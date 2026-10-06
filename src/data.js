@@ -75,6 +75,36 @@ export const providers = [
     id:"leclerc", name:"E.Leclerc", kinds:["fidélité enseigne","promos"], priority:"essentiel",
     stores:["leclerc"], url:"https://www.e.leclerc/",
     note:"Prix et avantages Carte E.Leclerc dépendent du magasin ; source directe à intégrer."
+  },
+  {
+    id:"envie-plus", name:"Envie de Plus", kinds:["ODR","bons de réduction"], priority:"fort",
+    stores:["carrefour","leclerc"], url:"https://www.enviedeplus.com/remboursement",
+    note:"Remboursements et coupons sur des marques P&G ; les offres sont souvent non cumulables avec les promotions."
+  },
+  {
+    id:"ma-vie-couleurs", name:"Ma vie en couleurs", kinds:["ODR","bons de réduction"], priority:"fort",
+    stores:["carrefour","leclerc"], url:"https://www.mavieencouleurs.fr/",
+    note:"Réductions multi-marques utilisables en magasin, Drive ou livraison selon les conditions de l'offre."
+  },
+  {
+    id:"anti-crise", name:"Anti-Crise", kinds:["optimisations","ODR","catalogues"], priority:"fort",
+    stores:["carrefour","leclerc"], url:"https://anti-crise.fr/",
+    note:"Communauté spécialisée dans les optimisations de courses, promotions fortes, ODR et produits 100 % remboursés."
+  },
+  {
+    id:"ma-reduc", name:"Ma Reduc", kinds:["codes promo","bons plans"], priority:"complément",
+    stores:["carrefour","leclerc"], url:"https://www.ma-reduc.com/",
+    note:"Codes promo et offres marchands ; utile pour compléter les achats en ligne et Drive."
+  },
+  {
+    id:"too-good-to-go", name:"Too Good To Go", kinds:["anti-gaspi","paniers"], priority:"complément",
+    stores:["carrefour","leclerc"], url:"https://www.toogoodtogo.com/fr",
+    note:"Paniers d'invendus à prix réduit ; particulièrement pertinent chez Carrefour et autres magasins partenaires."
+  },
+  {
+    id:"phenix", name:"Phenix", kinds:["anti-gaspi","paniers"], priority:"complément",
+    stores:["carrefour","leclerc"], url:"https://www.wearephenix.com/application-anti-gaspi/",
+    note:"Paniers d'invendus à prix réduit proposés par supermarchés et commerces partenaires."
   }
 ];
 
