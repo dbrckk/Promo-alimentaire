@@ -27,8 +27,19 @@ Le moteur compare leurs taux mais ne doit jamais activer plusieurs traceurs d'af
 
 - FidMarques
 - La Belle Adresse
+- Envie de Plus
+- Ma vie en couleurs
 - Wanteeed
 - Dealabs
+- Anti-Crise
+- Ma Reduc
+
+## Priorité 4 — anti-gaspillage
+
+- Too Good To Go
+- Phenix
+
+Ces deux sources ne comparent pas toujours une référence produit précise : elles doivent apparaître séparément des promotions classiques afin de ne pas fausser le classement produit.
 
 ## Règles produit
 
