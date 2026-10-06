@@ -27,3 +27,21 @@ test("filterOffers filtre magasin et recherche",()=>{
   assert.equal(filterOffers(list,{store:"leclerc",search:"mir"}).length,1);
   assert.equal(filterOffers(list,{store:"leclerc",search:"cadeau"}).length,0);
 });
+
+
+test("le registre de données reste cohérent", async()=>{
+  const { providers, offers } = await import("../src/data.js");
+  const providerIds=providers.map((x)=>x.id);
+  const offerIds=offers.map((x)=>x.id);
+  assert.equal(new Set(providerIds).size, providerIds.length, "provider ids uniques");
+  assert.equal(new Set(offerIds).size, offerIds.length, "offer ids uniques");
+  for(const provider of providers){
+    assert.match(provider.url,/^https:\/\//);
+    assert.ok(provider.stores.every((store)=>["carrefour","leclerc","all"].includes(store)));
+  }
+  for(const offer of offers){
+    assert.match(offer.sourceUrl,/^https:\/\//);
+    assert.ok(offer.stores.every((store)=>["carrefour","leclerc","all"].includes(store)));
+    assert.ok(!Number.isNaN(Date.parse(offer.verifiedAt)));
+  }
+});
