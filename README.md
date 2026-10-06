@@ -18,7 +18,7 @@ Les offres qui n'ont pas encore de prix magasin ne prétendent pas inventer une 
 
 ## Sources actuellement référencées
 
-Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Widilo, iGraal, Wanteeed, Bonial, La Belle Adresse, Dealabs, Club Carrefour/PASS et E.Leclerc.
+Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Widilo, iGraal, Wanteeed, Bonial, La Belle Adresse, Dealabs, Envie de Plus, Ma vie en couleurs, Anti-Crise, Ma Reduc, Too Good To Go, Phenix, Club Carrefour/PASS et E.Leclerc.
 
 ## Architecture
 
