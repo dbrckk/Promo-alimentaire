@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0d5c3d" />
+  <meta name="description" content="Compare les promotions, cashbacks, ODR et bons d'achat pour tes courses." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./styles.css" />
+  <title>Promo Alimentaire</title>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Comparateur d'économies</p>
+      <h1>Promo Alimentaire</h1>
+      <p class="subtitle">Cashback, ODR, coupons, bons d'achat et promos magasin au même endroit.</p>
+    </div>
+    <button id="installButton" class="ghost hidden" type="button">Installer</button>
+  </header>
+
+  <main>
+    <section class="panel controls" aria-label="Filtres">
+      <div class="field">
+        <label for="store">Magasin</label>
+        <select id="store">
+          <option value="carrefour">Carrefour</option>
+          <option value="leclerc">E.Leclerc</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sort">Trier par</label>
+        <select id="sort">
+          <option value="percent">Pourcentage d'économie</option>
+          <option value="amount">Argent économisé</option>
+          <option value="freshness">Données les plus récentes</option>
+        </select>
+      </div>
+      <div class="field search-field">
+        <label for="search">Recherche</label>
+        <input id="search" type="search" placeholder="Produit, marque ou source…" autocomplete="off" />
+      </div>
+    </section>
+
+    <section class="stats" id="stats" aria-live="polite"></section>
+
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab active" data-tab="offers" type="button">Meilleures offres</button>
+      <button class="tab" data-tab="providers" type="button">Sources</button>
+    </nav>
+
+    <section id="offersView">
+      <div id="offers" class="grid"></div>
+      <p id="empty" class="empty hidden">Aucune offre ne correspond aux filtres.</p>
+    </section>
+
+    <section id="providersView" class="hidden">
+      <div id="providers" class="grid providers"></div>
+    </section>
+
+    <section class="panel notice">
+      <strong>Important :</strong> les conditions de cumul changent selon l'offre. L'application affiche la source et les restrictions connues ; les conditions de la source au moment de l'achat restent prioritaires.
+    </section>
+  </main>
+
+  <footer>
+    <span id="datasetDate"></span>
+    <a href="https://github.com/dbrckk/Promo-alimentaire" target="_blank" rel="noreferrer">GitHub</a>
+  </footer>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
