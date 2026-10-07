@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "python3 -m http.server 4173",
     "test": "node --test tests/*.test.js",
-    "check": "node --check src/domain.js && node --check src/data.js && node --check src/open-data.js && node --check src/stacking.js && node --check src/matching.js && node --check src/bundle.js && node --check src/basket.js && node --check src/confidence.js && node --check src/history.js && node --check src/product-history.js && node --check src/gtin.js && node --check src/ingestion.js && node --check src/import-loader.js && node --check src/app.js && node --check sw.js && node --check scripts/validate-imports.mjs",
+    "check": "node --check src/domain.js && node --check src/data.js && node --check src/open-data.js && node --check src/stacking.js && node --check src/matching.js && node --check src/bundle.js && node --check src/basket.js && node --check src/confidence.js && node --check src/history.js && node --check src/product-history.js && node --check src/gtin.js && node --check src/ingestion.js && node --check src/import-loader.js && node --check src/app.js && node --check sw.js && node --check scripts/validate-imports.mjs && node --check scripts/check-import-freshness.mjs",
     "verify": "npm run check && npm test && npm run validate:imports",
-    "validate:imports": "node scripts/validate-imports.mjs"
+    "validate:imports": "node scripts/validate-imports.mjs",
+    "check:freshness": "node scripts/check-import-freshness.mjs"
   },
   "engines": {
     "node": ">=20"
