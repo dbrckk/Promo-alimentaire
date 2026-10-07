@@ -20,18 +20,35 @@ if(!response.ok) throw new Error("Coupon Network HTTP "+response.status);
 const html=await response.text();
 if(html.length<5000) throw new Error("Réponse Coupon Network anormalement courte.");
 
-const offers=parseCouponNetworkHtml(html,{verifiedAt});
+let offers=parseCouponNetworkHtml(html,{verifiedAt});
 if(offers.length<minOffers){
-  const detailLinks=(html.match(/autres-enseignes-cashback-coupons[^"'<>\s]+\/\d+/gi)||[]);
-  const couponIds=(html.match(/coupon\/\d+/gi)||[]);
-  const refundMarkers=(html.match(/REMBOURS/gi)||[]);
-  console.error("[coupon-network] diagnostic raw HTML:",{
-    length:html.length,
-    detailLinks:detailLinks.length,
-    couponIds:couponIds.length,
-    refundMarkers:refundMarkers.length,
-    contentType:response.headers.get("content-type")
-  });
+  const { extractCouponNetworkDetailUrls, parseCouponNetworkDetailHtml } = await import("../src/adapters/coupon-network.js");
+  const urls=extractCouponNetworkDetailUrls(html);
+  console.log("[coupon-network] liste directe insuffisante ("+offers.length+"), bascule sur "+urls.length+" fiches publiques uniques.");
+  const details=[];
+  const batchSize=6;
+  for(let start=0;start<urls.length;start+=batchSize){
+    const batch=urls.slice(start,start+batchSize);
+    const results=await Promise.all(batch.map(async(url)=>{
+      try{
+        const detailResponse=await fetch(url,{
+          headers:{Accept:"text/html,application/xhtml+xml","User-Agent":"PromoAlimentaire/0.1 public-offer-sync"},
+          redirect:"follow"
+        });
+        if(!detailResponse.ok) return null;
+        const detailHtml=await detailResponse.text();
+        return parseCouponNetworkDetailHtml(detailHtml,url,{verifiedAt});
+      }catch{
+        return null;
+      }
+    }));
+    details.push(...results.filter(Boolean));
+    await new Promise((resolve)=>setTimeout(resolve,120));
+  }
+  const unique=new Map(details.map((offer)=>[offer.externalId,offer]));
+  offers=[...unique.values()];
+}
+if(offers.length<minOffers){
   throw new Error("Extraction Coupon Network insuffisante : "+offers.length+" offre(s), minimum "+minOffers+". Ancien snapshot conservé.");
 }
 
