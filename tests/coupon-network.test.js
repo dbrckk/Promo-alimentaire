@@ -56,6 +56,7 @@ test("deriveProductMatch exige la marque et des termes distinctifs",()=>{
 test("extractCouponNetworkDetailUrls déduplique les fiches publiques",()=>{
   const html='<a href="/autres-enseignes-cashback-coupons/president-coupon/108489">A</a>'
     +'<a href="https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/president-coupon/108489">B</a>'
+    +'<a href="/carrefour-cashback-coupons/president-coupon/108489">B2</a>'
     +'<a href="/autres-enseignes-cashback-coupons/bonduelle-coupon/108567">C</a>';
   const urls=extractCouponNetworkDetailUrls(html);
   assert.equal(urls.length,2);
