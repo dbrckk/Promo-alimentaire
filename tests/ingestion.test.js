@@ -149,3 +149,24 @@ test("normalizeImportedOffer conserve l'exigence de carte fidélité",()=>{
   assert.equal(result.value.requiresLoyalty,"leclerc-card");
   assert.equal(result.value.autoStackWhenEligible,true);
 });
+
+
+test("normalizeImportedOffer conserve le blocage de résolution GTIN",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"leclerc",
+    externalId:"range",
+    title:"Gamme multi-références",
+    sourceUrl:"https://www.e.leclerc/",
+    verifiedAt:"2026-10-07",
+    stores:["leclerc"],
+    scope:"produit",
+    savingPercent:20,
+    multiReference:true,
+    eanResolutionBlocked:true,
+    eanResolutionReason:"Plusieurs variantes possibles."
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.multiReference,true);
+  assert.equal(result.value.eanResolutionBlocked,true);
+  assert.equal(result.value.eanResolutionReason,"Plusieurs variantes possibles.");
+});
