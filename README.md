@@ -18,6 +18,9 @@ Fonctionnalités actuelles :
 - estimation prudente du gain potentiel sur un prix récent ;
 - moteur de cumul prudent qui choisit le meilleur chemin valide sans additionner les offres incompatibles ;
 - simulateur d'optimisation d'un panier ;
+- liste de courses persistante sur l'appareil avec quantités ;
+- actualisation des mêmes références chez Carrefour et E.Leclerc ;
+- comparaison des deux paniers avec refus de déclarer un gagnant si la couverture prix est incomplète ;
 - PWA installable et fonctionnement hors ligne pour l'interface ;
 - tests métier sans dépendance externe.
 
@@ -45,7 +48,8 @@ Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Wi
 - `src/open-data.js` : Open Food Facts + Open Prices, normalisation EAN/prix.
 - `src/stacking.js` : moteur de compatibilité et de cumul.
 - `src/matching.js` : rapprochement EAN/GTIN et règles marque/nom.
-- `src/app.js` : interface, scanner et état local.
+- `src/basket.js` : évaluation d'une liste par enseigne et comparaison prudente.
+- `src/app.js` : interface, scanner, liste de courses et état local.
 - `tests/` : tests du domaine, ingestion ouverte et moteur de cumul.
 - aucun backend requis pour le MVP.
 
@@ -69,7 +73,7 @@ npm run verify
 
 1. Alimenter les offres avec des EAN/GTIN **vérifiés par la source** afin de faire passer les candidats en correspondances exactes.
 2. Ajouter historique des prix et score de fraîcheur/confiance.
-3. Ajouter une vue de comparaison explicite entre plusieurs magasins proches pour un même produit.
+3. Grouper les observations par magasin précis afin de comparer un **panier complet dans un même point de vente** plutôt qu'une agrégation d'enseigne.
 4. Ajouter des connecteurs d'ingestion autorisés pour les catalogues et offres.
 5. Déployer la PWA en HTTPS pour test Android réel.
 
