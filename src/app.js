@@ -1,8 +1,9 @@
-import { DATASET_DATE, offers, providers } from "./data.js";
+import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import { computeSaving, effectivePercent, filterOffers, rankOffers } from "./domain.js";
 import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
-import { estimateOfferSaving, findProductOffers } from "./matching.js";
+import { effectiveOfferPercent, estimateOfferSaving, findProductOffers } from "./matching.js";
+import { loadImportedOffers, mergeOffers } from "./import-loader.js";
 import {
   compareBasketStores,
   evaluateBasketLocations,
@@ -14,6 +15,7 @@ import { scoreBasketConfidence } from "./confidence.js";
 import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js";
 
 const money = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
+let offers=[...baseOffers];
 const els = {
   store:document.querySelector("#store"),
   sort:document.querySelector("#sort"),
@@ -120,6 +122,7 @@ els.clearHistory.addEventListener("click",()=>{
   state.comparisonHistory=[];
   saveComparisonHistory();
   renderComparisonHistory();
+hydrateImportedOffers();
   setListStatus("Historique local effacé.");
 });
 els.productResult.addEventListener("click",(event)=>{
@@ -178,7 +181,7 @@ function render(){
 function renderOffer(offer){
   const amount=computeSaving(offer);
   const pct=effectivePercent(offer);
-  const savingMain=amount!==null?money.format(amount):(pct!==null?formatPercent(pct):"—");
+  const savingMain=offerPercentLabel(offer) || (amount!==null?money.format(amount):(pct!==null?formatPercent(pct):"—"));
   const savingSub=amount!==null && pct!==null?formatPercent(pct):offer.scope==="panier"?"sur le panier":"sur le produit";
   const stackBadge=offer.autoStack===true
     ? '<span class="badge good">Cumul automatisable</span>'
@@ -325,11 +328,8 @@ function renderProductOffers(product,observations=[]){
         ? "Correspondance forte"
         : "Référence à vérifier";
     const confidenceClass=match.exact ? "good" : "warn";
-    const savingLabel=Number.isFinite(offer.savingPercent)
-      ? formatPercent(offer.savingPercent)
-      : Number.isFinite(offer.savingAmount)
-        ? money.format(offer.savingAmount)
-        : "—";
+    const savingLabel=offerPercentLabel(offer)
+      || (Number.isFinite(offer.savingAmount) ? money.format(offer.savingAmount) : "—");
     const amountLine=potential===null
       ? "Montant potentiel indisponible sans prix récent"
       : `Potentiel ≈ ${money.format(potential)} sur le dernier prix récent`;
@@ -906,6 +906,37 @@ function stopScanner(){
 function setProductStatus(message,isError=false){
   els.productStatus.textContent=message;
   els.productStatus.classList.toggle("error",Boolean(isError));
+}
+
+function offerPercentLabel(offer){
+  const tiers=Array.isArray(offer.quantityTiers) ? offer.quantityTiers : [];
+  if(tiers.length){
+    const values=tiers.map((tier)=>Number(tier.savingPercent)).filter(Number.isFinite);
+    if(values.length){
+      const min=Math.min(...values);
+      const max=Math.max(...values);
+      return min===max ? formatPercent(min) : `${formatPercent(min).replace(" %","")}–${formatPercent(max)}`;
+    }
+  }
+  const percent=effectiveOfferPercent(offer,1);
+  return Number.isFinite(percent) ? formatPercent(percent) : null;
+}
+
+async function hydrateImportedOffers(){
+  try{
+    const result=await loadImportedOffers();
+    offers=mergeOffers(baseOffers,result.offers);
+    const suffix=result.errors.length
+      ? ` · ${result.offers.length} offres publiques chargées, ${result.errors.length} lot(s) en erreur`
+      : ` · ${result.offers.length} offres publiques chargées`;
+    els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")}${suffix}`;
+    render();
+    renderOptimizer();
+    renderShoppingList();
+    if(state.product) renderProductOffers(state.product,state.priceObservations);
+  }catch(error){
+    els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")} · imports indisponibles`;
+  }
 }
 
 function stat(value,label){return `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`;}
