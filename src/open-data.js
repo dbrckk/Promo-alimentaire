@@ -135,3 +135,16 @@ export function haversineKm(lat1,lon1,lat2,lon2) {
     + Math.cos(toRad(aLat))*Math.cos(toRad(bLat))*Math.sin(dLon/2)**2;
   return 6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
+
+
+export function selectBestRecentPrice(observations,maxAgeDays=120,now=new Date()) {
+  const candidates=(observations || [])
+    .filter((item)=>Number.isFinite(Number(item.price)) && Number(item.price)>0)
+    .filter((item)=>isFreshObservation(item,maxAgeDays,now));
+  if(!candidates.length) return null;
+  return [...candidates].sort((a,b)=>{
+    const priceDiff=Number(a.price)-Number(b.price);
+    if(priceDiff!==0) return priceDiff;
+    return new Date(b.date)-new Date(a.date);
+  })[0];
+}
