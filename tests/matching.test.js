@@ -5,7 +5,9 @@ import {
   estimateOfferSaving,
   findProductOffers,
   matchOfferToProduct,
-  normalizeText
+  normalizeText,
+  rankMatchedOffers,
+  requiredQuantity
 } from "../src/matching.js";
 
 test("normalizeText neutralise accents et ponctuation",()=>{
@@ -81,4 +83,29 @@ test("un remboursement fixe par offre n'est pas multiplié par la quantité",()=
 test("un remboursement fixe per-unit peut être multiplié explicitement",()=>{
   const offer={savingAmount:0.5,minPurchaseQty:1,savingAmountMode:"per-unit"};
   assert.equal(estimateOfferSaving(2,offer,3),1.5);
+});
+
+
+test("requiredQuantity utilise la quantité minimale explicite ou du premier palier",()=>{
+  assert.equal(requiredQuantity({minPurchaseQty:2}),2);
+  assert.equal(requiredQuantity({quantityTiers:[{minQty:3,savingPercent:30},{minQty:5,savingPercent:40}]}),3);
+});
+
+test("rankMatchedOffers priorise un EAN exact puis le gain",()=>{
+  const matches=[
+    {offer:{id:"candidate",savingPercent:50,minPurchaseQty:1},match:{exact:false,confidence:"probable",score:90}},
+    {offer:{id:"exact",savingPercent:20,minPurchaseQty:1},match:{exact:true,confidence:"exact",score:100}}
+  ];
+  const ranked=rankMatchedOffers(matches,{price:10,quantity:1});
+  assert.equal(ranked[0].offer.id,"exact");
+  assert.equal(ranked[0].action.estimatedSaving,2);
+});
+
+test("rankMatchedOffers indique la quantité manquante",()=>{
+  const ranked=rankMatchedOffers([
+    {offer:{id:"two",savingAmount:1,minPurchaseQty:2},match:{exact:false,confidence:"candidate",score:60}}
+  ],{price:4,quantity:1});
+  assert.equal(ranked[0].action.quantitySatisfied,false);
+  assert.equal(ranked[0].action.missingQty,1);
+  assert.equal(ranked[0].action.estimatedSaving,null);
 });
