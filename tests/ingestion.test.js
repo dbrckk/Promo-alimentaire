@@ -94,3 +94,15 @@ test("un bundle sans cible valide est refusé",()=>{
   assert.equal(result.ok,false);
   assert.ok(result.errors.some((error)=>error.includes("bundleTargetRequirementId")));
 });
+
+
+test("normalizeImportedOffer conserve minPurchaseQty et savingAmountMode",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"coupon-network",externalId:"two-pack",title:"Deux produits",
+    stores:["all"],savingAmount:1.2,minPurchaseQty:2,
+    verifiedAt:"2026-10-07",sourceUrl:"https://example.com/offer"
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.minPurchaseQty,2);
+  assert.equal(result.value.savingAmountMode,"per-offer");
+});
