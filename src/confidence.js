@@ -29,9 +29,11 @@ export function scoreBasketConfidence(scenario,{now=new Date()}={}) {
     : 0;
   const proofScore=proofRatio*10;
 
-  const score=Math.round(Math.min(100,Math.max(
+  const rawScore=Math.min(100,Math.max(
     0,coverageScore+freshnessScore+locationScore+proofScore
-  )));
+  ));
+  const priceChannelReliable=scenario.priceChannelReliable!==false;
+  const score=Math.round(priceChannelReliable ? rawScore : rawScore*0.65);
 
   return {
     score,
@@ -46,7 +48,8 @@ export function scoreBasketConfidence(scenario,{now=new Date()}={}) {
     coverageRatio:roundRatio(coverageRatio),
     freshnessRatio:roundRatio(freshnessRatio),
     proofRatio:roundRatio(proofRatio),
-    locationReliable
+    locationReliable,
+    priceChannelReliable
   };
 }
 
@@ -82,7 +85,7 @@ function emptyScore(){
   return {
     score:0,level:"very-low",label:"Très faible",
     parts:{coverage:0,freshness:0,location:0,proof:0},
-    coverageRatio:0,freshnessRatio:0,proofRatio:0,locationReliable:false
+    coverageRatio:0,freshnessRatio:0,proofRatio:0,locationReliable:false,priceChannelReliable:false
   };
 }
 
