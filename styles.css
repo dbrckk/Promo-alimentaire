@@ -60,7 +60,7 @@ select:focus,input:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(1
 .empty{text-align:center;color:var(--muted);padding:38px 10px}
 .tool-panel{padding:18px;display:grid;gap:16px}
 .help{margin:7px 0 0;color:var(--muted);font-size:.8rem;line-height:1.45}
-.inline-form{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px}
+.inline-form{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:8px}
 .status{min-height:20px;font-size:.82rem;color:var(--muted)}
 .status.error{color:var(--danger)}
 .product-result{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
@@ -114,3 +114,5 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .match-saving strong{display:block;color:var(--good)}
 .match-saving small{display:block;color:var(--muted);font-size:.7rem;margin-top:2px}
 .match-note{font-size:.78rem;color:var(--muted);line-height:1.4;margin:0}
+
+.secondary.active{background:var(--brand);color:#fff;border-color:var(--brand)}
