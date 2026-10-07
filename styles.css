@@ -212,7 +212,7 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .payment-alternatives{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
 .payment-alternatives span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 8px}
 
-.saving-levers{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.saving-levers{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 .lever{border-radius:10px;padding:8px;display:grid;gap:3px}
 .lever span{font-size:.64rem;color:var(--muted)}
 .lever strong{font-size:.78rem}
