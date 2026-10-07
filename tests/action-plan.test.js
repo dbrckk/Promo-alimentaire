@@ -17,7 +17,7 @@ test("le plan ajoute les ODR après achat",()=>{
   const result=buildSavingsActionPlan({
     store:"leclerc",
     providers:[],
-    productCandidates:[{offer:{provider:"Shopmium",sourceUrl:"https://example.com"}}]
+    productCandidates:[{offer:{provider:"Shopmium",mechanism:"odr",type:"ODR",sourceUrl:"https://example.com"}}]
   });
   assert.ok(result.steps.some((step)=>step.phase==="après" && /ODR/.test(step.title)));
   assert.ok(result.steps.some((step)=>step.phase==="achat" && /preuve/.test(step.title.toLowerCase())));
