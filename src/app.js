@@ -497,7 +497,8 @@ function renderProductOffers(product,observations=[]){
     const evidence=offerEvidenceStatus(offer,{
       match,
       loyaltyProfile:state.loyaltyProfile,
-      storeVerified:false
+      storeVerified:false,
+      channelPriceVerified:false
     });
     const evidenceHtml=`
       <div class="evidence-grid">
@@ -505,6 +506,9 @@ function renderProductOffers(product,observations=[]){
         <span class="badge ${evidence.storeVerified?"good":"warn"}">Magasin : ${evidence.storeVerified?"confirmé":"à confirmer"}</span>
         ${offer.requiresLoyalty
           ? `<span class="badge ${evidence.loyaltyVerified?"good":"warn"}">Fidélité : ${evidence.loyaltyVerified?"confirmée":"à confirmer"}</span>`
+          : ""}
+        ${offer.requiresChannelPriceVerification
+          ? `<span class="badge ${evidence.channelPriceVerified?"good":"warn"}">Prix canal : ${evidence.channelPriceVerified?"confirmé":"à confirmer"}</span>`
           : ""}
       </div>
       ${evidence.blockers.length
