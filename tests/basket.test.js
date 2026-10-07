@@ -513,3 +513,30 @@ test("une promo confirmée 2+1 offert calcule exactement le nombre de groupes",(
   assert.equal(scenario.guaranteedSaving,1.67);
   assert.equal(scenario.finalCost,5.01);
 });
+
+
+test("ne soustrait pas deux fois une promo déjà incluse dans Open Prices",()=>{
+  const p={code:"3017624010701",name:"Produit",brands:"Marque",categories:[]};
+  const promo={
+    id:"retailer",scope:"produit",stores:["carrefour"],eans:[p.code],
+    savingPercent:30,mechanism:"retailer_promo",autoStack:true,
+    stackGroup:"retailer-promo",stackOrder:10,savingBasis:"base"
+  };
+  const discounted=evaluateBasketStore([{product:p,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{[p.code]:[{price:7,date:"2026-10-07",isDiscounted:true,priceWithoutDiscount:10}]},
+    offers:[promo],now:new Date("2026-10-08T12:00:00Z")
+  });
+  assert.equal(discounted.finalCost,7);
+  assert.equal(discounted.guaranteedSaving,0);
+  assert.equal(discounted.potentialProductSaving,0);
+  assert.equal(discounted.lines[0].alreadyRetailDiscounted,true);
+
+  const regular=evaluateBasketStore([{product:p,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{[p.code]:[{price:10,date:"2026-10-07",isDiscounted:false}]},
+    offers:[promo],now:new Date("2026-10-08T12:00:00Z")
+  });
+  assert.equal(regular.finalCost,7);
+  assert.equal(regular.guaranteedSaving,3);
+});
