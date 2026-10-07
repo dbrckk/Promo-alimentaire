@@ -12,6 +12,7 @@ export function normalizeQuantity(value) {
 
 export function evaluateBasketStore(items,{
   store,
+  channel=null,
   priceByCode={},
   offers=[],
   now=new Date(),
@@ -21,7 +22,7 @@ export function evaluateBasketStore(items,{
     const quantity=normalizeQuantity(item.quantity);
     const observations=priceByCode[item.product?.code] || [];
     const best=selectBestRecentPrice(observations,maxPriceAgeDays,now);
-    const matches=findProductOffers(item.product,offers,{store});
+    const matches=findProductOffers(item.product,offers,{store,channel});
 
     if(!best){
       return {
@@ -42,7 +43,7 @@ export function evaluateBasketStore(items,{
     const guaranteedProductOffers=matches
       .filter(({match,offer})=>match.exact && offer.autoStack===true)
       .map(({offer})=>offer);
-    const lineOptimization=optimizeStack(baseCost,guaranteedProductOffers,{store});
+    const lineOptimization=optimizeStack(baseCost,guaranteedProductOffers,{store,channel});
 
     const potentialSavings=matches
       .map(({offer})=>estimateOfferSaving(best.price,offer,quantity))
@@ -70,10 +71,10 @@ export function evaluateBasketStore(items,{
   const productAdjustedSubtotal=roundMoney(pricedLines.reduce((sum,line)=>sum+line.finalCost,0));
   const basketOffers=offers.filter((offer)=>offer.scope==="panier");
   const basketOptimization=productAdjustedSubtotal>0
-    ? optimizeStack(productAdjustedSubtotal,basketOffers,{store})
+    ? optimizeStack(productAdjustedSubtotal,basketOffers,{store,channel})
     : {finalCost:0,totalSaving:0,selected:[],considered:[],savingPercent:0};
 
-  const bundleCandidates=findBundleCandidates(items,lines,offers,{store});
+  const bundleCandidates=findBundleCandidates(items,lines,offers,{store,channel});
   const potentialBundleSaving=bundleCandidates.length
     ? roundMoney(Math.max(...bundleCandidates.map((candidate)=>candidate.saving)))
     : 0;
@@ -105,6 +106,7 @@ export function evaluateBasketStore(items,{
 
   return {
     store,
+    channel,
     lines,
     itemCount:lines.reduce((sum,line)=>sum+line.quantity,0),
     distinctCount:lines.length,
@@ -168,6 +170,7 @@ export function observationLocationKey(observation) {
 
 export function evaluateBasketLocations(items,{
   store,
+  channel=null,
   priceByCode={},
   offers=[],
   now=new Date(),
@@ -207,6 +210,7 @@ export function evaluateBasketLocations(items,{
   return [...locations.values()].map((entry)=>({
     ...evaluateBasketStore(items,{
       store,
+      channel,
       priceByCode:entry.priceByCode,
       offers,
       now,
