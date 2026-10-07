@@ -1,26 +1,31 @@
 export function offerEvidenceStatus(offer,{
   match=null,
   loyaltyProfile={},
-  storeVerified=false
+  storeVerified=false,
+  channelPriceVerified=false
 }={}){
   const productExact=Boolean(match?.exact || (Array.isArray(offer?.eans) && offer.eans.length));
   const productKnown=productExact || Boolean(offer?.productMatch);
   const requiresStore=offer?.requiresStoreVerification===true;
   const storeOk=!requiresStore || storeVerified===true || offer?.storeVerified===true;
 
+  const requiresPrice=offer?.requiresChannelPriceVerification===true;
+  const priceOk=!requiresPrice || channelPriceVerified===true || offer?.channelPriceVerified===true;
+
   const loyalty=loyaltyState(offer?.requiresLoyalty,loyaltyProfile);
   const loyaltyOk=loyalty===true;
   const loyaltyUnknown=loyalty===null;
 
   let level="candidate";
-  if(productExact && storeOk && loyaltyOk) level="verified";
-  else if(productExact && storeOk && !offer?.requiresLoyalty) level="verified";
+  if(productExact && storeOk && priceOk && loyaltyOk) level="verified";
+  else if(productExact && storeOk && priceOk && !offer?.requiresLoyalty) level="verified";
   else if(productExact) level="exact-product";
   else if(productKnown) level="heuristic";
 
   const blockers=[];
   if(!productExact) blockers.push("Référence produit exacte non prouvée");
   if(requiresStore && !storeOk) blockers.push("Disponibilité dans ce magasin non confirmée");
+  if(requiresPrice && !priceOk) blockers.push("Prix du canal sélectionné non confirmé");
   if(offer?.requiresLoyalty && !loyaltyOk){
     blockers.push(loyaltyUnknown
       ? "Carte fidélité non renseignée"
@@ -32,8 +37,12 @@ export function offerEvidenceStatus(offer,{
     productExact,
     storeVerified:storeOk,
     loyaltyVerified:loyaltyOk,
+    channelPriceVerified:priceOk,
     blockers,
-    canGuarantee:productExact && storeOk && (!offer?.requiresLoyalty || loyaltyOk)
+    canGuarantee:productExact
+      && storeOk
+      && priceOk
+      && (!offer?.requiresLoyalty || loyaltyOk)
   };
 }
 
