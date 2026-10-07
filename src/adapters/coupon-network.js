@@ -161,7 +161,8 @@ function distinctiveTerms(product){
     .filter(Boolean)){
       const key=word.toLocaleLowerCase("fr");
       if(stop.has(key)) continue;
-      if(word.length<4 && !/\d/.test(word)) continue;
+      const usefulShortCode=/[a-zA-Z]/.test(word) && /\d/.test(word);
+      if(word.length<4 && !usefulShortCode) continue;
       if(seen.has(key)) continue;
       seen.add(key);
       result.push(word);
