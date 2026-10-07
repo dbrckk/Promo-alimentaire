@@ -112,6 +112,7 @@ export function normalizeImportedOffer(raw) {
       requiresLoyalty:value.requiresLoyalty || null,
       autoStackWhenEligible:value.autoStackWhenEligible===true,
       requiresStoreVerification:value.requiresStoreVerification===true,
+      requiresChannelPriceVerification:value.requiresChannelPriceVerification===true,
       multiReference:value.multiReference===true,
       eanResolutionBlocked:value.eanResolutionBlocked===true,
       eanResolutionReason:value.eanResolutionReason
@@ -121,7 +122,9 @@ export function normalizeImportedOffer(raw) {
       stackGroup:value.stackGroup || null,
       stackOrder:Number.isFinite(Number(value.stackOrder)) ? Number(value.stackOrder) : 50,
       savingBasis:value.savingBasis==="base" ? "base" : "current",
-      autoStack:value.autoStack===true && value.requiresStoreVerification!==true,
+      autoStack:value.autoStack===true
+        && value.requiresStoreVerification!==true
+        && value.requiresChannelPriceVerification!==true,
       stackingConfidence:value.stackingConfidence || "unknown",
       stacking:value.stacking || "conditions à vérifier",
       conditions:value.conditions || "",
