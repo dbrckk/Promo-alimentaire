@@ -137,12 +137,35 @@ export function haversineKm(lat1,lon1,lat2,lon2) {
 }
 
 
-export function selectBestRecentPrice(observations,maxAgeDays=120,now=new Date()) {
+export function observationAgeDays(observation,now=new Date()) {
+  if(!observation?.date) return null;
+  const date=new Date(observation.date);
+  if(Number.isNaN(date.getTime())) return null;
+  const ageMs=now-date;
+  if(ageMs<0) return null;
+  return Math.floor(ageMs/(24*60*60*1000));
+}
+
+export function priceFreshness(observation,now=new Date()) {
+  const ageDays=observationAgeDays(observation,now);
+  if(ageDays===null) return {level:"unknown",label:"date inconnue",ageDays:null};
+  if(ageDays<=7) return {level:"very-recent",label:"≤ 7 jours",ageDays};
+  if(ageDays<=30) return {level:"recent",label:"≤ 30 jours",ageDays};
+  if(ageDays<=120) return {level:"old",label:"31–120 jours",ageDays};
+  return {level:"stale",label:"> 120 jours",ageDays};
+}
+
+export function selectBestRecentPrice(observations,maxAgeDays=120,now=new Date(),preferredAgeDays=30) {
   const candidates=(observations || [])
     .filter((item)=>Number.isFinite(Number(item.price)) && Number(item.price)>0)
     .filter((item)=>isFreshObservation(item,maxAgeDays,now));
   if(!candidates.length) return null;
-  return [...candidates].sort((a,b)=>{
+  const preferred=candidates.filter((item)=>{
+    const age=observationAgeDays(item,now);
+    return age!==null && age<=preferredAgeDays;
+  });
+  const pool=preferred.length ? preferred : candidates;
+  return [...pool].sort((a,b)=>{
     const priceDiff=Number(a.price)-Number(b.price);
     if(priceDiff!==0) return priceDiff;
     return new Date(b.date)-new Date(a.date);
