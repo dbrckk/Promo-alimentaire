@@ -39,7 +39,7 @@
     "channels": [
       "store"
     ],
-    "savingPercent": 44,
+    "savingPercent": 4,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
     "sourceUrl": "https://www.widilo.fr/bon-d-achat/carrefour",
@@ -120,7 +120,7 @@
     "channels": [
       "store"
     ],
-    "savingPercent": 6,
+    "savingPercent": 0.05,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
     "sourceUrl": "https://www.ebuyclub.com/cashback-connecte",
@@ -202,7 +202,7 @@
     "channels": [
       "online"
     ],
-    "savingPercent": 6.5,
+    "savingPercent": 2.5,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
     "sourceUrl": "https://www.ebuyclub.com/cashback",
