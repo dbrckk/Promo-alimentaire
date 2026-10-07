@@ -43,3 +43,27 @@ test("carte fidélité inconnue bloque la garantie",()=>{
   assert.equal(result.canGuarantee,false);
   assert.ok(result.blockers.some((x)=>/non renseignée/.test(x)));
 });
+
+
+test("un EAN exact reste non garanti si le prix Drive doit être confirmé",()=>{
+  const result=offerEvidenceStatus({
+    eans:["3017624010701"],
+    requiresChannelPriceVerification:true
+  },{
+    channelPriceVerified:false
+  });
+  assert.equal(result.productExact,true);
+  assert.equal(result.channelPriceVerified,false);
+  assert.equal(result.canGuarantee,false);
+  assert.ok(result.blockers.some((x)=>/Prix du canal/.test(x)));
+});
+
+test("la validation du prix canal lève ce blocage",()=>{
+  const result=offerEvidenceStatus({
+    eans:["3017624010701"],
+    requiresChannelPriceVerification:true
+  },{
+    channelPriceVerified:true
+  });
+  assert.equal(result.canGuarantee,true);
+});
