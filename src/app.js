@@ -566,6 +566,34 @@ function renderOptimizer(){
       </div>`).join("")
     : '<div class="route-step"><span>Aucune remise panier suffisamment sûre n’est automatisée pour cette enseigne.</span><strong>—</strong></div>';
   const uncertain=result.considered.filter((offer)=>offer.autoStack!==true);
+  const selectedPayment=result.selected.find((offer)=>offer.mechanism==="gift_card") || null;
+  const paymentAlternatives=basketOffers
+    .filter((offer)=>offer.mechanism==="gift_card")
+    .filter((offer)=>offer.stores?.includes(state.store)||offer.stores?.includes("all"))
+    .sort((a,b)=>(b.savingPercent||0)-(a.savingPercent||0));
+  const paymentAdvice=selectedPayment
+    ? `<div class="payment-advice">
+         <div>
+           <span>Meilleur paiement actuel</span>
+           <strong>${escapeHtml(selectedPayment.provider)} · ${formatPercent(selectedPayment.savingPercent)}</strong>
+           <small>Économie estimée : ${money.format(selectedPayment.calculatedSaving)} sur ce panier.</small>
+         </div>
+         <a class="open" href="${escapeHtml(selectedPayment.sourceUrl)}" target="_blank" rel="noreferrer">Ouvrir</a>
+         ${paymentAlternatives.length>1
+           ? `<div class="payment-alternatives">${paymentAlternatives
+               .filter((offer)=>offer.id!==selectedPayment.id)
+               .slice(0,3)
+               .map((offer)=>`<span>${escapeHtml(offer.provider)} ${formatPercent(offer.savingPercent)}</span>`)
+               .join("")}</div>`
+           : ""}
+       </div>`
+    : `<div class="payment-advice muted">
+         <div>
+           <span>Meilleur paiement actuel</span>
+           <strong>Aucune carte cadeau remisée validée pour ${storeLabel(state.store)}</strong>
+           <small>Les autres cashbacks restent affichés séparément quand leur cumul est incertain.</small>
+         </div>
+       </div>`;
   els.optimizerResult.innerHTML=`
     <section class="optimizer-card">
       <div class="optimizer-total">
@@ -573,6 +601,7 @@ function renderOptimizer(){
         <div><span>Économie validée</span><strong>−${money.format(result.totalSaving)} · ${formatPercent(result.savingPercent)}</strong></div>
         <div><span>Coût effectif estimé</span><strong>${money.format(result.finalCost)}</strong></div>
       </div>
+      ${paymentAdvice}
       <div class="route">${route}</div>
       <p class="help">
         ${uncertain.length} offre(s) panier supplémentaire(s) sont volontairement exclues du total car leur cumul n'est pas assez certain.
