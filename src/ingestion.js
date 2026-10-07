@@ -39,6 +39,8 @@ export function normalizeImportedOffer(raw) {
   const minPurchaseQty=Math.max(1,Math.trunc(Number(value.minPurchaseQty)||1));
   const savingCapAmount=nullableNumber(value.savingCapAmount);
   const basePrice=nullableNumber(value.basePrice);
+  const sourceRegularPrice=nullableNumber(value.sourceRegularPrice);
+  const sourcePromoPrice=nullableNumber(value.sourcePromoPrice);
   const promoFormula=normalizePromoFormula(value.promoFormula,errors);
   const quantityTiers=normalizeQuantityTiers(value.quantityTiers,errors);
   const bundleRequirements=normalizeBundleRequirements(value.bundleRequirements,errors);
@@ -92,6 +94,8 @@ export function normalizeImportedOffer(raw) {
       minPurchaseQty,
       savingCapAmount:Number.isFinite(savingCapAmount) ? savingCapAmount : null,
       basePrice:Number.isFinite(basePrice) ? basePrice : null,
+      sourceRegularPrice:Number.isFinite(sourceRegularPrice) ? sourceRegularPrice : null,
+      sourcePromoPrice:Number.isFinite(sourcePromoPrice) ? sourcePromoPrice : null,
       verifiedAt,
       startsAt,
       expiresAt,
