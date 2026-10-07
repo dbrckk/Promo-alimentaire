@@ -147,3 +147,28 @@ L'interface distingue explicitement :
 - **potentiel bundle** : offre multi-produits détectée mais non garantie ;
 - **meilleur cas prudent** : coût estimé après la plus forte économie candidate, sans additionner artificiellement produit + bundle quand leur compatibilité n'est pas établie.
 
+
+
+## Concurrence entre portails cashback
+
+Pour les achats en ligne, plusieurs services peuvent proposer simultanément une redirection ou une extension cashback. L'application ne les additionne jamais automatiquement.
+
+Règles :
+
+1. comparer les taux disponibles juste avant la commande ;
+2. choisir **un seul** chemin d'affiliation principal ;
+3. éviter d'activer plusieurs extensions cashback concurrentes ;
+4. conserver les offres CB / cartes cadeaux séparées tant que leur compatibilité exacte n'est pas établie ;
+5. ne compter dans le total garanti que les mécanismes explicitement marqués compatibles.
+
+Joko et iGraal peuvent apparaître comme vérifications dynamiques dans le plan d'action même lorsqu'aucun taux public chiffrable n'est disponible.
+
+## Canaux
+
+- `store` : achat physique en magasin ;
+- `drive` : commande Drive ;
+- `online` : commande web/livraison ;
+- absence de `channels` sur une offre : applicable à tous les canaux seulement lorsque la source ne distingue pas le canal.
+
+Les prix Open Prices sont traités comme des observations magasin. Ils ne servent pas à désigner un gagnant fiable en mode Drive ou En ligne.
+
