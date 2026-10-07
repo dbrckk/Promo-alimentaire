@@ -56,6 +56,9 @@ Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Wi
 - `src/basket.js` : évaluation d'une liste par enseigne et comparaison prudente.
 - `src/confidence.js` : score de confiance explicable des scénarios.
 - `src/history.js` : snapshots locaux et tendances de comparaison.
+- `src/gtin.js` : normalisation et checksum GTIN/EAN.
+- `src/ingestion.js` : validation des lots d'offres traçables.
+- `scripts/validate-imports.mjs` : porte CI pour les fichiers `data/import/*.json`.
 - `src/app.js` : interface, scanner, liste de courses et état local.
 - `tests/` : tests du domaine, ingestion ouverte et moteur de cumul.
 - aucun backend requis pour le MVP.
@@ -76,6 +79,8 @@ Puis ouvrir `http://localhost:4173`.
 npm run verify
 ```
 
+La commande vérifie aussi automatiquement les futurs lots `data/import/*.json`.
+
 ## Priorités suivantes
 
 1. Alimenter les offres avec des EAN/GTIN **vérifiés par la source** afin de faire passer les candidats en correspondances exactes.
@@ -84,4 +89,4 @@ npm run verify
 4. Ajouter des connecteurs d'ingestion autorisés pour les catalogues et offres.
 5. Déployer la PWA en HTTPS pour test Android réel.
 
-Voir `docs/SOURCES.md` pour la stratégie d'intégration et `docs/MATCHING.md` pour les règles de rapprochement produit/offre.
+Voir `docs/SOURCES.md` pour la stratégie d'intégration, `docs/MATCHING.md` pour le rapprochement produit/offre et `docs/INGESTION.md` pour le pipeline EAN vérifié.
