@@ -97,8 +97,19 @@ export function evaluateBasketStore(items,{
   const potentialProductSaving=roundMoney(pricedLines.reduce(
     (sum,line)=>sum+(line.potentialProductSaving || 0),0
   ));
+  const uncertainBasketCandidates=basketOptimization.considered
+    .filter((offer)=>offer.autoStack!==true)
+    .map((offer)=>({
+      offer,
+      saving:estimateBasketCandidateSaving(finalCost,offer)
+    }))
+    .filter((candidate)=>Number.isFinite(candidate.saving)&&candidate.saving>0)
+    .sort((a,b)=>b.saving-a.saving);
+  const potentialBasketSaving=uncertainBasketCandidates.length
+    ? roundMoney(uncertainBasketCandidates[0].saving)
+    : 0;
   const conservativePotentialExtraSaving=roundMoney(
-    Math.max(potentialProductSaving,potentialBundleSaving)
+    Math.max(potentialProductSaving,potentialBundleSaving,potentialBasketSaving)
   );
   const conservativeBestCaseCost=roundMoney(
     Math.max(0,finalCost-conservativePotentialExtraSaving)
@@ -129,8 +140,10 @@ export function evaluateBasketStore(items,{
       otherBasketGuaranteed:otherBasketGuaranteedSaving,
       productPotential:potentialProductSaving,
       bundlePotential:potentialBundleSaving,
+      basketPotential:potentialBasketSaving,
       uncertainBasketCount:basketOptimization.considered.filter((offer)=>offer.autoStack!==true).length
     },
+    uncertainBasketCandidates,
     conservativePotentialExtraSaving,
     conservativeBestCaseCost,
     bundleCandidates
@@ -234,4 +247,17 @@ export function selectBestLocationScenario(scenarios) {
     const db=Number.isFinite(b.location?.distanceKm) ? b.location.distanceKm : Infinity;
     return da-db;
   })[0];
+}
+
+
+export function estimateBasketCandidateSaving(baseCost,offer){
+  const base=Number(baseCost);
+  if(!Number.isFinite(base)||base<=0||!offer) return null;
+  if(Number.isFinite(offer.savingAmount)){
+    return roundMoney(Math.min(base,Math.max(0,Number(offer.savingAmount))));
+  }
+  if(Number.isFinite(offer.savingPercent)){
+    return roundMoney(Math.min(base,base*Number(offer.savingPercent)/100));
+  }
+  return null;
 }
