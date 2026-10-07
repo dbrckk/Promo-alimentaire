@@ -9,15 +9,21 @@ export function optimizeStack(basePrice,offers,{store}={}) {
   const candidates=considered.filter((offer)=>offer.autoStack===true);
   let best=evaluateSelection(price,[]);
 
-  const count=candidates.length;
-  for(let mask=1;mask<(1<<count);mask+=1){
-    const selection=[];
-    for(let i=0;i<count;i+=1) if(mask&(1<<i)) selection.push(candidates[i]);
-    if(!isCompatible(selection)) continue;
-    const evaluated=evaluateSelection(price,selection);
-    if(evaluated.totalSaving>best.totalSaving) best=evaluated;
-  }
+  search(0,[]);
   return {...best,considered};
+
+  function search(index,selection){
+    if(index>=candidates.length){
+      if(!isCompatible(selection)) return;
+      const evaluated=evaluateSelection(price,selection);
+      if(evaluated.totalSaving>best.totalSaving) best=evaluated;
+      return;
+    }
+    search(index+1,selection);
+    selection.push(candidates[index]);
+    if(isCompatible(selection)) search(index+1,selection);
+    selection.pop();
+  }
 }
 
 export function isCompatible(selection) {
@@ -35,7 +41,7 @@ export function isCompatible(selection) {
 
 function isApplicable(offer,store){
   return (!store || offer.stores?.includes(store) || offer.stores?.includes("all"))
-    && Number.isFinite(offer.savingPercent ?? offer.savingAmount);
+    && (Number.isFinite(offer.savingPercent) || Number.isFinite(offer.savingAmount));
 }
 
 function evaluateSelection(basePrice,selection){
