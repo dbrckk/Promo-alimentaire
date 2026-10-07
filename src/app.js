@@ -19,6 +19,7 @@ const els = {
   barcodeForm:document.querySelector("#barcodeForm"),
   barcode:document.querySelector("#barcode"),
   scanButton:document.querySelector("#scanButton"),
+  nearbyButton:document.querySelector("#nearbyButton"),
   productStatus:document.querySelector("#productStatus"),
   productResult:document.querySelector("#productResult"),
   productOffers:document.querySelector("#productOffers"),
@@ -45,6 +46,9 @@ const state = {
   productCode:null,
   product:null,
   priceObservations:[],
+  nearbyEnabled:false,
+  coords:null,
+  radiusKm:25,
   lookupToken:0
 };
 
@@ -75,6 +79,7 @@ els.barcodeForm.addEventListener("submit",(event)=>{
   lookupBarcode(els.barcode.value);
 });
 els.scanButton.addEventListener("click",startScanner);
+els.nearbyButton.addEventListener("click",toggleNearbyPrices);
 els.closeScan.addEventListener("click",()=>els.scanDialog.close());
 els.scanDialog.addEventListener("close",stopScanner);
 
@@ -168,7 +173,7 @@ async function lookupBarcode(rawValue){
 
   const [productResult,pricesResult]=await Promise.allSettled([
     fetchProductByBarcode(code),
-    fetchPricesByBarcode(code,{store:state.store})
+    fetchPricesByBarcode(code,priceQueryOptions())
   ]);
   if(token!==state.lookupToken) return;
 
@@ -202,7 +207,7 @@ async function refreshPrices(code){
   const token=++state.lookupToken;
   setProductStatus("Actualisation des prix pour cette enseigne…");
   try{
-    const result=await fetchPricesByBarcode(code,{store:state.store});
+    const result=await fetchPricesByBarcode(code,priceQueryOptions());
     if(token!==state.lookupToken) return;
     state.priceObservations=result.observations;
     renderPrices(state.priceObservations,result.sourceUrl);
@@ -295,11 +300,57 @@ function renderProductOffers(product,observations=[]){
     ${cards}`;
 }
 
+function priceQueryOptions(){
+  const options={store:state.store};
+  if(state.nearbyEnabled && state.coords){
+    options.coords=state.coords;
+    options.radiusKm=state.radiusKm;
+  }
+  return options;
+}
+
+async function toggleNearbyPrices(){
+  if(state.nearbyEnabled){
+    state.nearbyEnabled=false;
+    state.coords=null;
+    els.nearbyButton.classList.remove("active");
+    els.nearbyButton.textContent="Autour de moi";
+    if(state.productCode) await refreshPrices(state.productCode);
+    return;
+  }
+  if(!navigator.geolocation){
+    setProductStatus("La géolocalisation n'est pas disponible sur ce navigateur.",true);
+    return;
+  }
+  setProductStatus("Demande de position pour limiter les prix à proximité…");
+  navigator.geolocation.getCurrentPosition(async(position)=>{
+    state.coords={
+      latitude:position.coords.latitude,
+      longitude:position.coords.longitude
+    };
+    state.nearbyEnabled=true;
+    els.nearbyButton.classList.add("active");
+    els.nearbyButton.textContent=`À moins de ${state.radiusKm} km`;
+    if(state.productCode) await refreshPrices(state.productCode);
+    else setProductStatus("Mode proximité activé. Recherche ou scanne un produit.");
+  },()=>{
+    state.coords=null;
+    state.nearbyEnabled=false;
+    els.nearbyButton.classList.remove("active");
+    els.nearbyButton.textContent="Autour de moi";
+    setProductStatus("Position non disponible. Autorise la localisation ou utilise les prix globaux.",true);
+  },{
+    enableHighAccuracy:false,
+    timeout:10000,
+    maximumAge:300000
+  });
+}
+
 function renderPrices(observations,sourceUrl){
   if(!observations.length){
     els.priceResults.innerHTML=`
       <div class="panel price-source">
-        Aucun prix Open Prices trouvé pour ce code-barres chez ${storeLabel(state.store)}.
+        Aucun prix Open Prices trouvé pour ce code-barres chez ${storeLabel(state.store)}${state.nearbyEnabled?` dans un rayon de ${state.radiusKm} km`:""}.
         Cela ne signifie pas que le produit n'y est pas vendu : la base est communautaire et encore incomplète.
       </div>`;
     return;
@@ -325,7 +376,7 @@ function renderPrices(observations,sourceUrl){
   els.priceResults.innerHTML=`
     ${cards}
     <div class="panel price-source">
-      ${observations.length} observation(s) ${storeLabel(state.store)} trouvée(s). Source : Open Prices / Open Food Facts.
+      ${observations.length} observation(s) ${storeLabel(state.store)} trouvée(s)${state.nearbyEnabled?` dans un rayon de ${state.radiusKm} km`:""}. Source : Open Prices / Open Food Facts.
       <a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noreferrer">Données brutes</a>
     </div>`;
 }
