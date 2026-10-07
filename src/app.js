@@ -8,6 +8,7 @@ import {
   compareBasketStores,
   evaluateBasketLocations,
   evaluateBasketStore,
+  estimateBasketCandidateSaving,
   normalizeQuantity,
   selectBestLocationScenario
 } from "./basket.js";
@@ -578,6 +579,11 @@ function renderOptimizer(){
       </div>`).join("")
     : '<div class="route-step"><span>Aucune remise panier suffisamment sûre n’est automatisée pour cette enseigne.</span><strong>—</strong></div>';
   const uncertain=result.considered.filter((offer)=>offer.autoStack!==true);
+  const uncertainCandidates=uncertain
+    .map((offer)=>({offer,saving:estimateBasketCandidateSaving(result.finalCost,offer)}))
+    .filter((entry)=>Number.isFinite(entry.saving)&&entry.saving>0)
+    .sort((a,b)=>b.saving-a.saving);
+  const bestUncertain=uncertainCandidates[0] || null;
   const selectedPayment=result.selected.find((offer)=>offer.mechanism==="gift_card") || null;
   const paymentAlternatives=basketOffers
     .filter((offer)=>offer.mechanism==="gift_card")
@@ -610,6 +616,27 @@ function renderOptimizer(){
            <small>Les autres cashbacks restent affichés séparément quand leur cumul est incertain.</small>
          </div>
        </div>`;
+  const potentialAdvice=bestUncertain
+    ? `<div class="potential-advice">
+         <div>
+           <span>Meilleur cashback potentiel du canal</span>
+           <strong>${escapeHtml(bestUncertain.offer.provider)} · jusqu’à ${money.format(bestUncertain.saving)}</strong>
+           <small>Non inclus dans le total garanti : active et vérifie ses conditions avant achat.</small>
+         </div>
+         ${bestUncertain.offer.sourceUrl?`<a class="open" href="${escapeHtml(bestUncertain.offer.sourceUrl)}" target="_blank" rel="noreferrer">Vérifier</a>`:""}
+       </div>`
+    : "";
+  const optimizerPlan=buildSavingsActionPlan({
+    store:state.store,
+    channel:state.channel,
+    selectedPayment,
+    uncertainBasketOffers:uncertain,
+    productCandidates:[],
+    bundleCandidates:[],
+    providers
+  });
+  const optimizerPlanHtml=renderSavingsActionPlan(optimizerPlan);
+
   els.optimizerResult.innerHTML=`
     <section class="optimizer-card">
       <div class="optimizer-total">
@@ -618,11 +645,13 @@ function renderOptimizer(){
         <div><span>Coût effectif estimé</span><strong>${money.format(result.finalCost)}</strong></div>
       </div>
       ${paymentAdvice}
+      ${potentialAdvice}
       <div class="route">${route}</div>
       <p class="help">
         ${uncertain.length} offre(s) panier supplémentaire(s) sont volontairement exclues du total car leur cumul n'est pas assez certain.
         Le moteur choisit une seule offre par groupe incompatible, donc plusieurs cartes cadeaux ne sont jamais additionnées artificiellement.
       </p>
+      ${optimizerPlanHtml}
     </section>`;
 }
 
