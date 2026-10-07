@@ -117,3 +117,58 @@ test("changer EAN ou taux invalide la confirmation précédente",()=>{
     }),false);
   }
 });
+
+
+test("changer canal, exclusions ou cumul invalide une confirmation",()=>{
+  const base={...offer,channels:["store"],conditions:"Sans cumul",stacking:"Exclusif"};
+  const confirmation=createStoreConfirmation(base,{
+    store:"leclerc",locationKey:"id:42",confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  for(const changed of [
+    {...base,channels:["online"]},
+    {...base,conditions:"Cumul autorisé"},
+    {...base,stacking:"Cumul possible"},
+    {...base,reviewAfter:"2026-10-09"},
+    {...base,eanEvidenceUrl:"https://example.com/new-source"}
+  ]){
+    assert.equal(isStoreConfirmationActive(confirmation,changed,{
+      store:"leclerc",locationKey:"id:42",now:new Date("2026-10-08T10:00:00Z")
+    }),false);
+  }
+});
+
+test("la vérification magasin ne valide pas un prix Drive non vérifié",()=>{
+  const restricted={...offer,requiresChannelPriceVerification:true};
+  const confirmation=createStoreConfirmation(restricted,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  const [result]=applyLocalStoreConfirmations([restricted],[confirmation],{
+    store:"leclerc",locationKey:"id:42",
+    now:new Date("2026-10-08T10:00:00Z")
+  });
+  assert.equal(result.storeVerified,true);
+  assert.equal(result.autoStack,false);
+});
+
+test("la revue expirée interdit une nouvelle confirmation",()=>{
+  assert.throws(()=>createStoreConfirmation({
+    ...offer,reviewAfter:"2026-10-06"
+  },{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  }),/expirée|réviser/);
+});
+
+test("une confirmation expire aussi au prochain contrôle de source",()=>{
+  const expiring={...offer,reviewAfter:"2026-10-08"};
+  const c=createStoreConfirmation(expiring,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  assert.match(c.validUntil,/2026-10-08/);
+  assert.equal(isStoreConfirmationActive(c,expiring,{
+    store:"leclerc",locationKey:"id:42",
+    now:new Date("2026-10-09T00:00:00Z")
+  }),false);
+});
