@@ -1154,7 +1154,7 @@ function renderStrategySummary(summary){
 function renderBasketScenario(scenario){
   const coverageClass=scenario.isComplete ? "coverage-good" : "coverage-warn";
   const totalLabel=scenario.priceChannelReliable===false
-    ? "Total indicatif"
+    ? "Coût effectif indicatif"
     : scenario.isComplete ? "Coût effectif" : "Total partiel";
   const locationText=scenario.location
     ? [scenario.location.name,scenario.location.postcode,scenario.location.city].filter(Boolean).join(" · ")
@@ -1188,13 +1188,15 @@ function renderBasketScenario(scenario){
     ? scenario.basketOptimization.selected.map((offer)=>`${escapeHtml(offer.provider)} −${money.format(offer.calculatedSaving)}`).join(" · ")
     : "Aucune remise panier automatiquement retenue";
   const breakdown=scenario.savingsBreakdown || {
-    productGuaranteed:0,paymentGuaranteed:0,otherBasketGuaranteed:0,
+    productGuaranteed:0,productImmediateGuaranteed:0,loyaltyGuaranteed:0,refundGuaranteed:0,
+    checkoutGuaranteed:0,paymentGuaranteed:0,otherBasketGuaranteed:0,
     productPotential:scenario.potentialProductSaving||0,bundlePotential:scenario.potentialBundleSaving||0,
     basketPotential:0,uncertainBasketCount:0
   };
   const levers=`
     <div class="saving-levers">
-      <div class="lever guaranteed"><span>Produit exact</span><strong>−${money.format(breakdown.productGuaranteed)}</strong></div>
+      <div class="lever guaranteed"><span>Promo immédiate</span><strong>−${money.format(breakdown.productImmediateGuaranteed||0)}</strong></div>
+      <div class="lever guaranteed"><span>Fidélité cagnottée</span><strong>+${money.format(breakdown.loyaltyGuaranteed||0)}</strong></div>
       <div class="lever guaranteed"><span>Paiement remisé</span><strong>−${money.format(breakdown.paymentGuaranteed)}</strong></div>
       <div class="lever guaranteed"><span>Autres garanties</span><strong>−${money.format(breakdown.otherBasketGuaranteed)}</strong></div>
       <div class="lever potential"><span>ODR candidates</span><strong>jusqu’à ${money.format(breakdown.productPotential)}</strong></div>
@@ -1227,7 +1229,7 @@ function renderBasketScenario(scenario){
     ? `<div class="best-case-box">
          <span>Meilleur cas prudent</span>
          <strong>${money.format(scenario.conservativeBestCaseCost)}</strong>
-         <small>Après la meilleure économie candidate retenue sans additionner produit + bundle potentiellement incompatibles.</small>
+         <small>Coût économique après le meilleur levier candidat, sans additionner artificiellement des offres potentiellement incompatibles. Le prix payé en caisse peut être supérieur si une partie revient en cagnotte/remboursement.</small>
        </div>`
     : "";
 
@@ -1255,8 +1257,9 @@ function renderBasketScenario(scenario){
         </div>
       </div>
       <div class="scenario-summary">
-        <div><span>Sous-total observé</span><strong>${money.format(scenario.observedSubtotal)}</strong></div>
-        <div><span>Économie validée</span><strong>−${money.format(scenario.guaranteedSaving)}</strong></div>
+        <div><span>Prix caisse estimé</span><strong>${money.format(scenario.checkoutCost ?? scenario.observedSubtotal)}</strong></div>
+        <div><span>Cagnotte fidélité</span><strong>+${money.format(scenario.loyaltyCredit||0)}</strong></div>
+        <div><span>Économie validée totale</span><strong>−${money.format(scenario.guaranteedSaving)}</strong></div>
         <div><span>${totalLabel}</span><strong>${money.format(scenario.finalCost)}</strong></div>
       </div>
       ${levers}
