@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { createStoreConfirmation } from "../src/local-verification.js";
 import {
   compareBasketStores,
   evaluateBasketLocations,
@@ -373,4 +374,71 @@ test("le gain potentiel maximal ne se limite pas à la correspondance la plus s�
   assert.equal(scenario.lines[0].bestProductCandidate.offer.id,"exact");
   assert.equal(scenario.lines[0].bestSavingCandidate.offer.id,"bigger");
   assert.equal(scenario.potentialProductSaving,5);
+});
+
+
+test("une promo EAN exacte confirmée dans le magasin devient garantie",()=>{
+  const promo={
+    id:"local-promo",
+    scope:"produit",
+    stores:["leclerc"],
+    channels:["store"],
+    eans:["3017624010701"],
+    savingPercent:20,
+    mechanism:"retailer_promo",
+    requiresStoreVerification:true,
+    autoStack:false,
+    stackGroup:"retailer-promo",
+    savingBasis:"current",
+    expiresAt:"2026-10-10"
+  };
+  const confirmation=createStoreConfirmation(promo,{
+    store:"leclerc",
+    locationKey:"id:42",
+    locationName:"E.Leclerc Test",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  const scenario=evaluateBasketStore([{product,quantity:1}],{
+    store:"leclerc",
+    channel:"store",
+    storeVerificationKey:"id:42",
+    storeConfirmations:[confirmation],
+    priceByCode:{"3017624010701":[{price:10,date:"2026-10-07"}]},
+    offers:[promo],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.guaranteedSaving,2);
+  assert.equal(scenario.finalCost,8);
+});
+
+test("la même confirmation ne garantit rien dans un autre magasin",()=>{
+  const promo={
+    id:"local-promo-2",
+    scope:"produit",
+    stores:["leclerc"],
+    channels:["store"],
+    eans:["3017624010701"],
+    savingPercent:20,
+    mechanism:"retailer_promo",
+    requiresStoreVerification:true,
+    autoStack:false,
+    stackGroup:"retailer-promo",
+    savingBasis:"current",
+    expiresAt:"2026-10-10"
+  };
+  const confirmation=createStoreConfirmation(promo,{
+    store:"leclerc",
+    locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  const scenario=evaluateBasketStore([{product,quantity:1}],{
+    store:"leclerc",
+    channel:"store",
+    storeVerificationKey:"id:99",
+    storeConfirmations:[confirmation],
+    priceByCode:{"3017624010701":[{price:10,date:"2026-10-07"}]},
+    offers:[promo],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.guaranteedSaving,0);
 });
