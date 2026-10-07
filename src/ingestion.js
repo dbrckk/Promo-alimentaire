@@ -112,6 +112,11 @@ export function normalizeImportedOffer(raw) {
       requiresLoyalty:value.requiresLoyalty || null,
       autoStackWhenEligible:value.autoStackWhenEligible===true,
       requiresStoreVerification:value.requiresStoreVerification===true,
+      multiReference:value.multiReference===true,
+      eanResolutionBlocked:value.eanResolutionBlocked===true,
+      eanResolutionReason:value.eanResolutionReason
+        ? String(value.eanResolutionReason).trim()
+        : null,
       promoFormula,
       stackGroup:value.stackGroup || null,
       stackOrder:Number.isFinite(Number(value.stackOrder)) ? Number(value.stackOrder) : 50,
