@@ -3,6 +3,8 @@ const GENERIC_TITLE_WORDS=new Set([
   "le","la","les","de","du","des","d","un","une","et","ou","en","sur","coeurs","coeur","assiette","apero","vegetal","vegetale",
   "original","pause","gourmande","gourmand","nouveau","nouveaux","nouvelle","nouvelles","decouvrez","gamme","global","produit","produits",
   "mini","muffins","muffin","boissons","boisson","fruits","fruit","plats","plat","cuisines","cuisine",
+  "tranches","tranche","vege","yaourt","yaourts","maison","gels","gel","douche","douches","derma","therapie",
+  "parfum","linge","smoothies","smoothie","gourmands","gourmand",
   "proteine","protein","plus","american","sandwich","sandwiches","recettes","sans","viande","poisson"
 ]);
 
@@ -112,24 +114,40 @@ export function parseReferenceNames(html){
 }
 
 export function deriveShopmiumProductMatch(title,referenceNames=[]){
-  const words=clean(title).replace(/[™®©+*]/g," ").split(/[^a-zA-ZÀ-ÿ0-9]+/).filter(Boolean);
-  const candidates=words.filter((word)=>{
-    const key=normalizeWord(word);
-    return key.length>=3 && !GENERIC_TITLE_WORDS.has(key) && !/^\d+$/.test(key);
-  });
-  if(!candidates.length) return null;
+  const titleWords=clean(title).replace(/[™®©+*]/g," ").split(/[^a-zA-ZÀ-ÿ0-9]+/).filter(Boolean);
+  const titleKeys=new Set(titleWords.map(normalizeWord).filter(Boolean));
 
-  let brand=candidates[0];
-  if(candidates.length>=2 && /^[A-ZÀ-Ý]/.test(candidates[0]) && /^[A-ZÀ-Ý]/.test(candidates[1])){
-    brand=`${candidates[0]} ${candidates[1]}`;
+  let brand=inferBrandFromReferencePrefix(referenceNames,titleKeys);
+  if(!brand){
+    const candidates=titleWords.filter((word)=>{
+      const key=normalizeWord(word);
+      return key.length>=3 && !GENERIC_TITLE_WORDS.has(key) && !/^\d+$/.test(key);
+    });
+    if(!candidates.length){
+      const shortAllCaps=titleWords.length>0 && titleWords.length<=3
+        && titleWords.every((word)=>word===word.toLocaleUpperCase("fr"));
+      if(shortAllCaps) brand=titleWords.join(" ");
+      else return null;
+    }else{
+      const shortAllCaps=titleWords.length<=3
+        && titleWords.every((word)=>word===word.toLocaleUpperCase("fr"));
+      if(shortAllCaps) brand=titleWords.join(" ");
+      else{
+        brand=candidates[0];
+        if(candidates.length>=2 && /^[A-ZÀ-Ý]/.test(candidates[0]) && /^[A-ZÀ-Ý]/.test(candidates[1])){
+          brand=`${candidates[0]} ${candidates[1]}`;
+        }
+      }
+    }
   }
 
+  const brandKeys=new Set(normalizeWord(brand).split(" ").filter(Boolean));
   const optional=[];
   for(const ref of referenceNames){
     for(const token of clean(ref).split(/[^a-zA-ZÀ-ÿ0-9]+/).filter(Boolean)){
       const key=normalizeWord(token);
       if(key.length<4||GENERIC_TITLE_WORDS.has(key)) continue;
-      if(normalizeWord(brand).split(" ").includes(key)) continue;
+      if(brandKeys.has(key)) continue;
       if(optional.some((value)=>normalizeWord(value)===key)) continue;
       optional.push(token);
       if(optional.length>=5) break;
@@ -142,6 +160,27 @@ export function deriveShopmiumProductMatch(title,referenceNames=[]){
     ...(optional.length?{any:optional}:{}),
     minScore:optional.length?60:55
   };
+}
+
+function inferBrandFromReferencePrefix(referenceNames,titleKeys){
+  if(!Array.isArray(referenceNames)||referenceNames.length===0) return null;
+  const tokenized=referenceNames
+    .map((ref)=>clean(ref).replace(/[™®©+*]/g," ").split(/[^a-zA-ZÀ-ÿ0-9]+/).filter(Boolean))
+    .filter((tokens)=>tokens.length);
+  if(!tokenized.length) return null;
+
+  const maxPrefix=Math.min(2,...tokenized.map((tokens)=>tokens.length));
+  const common=[];
+  for(let index=0;index<maxPrefix;index+=1){
+    const firstKey=normalizeWord(tokenized[0][index]);
+    if(!firstKey) break;
+    if(!tokenized.every((tokens)=>normalizeWord(tokens[index])===firstKey)) break;
+    if(GENERIC_TITLE_WORDS.has(firstKey)) continue;
+    if(!titleKeys.has(firstKey)) continue;
+    common.push(tokenized[0][index]);
+  }
+  if(!common.length) return null;
+  return common.join(" ");
 }
 
 function parseFlatPercent(text){
