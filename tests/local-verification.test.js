@@ -88,3 +88,32 @@ test("pruneStoreConfirmations retire les confirmations expirées",()=>{
   };
   assert.deepEqual(pruneStoreConfirmations([old],new Date("2026-10-07T00:00:00Z")),[]);
 });
+
+test("une confirmation ancienne sans empreinte n'est pas acceptée",()=>{
+  const confirmation=createStoreConfirmation(offer,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  delete confirmation.offerFingerprint;
+  assert.equal(isStoreConfirmationActive(confirmation,offer,{
+    store:"leclerc",locationKey:"id:42",
+    now:new Date("2026-10-08T10:00:00Z")
+  }),false);
+});
+
+test("changer EAN ou taux invalide la confirmation précédente",()=>{
+  const confirmation=createStoreConfirmation(offer,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  for(const changed of [
+    {...offer,eans:["12345678"]},
+    {...offer,savingPercent:25},
+    {...offer,promoFormula:{type:"buy_x_get_y_free",buy:2,free:1}}
+  ]){
+    assert.equal(isStoreConfirmationActive(confirmation,changed,{
+      store:"leclerc",locationKey:"id:42",
+      now:new Date("2026-10-08T10:00:00Z")
+    }),false);
+  }
+});
