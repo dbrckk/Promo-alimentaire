@@ -1,6 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { validateImportBatch } from "../src/ingestion.js";
+import { validatePaymentRateSafety } from "../src/adapters/payment-discounts.js";
 
 const directory=new URL("../data/import/",import.meta.url);
 let files=[];
@@ -34,7 +35,22 @@ for(const file of files){
       console.error(`  index ${issue.index}: ${issue.errors.join(" | ")}`);
     }
   }else{
-    console.log(`[import] ${file}: ${result.normalized.length} offre(s) valides`);
+    if(file==="payment-discounts-auto.json"){
+      const unsafe=result.normalized
+        .map((offer,index)=>({index,offer,safety:validatePaymentRateSafety(offer)}))
+        .filter((item)=>!item.safety.ok);
+      if(unsafe.length){
+        failed=true;
+        console.error(`[import] ${file}: ${unsafe.length} taux de paiement hors garde-fou`);
+        for(const item of unsafe){
+          console.error(`  index ${item.index}: ${item.safety.reason}`);
+        }
+      }else{
+        console.log(`[import] ${file}: ${result.normalized.length} offre(s) valides + garde-fous paiement OK`);
+      }
+    }else{
+      console.log(`[import] ${file}: ${result.normalized.length} offre(s) valides`);
+    }
   }
 }
 
