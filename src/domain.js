@@ -43,3 +43,38 @@ export function roundMoney(value) {
 function nullableNumber(value) {
   return Number.isFinite(value) ? value : -Infinity;
 }
+
+
+export function offerDeadline(offer,now=new Date()){
+  const current=new Date(now);
+  if(Number.isNaN(current.getTime())) return null;
+  const candidates=[
+    {kind:"expires",value:offer?.expiresAt},
+    {kind:"review",value:offer?.reviewAfter}
+  ].filter((item)=>item.value).map((item)=>{
+    const raw=String(item.value);
+    const date=new Date(raw.length===10 ? raw+"T23:59:59" : raw);
+    return {...item,date};
+  }).filter((item)=>!Number.isNaN(item.date.getTime()));
+
+  if(!candidates.length) return null;
+  candidates.sort((a,b)=>a.date-b.date);
+  const next=candidates[0];
+  const daysUntil=Math.ceil((next.date-current)/(24*60*60*1000));
+  const prefix=next.kind==="expires" ? "Expire" : "Révision";
+  const label=daysUntil<0
+    ? `${prefix} dépassée`
+    : daysUntil===0
+      ? `${prefix} aujourd’hui`
+      : daysUntil===1
+        ? `${prefix} demain`
+        : `${prefix} dans ${daysUntil} j`;
+  return {
+    kind:next.kind,
+    date:next.date.toISOString(),
+    daysUntil,
+    urgent:daysUntil>=0 && daysUntil<=3,
+    overdue:daysUntil<0,
+    label
+  };
+}
