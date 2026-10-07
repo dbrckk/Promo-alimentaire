@@ -202,7 +202,13 @@ function renderOffer(offer){
   const amount=computeSaving(offer);
   const pct=effectivePercent(offer);
   const savingMain=offerPercentLabel(offer) || (amount!==null?money.format(amount):(pct!==null?formatPercent(pct):"—"));
-  const savingSub=amount!==null && pct!==null?formatPercent(pct):offer.scope==="panier"?"sur le panier":"sur le produit";
+  const savingSub=amount!==null && pct!==null
+    ? formatPercent(pct)
+    : offer.scope==="panier"
+      ? "sur le panier"
+      : offer.scope==="bundle"
+        ? "offre multi-produits"
+        : "sur le produit";
   const stackBadge=offer.autoStack===true
     ? '<span class="badge good">Cumul automatisable</span>'
     : '<span class="badge warn">Cumul à vérifier</span>';
@@ -216,7 +222,7 @@ function renderOffer(offer){
         <div class="saving"><strong>${savingMain}</strong><small>${savingSub}</small></div>
       </div>
       <div class="badges">
-        <span class="badge">${offer.scope==="panier"?"Panier entier":"Produit ciblé"}</span>
+        <span class="badge">${offer.scope==="panier"?"Panier entier":offer.scope==="bundle"?"Multi-produits":"Produit ciblé"}</span>
         <span class="badge">${escapeHtml(offer.category)}</span>
         ${stackBadge}
       </div>
@@ -931,6 +937,9 @@ function renderBasketScenario(scenario){
   const potential=scenario.potentialProductSaving>0
     ? `<p class="help">ODR/coupons produits candidats : jusqu’à ${money.format(scenario.potentialProductSaving)} potentiels, non inclus tant que l’éligibilité/cumul n’est pas confirmé.</p>`
     : "";
+  const bundlePotential=scenario.potentialBundleSaving>0
+    ? `<p class="help"><strong>Offre multi-produits potentielle :</strong> jusqu’à ${money.format(scenario.potentialBundleSaving)} supplémentaires. Elle n’est jamais intégrée au coût garanti avant confirmation des références, de l’achat simultané et des règles de cumul.</p>`
+    : "";
 
   return `
     <article class="scenario-card">
@@ -960,6 +969,7 @@ function renderBasketScenario(scenario){
       <div class="scenario-lines">${lines}</div>
       <p class="help">${basketRoute}</p>
       ${potential}
+      ${bundlePotential}
     </article>`;
 }
 
