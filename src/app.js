@@ -3,7 +3,13 @@ import { computeSaving, effectivePercent, filterOffers, rankOffers } from "./dom
 import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { estimateOfferSaving, findProductOffers } from "./matching.js";
-import { compareBasketStores, evaluateBasketStore, normalizeQuantity } from "./basket.js";
+import {
+  compareBasketStores,
+  evaluateBasketLocations,
+  evaluateBasketStore,
+  normalizeQuantity,
+  selectBestLocationScenario
+} from "./basket.js";
 
 const money = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 const els = {
@@ -579,11 +585,30 @@ function renderShoppingList(){
       </article>`;
   }).join("");
 
-  const scenarios=["carrefour","leclerc"].map((store)=>evaluateBasketStore(state.shoppingList,{
-    store,
-    priceByCode:state.basketPriceData[store],
-    offers
-  }));
+  const scenarios=["carrefour","leclerc"].map((store)=>{
+    const locationScenarios=evaluateBasketLocations(state.shoppingList,{
+      store,
+      priceByCode:state.basketPriceData[store],
+      offers
+    });
+    const locationScenario=selectBestLocationScenario(locationScenarios);
+    if(locationScenario){
+      return {
+        ...locationScenario,
+        locationReliable:/^(id|geo):/.test(locationScenario.locationKey || "")
+      };
+    }
+    return {
+      ...evaluateBasketStore(state.shoppingList,{
+        store,
+        priceByCode:state.basketPriceData[store],
+        offers
+      }),
+      location:null,
+      locationKey:null,
+      locationReliable:false
+    };
+  });
   renderBasketComparison(scenarios);
 }
 
@@ -649,11 +674,14 @@ function syncNearbyControls(){
 function renderBasketComparison(scenarios){
   const ranked=compareBasketStores(scenarios);
   const allComplete=scenarios.length>0 && scenarios.every((scenario)=>scenario.isComplete);
+  const allLocationsReliable=scenarios.length>0 && scenarios.every((scenario)=>scenario.locationReliable);
   let recommendation="";
   if(!state.nearbyEnabled){
     recommendation='<div class="basket-recommendation"><strong>Comparaison locale non activée.</strong> Active « Autour de moi » puis actualise pour comparer des magasins dans le même secteur.</div>';
   }else if(!allComplete){
     recommendation='<div class="basket-recommendation"><strong>Comparaison incomplète.</strong> Au moins une enseigne manque d’un prix récent pour un produit ; aucun gagnant n’est déclaré.</div>';
+  }else if(!allLocationsReliable){
+    recommendation='<div class="basket-recommendation"><strong>Point de vente insuffisamment identifié.</strong> Les prix sont affichés, mais aucun gagnant n’est déclaré tant que chaque panier ne correspond pas clairement à un magasin physique unique.</div>';
   }else if(ranked.length>=2){
     const best=ranked[0];
     const second=ranked[1];
@@ -673,6 +701,15 @@ function renderBasketComparison(scenarios){
 function renderBasketScenario(scenario){
   const coverageClass=scenario.isComplete ? "coverage-good" : "coverage-warn";
   const totalLabel=scenario.isComplete ? "Coût effectif" : "Total partiel";
+  const locationText=scenario.location
+    ? [scenario.location.name,scenario.location.postcode,scenario.location.city].filter(Boolean).join(" · ")
+    : "Point de vente non identifié";
+  const distanceText=Number.isFinite(scenario.location?.distanceKm)
+    ? ` · ${scenario.location.distanceKm.toLocaleString("fr-FR")} km`
+    : "";
+  const locationWarning=scenario.locationReliable
+    ? ""
+    : '<span class="badge warn">magasin à confirmer</span>';
   const lines=scenario.lines.map((line)=>{
     if(line.missingPrice){
       return `<div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}</span><strong class="missing">prix manquant</strong></div>`;
@@ -691,7 +728,9 @@ function renderBasketScenario(scenario){
     <article class="scenario-card">
       <div>
         <h3>${storeLabel(scenario.store)}</h3>
+        <div class="source">${escapeHtml(locationText)}${distanceText}</div>
         <div class="${coverageClass} source">${scenario.pricedCount}/${scenario.distinctCount} références avec prix récent</div>
+        <div class="badges">${locationWarning}</div>
       </div>
       <div class="scenario-summary">
         <div><span>Sous-total observé</span><strong>${money.format(scenario.observedSubtotal)}</strong></div>
