@@ -28,8 +28,10 @@ Fonctionnalités actuelles :
 - liste de courses persistante sur l'appareil avec quantités ;
 - actualisation des mêmes références chez Carrefour et E.Leclerc ;
 - comparaison des deux paniers avec refus de déclarer un gagnant si la couverture prix est incomplète ;
+- ventilation des économies par levier : produit exact, paiement remisé, autres garanties, ODR candidates et bundles ;
 - regroupement des prix par point de vente physique pour éviter de mélanger plusieurs magasins d'une même enseigne ;
 - préférence automatique pour les prix ≤30 jours, avec repli jusqu'à 120 jours seulement si nécessaire ;
+- meilleur cas prudent qui ne double-compte pas les ODR produit et bundles potentiellement incompatibles ;
 - score de confiance explicable sur 100 par scénario (couverture, fraîcheur, identification du magasin, preuve Open Prices) ;
 - historique local limité aux 20 dernières comparaisons, sans stockage des coordonnées ;
 - tendance du coût entre les dernières comparaisons valides ;
