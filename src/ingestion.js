@@ -38,6 +38,8 @@ export function normalizeImportedOffer(raw) {
   const savingAmountMode=value.savingAmountMode==="per-unit" ? "per-unit" : "per-offer";
   const minPurchaseQty=Math.max(1,Math.trunc(Number(value.minPurchaseQty)||1));
   const savingCapAmount=nullableNumber(value.savingCapAmount);
+  const basePrice=nullableNumber(value.basePrice);
+  const promoFormula=normalizePromoFormula(value.promoFormula,errors);
   const quantityTiers=normalizeQuantityTiers(value.quantityTiers,errors);
   const bundleRequirements=normalizeBundleRequirements(value.bundleRequirements,errors);
   const bundleTargetRequirementId=value.bundleTargetRequirementId
@@ -89,7 +91,7 @@ export function normalizeImportedOffer(raw) {
       savingAmountMode,
       minPurchaseQty,
       savingCapAmount:Number.isFinite(savingCapAmount) ? savingCapAmount : null,
-      basePrice:null,
+      basePrice:Number.isFinite(basePrice) ? basePrice : null,
       verifiedAt,
       startsAt,
       expiresAt,
@@ -105,10 +107,16 @@ export function normalizeImportedOffer(raw) {
       bundleTargetRequirementId,
       channels:Array.isArray(value.channels) ? value.channels.map((x)=>String(x).trim()).filter(Boolean) : [],
       mechanism:value.mechanism || null,
+      rewardType:value.rewardType || null,
+      benefitTiming:value.benefitTiming || null,
+      requiresLoyalty:value.requiresLoyalty || null,
+      autoStackWhenEligible:value.autoStackWhenEligible===true,
+      requiresStoreVerification:value.requiresStoreVerification===true,
+      promoFormula,
       stackGroup:value.stackGroup || null,
       stackOrder:Number.isFinite(Number(value.stackOrder)) ? Number(value.stackOrder) : 50,
       savingBasis:value.savingBasis==="base" ? "base" : "current",
-      autoStack:value.autoStack===true,
+      autoStack:value.autoStack===true && value.requiresStoreVerification!==true,
       stackingConfidence:value.stackingConfidence || "unknown",
       stacking:value.stacking || "conditions à vérifier",
       conditions:value.conditions || "",
@@ -271,4 +279,40 @@ function normalizeBundleRequirements(value,errors){
     result.push({id,minQty,productMatch});
   });
   return result;
+}
+
+
+function normalizePromoFormula(value,errors){
+  if(value===null || value===undefined) return null;
+  if(typeof value!=="object"){
+    errors.push("promoFormula doit être un objet.");
+    return null;
+  }
+  const type=String(value.type || "").trim();
+  if(type==="nth_percent"){
+    const nth=Math.max(1,Math.trunc(Number(value.nth)||2));
+    const cycle=Math.max(nth,Math.trunc(Number(value.cycle)||nth));
+    const percent=Number(value.percent);
+    if(!Number.isFinite(percent)||percent<=0||percent>100){
+      errors.push("promoFormula.percent invalide.");
+      return null;
+    }
+    return {type,nth,cycle,percent,repeat:value.repeat!==false};
+  }
+  if(type==="buy_x_get_y_free"){
+    const buy=Math.max(1,Math.trunc(Number(value.buy)||1));
+    const free=Math.max(1,Math.trunc(Number(value.free)||1));
+    return {type,buy,free,repeat:value.repeat!==false};
+  }
+  if(type==="bundle_price"){
+    const groupQty=Math.max(2,Math.trunc(Number(value.groupQty)||2));
+    const bundlePrice=Number(value.bundlePrice);
+    if(!Number.isFinite(bundlePrice)||bundlePrice<0){
+      errors.push("promoFormula.bundlePrice invalide.");
+      return null;
+    }
+    return {type,groupQty,bundlePrice,repeat:value.repeat!==false};
+  }
+  errors.push("promoFormula.type invalide.");
+  return null;
 }
