@@ -211,3 +211,13 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .payment-advice.muted strong{color:var(--text)}
 .payment-alternatives{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
 .payment-alternatives span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 8px}
+
+.saving-levers{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.lever{border-radius:10px;padding:8px;display:grid;gap:3px}
+.lever span{font-size:.64rem;color:var(--muted)}
+.lever strong{font-size:.78rem}
+.lever.guaranteed{background:#edf8f1;border:1px solid #c9e6d5}
+.lever.guaranteed strong{color:var(--good)}
+.lever.potential{background:#fff8e9;border:1px solid #ead9aa}
+.lever.potential strong{color:#8a6500}
+@media(max-width:800px){.saving-levers{grid-template-columns:1fr 1fr}.lever:last-child{grid-column:1/-1}}
