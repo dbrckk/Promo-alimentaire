@@ -34,6 +34,7 @@ export function evaluateBasketStore(items,{
         finalCost:null,
         guaranteedSaving:0,
         potentialProductSaving:null,
+        bestProductCandidate:null,
         matches,
         missingPrice:true
       };
@@ -45,11 +46,21 @@ export function evaluateBasketStore(items,{
       .map(({offer})=>offer);
     const lineOptimization=optimizeStack(baseCost,guaranteedProductOffers,{store,channel});
 
-    const potentialSavings=matches
-      .map(({offer})=>estimateOfferSaving(best.price,offer,quantity))
-      .filter(Number.isFinite)
-      .map((saving)=>roundMoney(saving));
-    const potentialProductSaving=potentialSavings.length ? Math.max(...potentialSavings) : null;
+    const potentialCandidates=matches
+      .map(({offer,match})=>({
+        offer,
+        match,
+        saving:estimateOfferSaving(best.price,offer,quantity)
+      }))
+      .filter((candidate)=>Number.isFinite(candidate.saving))
+      .map((candidate)=>({...candidate,saving:roundMoney(candidate.saving)}))
+      .sort((a,b)=>{
+        if(a.match.exact!==b.match.exact) return a.match.exact ? -1 : 1;
+        if(a.saving!==b.saving) return b.saving-a.saving;
+        return (b.match.score||0)-(a.match.score||0);
+      });
+    const bestProductCandidate=potentialCandidates[0] || null;
+    const potentialProductSaving=bestProductCandidate?.saving ?? null;
 
     return {
       code:item.product?.code || "",
@@ -60,6 +71,7 @@ export function evaluateBasketStore(items,{
       finalCost:lineOptimization.finalCost,
       guaranteedSaving:lineOptimization.totalSaving,
       potentialProductSaving,
+      bestProductCandidate,
       matches,
       missingPrice:false
     };
