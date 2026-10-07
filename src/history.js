@@ -5,15 +5,17 @@ export function createHistoryEntry({
   shoppingList=[],
   radiusKm=null,
   nearbyEnabled=false,
+  channel="store",
   createdAt=new Date()
 }={}) {
   const best=[...scenarios]
-    .filter((scenario)=>scenario?.isComplete && scenario?.locationReliable)
+    .filter((scenario)=>scenario?.isComplete && scenario?.locationReliable && scenario?.priceChannelReliable!==false)
     .sort((a,b)=>a.finalCost-b.finalCost)[0] || null;
 
   return {
-    id:historyId(createdAt,shoppingList),
+    id:historyId(createdAt,shoppingList,channel),
     createdAt:new Date(createdAt).toISOString(),
+    channel,
     nearbyEnabled:Boolean(nearbyEnabled),
     radiusKm:nearbyEnabled ? Number(radiusKm)||null : null,
     itemCount:shoppingList.reduce((sum,item)=>sum+(Number(item.quantity)||1),0),
@@ -56,6 +58,8 @@ function compactScenario(scenario){
     city:scenario.location?.city || "",
     postcode:scenario.location?.postcode || "",
     locationReliable:Boolean(scenario.locationReliable),
+    priceChannelReliable:scenario.priceChannelReliable!==false,
+    channel:scenario.channel || "store",
     isComplete:Boolean(scenario.isComplete),
     pricedCount:Number(scenario.pricedCount)||0,
     distinctCount:Number(scenario.distinctCount)||0,
@@ -66,13 +70,13 @@ function compactScenario(scenario){
   };
 }
 
-function historyId(date,shoppingList){
+function historyId(date,shoppingList,channel="store"){
   const codes=(shoppingList || [])
     .map((item)=>`${item.product?.code || "?"}x${Number(item.quantity)||1}`)
     .sort()
     .join("|");
   const minute=new Date(date).toISOString().slice(0,16);
-  return `${minute}:${codes}`;
+  return `${minute}:${channel}:${codes}`;
 }
 
 function round(value){
