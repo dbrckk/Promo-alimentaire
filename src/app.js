@@ -1,6 +1,6 @@
 import { DATASET_DATE, offers, providers } from "./data.js";
 import { computeSaving, effectivePercent, filterOffers, rankOffers } from "./domain.js";
-import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode } from "./open-data.js";
+import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { estimateOfferSaving, findProductOffers } from "./matching.js";
 
@@ -255,7 +255,7 @@ function renderProductOffers(product,observations=[]){
     return;
   }
 
-  const recentPrice=observations.find((item)=>isFreshObservation(item))?.price ?? null;
+  const recentPrice=selectBestRecentPrice(observations)?.price ?? null;
   const cards=matches.map(({offer,match})=>{
     const potential=recentPrice===null ? null : estimateOfferSaving(recentPrice,offer);
     const confidenceLabel=match.exact
@@ -363,6 +363,11 @@ function renderPrices(observations,sourceUrl){
       </div>`;
     return;
   }
+  const best=selectBestRecentPrice(observations);
+  const bestSummary=best
+    ? `<div class="panel price-source"><strong>Meilleur prix récent : ${money.format(best.price)}</strong> · ${escapeHtml(best.storeName)}${best.city?` · ${escapeHtml(best.city)}`:""}${Number.isFinite(best.distanceKm)?` · ${best.distanceKm.toLocaleString("fr-FR")} km`:""}</div>`
+    : '<div class="panel price-source">Aucune observation assez récente pour établir un meilleur prix.</div>';
+
   const cards=observations.slice(0,12).map((item)=>{
     const fresh=isFreshObservation(item);
     const previous=item.priceWithoutDiscount && item.priceWithoutDiscount>item.price
@@ -383,6 +388,7 @@ function renderPrices(observations,sourceUrl){
       </article>`;
   }).join("");
   els.priceResults.innerHTML=`
+    ${bestSummary}
     ${cards}
     <div class="panel price-source">
       ${observations.length} observation(s) ${storeLabel(state.store)} trouvée(s)${state.nearbyEnabled?` dans un rayon de ${state.radiusKm} km`:""}. Source : Open Prices / Open Food Facts.
