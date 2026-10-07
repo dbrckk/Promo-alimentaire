@@ -2,7 +2,7 @@ import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import { computeSaving, effectivePercent, filterOffers, rankOffers } from "./domain.js";
 import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
-import { effectiveOfferPercent, estimateOfferSaving, findProductOffers } from "./matching.js";
+import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
 import {
   compareBasketStores,
@@ -389,7 +389,10 @@ function renderProduct(product){
 }
 
 function renderProductOffers(product,observations=[]){
-  const matches=findProductOffers(product,offers,{store:state.store});
+  const rawMatches=findProductOffers(product,offers,{store:state.store});
+  const bestObserved=selectBestRecentPrice(observations);
+  const recentPrice=bestObserved?.price ?? null;
+  const matches=rankMatchedOffers(rawMatches,{price:recentPrice,quantity:1});
   if(!matches.length){
     els.productOffers.innerHTML=`
       <div class="panel price-source">
@@ -398,9 +401,8 @@ function renderProductOffers(product,observations=[]){
     return;
   }
 
-  const recentPrice=selectBestRecentPrice(observations)?.price ?? null;
-  const cards=matches.map(({offer,match})=>{
-    const potential=recentPrice===null ? null : estimateOfferSaving(recentPrice,offer);
+  const cards=matches.map(({offer,match,action},index)=>{
+    const potential=action.estimatedSaving;
     const confidenceLabel=match.exact
       ? "EAN exact"
       : match.confidence==="probable"
@@ -410,14 +412,19 @@ function renderProductOffers(product,observations=[]){
     const savingLabel=offerPercentLabel(offer)
       || (Number.isFinite(offer.savingAmount) ? money.format(offer.savingAmount) : "—");
     const amountLine=potential===null
-      ? "Montant potentiel indisponible sans prix récent"
-      : `Potentiel ≈ ${money.format(potential)} sur le dernier prix récent`;
+      ? (action.quantitySatisfied
+          ? "Montant potentiel indisponible sans prix récent"
+          : `Acheter au moins ${action.minQty} article(s) pour activer cette offre`)
+      : `Potentiel ≈ ${money.format(potential)} sur le meilleur prix récent`;
+    const quantityLine=action.quantitySatisfied
+      ? (action.minQty>1 ? `Quantité minimale atteinte : ${action.minQty}` : "Valable dès 1 article")
+      : `Il manque ${action.missingQty} article(s) pour atteindre le minimum`;
     const safetyNote=match.exact
       ? "Correspondance EAN/GTIN explicite. Les conditions de l’offre restent à vérifier."
       : "Détection par marque/nom uniquement : ne pas considérer l’offre comme garantie avant vérification de la référence éligible.";
 
     return `
-      <article class="match-card">
+      <article class="match-card ${index===0?"best-match":""}">
         <div class="match-top">
           <div>
             <h3>${escapeHtml(offer.title)}</h3>
@@ -429,8 +436,10 @@ function renderProductOffers(product,observations=[]){
           </div>
         </div>
         <div class="badges">
+          ${index===0?'<span class="badge good">Meilleur candidat</span>':""}
           <span class="badge ${confidenceClass}">${confidenceLabel}</span>
           <span class="badge">${escapeHtml(storeLabel(state.store))}</span>
+          <span class="badge ${action.quantitySatisfied?"good":"warn"}">${escapeHtml(quantityLine)}</span>
         </div>
         <p class="match-note">${escapeHtml(safetyNote)}</p>
         <div class="actions">
