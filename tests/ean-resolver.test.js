@@ -90,3 +90,58 @@ test("un candidat de même marque sous le seuil final suffit à créer l'ambigu�
   ]);
   assert.equal(result.status,"ambiguous");
 });
+
+
+test("fetchOpenFoodFactsCandidates retente un 503 puis réussit",async()=>{
+  let calls=0;
+  const waits=[];
+  const fetchImpl=async()=>{
+    calls+=1;
+    if(calls===1){
+      return {
+        ok:false,status:503,
+        headers:{get:()=>null}
+      };
+    }
+    return {
+      ok:true,status:200,
+      json:async()=>({
+        products:[{
+          code:"3017624010701",
+          product_name:"Espresso Concentrate",
+          brands:"Nescafé"
+        }]
+      })
+    };
+  };
+  const result=await fetchOpenFoodFactsCandidates(offer,{
+    fetchImpl,
+    maxRetries:2,
+    retryBaseMs:10,
+    sleepImpl:async(ms)=>waits.push(ms)
+  });
+  assert.equal(calls,2);
+  assert.deepEqual(waits,[10]);
+  assert.equal(result.candidates.length,1);
+});
+
+test("fetchOpenFoodFactsCandidates respecte Retry-After",async()=>{
+  let calls=0;
+  const waits=[];
+  const fetchImpl=async()=>{
+    calls+=1;
+    if(calls===1){
+      return {
+        ok:false,status:429,
+        headers:{get:(name)=>name==="retry-after"?"2":null}
+      };
+    }
+    return {ok:true,status:200,json:async()=>({products:[]})};
+  };
+  await fetchOpenFoodFactsCandidates(offer,{
+    fetchImpl,
+    maxRetries:1,
+    sleepImpl:async(ms)=>waits.push(ms)
+  });
+  assert.deepEqual(waits,[2000]);
+});
