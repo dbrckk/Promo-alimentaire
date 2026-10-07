@@ -2,21 +2,25 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "bonduelle-carottes-citron-sicile-2026-10-07",
-    "title": "Bonduelle — Carottes râpées au Citron de Sicile",
     "type": "ODR",
-    "category": "frais",
     "stores": [
       "all"
     ],
-    "savingAmount": 0.2,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "sourceUrl": "https://www.couponnetwork.fr/",
     "scope": "produit",
-    "referenceNames": [
-      "Bonduelle Carottes râpées au Citron de Sicile"
-    ],
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "bonduelle-carottes-citron-2026-10-07",
+    "title": "Bonduelle — Carottes râpées au Citron de Sicile",
+    "savingAmount": 0.2,
+    "category": "frais",
     "productMatch": {
       "brands": [
         "Bonduelle"
@@ -27,32 +31,30 @@
       ],
       "minScore": 70
     },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
     "conditions": "0,20 € remboursé sur une barquette de carottes râpées Bonduelle au citron de Sicile."
   },
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "cassegrain-innovation-traiteur-2026-10-07",
-    "title": "Cassegrain — Innovation Traiteur",
     "type": "ODR",
-    "category": "frais",
     "stores": [
       "all"
     ],
-    "savingAmount": 0.5,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "sourceUrl": "https://www.couponnetwork.fr/",
     "scope": "produit",
-    "referenceNames": [
-      "Cassegrain Innovation Traiteur"
-    ],
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "cassegrain-innovation-traiteur-2026-10-07",
+    "title": "Cassegrain — Innovation Traiteur",
+    "savingAmount": 0.5,
+    "category": "frais",
     "productMatch": {
       "brands": [
         "Cassegrain"
@@ -62,32 +64,30 @@
       ],
       "minScore": 65
     },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
     "conditions": "0,50 € remboursé sur un produit Traiteur Cassegrain au choix dans la gamme."
   },
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "zespri-kiwis-2026-10-07",
-    "title": "Zespri — Kiwis",
     "type": "ODR",
-    "category": "fruits",
     "stores": [
       "all"
     ],
-    "savingAmount": 0.5,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "sourceUrl": "https://www.couponnetwork.fr/",
     "scope": "produit",
-    "referenceNames": [
-      "Barquette de kiwis Zespri"
-    ],
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "zespri-kiwis-2026-10-07",
+    "title": "Zespri — Kiwis",
+    "savingAmount": 0.5,
+    "category": "fruits",
     "productMatch": {
       "brands": [
         "Zespri"
@@ -98,104 +98,30 @@
       ],
       "minScore": 60
     },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
     "conditions": "0,50 € remboursé sur une barquette de kiwis Zespri."
   },
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "candia-plus-1l-2026-10-07",
-    "title": "Candia — Candia+ Bouteille 1 L",
     "type": "ODR",
-    "category": "crèmerie",
     "stores": [
       "all"
     ],
-    "savingAmount": 0.4,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "sourceUrl": "https://www.couponnetwork.fr/",
     "scope": "produit",
-    "referenceNames": [
-      "Candia+ Bouteille 1L"
-    ],
-    "productMatch": {
-      "brands": [
-        "Candia"
-      ],
-      "all": [
-        "Candia",
-        "1L"
-      ],
-      "minScore": 65
-    },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
     "savingBasis": "base",
+    "savingAmountMode": "per-offer",
     "autoStack": false,
     "stackingConfidence": "unknown",
     "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
-    "conditions": "0,40 € remboursé sur une bouteille de 1 L Candia+ au choix dans la gamme."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "yoplait-skyr-2026-10-07",
-    "title": "Yoplait — Skyr",
-    "type": "ODR",
-    "category": "crèmerie",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.4,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
-    "scope": "produit",
-    "referenceNames": [
-      "Yoplait Skyr 4x100g",
-      "Yoplait Skyr Vitaminé 4x120g"
-    ],
-    "productMatch": {
-      "brands": [
-        "Yoplait"
-      ],
-      "all": [
-        "Skyr"
-      ],
-      "minScore": 65
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
-    "conditions": "0,40 € remboursé sur un pack Yoplait Skyr 4x100g ou Vitaminé 4x120g."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
     "externalId": "president-poche-30cl-2026-10-07",
     "title": "Président — Poche 30 cl",
-    "type": "ODR",
-    "category": "crèmerie",
-    "stores": [
-      "all"
-    ],
     "savingAmount": 0.3,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
-    "scope": "produit",
-    "referenceNames": [
-      "Président fraîche et épaisse 25% MG Poche 30cl"
-    ],
+    "category": "crèmerie",
     "productMatch": {
       "brands": [
         "Président",
@@ -206,49 +132,1070 @@
       ],
       "minScore": 60
     },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
     "conditions": "0,30 € remboursé sur une poche 30 cl Président fraîche et épaisse 25 % MG."
   },
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "lactel-vita-vie-6x1l-2026-10-07",
-    "title": "Lactel — Vita'Vie 6x1 L",
     "type": "ODR",
-    "category": "crèmerie",
     "stores": [
       "all"
     ],
-    "savingAmount": 1,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "sourceUrl": "https://www.couponnetwork.fr/",
     "scope": "produit",
-    "referenceNames": [
-      "Lactel Vita'Vie 6x1L"
-    ],
-    "productMatch": {
-      "brands": [
-        "Lactel"
-      ],
-      "all": [
-        "Vita",
-        "Vie",
-        "6x1L"
-      ],
-      "minScore": 70
-    },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
     "savingBasis": "base",
+    "savingAmountMode": "per-offer",
     "autoStack": false,
     "stackingConfidence": "unknown",
     "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
-    "conditions": "1 € remboursé sur un pack 6x1 L de lait Lactel Vita'Vie."
+    "externalId": "bridelice-poche-30cl-2026-10-07",
+    "title": "Bridélice — Poche 30 cl",
+    "savingAmount": 0.3,
+    "category": "crèmerie",
+    "productMatch": {
+      "brands": [
+        "Bridélice",
+        "Bridelice"
+      ],
+      "all": [
+        "30cl"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,30 € remboursé sur une poche 30 cl Bridélice légère et épaisse 12 % MG."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "300-laitiers-bio-2026-10-07",
+    "title": "Les 300 Laitiers Bio — Yaourts, desserts, fromages blancs ou skyrs",
+    "savingAmount": 0.3,
+    "category": "crèmerie",
+    "productMatch": {
+      "brands": [
+        "Les 300 Laitiers Bio",
+        "300 Laitiers Bio"
+      ],
+      "any": [
+        "Yaourt",
+        "Dessert",
+        "Fromage Blanc",
+        "Skyr"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,30 € remboursé sur un pack Les 300 Laitiers Bio éligible."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "alpro-brasses-vegetaux-2026-10-07",
+    "title": "Alpro — Brassés végétaux",
+    "savingAmount": 0.3,
+    "category": "crèmerie",
+    "productMatch": {
+      "brands": [
+        "Alpro"
+      ],
+      "all": [
+        "Brasse"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,30 € remboursé sur un produit Alpro de la gamme brassés végétaux."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "perle-de-lait-8x125-2026-10-07",
+    "title": "Perle de Lait — 8x125 g",
+    "savingAmount": 0.5,
+    "category": "crèmerie",
+    "productMatch": {
+      "brands": [
+        "Perle de Lait"
+      ],
+      "all": [
+        "8x125"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,50 € remboursé sur un produit Perle de Lait 8x125 g."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "danone-yaourt-0mg-x4-2026-10-07",
+    "title": "Danone — Yaourt 0 % M.G x4",
+    "savingAmount": 0.3,
+    "category": "crèmerie",
+    "productMatch": {
+      "brands": [
+        "Danone"
+      ],
+      "all": [
+        "0",
+        "x4"
+      ],
+      "any": [
+        "Yaourt",
+        "Yaourts"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,30 € remboursé sur un pack de yaourts Danone 0 % M.G x4."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "pasquier-tartines-pain-grille-2026-10-07",
+    "title": "Pasquier — Tartines et Pain Grillé",
+    "savingAmount": 0.3,
+    "category": "épicerie",
+    "productMatch": {
+      "brands": [
+        "Pasquier"
+      ],
+      "any": [
+        "Tartines",
+        "Pain Grille"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,30 € remboursé sur un produit Tartines de Pain/Pain Grillé Pasquier au choix."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "carambar-atomic-2026-10-07",
+    "title": "Carambar — Atomic",
+    "savingAmount": 0.4,
+    "category": "confiserie",
+    "productMatch": {
+      "brands": [
+        "Carambar"
+      ],
+      "all": [
+        "Atomic"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,40 € remboursé sur un paquet de Carambar Atomic classique."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "pasquier-brioche-tranchee-2026-10-07",
+    "title": "Pasquier — Brioche Tranchée",
+    "savingAmount": 0.4,
+    "category": "boulangerie",
+    "productMatch": {
+      "brands": [
+        "Pasquier"
+      ],
+      "all": [
+        "Brioche"
+      ],
+      "any": [
+        "Tranchee",
+        "Tranchees"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,40 € remboursé sur un paquet de la gamme brioche tranchée Pasquier."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "lesieur-touche-olive-2026-10-07",
+    "title": "Lesieur — Touche d'olive",
+    "savingAmount": 0.8,
+    "category": "épicerie",
+    "productMatch": {
+      "brands": [
+        "Lesieur"
+      ],
+      "all": [
+        "Touche",
+        "Olive"
+      ],
+      "minScore": 70
+    },
+    "conditions": "0,80 € remboursé sur une bouteille Lesieur Touche d'olive."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "ricore-chicoree-nature-85g-2026-10-07",
+    "title": "Ricoré — Chicorée Nature 85 g",
+    "savingAmount": 0.4,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Ricoré",
+        "Ricore"
+      ],
+      "all": [
+        "Chicoree",
+        "85g"
+      ],
+      "minScore": 70
+    },
+    "conditions": "0,40 € remboursé sur une boîte Ricoré Chicorée Nature 85 g."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "lutti-boite-bonbons-2026-10-07",
+    "title": "Lutti — Boîte de bonbons",
+    "savingAmount": 0.7,
+    "category": "confiserie",
+    "productMatch": {
+      "brands": [
+        "Lutti"
+      ],
+      "any": [
+        "Bonbons",
+        "Boite"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,70 € remboursé sur une boîte de bonbons Lutti au choix."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "bjorg-sans-gluten-2026-10-07",
+    "title": "Bjorg — Sans Gluten",
+    "savingAmount": 0.7,
+    "category": "épicerie",
+    "productMatch": {
+      "brands": [
+        "Bjorg"
+      ],
+      "all": [
+        "Sans Gluten"
+      ],
+      "minScore": 70
+    },
+    "conditions": "0,70 € remboursé sur un produit Bjorg Sans Gluten au choix."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "lesieur-huile-olive-vierge-2026-10-07",
+    "title": "Lesieur — Huile d'olive vierge",
+    "savingAmount": 1.3,
+    "category": "épicerie",
+    "productMatch": {
+      "brands": [
+        "Lesieur"
+      ],
+      "all": [
+        "Huile",
+        "Olive",
+        "Vierge"
+      ],
+      "minScore": 75
+    },
+    "conditions": "1,30 € remboursé sur une bouteille d'huile d'olive vierge Lesieur."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "grand-mere-cafe-moulu-2026-10-07",
+    "title": "Grand'Mère — Café moulu",
+    "savingAmount": 1.2,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Grand'Mère",
+        "Grand Mere"
+      ],
+      "all": [
+        "Cafe",
+        "Moulu"
+      ],
+      "minScore": 70
+    },
+    "conditions": "1,20 € remboursé sur l'achat de 2 paquets de café moulu Grand'Mère.",
+    "minPurchaseQty": 2
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "nesquik-cereales-fraise-2026-10-07",
+    "title": "Nesquik — Céréales goût fraise",
+    "savingAmount": 0.7,
+    "category": "épicerie",
+    "productMatch": {
+      "brands": [
+        "Nesquik"
+      ],
+      "all": [
+        "Cereales",
+        "Fraise"
+      ],
+      "minScore": 70
+    },
+    "conditions": "0,70 € remboursé sur un pack de céréales Nesquik goût fraise."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "starbucks-capsules-x10-2026-10-07",
+    "title": "Starbucks — Capsules x10",
+    "savingAmount": 0.5,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Starbucks"
+      ],
+      "all": [
+        "Capsules",
+        "10"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,50 € remboursé sur une boîte de 10 capsules Starbucks pour machine Nespresso."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "les-dieux-sardines-2026-10-07",
+    "title": "Les Dieux — Sardines",
+    "savingAmount": 0.4,
+    "category": "épicerie",
+    "productMatch": {
+      "brands": [
+        "Les Dieux"
+      ],
+      "all": [
+        "Sardines"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,40 € remboursé sur l'achat de 2 boîtes de sardines Les Dieux.",
+    "minPurchaseQty": 2
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "starbucks-capsules-x18-2026-10-07",
+    "title": "Starbucks — Capsules x18",
+    "savingAmount": 1,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Starbucks"
+      ],
+      "all": [
+        "Capsules",
+        "18"
+      ],
+      "minScore": 65
+    },
+    "conditions": "1 € remboursé sur une boîte de 18 capsules Starbucks pour machine Nespresso."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "materne-sans-sucres-ajoutes-x12-2026-10-07",
+    "title": "Materne — Sans sucres ajoutés x12",
+    "savingAmount": 0.5,
+    "category": "épicerie",
+    "productMatch": {
+      "brands": [
+        "Materne"
+      ],
+      "all": [
+        "12"
+      ],
+      "any": [
+        "Sans Sucres Ajoutes",
+        "Sans Sucre Ajoute"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,50 € remboursé sur un pack de 12 coupelles Materne Sans Sucres Ajoutés."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "pasquier-crousti-dej-2026-10-07",
+    "title": "Pasquier — Crousti'Déj",
+    "savingAmount": 0.3,
+    "category": "boulangerie",
+    "productMatch": {
+      "brands": [
+        "Pasquier"
+      ],
+      "any": [
+        "Crousti Dej",
+        "Crousti'Dej"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,30 € remboursé sur un paquet de Crousti'Déj."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "william-saurin-cocotte-2026-10-07",
+    "title": "William Saurin — Cocotte micro-ondable",
+    "savingAmount": 0.5,
+    "category": "épicerie",
+    "productMatch": {
+      "brands": [
+        "William Saurin"
+      ],
+      "all": [
+        "Cocotte"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,50 € remboursé sur une cocotte micro-ondable William Saurin au choix."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "rozana-6x50cl-2026-10-07",
+    "title": "Rozana — 6x50 cl",
+    "savingAmount": 0.3,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Rozana"
+      ],
+      "all": [
+        "6x50"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,30 € remboursé sur un pack Rozana 6x50 cl."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "lipton-petillant-2026-10-07",
+    "title": "Lipton — Pétillant",
+    "savingAmount": 0.3,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Lipton"
+      ],
+      "all": [
+        "Petillant"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,30 € remboursé sur un produit de la gamme Lipton pétillant."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "sous-le-pommier-pur-jus-1l-2026-10-07",
+    "title": "Sous le Pommier — Pur jus 1 L",
+    "savingAmount": 0.5,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Sous le Pommier"
+      ],
+      "all": [
+        "1L"
+      ],
+      "any": [
+        "Pomme",
+        "Pomme Poire"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,50 € remboursé sur l'achat de 2 purs jus Sous le Pommier 1 L.",
+    "minPurchaseQty": 2
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "alpro-boissons-vegetales-2026-10-07",
+    "title": "Alpro — Boissons végétales",
+    "savingAmount": 0.4,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Alpro"
+      ],
+      "all": [
+        "Boisson"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,40 € remboursé sur un produit Alpro de la gamme boissons végétales."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "volvic-vitamin-plus-75cl-2026-10-07",
+    "title": "Volvic Vitamin+ — 75 cl",
+    "savingAmount": 0.2,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Volvic"
+      ],
+      "all": [
+        "Vitamin",
+        "75cl"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,20 € remboursé sur une bouteille Volvic Vitamin+ 75 cl."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "maison-perrier-forever-2026-10-07",
+    "title": "Maison Perrier — Forever",
+    "savingAmount": 0.2,
+    "category": "boissons",
+    "productMatch": {
+      "brands": [
+        "Maison Perrier"
+      ],
+      "all": [
+        "Forever"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,20 € remboursé sur un produit Maison Perrier Forever."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "ajinomoto-gyoza-2026-10-07",
+    "title": "Ajinomoto — Gyoza",
+    "savingAmount": 0.8,
+    "category": "surgelés",
+    "productMatch": {
+      "brands": [
+        "Ajinomoto"
+      ],
+      "all": [
+        "Gyoza"
+      ],
+      "minScore": 65
+    },
+    "conditions": "0,80 € remboursé sur une boîte ou un sachet de Gyoza Ajinomoto."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "bref-wc-blocs-2026-10-07",
+    "title": "Bref WC — Blocs WC",
+    "savingAmount": 0.4,
+    "category": "entretien",
+    "productMatch": {
+      "brands": [
+        "Bref WC",
+        "Bref"
+      ],
+      "all": [
+        "WC"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,40 € remboursé sur un bloc WC au choix dans les gammes Bref WC."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "maison-verte-lessives-2026-10-07",
+    "title": "Maison Verte — Lessives",
+    "savingAmount": 1.2,
+    "category": "entretien",
+    "productMatch": {
+      "brands": [
+        "Maison Verte"
+      ],
+      "all": [
+        "Lessive"
+      ],
+      "minScore": 65
+    },
+    "conditions": "1,20 € remboursé sur une lessive Maison Verte en bouteille, recharge ou capsules."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "type": "ODR",
+    "stores": [
+      "all"
+    ],
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/",
+    "scope": "produit",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "savingAmountMode": "per-offer",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "externalId": "colgate-max-white-2026-10-07",
+    "title": "Colgate — Max White",
+    "savingAmount": 0.5,
+    "category": "hygiène",
+    "productMatch": {
+      "brands": [
+        "Colgate"
+      ],
+      "any": [
+        "Max White",
+        "Blancheur"
+      ],
+      "minScore": 60
+    },
+    "conditions": "0,50 € remboursé sur un dentifrice Colgate au choix dans la gamme blancheur."
   }
 ]
