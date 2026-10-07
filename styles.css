@@ -176,3 +176,12 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 @media(max-width:720px){
   .confidence-parts{grid-template-columns:1fr 1fr}
 }
+
+.product-price-history{display:grid;gap:10px;margin-top:14px}
+.price-history-list{display:grid;gap:6px}
+.price-history-row{display:flex;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.price-history-row strong{color:var(--brand)}
+.price-history-row span{color:var(--muted);font-size:.72rem;text-align:right}
+.price-alerts{display:grid;gap:8px;margin-top:12px}
+.price-alert-card{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#e8f5ee;border:1px solid #cce8d8;border-radius:14px;padding:12px}
+.price-alert-card strong{font-size:.84rem}
