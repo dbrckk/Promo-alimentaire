@@ -20,6 +20,7 @@ const els = {
   barcode:document.querySelector("#barcode"),
   scanButton:document.querySelector("#scanButton"),
   nearbyButton:document.querySelector("#nearbyButton"),
+  radiusSelect:document.querySelector("#radiusSelect"),
   productStatus:document.querySelector("#productStatus"),
   productResult:document.querySelector("#productResult"),
   productOffers:document.querySelector("#productOffers"),
@@ -80,6 +81,13 @@ els.barcodeForm.addEventListener("submit",(event)=>{
 });
 els.scanButton.addEventListener("click",startScanner);
 els.nearbyButton.addEventListener("click",toggleNearbyPrices);
+els.radiusSelect.addEventListener("change",async()=>{
+  state.radiusKm=Number(els.radiusSelect.value)||25;
+  if(state.nearbyEnabled){
+    els.nearbyButton.textContent=`À moins de ${state.radiusKm} km`;
+    if(state.productCode) await refreshPrices(state.productCode);
+  }
+});
 els.closeScan.addEventListener("click",()=>els.scanDialog.close());
 els.scanDialog.addEventListener("close",stopScanner);
 
@@ -361,6 +369,7 @@ function renderPrices(observations,sourceUrl){
       ? ` · avant ${money.format(item.priceWithoutDiscount)}`
       : "";
     const place=[item.storeName,item.postcode,item.city].filter(Boolean).join(" · ");
+    const distance=Number.isFinite(item.distanceKm) ? ` · ${item.distanceKm.toLocaleString("fr-FR")} km` : "";
     return `
       <article class="price-card">
         <div class="price-main">
@@ -369,7 +378,7 @@ function renderPrices(observations,sourceUrl){
         </div>
         <div class="price-place">
           <strong>${escapeHtml(place || storeLabel(state.store))}</strong>
-          <span>${formatDate(item.date)} · ${fresh?"récent":"ancien"}</span>
+          <span>${formatDate(item.date)} · ${fresh?"récent":"ancien"}${distance}</span>
         </div>
       </article>`;
   }).join("");
