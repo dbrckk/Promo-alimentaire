@@ -98,3 +98,16 @@ test("une vraie ODR reste une étape après achat",()=>{
   });
   assert.ok(result.steps.some((step)=>step.phase==="après" && /ODR produit/.test(step.title)));
 });
+
+
+test("le profil PASS ajoute un rappel Journée PASS sans économie automatique",()=>{
+  const result=buildSavingsActionPlan({
+    store:"carrefour",
+    loyaltyProfile:{carrefour:"pass"},
+    providers:[]
+  });
+  const step=result.steps.find((item)=>/Journée PASS/.test(item.title));
+  assert.ok(step);
+  assert.equal(step.kind,"check");
+  assert.match(step.detail,/n’est pas ajouté automatiquement/);
+});
