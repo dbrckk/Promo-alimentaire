@@ -127,7 +127,10 @@ export function selectUniqueEanCandidate(offer,candidates,{
 
 export async function fetchOpenFoodFactsCandidates(offer,{
   fetchImpl=fetch,
-  pageSize=20
+  pageSize=20,
+  maxRetries=2,
+  retryBaseMs=8000,
+  sleepImpl=(ms)=>new Promise((resolve)=>setTimeout(resolve,ms))
 }={}){
   const terms=buildOpenFoodFactsSearchTerms(offer);
   if(!terms) return {terms,candidates:[],sourceUrl:null};
@@ -141,14 +144,28 @@ export async function fetchOpenFoodFactsCandidates(offer,{
     fields:"code,product_name,generic_name,brands,quantity,countries_tags,stores_tags"
   });
   const sourceUrl="https://world.openfoodfacts.org/cgi/search.pl?"+params;
-  const response=await fetchImpl(sourceUrl,{
-    headers:{
-      Accept:"application/json",
-      "User-Agent":"PromoAlimentaire/0.1 conservative-ean-resolver"
-    },
-    signal:AbortSignal.timeout(15000)
-  });
-  if(!response.ok) throw new Error("Open Food Facts search HTTP "+response.status);
+  let response=null;
+  for(let attempt=0;attempt<=maxRetries;attempt+=1){
+    response=await fetchImpl(sourceUrl,{
+      headers:{
+        Accept:"application/json",
+        "User-Agent":"PromoAlimentaire/0.1 conservative-ean-resolver"
+      },
+      signal:AbortSignal.timeout(15000)
+    });
+    if(response.ok) break;
+
+    const retryable=response.status===429 || response.status===503;
+    if(!retryable || attempt>=maxRetries){
+      throw new Error("Open Food Facts search HTTP "+response.status);
+    }
+
+    const retryAfterSeconds=Number(response.headers?.get?.("retry-after"));
+    const waitMs=Number.isFinite(retryAfterSeconds) && retryAfterSeconds>0
+      ? retryAfterSeconds*1000
+      : retryBaseMs*(2**attempt);
+    await sleepImpl(waitMs);
+  }
   const payload=await response.json();
   const candidates=(payload?.products || []).map((product)=>({
     code:String(product.code || ""),
