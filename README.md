@@ -8,6 +8,7 @@ Fonctionnalités actuelles :
 - choix Carrefour / E.Leclerc ;
 - tri par pourcentage d'économie, économie en euros ou fraîcheur ;
 - recherche d'offres ;
+- chargement runtime de snapshots publics validés (Shopmium et La Belle Adresse au 07/10/2026) avec expiration automatique ;
 - annuaire de sources complémentaires ;
 - recherche produit par EAN/UPC ;
 - scanner code-barres natif sur les navigateurs compatibles Android ;
@@ -58,6 +59,7 @@ Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Wi
 - `src/history.js` : snapshots locaux et tendances de comparaison.
 - `src/gtin.js` : normalisation et checksum GTIN/EAN.
 - `src/ingestion.js` : validation des lots d'offres traçables.
+- `src/import-loader.js` : chargement des snapshots actifs et rejet des lots invalides.
 - `scripts/validate-imports.mjs` : porte CI pour les fichiers `data/import/*.json`.
 - `src/app.js` : interface, scanner, liste de courses et état local.
 - `tests/` : tests du domaine, ingestion ouverte et moteur de cumul.
