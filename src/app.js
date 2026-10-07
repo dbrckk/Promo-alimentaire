@@ -23,6 +23,11 @@ import {
 } from "./loyalty.js";
 import { offerEvidenceStatus } from "./evidence.js";
 import {
+  confirmationKey,
+  createStoreConfirmation,
+  pruneStoreConfirmations
+} from "./local-verification.js";
+import {
   addPriceObservation,
   detectPriceDrops,
   productHistory,
@@ -88,6 +93,7 @@ const state = {
   store:localStorage.getItem("promo-store") || "carrefour",
   channel:localStorage.getItem("promo-channel") || "store",
   loyaltyProfile:loadLoyaltyProfile(),
+  storeConfirmations:loadStoreConfirmations(),
   sort:localStorage.getItem("promo-sort") || "percent",
   search:"",
   tab:"offers",
@@ -174,6 +180,7 @@ els.productResult.addEventListener("click",(event)=>{
   if(event.target.closest('[data-action="add-current-product"]')) addCurrentProduct();
 });
 els.shoppingListItems.addEventListener("click",handleShoppingListAction);
+els.basketComparison.addEventListener("click",handleBasketComparisonAction);
 els.dropThreshold.addEventListener("change",()=>{
   state.dropThreshold=Number(els.dropThreshold.value)||10;
   localStorage.setItem("promo-drop-threshold",String(state.dropThreshold));
@@ -901,7 +908,8 @@ function evaluateCurrentBasketScenarios(){
       channel:state.channel,
       priceByCode:state.basketPriceData[store],
       offers,
-      loyaltyProfile:state.loyaltyProfile
+      loyaltyProfile:state.loyaltyProfile,
+      storeConfirmations:state.storeConfirmations
     });
     const locationScenario=selectBestLocationScenario(locationScenarios);
     let scenario;
@@ -917,7 +925,8 @@ function evaluateCurrentBasketScenarios(){
           channel:state.channel,
           priceByCode:state.basketPriceData[store],
           offers,
-          loyaltyProfile:state.loyaltyProfile
+          loyaltyProfile:state.loyaltyProfile,
+          storeConfirmations:state.storeConfirmations
         }),
         location:null,
         locationKey:null,
@@ -933,6 +942,72 @@ function evaluateCurrentBasketScenarios(){
       confidence:scoreBasketConfidence(enrichedScenario)
     };
   });
+}
+
+function loadStoreConfirmations(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem("promo-store-confirmations-v1") || "[]");
+    return pruneStoreConfirmations(Array.isArray(parsed)?parsed:[]);
+  }catch{
+    return [];
+  }
+}
+
+function saveStoreConfirmations(){
+  state.storeConfirmations=pruneStoreConfirmations(state.storeConfirmations);
+  localStorage.setItem(
+    "promo-store-confirmations-v1",
+    JSON.stringify(state.storeConfirmations)
+  );
+}
+
+function handleBasketComparisonAction(event){
+  const button=event.target.closest('[data-basket-action="toggle-store-confirmation"]');
+  if(!button) return;
+
+  const offerId=button.dataset.offerId;
+  const store=button.dataset.store;
+  const locationKey=button.dataset.locationKey;
+  const locationName=button.dataset.locationName || "";
+  const key=confirmationKey({offerId,store,locationKey});
+  const existing=state.storeConfirmations.findIndex((entry)=>
+    (entry.key || confirmationKey(entry))===key
+  );
+
+  if(existing>=0){
+    state.storeConfirmations.splice(existing,1);
+    saveStoreConfirmations();
+    setListStatus("Confirmation magasin retirée.");
+    renderShoppingList();
+    return;
+  }
+
+  const offer=offers.find((entry)=>entry.id===offerId);
+  if(!offer){
+    setListStatus("Offre introuvable dans les données actuelles.",true);
+    return;
+  }
+
+  try{
+    const confirmation=createStoreConfirmation(offer,{
+      store,
+      locationKey,
+      locationName
+    });
+    state.storeConfirmations=[
+      ...state.storeConfirmations.filter((entry)=>
+        (entry.key || confirmationKey(entry))!==confirmation.key
+      ),
+      confirmation
+    ];
+    saveStoreConfirmations();
+    setListStatus(
+      "Promo confirmée localement pour ce magasin jusqu’à son expiration."
+    );
+    renderShoppingList();
+  }catch(error){
+    setListStatus(error.message || "Confirmation impossible.",true);
+  }
 }
 
 function loadLoyaltyProfile(){
@@ -1229,11 +1304,31 @@ function renderBasketScenario(scenario){
     const maxCandidateDiff=maxCandidate && candidate
       && maxCandidate.offer?.id!==candidate.offer?.id
       && maxCandidate.saving>candidate.saving;
+    const canConfirmStore=Boolean(
+      candidate
+      && candidate.match.exact
+      && candidate.offer?.requiresStoreVerification
+      && scenario.locationReliable
+      && scenario.locationKey
+    );
+    const locallyConfirmed=Boolean(candidate?.offer?.storeVerified);
+    const confirmationButton=canConfirmStore
+      ? `<button
+          class="confirm-store-offer ${locallyConfirmed?"active":""}"
+          type="button"
+          data-basket-action="toggle-store-confirmation"
+          data-offer-id="${escapeHtml(candidate.offer.id)}"
+          data-store="${escapeHtml(scenario.store)}"
+          data-location-key="${escapeHtml(scenario.locationKey)}"
+          data-location-name="${escapeHtml(scenario.location?.name || "")}"
+        >${locallyConfirmed?"Confirmée dans ce magasin ✓":"J’ai vérifié cette promo ici"}</button>`
+      : "";
     const candidateHtml=candidate
       ? `<div class="line-offer">
            <span class="badge ${candidate.match.exact?"good":"warn"}">${candidate.match.exact?"EAN exact":"à vérifier"}</span>
            <span>${escapeHtml(candidate.offer.provider)} · ${escapeHtml(candidate.offer.title)}${offerDeadline(candidate.offer)?` · ${escapeHtml(offerDeadline(candidate.offer).label)}`:""}</span>
            <strong>≈ −${money.format(candidate.saving)}</strong>
+           ${confirmationButton}
          </div>`
       : "";
     return `<div class="scenario-line-wrap">
