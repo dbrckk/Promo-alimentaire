@@ -24,6 +24,21 @@ export function buildSavingsActionPlan({
     push("avant","Vérifier Joko avant de payer",detail,"check",joko.url);
   }
 
+  const dynamicOnlineProviders=providers.filter((provider)=>
+    ["joko","igraal"].includes(provider.id)
+    && (provider.stores?.includes(store)||provider.stores?.includes("all"))
+  );
+  if(channel==="online" && dynamicOnlineProviders.length){
+    push(
+      "avant",
+      "Comparer les cashbacks dynamiques",
+      "Vérifie aussi "+dynamicOnlineProviders.map((provider)=>provider.name).join(" et ")+
+        " juste avant la commande. Leurs taux peuvent varier et ne sont pas comptés sans donnée publique vérifiable.",
+      "check",
+      dynamicOnlineProviders[0].url || null
+    );
+  }
+
   const affiliateCashbacks=(uncertainBasketOffers || [])
     .filter((offer)=>offer.mechanism==="affiliate_cashback");
   if(channel==="online" && affiliateCashbacks.length){
