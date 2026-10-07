@@ -112,3 +112,20 @@ test("cleanOfferTitle retire le badge de remboursement collé au titre",()=>{
     "Les Dieux - Global Gamme"
   );
 });
+
+
+test("deriveProductMatch utilise la description pour un titre générique",()=>{
+  const match=deriveProductMatch(
+    "Les Dieux - Global Gamme",
+    "Sur l'achat de 2 boîtes de sardines Les Dieux au choix dans la gamme."
+  );
+  assert.equal(match.brands[0],"Les Dieux");
+  assert.ok(match.all.includes("sardines"));
+});
+
+test("deriveProductMatch déduplique les termes répétitifs",()=>{
+  const match=deriveProductMatch(
+    "Sous le Pommier - Pur jus de Pomme Nature ou Pomme Poire 1L"
+  );
+  assert.equal(new Set(match.all.map((x)=>x.toLowerCase())).size,match.all.length);
+});
