@@ -172,3 +172,26 @@ Joko et iGraal peuvent apparaître comme vérifications dynamiques dans le plan 
 
 Les prix Open Prices sont traités comme des observations magasin. Ils ne servent pas à désigner un gagnant fiable en mode Drive ou En ligne.
 
+
+
+## Échelle de preuve des promotions enseigne
+
+Une promotion locale n'entre dans le total garanti que si son niveau de preuve le permet :
+
+- **heuristique** : correspondance marque/nom seulement ;
+- **exact-product** : EAN/GTIN exact prouvé ;
+- **store-verified** : point de vente physique explicitement confirmé localement ;
+- **loyalty-verified** : carte requise déclarée disponible ;
+- **verified** : toutes les conditions nécessaires sont réunies.
+
+Les confirmations de magasin sont locales au navigateur et expirent automatiquement. Elles ne sont jamais partagées comme preuve globale pour les autres utilisateurs ou les autres magasins.
+
+## Résolution automatique des GTIN
+
+Le résolveur Open Food Facts utilise la recherche plein texte historique uniquement pour un petit nombre d'offres catalogue et n'accepte jamais un résultat sur la seule proximité lexicale. Un produit est promu en EAN exact seulement si le candidat est suffisamment spécifique et non ambigu.
+
+Le workflow respecte volontairement un rythme inférieur aux limites documentées d'Open Food Facts et retente les réponses temporaires `429` / `503` avec backoff. En cas d'échec réseau, l'offre d'origine reste inchangée.
+
+## Promotions multi-achats
+
+Les valeurs affichées comme `2+1 offert`, `-X % sur le 2e` ou prix de lot sont représentées par une formule explicite et recalculées selon la quantité réellement présente dans le panier. Un pourcentage moyen n'est jamais extrapolé aux unités hors groupe promotionnel.
