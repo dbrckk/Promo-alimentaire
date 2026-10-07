@@ -40,3 +40,13 @@ test("le filtre magasin est respecté",()=>{
 test("isCompatible refuse deux offres du même groupe",()=>{
   assert.equal(isCompatible([gift("a",4),gift("b",3)]),false);
 });
+
+
+test("optimizeStack respecte le canal",()=>{
+  const offers=[
+    {...gift("store",4),channels:["store"]},
+    {...gift("online",8),channels:["online"]}
+  ];
+  const result=optimizeStack(100,offers,{store:"carrefour",channel:"store"});
+  assert.deepEqual(result.selected.map((x)=>x.id),["store"]);
+});
