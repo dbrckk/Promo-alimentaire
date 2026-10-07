@@ -6,6 +6,7 @@ PWA mobile-first pour regrouper et comparer les économies disponibles chez **Ca
 
 Fonctionnalités actuelles :
 - choix Carrefour / E.Leclerc ;
+- filtre de canal d’achat : Magasin / Drive / En ligne ;
 - tri par pourcentage d'économie, économie en euros ou fraîcheur ;
 - recherche d'offres ;
 - chargement runtime de snapshots publics validés (Shopmium, La Belle Adresse, Coupon Network et Envie de Plus au 07/10/2026) avec expiration automatique ;
@@ -25,6 +26,7 @@ Fonctionnalités actuelles :
 - moteur de cumul prudent qui choisit le meilleur chemin valide sans additionner les offres incompatibles ;
 - simulateur d'optimisation d'un panier ;
 - recommandation explicite du meilleur moyen de paiement remisé, avec alternatives et économie estimée ;
+- plan d’action ordonné avant / paiement / en caisse / après achat pour ne pas rater une activation ou une ODR ;
 - liste de courses persistante sur l'appareil avec quantités ;
 - actualisation des mêmes références chez Carrefour et E.Leclerc ;
 - comparaison des deux paniers avec refus de déclarer un gagnant si la couverture prix est incomplète ;
@@ -129,4 +131,18 @@ La Belle Adresse charge actuellement ses remboursements via une API membre prot�
 ### Taux de paiement
 
 Les taux publics Carrefour de Fidme, Widilo, eBuyClub et Poulpeo, ainsi que le cashback connecté eBuyClub Carrefour/E.Leclerc, disposent désormais d'un snapshot dédié et d'une synchronisation quotidienne. Les valeurs importées remplacent les taux statiques équivalents sans créer de doublons.
+
+
+
+### Canaux et cashbacks web
+
+Le canal sélectionné filtre désormais toutes les offres compatibles :
+
+- **Magasin** : cartes cadeaux, cashback carte, ODR magasin compatibles ;
+- **Drive** : uniquement les offres qui déclarent ce canal ou qui sont valables tous canaux ;
+- **En ligne** : cashbacks d'affiliation et offres web.
+
+Les cashbacks web eBuyClub actuels sont chargés comme **potentiels non garantis** : Carrefour jusqu'à 3 € et E.Leclerc jusqu'à 2,5 % au 7 octobre 2026. Joko et iGraal sont traités comme sources dynamiques à vérifier juste avant la commande quand aucun taux public fiable n'est disponible.
+
+Open Prices reste une source de prix observés dans des magasins physiques : en Drive / En ligne, l'application affiche ces prix comme indicatifs et ne déclare jamais un gagnant Carrefour/E.Leclerc sur cette seule base.
 
