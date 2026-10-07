@@ -24,7 +24,8 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       if(!result.ok){
         errors.push({file,issues:result.errors});
         sourceStats.push({
-          file,status:"error",activeCount:0,totalCount:Array.isArray(records)?records.length:0,
+          file,mode:/auto\.json$/i.test(file) ? "automatic" : "manual",
+          status:"error",activeCount:0,totalCount:Array.isArray(records)?records.length:0,
           providerIds:[],latestVerifiedAt:null,nextDeadline:null
         });
         continue;
@@ -41,6 +42,7 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       const daysUntil=nextDeadline ? Math.ceil((nextDeadline-now)/(24*60*60*1000)) : null;
       sourceStats.push({
         file,
+        mode:/auto\.json$/i.test(file) ? "automatic" : "manual",
         status:activeOffers.length===0 ? "stale" : daysUntil!==null && daysUntil<=3 ? "review-soon" : "ok",
         activeCount:activeOffers.length,
         totalCount:result.normalized.length,
@@ -59,7 +61,8 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
     }catch(error){
       errors.push({file,issues:[{errors:[error.message]}]});
       sourceStats.push({
-        file,status:"error",activeCount:0,totalCount:0,providerIds:[],
+        file,mode:/auto\.json$/i.test(file) ? "automatic" : "manual",
+        status:"error",activeCount:0,totalCount:0,providerIds:[],
         latestVerifiedAt:null,nextDeadline:null
       });
     }
