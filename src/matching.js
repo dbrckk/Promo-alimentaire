@@ -1,3 +1,8 @@
+import {
+  estimateRetailerPromoSaving,
+  minimumQuantityForRetailerPromo
+} from "./retailer-promo.js";
+
 export function normalizeText(value) {
   return String(value ?? "")
     .normalize("NFD")
@@ -94,6 +99,9 @@ export function estimateOfferSaving(price,offer,quantity=1) {
   const qty=Math.max(1,Math.trunc(Number(quantity)||1));
   const minPurchaseQty=Math.max(1,Math.trunc(Number(offer.minPurchaseQty)||1));
   if(!Number.isFinite(value) || value<=0 || qty<minPurchaseQty) return null;
+  const formulaSaving=estimateRetailerPromoSaving(value,qty,offer);
+  if(Number.isFinite(formulaSaving)) return formulaSaving;
+  if(offer.promoFormula && !Number.isFinite(formulaSaving)) return null;
   if(Number.isFinite(offer.savingAmount)) {
     const multiplier=offer.savingAmountMode==="per-unit" ? qty : 1;
     return Math.min(value*qty,round(offer.savingAmount*multiplier));
@@ -165,8 +173,9 @@ export function rankMatchedOffers(matches,{price=null,quantity=1}={}) {
 
 export function requiredQuantity(offer) {
   const explicit=Math.max(1,Math.trunc(Number(offer?.minPurchaseQty)||1));
+  const formulaMin=minimumQuantityForRetailerPromo(offer);
   const tiers=Array.isArray(offer?.quantityTiers) ? offer.quantityTiers : [];
-  if(!tiers.length) return explicit;
+  if(!tiers.length) return Math.max(explicit,formulaMin || 1);
   const tierMin=Math.min(...tiers.map((tier)=>Math.max(1,Math.trunc(Number(tier.minQty)||1))));
-  return Math.max(explicit,tierMin);
+  return Math.max(explicit,tierMin,formulaMin || 1);
 }
