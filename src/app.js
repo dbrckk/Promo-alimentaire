@@ -13,6 +13,7 @@ import {
 } from "./basket.js";
 import { scoreBasketConfidence } from "./confidence.js";
 import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js";
+import { buildSavingsActionPlan } from "./action-plan.js";
 import {
   addPriceObservation,
   detectPriceDrops,
@@ -1038,6 +1039,18 @@ function renderBasketScenario(scenario){
   const bundlePotential=scenario.potentialBundleSaving>0
     ? `<p class="help"><strong>Offre multi-produits potentielle :</strong> jusqu’à ${money.format(scenario.potentialBundleSaving)} supplémentaires. Elle n’est jamais intégrée au coût garanti avant confirmation des références, de l’achat simultané et des règles de cumul.</p>`
     : "";
+  const selectedPayment=scenario.basketOptimization.selected.find((offer)=>offer.mechanism==="gift_card") || null;
+  const uncertainBasketOffers=scenario.basketOptimization.considered.filter((offer)=>offer.autoStack!==true);
+  const productCandidates=scenario.lines.flatMap((line)=>line.matches || []);
+  const actionPlan=buildSavingsActionPlan({
+    store:scenario.store,
+    selectedPayment,
+    uncertainBasketOffers,
+    productCandidates,
+    bundleCandidates:scenario.bundleCandidates || [],
+    providers
+  });
+  const actionPlanHtml=renderSavingsActionPlan(actionPlan);
   const prudentBestCase=scenario.conservativePotentialExtraSaving>0
     ? `<div class="best-case-box">
          <span>Meilleur cas prudent</span>
@@ -1077,7 +1090,32 @@ function renderBasketScenario(scenario){
       ${potential}
       ${bundlePotential}
       ${prudentBestCase}
+      ${actionPlanHtml}
     </article>`;
+}
+
+function renderSavingsActionPlan(plan){
+  if(!plan?.steps?.length) return "";
+  const phaseLabels={avant:"Avant",paiement:"Paiement",achat:"En caisse",après:"Après achat"};
+  return `
+    <section class="action-plan">
+      <div class="product-offers-head">
+        <h3>Ordre recommandé</h3>
+        <p>Les étapes incertaines restent des vérifications et ne sont pas incluses dans l’économie garantie.</p>
+      </div>
+      <ol class="action-plan-list">
+        ${plan.steps.map((step)=>`
+          <li class="action-step ${escapeHtml(step.kind)}">
+            <div class="action-step-order">${step.order}</div>
+            <div>
+              <div class="action-step-phase">${escapeHtml(phaseLabels[step.phase] || step.phase)}</div>
+              <strong>${escapeHtml(step.title)}</strong>
+              <p>${escapeHtml(step.detail)}</p>
+              ${step.sourceUrl?`<a class="action-source" href="${escapeHtml(step.sourceUrl)}" target="_blank" rel="noreferrer">Vérifier la source</a>`:""}
+            </div>
+          </li>`).join("")}
+      </ol>
+    </section>`;
 }
 
 function setListStatus(message,isError=false){
