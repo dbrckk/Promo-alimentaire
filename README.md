@@ -146,3 +146,31 @@ Les cashbacks web eBuyClub actuels sont chargés comme **potentiels non garantis
 
 Open Prices reste une source de prix observés dans des magasins physiques : en Drive / En ligne, l'application affiche ces prix comme indicatifs et ne déclare jamais un gagnant Carrefour/E.Leclerc sur cette seule base.
 
+
+
+## Promotions enseigne et niveau de preuve
+
+Les promotions Carrefour/E.Leclerc suivent désormais une chaîne de preuve stricte :
+
+1. **Candidat heuristique** — marque/nom compatibles mais référence exacte inconnue.
+2. **EAN exact** — la promotion est reliée à un GTIN précis avec une preuve produit.
+3. **Magasin confirmé** — l'utilisateur confirme localement avoir vérifié cette promo dans le point de vente physique affiché.
+4. **Fidélité confirmée** — quand une carte est requise, le profil local doit indiquer Club/PASS/Carte E.Leclerc.
+5. **Garantie calculable** — seulement lorsque toutes les preuves requises sont réunies.
+
+La confirmation magasin est stockée uniquement sur l'appareil, liée au couple offre + magasin, et expire au plus tard avec l'offre ou après 7 jours.
+
+Les mécaniques multi-achats sont calculées à partir de leur formule exacte. Par exemple, `-68 % sur le 2e` n'est pas appliqué comme `-34 %` sur une quantité impaire ; `2+1 offert` ne compte qu'un article gratuit par groupe complet de trois.
+
+### Résolution EAN
+
+Un workflow séparé cherche les GTIN manquants via Open Food Facts. Il reste volontairement conservateur :
+
+- recherche espacée pour respecter les limites du service ;
+- retry/backoff sur HTTP 429/503 ;
+- marque et termes produit obligatoires ;
+- seuil de score ;
+- marge minimale sur le second candidat ;
+- une offre générique avec plusieurs produits plausibles reste ambiguë.
+
+Aucun EAN n'est écrit lorsqu'une ambiguïté subsiste.
