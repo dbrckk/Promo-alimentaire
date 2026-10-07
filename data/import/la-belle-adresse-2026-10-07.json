@@ -1,0 +1,257 @@
+[
+  {
+    "providerId": "belle-adresse",
+    "provider": "La Belle Adresse",
+    "externalId": "xtra-total-triocaps-2026-10",
+    "title": "X.TRA Total Triocaps",
+    "type": "ODR",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.labelleadresse.com/economies/remboursement-marque-xtra",
+    "scope": "produit",
+    "referenceNames": [
+      "X.TRA Total Triocaps"
+    ],
+    "productMatch": {
+      "brands": [
+        "X.TRA",
+        "X-tra",
+        "Xtra"
+      ],
+      "all": [
+        "Total",
+        "Triocaps"
+      ],
+      "minScore": 70
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec promotions, lots, réductions magasin ou carte de fidélité",
+    "conditions": "40 % remboursés. Une utilisation sur le mois ; preuve d'achat utilisable une seule fois dans les 30 jours."
+  },
+  {
+    "providerId": "belle-adresse",
+    "provider": "La Belle Adresse",
+    "externalId": "xtra-total-liquide-2026-10",
+    "title": "X.TRA Total Liquide",
+    "type": "ODR",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.labelleadresse.com/economies/remboursement-marque-xtra",
+    "scope": "produit",
+    "referenceNames": [
+      "X.TRA Total Liquide"
+    ],
+    "productMatch": {
+      "brands": [
+        "X.TRA",
+        "X-tra",
+        "Xtra"
+      ],
+      "all": [
+        "Total",
+        "Liquide"
+      ],
+      "minScore": 70
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec promotions, lots, réductions magasin ou carte de fidélité",
+    "conditions": "40 % remboursés. Une utilisation sur le mois ; preuve d'achat utilisable une seule fois dans les 30 jours."
+  },
+  {
+    "providerId": "belle-adresse",
+    "provider": "La Belle Adresse",
+    "externalId": "le-chat-discs-2026-10",
+    "title": "Le Chat Discs",
+    "type": "ODR",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.labelleadresse.com/economies/remboursement-marque-le-chat",
+    "scope": "produit",
+    "referenceNames": [
+      "Le Chat Discs"
+    ],
+    "productMatch": {
+      "brands": [
+        "Le Chat"
+      ],
+      "any": [
+        "Disc",
+        "Discs"
+      ],
+      "minScore": 65
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec promotions, lots, réductions magasin ou carte de fidélité",
+    "conditions": "40 % remboursés. Une utilisation sur le mois."
+  },
+  {
+    "providerId": "belle-adresse",
+    "provider": "La Belle Adresse",
+    "externalId": "le-chat-liquide-2026-10",
+    "title": "Le Chat Liquide",
+    "type": "ODR",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.labelleadresse.com/economies/remboursement-marque-le-chat",
+    "scope": "produit",
+    "referenceNames": [
+      "Le Chat Liquide"
+    ],
+    "productMatch": {
+      "brands": [
+        "Le Chat"
+      ],
+      "all": [
+        "Liquide"
+      ],
+      "minScore": 65
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec promotions, lots, réductions magasin ou carte de fidélité",
+    "conditions": "40 % remboursés. Une utilisation sur le mois."
+  },
+  {
+    "providerId": "belle-adresse",
+    "provider": "La Belle Adresse",
+    "externalId": "mir-lessive-white-2026-10",
+    "title": "Mir Lessive White",
+    "type": "ODR",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.labelleadresse.com/economies/remboursement-marque-mir-lessive-white",
+    "scope": "produit",
+    "referenceNames": [
+      "Mir Lessive White"
+    ],
+    "productMatch": {
+      "brands": [
+        "Mir"
+      ],
+      "all": [
+        "Lessive",
+        "White"
+      ],
+      "minScore": 70
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec promotions, lots, réductions magasin ou carte de fidélité",
+    "conditions": "40 % remboursés. Une utilisation sur le mois."
+  },
+  {
+    "providerId": "belle-adresse",
+    "provider": "La Belle Adresse",
+    "externalId": "mir-lessive-fraicheur-2026-10",
+    "title": "Mir Lessive Fraîcheur",
+    "type": "ODR",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.labelleadresse.com/economies/remboursement",
+    "scope": "produit",
+    "referenceNames": [
+      "Mir Lessive Fraîcheur"
+    ],
+    "productMatch": {
+      "brands": [
+        "Mir"
+      ],
+      "all": [
+        "Lessive",
+        "Fraicheur"
+      ],
+      "minScore": 70
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec promotions, lots, réductions magasin ou carte de fidélité",
+    "conditions": "40 % remboursés. Référence exacte à confirmer sur la page source au moment de l'achat."
+  },
+  {
+    "providerId": "belle-adresse",
+    "provider": "La Belle Adresse",
+    "externalId": "mir-vaisselle-675-2026-10",
+    "title": "Mir Vaisselle 675 ml",
+    "type": "ODR",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.labelleadresse.com/economies/remboursement-univers-maison",
+    "scope": "produit",
+    "referenceNames": [
+      "Mir Vaisselle 675ml"
+    ],
+    "productMatch": {
+      "brands": [
+        "Mir"
+      ],
+      "all": [
+        "Vaisselle",
+        "675"
+      ],
+      "minScore": 70
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec promotions, lots, réductions magasin ou carte de fidélité",
+    "conditions": "40 % remboursés. Une utilisation sur le mois."
+  }
+]
