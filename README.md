@@ -27,6 +27,8 @@ Fonctionnalités actuelles :
 - score de confiance explicable sur 100 par scénario (couverture, fraîcheur, identification du magasin, preuve Open Prices) ;
 - historique local limité aux 20 dernières comparaisons, sans stockage des coordonnées ;
 - tendance du coût entre les dernières comparaisons valides ;
+- historique de prix local par produit et par enseigne ;
+- alertes locales de baisse de prix avec seuil configurable 5/10/15/20 %, évaluées lors des actualisations ;
 - PWA installable et fonctionnement hors ligne pour l'interface ;
 - tests métier sans dépendance externe.
 
@@ -57,6 +59,7 @@ Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Wi
 - `src/basket.js` : évaluation d'une liste par enseigne et comparaison prudente.
 - `src/confidence.js` : score de confiance explicable des scénarios.
 - `src/history.js` : snapshots locaux et tendances de comparaison.
+- `src/product-history.js` : historique par produit, tendances et détection de baisse.
 - `src/gtin.js` : normalisation et checksum GTIN/EAN.
 - `src/ingestion.js` : validation des lots d'offres traçables.
 - `src/import-loader.js` : chargement des snapshots actifs et rejet des lots invalides.
