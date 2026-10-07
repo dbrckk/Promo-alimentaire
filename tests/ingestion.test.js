@@ -217,3 +217,28 @@ test("normalizeImportedOffer conserve les prix source d'une promo Carrefour",()=
   assert.equal(result.value.sourceRegularPrice,1.59);
   assert.equal(result.value.sourcePromoPrice,1.11);
 });
+
+
+test("validateImportBatch refuse une structure non-tableau",()=>{
+  assert.equal(validateImportBatch({offers:[]}).ok,false);
+  assert.equal(validateImportBatch(null).ok,false);
+});
+
+test("un produit importé sans EAN prouvé ne peut pas se déclarer cumulable automatiquement",()=>{
+  const base={
+    providerId:"shopmium",externalId:"example",title:"Exemple",
+    stores:["carrefour"],verifiedAt:"2026-10-07",
+    sourceUrl:"https://example.com/promo",
+    savingPercent:20,scope:"produit",autoStack:true
+  };
+  const uncertain=normalizeImportedOffer(base);
+  assert.equal(uncertain.ok,true);
+  assert.equal(uncertain.value.autoStack,false);
+  const exact=normalizeImportedOffer({
+    ...base,eans:["3017624010701"],eanEvidenceUrl:"https://example.com/3017624010701"
+  });
+  assert.equal(exact.ok,true);
+  assert.equal(exact.value.autoStack,true);
+  const card=normalizeImportedOffer({...base,scope:"panier"});
+  assert.equal(card.value.autoStack,true);
+});
