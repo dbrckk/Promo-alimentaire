@@ -1061,6 +1061,7 @@ function renderBasketScenario(scenario){
   const productCandidates=scenario.lines.flatMap((line)=>line.matches || []);
   const actionPlan=buildSavingsActionPlan({
     store:scenario.store,
+    channel:scenario.channel || state.channel,
     selectedPayment,
     uncertainBasketOffers,
     productCandidates,
