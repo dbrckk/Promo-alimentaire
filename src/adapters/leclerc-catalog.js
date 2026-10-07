@@ -44,7 +44,7 @@ export function verifyLeclercCatalogOffer(html,offer){
     }
   }else if(offer?.mechanism==="retailer_loyalty"){
     const pct=numberPattern(offer.savingPercent);
-    if(!/ticket\s+e\s*leclerc/.test(text) || !new RegExp(pct+"\\s*%").test(text)){
+    if(!/ticket\s+e[.\s]*leclerc/.test(text) || !new RegExp(pct+"\\s*%").test(text)){
       reasons.push("Ticket E.Leclerc/taux absent");
     }
   }else if(Number.isFinite(Number(offer?.savingPercent))){
