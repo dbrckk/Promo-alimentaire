@@ -22,11 +22,14 @@ export function rankOffers(offers, sort = "percent") {
   });
 }
 
-export function filterOffers(offers, { store, search = "" }) {
+export function filterOffers(offers, { store, channel=null, search = "" }) {
   const needle = search.trim().toLocaleLowerCase("fr");
   return offers.filter((offer) => {
     const storeMatch = offer.stores.includes(store) || offer.stores.includes("all");
     if (!storeMatch) return false;
+    const channels=Array.isArray(offer.channels) ? offer.channels : [];
+    const channelMatch=!channel || channels.length===0 || channels.includes(channel) || channels.includes("all");
+    if(!channelMatch) return false;
     if (!needle) return true;
     return [offer.title, offer.provider, offer.category, offer.type]
       .filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle);
