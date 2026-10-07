@@ -70,6 +70,12 @@
           <button class="primary" type="submit">Rechercher</button>
           <button id="scanButton" class="secondary" type="button">Scanner</button>
           <button id="nearbyButton" class="secondary" type="button">Autour de moi</button>
+          <select id="radiusSelect" aria-label="Rayon de recherche">
+            <option value="5">5 km</option>
+            <option value="10">10 km</option>
+            <option value="25" selected>25 km</option>
+            <option value="50">50 km</option>
+          </select>
         </form>
         <p class="help">« Autour de moi » utilise ta position uniquement pour la requête Open Prices en cours. Elle n'est pas enregistrée par l'application.</p>
         <div id="productStatus" class="status" aria-live="polite"></div>
