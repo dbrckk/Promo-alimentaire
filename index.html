@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0d5c3d" />
-  <meta name="description" content="Compare les promotions, cashbacks, ODR et bons d'achat pour tes courses." />
+  <meta name="description" content="Compare les promotions, cashbacks, ODR, prix et bons d'achat pour tes courses." />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./styles.css" />
@@ -15,7 +15,7 @@
     <div>
       <p class="eyebrow">Comparateur d'économies</p>
       <h1>Promo Alimentaire</h1>
-      <p class="subtitle">Cashback, ODR, coupons, bons d'achat et promos magasin au même endroit.</p>
+      <p class="subtitle">Cashback, ODR, coupons, prix observés et meilleur chemin d'achat au même endroit.</p>
     </div>
     <button id="installButton" class="ghost hidden" type="button">Installer</button>
   </header>
@@ -46,7 +46,9 @@
     <section class="stats" id="stats" aria-live="polite"></section>
 
     <nav class="tabs" aria-label="Sections">
-      <button class="tab active" data-tab="offers" type="button">Meilleures offres</button>
+      <button class="tab active" data-tab="offers" type="button">Offres</button>
+      <button class="tab" data-tab="product" type="button">Produit</button>
+      <button class="tab" data-tab="optimizer" type="button">Optimiseur</button>
       <button class="tab" data-tab="providers" type="button">Sources</button>
     </nav>
 
@@ -55,14 +57,57 @@
       <p id="empty" class="empty hidden">Aucune offre ne correspond aux filtres.</p>
     </section>
 
+    <section id="productView" class="hidden">
+      <div class="panel tool-panel">
+        <div>
+          <p class="eyebrow dark">Prix par code-barres</p>
+          <h2>Retrouver un produit et ses prix observés</h2>
+          <p class="help">Les fiches viennent d'Open Food Facts et les prix d'Open Prices. Les prix sont communautaires : la date et le magasin sont toujours affichés.</p>
+        </div>
+        <form id="barcodeForm" class="inline-form">
+          <label class="sr-only" for="barcode">Code-barres EAN / UPC</label>
+          <input id="barcode" inputmode="numeric" pattern="[0-9 ]*" placeholder="Ex. 3017624010701" autocomplete="off" />
+          <button class="primary" type="submit">Rechercher</button>
+          <button id="scanButton" class="secondary" type="button">Scanner</button>
+        </form>
+        <div id="productStatus" class="status" aria-live="polite"></div>
+      </div>
+      <div id="productResult" class="product-result hidden"></div>
+      <div id="priceResults" class="price-results"></div>
+    </section>
+
+    <section id="optimizerView" class="hidden">
+      <div class="panel tool-panel">
+        <div>
+          <p class="eyebrow dark">Cumul fiable</p>
+          <h2>Optimiser un panier</h2>
+          <p class="help">Le moteur ne cumule automatiquement que les remises dont la compatibilité est suffisamment connue. Les cashbacks/ODR incertains restent signalés mais exclus du total.</p>
+        </div>
+        <div class="field amount-field">
+          <label for="basketAmount">Montant du panier</label>
+          <div class="money-input"><input id="basketAmount" type="number" min="0.01" step="0.01" value="50" inputmode="decimal" /><span>€</span></div>
+        </div>
+      </div>
+      <div id="optimizerResult"></div>
+    </section>
+
     <section id="providersView" class="hidden">
       <div id="providers" class="grid providers"></div>
     </section>
 
     <section class="panel notice">
-      <strong>Important :</strong> les conditions de cumul changent selon l'offre. L'application affiche la source et les restrictions connues ; les conditions de la source au moment de l'achat restent prioritaires.
+      <strong>Important :</strong> les conditions de cumul peuvent changer. Une économie combinée n'est comptée automatiquement que lorsque ses règles sont assez claires ; les conditions de la source au moment de l'achat restent prioritaires.
     </section>
   </main>
+
+  <dialog id="scanDialog" class="scan-dialog">
+    <div class="scan-head">
+      <strong>Scanner le code-barres</strong>
+      <button id="closeScan" class="icon-button" type="button" aria-label="Fermer">×</button>
+    </div>
+    <video id="scanVideo" autoplay playsinline muted></video>
+    <p class="help">Place le code-barres au centre de l'image.</p>
+  </dialog>
 
   <footer>
     <span id="datasetDate"></span>
