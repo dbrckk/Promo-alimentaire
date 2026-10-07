@@ -233,3 +233,9 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .action-step.money{background:#edf8f1;border-color:#c9e6d5}
 .action-step.refund{background:#f3f5fb}
 .action-source{display:inline-block;margin-top:5px;font-size:.68rem;color:var(--brand);font-weight:750}
+
+.potential-advice{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px;border:1px solid #ead9aa;border-radius:13px;background:#fff8e9}
+.potential-advice>div{display:grid;gap:2px}
+.potential-advice span{font-size:.7rem;color:var(--muted)}
+.potential-advice strong{font-size:.95rem;color:#8a6500}
+.potential-advice small{font-size:.7rem;color:var(--muted)}
