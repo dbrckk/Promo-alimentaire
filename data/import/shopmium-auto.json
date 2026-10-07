@@ -49,7 +49,7 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "Apéricube"
+        "APERICUBE"
       ],
       "any": [
         "BELLA",
@@ -112,7 +112,7 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "Tranches Végé"
+        "Fleury Michon"
       ],
       "any": [
         "Lentilles",
@@ -262,10 +262,9 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "RÉGILAIT YAOURT"
+        "Régilait"
       ],
       "any": [
-        "Maison",
         "sachet",
         "175g"
       ],
@@ -323,11 +322,11 @@
         "innocent"
       ],
       "any": [
-        "smoothie",
         "fraise",
         "velours",
         "750ml",
-        "citron"
+        "citron",
+        "crémeux"
       ],
       "minScore": 60
     },
@@ -439,7 +438,7 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "TOURTEL TWIST"
+        "Tourtel Twist"
       ],
       "any": [
         "Framboise",
@@ -496,7 +495,7 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "Cafés Legal"
+        "Legal"
       ],
       "any": [
         "Lungo",
@@ -560,7 +559,7 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "SHOOT"
+        "FRUIT SHOOT"
       ],
       "any": [
         "Pêche",
@@ -613,7 +612,7 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "Cristaline"
+        "CRISTALINE"
       ],
       "any": [
         "source",
@@ -862,7 +861,7 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "PURÉE"
+        "OH PUREE"
       ],
       "any": [
         "SACHET109g",
@@ -927,14 +926,14 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "Gels Douche"
+        "SANEX"
       ],
       "any": [
-        "SANEX",
-        "DERMA",
-        "THÉRAPIE",
         "ANTI",
-        "DESSÈCHEMENT"
+        "DESSÈCHEMENT",
+        "425ML",
+        "DÉMANGEAISON",
+        "AIDE"
       ],
       "minScore": 60
     },
@@ -987,14 +986,14 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "Soupline Parfum"
+        "Soupline"
       ],
       "any": [
-        "Linge",
         "Pivoine",
         "Impériale",
         "Jasmin",
-        "Absolu"
+        "Absolu",
+        "Pistache"
       ],
       "minScore": 60
     },
@@ -1045,7 +1044,7 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "MONALIE"
+        "Monalie"
       ],
       "any": [
         "mousseux",
