@@ -3,6 +3,7 @@ import { computeSaving, effectivePercent, filterOffers, rankOffers } from "./dom
 import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { estimateOfferSaving, findProductOffers } from "./matching.js";
+import { compareBasketStores, evaluateBasketStore, normalizeQuantity } from "./basket.js";
 
 const money = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 const els = {
@@ -25,6 +26,14 @@ const els = {
   productResult:document.querySelector("#productResult"),
   productOffers:document.querySelector("#productOffers"),
   priceResults:document.querySelector("#priceResults"),
+  listCount:document.querySelector("#listCount"),
+  refreshList:document.querySelector("#refreshList"),
+  listNearbyButton:document.querySelector("#listNearbyButton"),
+  listRadiusSelect:document.querySelector("#listRadiusSelect"),
+  clearList:document.querySelector("#clearList"),
+  listStatus:document.querySelector("#listStatus"),
+  shoppingListItems:document.querySelector("#shoppingListItems"),
+  basketComparison:document.querySelector("#basketComparison"),
   basketAmount:document.querySelector("#basketAmount"),
   optimizerResult:document.querySelector("#optimizerResult"),
   scanDialog:document.querySelector("#scanDialog"),
@@ -35,6 +44,7 @@ const els = {
 const views = {
   offers:document.querySelector("#offersView"),
   product:document.querySelector("#productView"),
+  list:document.querySelector("#listView"),
   optimizer:document.querySelector("#optimizerView"),
   providers:document.querySelector("#providersView")
 };
@@ -50,11 +60,16 @@ const state = {
   nearbyEnabled:false,
   coords:null,
   radiusKm:25,
+  shoppingList:loadShoppingList(),
+  basketPriceData:{carrefour:{},leclerc:{}},
+  basketRefreshing:false,
   lookupToken:0
 };
 
 els.store.value=state.store;
 els.sort.value=state.sort;
+els.radiusSelect.value=String(state.radiusKm);
+els.listRadiusSelect.value=String(state.radiusKm);
 els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")}`;
 
 els.store.addEventListener("change",async()=>{
@@ -81,11 +96,35 @@ els.barcodeForm.addEventListener("submit",(event)=>{
 });
 els.scanButton.addEventListener("click",startScanner);
 els.nearbyButton.addEventListener("click",toggleNearbyPrices);
+els.listNearbyButton.addEventListener("click",toggleNearbyPrices);
+els.refreshList.addEventListener("click",refreshShoppingList);
+els.clearList.addEventListener("click",()=>{
+  state.shoppingList=[];
+  state.basketPriceData={carrefour:{},leclerc:{}};
+  saveShoppingList();
+  renderShoppingList();
+  setListStatus("Liste vidée.");
+});
+els.productResult.addEventListener("click",(event)=>{
+  if(event.target.closest('[data-action="add-current-product"]')) addCurrentProduct();
+});
+els.shoppingListItems.addEventListener("click",handleShoppingListAction);
 els.radiusSelect.addEventListener("change",async()=>{
   state.radiusKm=Number(els.radiusSelect.value)||25;
+  els.listRadiusSelect.value=String(state.radiusKm);
+  syncNearbyControls();
   if(state.nearbyEnabled){
-    els.nearbyButton.textContent=`À moins de ${state.radiusKm} km`;
     if(state.productCode) await refreshPrices(state.productCode);
+    markBasketPricesStale();
+  }
+});
+els.listRadiusSelect.addEventListener("change",async()=>{
+  state.radiusKm=Number(els.listRadiusSelect.value)||25;
+  els.radiusSelect.value=String(state.radiusKm);
+  syncNearbyControls();
+  if(state.nearbyEnabled){
+    if(state.productCode) await refreshPrices(state.productCode);
+    markBasketPricesStale();
   }
 });
 els.closeScan.addEventListener("click",()=>els.scanDialog.close());
@@ -97,6 +136,7 @@ function setTab(tab){
   state.tab=tab;
   els.tabs.forEach((button)=>button.classList.toggle("active",button.dataset.tab===tab));
   for(const [name,view] of Object.entries(views)) view.classList.toggle("hidden",name!==tab);
+  if(tab==="list") renderShoppingList();
 }
 
 function render(){
@@ -115,6 +155,7 @@ function render(){
     stat(activeProviders.length,"sources utiles"),
     stat(maxPercent===null?"—":formatPercent(maxPercent),"meilleure remise")
   ].join("");
+  renderListCount();
 }
 
 function renderOffer(offer){
@@ -239,7 +280,10 @@ function renderProduct(product){
         <h2>${escapeHtml(product.name)}</h2>
         <p>${escapeHtml([product.brands,product.quantity].filter(Boolean).join(" · ") || "Marque/quantité non renseignée")}</p>
         <p>${nutri} · EAN ${escapeHtml(product.code)}</p>
-        <a class="open" href="${escapeHtml(product.sourceUrl)}" target="_blank" rel="noreferrer">Fiche Open Food Facts</a>
+        <div class="actions">
+          <a class="open" href="${escapeHtml(product.sourceUrl)}" target="_blank" rel="noreferrer">Fiche Open Food Facts</a>
+          <button class="secondary" data-action="add-current-product" type="button">Ajouter à la liste</button>
+        </div>
       </div>
     </div>`;
   els.productResult.classList.remove("hidden");
@@ -321,9 +365,10 @@ async function toggleNearbyPrices(){
   if(state.nearbyEnabled){
     state.nearbyEnabled=false;
     state.coords=null;
-    els.nearbyButton.classList.remove("active");
-    els.nearbyButton.textContent="Autour de moi";
+    syncNearbyControls();
+    markBasketPricesStale();
     if(state.productCode) await refreshPrices(state.productCode);
+    setListStatus("Mode proximité désactivé. Actualise la liste pour recalculer les prix.");
     return;
   }
   if(!navigator.geolocation){
@@ -337,16 +382,17 @@ async function toggleNearbyPrices(){
       longitude:position.coords.longitude
     };
     state.nearbyEnabled=true;
-    els.nearbyButton.classList.add("active");
-    els.nearbyButton.textContent=`À moins de ${state.radiusKm} km`;
+    syncNearbyControls();
+    markBasketPricesStale();
     if(state.productCode) await refreshPrices(state.productCode);
     else setProductStatus("Mode proximité activé. Recherche ou scanne un produit.");
+    setListStatus(`Mode proximité activé (${state.radiusKm} km). Actualise la liste.`);
   },()=>{
     state.coords=null;
     state.nearbyEnabled=false;
-    els.nearbyButton.classList.remove("active");
-    els.nearbyButton.textContent="Autour de moi";
+    syncNearbyControls();
     setProductStatus("Position non disponible. Autorise la localisation ou utilise les prix globaux.",true);
+    setListStatus("Position non disponible. Les prix locaux ne peuvent pas être calculés.",true);
   },{
     enableHighAccuracy:false,
     timeout:10000,
@@ -425,6 +471,242 @@ function renderOptimizer(){
         Le moteur choisit une seule offre par groupe incompatible, donc plusieurs cartes cadeaux ne sont jamais additionnées artificiellement.
       </p>
     </section>`;
+}
+
+
+function loadShoppingList(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem("promo-shopping-list-v1") || "[]");
+    if(!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item)=>item?.product?.code)
+      .slice(0,30)
+      .map((item)=>({product:item.product,quantity:normalizeQuantity(item.quantity)}));
+  }catch{
+    return [];
+  }
+}
+
+function saveShoppingList(){
+  localStorage.setItem("promo-shopping-list-v1",JSON.stringify(state.shoppingList));
+  renderListCount();
+}
+
+function renderListCount(){
+  els.listCount.textContent=String(state.shoppingList.length);
+}
+
+function addCurrentProduct(){
+  if(!state.product) return;
+  const code=state.product.code;
+  const existing=state.shoppingList.find((item)=>item.product.code===code);
+  if(existing){
+    existing.quantity=normalizeQuantity(existing.quantity+1);
+  }else{
+    state.shoppingList.push({
+      product:{
+        code:state.product.code,
+        name:state.product.name,
+        brands:state.product.brands,
+        quantity:state.product.quantity,
+        imageUrl:state.product.imageUrl,
+        nutriScore:state.product.nutriScore,
+        categories:state.product.categories,
+        sourceUrl:state.product.sourceUrl
+      },
+      quantity:1
+    });
+  }
+  state.basketPriceData.carrefour[code]=state.priceObservations;
+  saveShoppingList();
+  renderShoppingList();
+  setProductStatus("Produit ajouté à la liste.");
+}
+
+function handleShoppingListAction(event){
+  const button=event.target.closest("[data-list-action]");
+  if(!button) return;
+  const code=button.dataset.code;
+  const index=state.shoppingList.findIndex((item)=>item.product.code===code);
+  if(index<0) return;
+  const action=button.dataset.listAction;
+  if(action==="remove"){
+    state.shoppingList.splice(index,1);
+    delete state.basketPriceData.carrefour[code];
+    delete state.basketPriceData.leclerc[code];
+  }else if(action==="increment"){
+    state.shoppingList[index].quantity=normalizeQuantity(state.shoppingList[index].quantity+1);
+  }else if(action==="decrement"){
+    const next=state.shoppingList[index].quantity-1;
+    if(next<1){
+      state.shoppingList.splice(index,1);
+      delete state.basketPriceData.carrefour[code];
+      delete state.basketPriceData.leclerc[code];
+    }else{
+      state.shoppingList[index].quantity=next;
+    }
+  }
+  saveShoppingList();
+  renderShoppingList();
+}
+
+function renderShoppingList(){
+  renderListCount();
+  if(!state.shoppingList.length){
+    els.shoppingListItems.innerHTML='<div class="panel price-source">Ta liste est vide. Scanne ou recherche un produit puis appuie sur « Ajouter à la liste ».</div>';
+    els.basketComparison.innerHTML="";
+    return;
+  }
+
+  els.shoppingListItems.innerHTML=state.shoppingList.map((item)=>{
+    const product=item.product;
+    const image=product.imageUrl
+      ? `<img src="${escapeHtml(product.imageUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer" />`
+      : "";
+    return `
+      <article class="list-item">
+        ${image}
+        <div class="list-item-main">
+          <h3>${escapeHtml(product.name || "Produit")}</h3>
+          <p>${escapeHtml([product.brands,product.quantity,`EAN ${product.code}`].filter(Boolean).join(" · "))}</p>
+          <button class="remove-item" data-list-action="remove" data-code="${escapeHtml(product.code)}" type="button">Retirer</button>
+        </div>
+        <div class="qty" aria-label="Quantité">
+          <button data-list-action="decrement" data-code="${escapeHtml(product.code)}" type="button" aria-label="Diminuer">−</button>
+          <strong>${item.quantity}</strong>
+          <button data-list-action="increment" data-code="${escapeHtml(product.code)}" type="button" aria-label="Augmenter">+</button>
+        </div>
+      </article>`;
+  }).join("");
+
+  const scenarios=["carrefour","leclerc"].map((store)=>evaluateBasketStore(state.shoppingList,{
+    store,
+    priceByCode:state.basketPriceData[store],
+    offers
+  }));
+  renderBasketComparison(scenarios);
+}
+
+async function refreshShoppingList(){
+  if(state.basketRefreshing || !state.shoppingList.length) return;
+  state.basketRefreshing=true;
+  els.refreshList.disabled=true;
+  const next={carrefour:{},leclerc:{}};
+  let failures=0;
+
+  try{
+    for(let index=0;index<state.shoppingList.length;index+=1){
+      const item=state.shoppingList[index];
+      setListStatus(`Actualisation ${index+1}/${state.shoppingList.length} : ${item.product.name || item.product.code}…`);
+      const [carrefour,leclerc]=await Promise.allSettled([
+        fetchPricesByBarcode(item.product.code,basketQueryOptions("carrefour")),
+        fetchPricesByBarcode(item.product.code,basketQueryOptions("leclerc"))
+      ]);
+      if(carrefour.status==="fulfilled") next.carrefour[item.product.code]=carrefour.value.observations;
+      else { next.carrefour[item.product.code]=[]; failures+=1; }
+      if(leclerc.status==="fulfilled") next.leclerc[item.product.code]=leclerc.value.observations;
+      else { next.leclerc[item.product.code]=[]; failures+=1; }
+    }
+    state.basketPriceData=next;
+    renderShoppingList();
+    const locality=state.nearbyEnabled ? ` dans un rayon de ${state.radiusKm} km` : " sans filtre géographique";
+    setListStatus(
+      failures
+        ? `Actualisation terminée avec ${failures} requête(s) indisponible(s)${locality}.`
+        : `Prix actualisés pour Carrefour et E.Leclerc${locality}.`,
+      failures>0
+    );
+  }finally{
+    state.basketRefreshing=false;
+    els.refreshList.disabled=false;
+  }
+}
+
+function basketQueryOptions(store){
+  const options={store};
+  if(state.nearbyEnabled && state.coords){
+    options.coords=state.coords;
+    options.radiusKm=state.radiusKm;
+  }
+  return options;
+}
+
+function markBasketPricesStale(){
+  state.basketPriceData={carrefour:{},leclerc:{}};
+  renderShoppingList();
+}
+
+function syncNearbyControls(){
+  const label=state.nearbyEnabled ? `À moins de ${state.radiusKm} km` : "Autour de moi";
+  for(const button of [els.nearbyButton,els.listNearbyButton]){
+    button.textContent=label;
+    button.classList.toggle("active",state.nearbyEnabled);
+  }
+  els.radiusSelect.value=String(state.radiusKm);
+  els.listRadiusSelect.value=String(state.radiusKm);
+}
+
+function renderBasketComparison(scenarios){
+  const ranked=compareBasketStores(scenarios);
+  const allComplete=scenarios.length>0 && scenarios.every((scenario)=>scenario.isComplete);
+  let recommendation="";
+  if(!state.nearbyEnabled){
+    recommendation='<div class="basket-recommendation"><strong>Comparaison locale non activée.</strong> Active « Autour de moi » puis actualise pour comparer des magasins dans le même secteur.</div>';
+  }else if(!allComplete){
+    recommendation='<div class="basket-recommendation"><strong>Comparaison incomplète.</strong> Au moins une enseigne manque d’un prix récent pour un produit ; aucun gagnant n’est déclaré.</div>';
+  }else if(ranked.length>=2){
+    const best=ranked[0];
+    const second=ranked[1];
+    const difference=Math.round((second.finalCost-best.finalCost+Number.EPSILON)*100)/100;
+    recommendation=difference>0
+      ? `<div class="basket-recommendation"><strong>${storeLabel(best.store)} est le meilleur scénario observé</strong> : environ ${money.format(difference)} de moins sur ce panier, après remises automatiquement validées.</div>`
+      : '<div class="basket-recommendation"><strong>Égalité sur les données disponibles.</strong> Les deux scénarios ont le même coût effectif estimé.</div>';
+  }
+
+  els.basketComparison.innerHTML=`
+    ${recommendation}
+    <div class="scenario-grid">
+      ${scenarios.map(renderBasketScenario).join("")}
+    </div>`;
+}
+
+function renderBasketScenario(scenario){
+  const coverageClass=scenario.isComplete ? "coverage-good" : "coverage-warn";
+  const totalLabel=scenario.isComplete ? "Coût effectif" : "Total partiel";
+  const lines=scenario.lines.map((line)=>{
+    if(line.missingPrice){
+      return `<div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}</span><strong class="missing">prix manquant</strong></div>`;
+    }
+    const place=line.bestPrice?.storeName ? ` · ${escapeHtml(line.bestPrice.storeName)}` : "";
+    return `<div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>`;
+  }).join("");
+  const basketRoute=scenario.basketOptimization.selected.length
+    ? scenario.basketOptimization.selected.map((offer)=>`${escapeHtml(offer.provider)} −${money.format(offer.calculatedSaving)}`).join(" · ")
+    : "Aucune remise panier automatiquement retenue";
+  const potential=scenario.potentialProductSaving>0
+    ? `<p class="help">ODR/coupons produits candidats : jusqu’à ${money.format(scenario.potentialProductSaving)} potentiels, non inclus tant que l’éligibilité/cumul n’est pas confirmé.</p>`
+    : "";
+
+  return `
+    <article class="scenario-card">
+      <div>
+        <h3>${storeLabel(scenario.store)}</h3>
+        <div class="${coverageClass} source">${scenario.pricedCount}/${scenario.distinctCount} références avec prix récent</div>
+      </div>
+      <div class="scenario-summary">
+        <div><span>Sous-total observé</span><strong>${money.format(scenario.observedSubtotal)}</strong></div>
+        <div><span>Économie validée</span><strong>−${money.format(scenario.guaranteedSaving)}</strong></div>
+        <div><span>${totalLabel}</span><strong>${money.format(scenario.finalCost)}</strong></div>
+      </div>
+      <div class="scenario-lines">${lines}</div>
+      <p class="help">${basketRoute}</p>
+      ${potential}
+    </article>`;
+}
+
+function setListStatus(message,isError=false){
+  els.listStatus.textContent=message;
+  els.listStatus.classList.toggle("error",Boolean(isError));
 }
 
 let scannerStream=null;
@@ -515,5 +797,7 @@ if("serviceWorker" in navigator){
   window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }
 
+syncNearbyControls();
 render();
 renderOptimizer();
+renderShoppingList();
