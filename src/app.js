@@ -1049,7 +1049,7 @@ function renderBasketScenario(scenario){
   const breakdown=scenario.savingsBreakdown || {
     productGuaranteed:0,paymentGuaranteed:0,otherBasketGuaranteed:0,
     productPotential:scenario.potentialProductSaving||0,bundlePotential:scenario.potentialBundleSaving||0,
-    uncertainBasketCount:0
+    basketPotential:0,uncertainBasketCount:0
   };
   const levers=`
     <div class="saving-levers">
@@ -1058,12 +1058,16 @@ function renderBasketScenario(scenario){
       <div class="lever guaranteed"><span>Autres garanties</span><strong>−${money.format(breakdown.otherBasketGuaranteed)}</strong></div>
       <div class="lever potential"><span>ODR candidates</span><strong>jusqu’à ${money.format(breakdown.productPotential)}</strong></div>
       <div class="lever potential"><span>Bundles candidats</span><strong>jusqu’à ${money.format(breakdown.bundlePotential)}</strong></div>
+      <div class="lever potential"><span>Cashback panier candidat</span><strong>jusqu’à ${money.format(breakdown.basketPotential||0)}</strong></div>
     </div>`;
   const potential=scenario.potentialProductSaving>0
     ? `<p class="help">ODR/coupons produits candidats : jusqu’à ${money.format(scenario.potentialProductSaving)} potentiels, non inclus tant que l’éligibilité/cumul n’est pas confirmé.</p>`
     : "";
   const bundlePotential=scenario.potentialBundleSaving>0
     ? `<p class="help"><strong>Offre multi-produits potentielle :</strong> jusqu’à ${money.format(scenario.potentialBundleSaving)} supplémentaires. Elle n’est jamais intégrée au coût garanti avant confirmation des références, de l’achat simultané et des règles de cumul.</p>`
+    : "";
+  const basketPotential=breakdown.basketPotential>0
+    ? `<p class="help"><strong>Cashback panier potentiel :</strong> jusqu’à ${money.format(breakdown.basketPotential)} selon le meilleur cashback non garanti compatible avec ce canal. Il reste exclu du coût garanti.</p>`
     : "";
   const selectedPayment=scenario.basketOptimization.selected.find((offer)=>offer.mechanism==="gift_card") || null;
   const uncertainBasketOffers=scenario.basketOptimization.considered.filter((offer)=>offer.autoStack!==true);
@@ -1119,6 +1123,7 @@ function renderBasketScenario(scenario){
       <p class="help">${basketRoute}</p>
       ${potential}
       ${bundlePotential}
+      ${basketPotential}
       ${prudentBestCase}
       ${actionPlanHtml}
     </article>`;
