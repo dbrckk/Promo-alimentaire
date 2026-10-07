@@ -1113,8 +1113,8 @@ function renderProductPriceHistory(){
     store:state.store
   });
   const trendHtml=trend
-    ? `<div class="history-trend ${trend.direction==="down"?"good":trend.direction==="up"?"bad":""}">${trend.direction==="down"?"Baisse":trend.direction==="up"?"Hausse":"Stable"} de ${money.format(Math.abs(trend.delta))} (${Math.abs(trend.percent).toLocaleString("fr-FR",{maximumFractionDigits:1})} %) depuis l’observation précédente.</div>`
-    : '<div class="history-trend">Une seconde observation différente permettra de calculer une tendance.</div>';
+    ? `<div class="history-trend ${trend.direction==="down"?"good":trend.direction==="up"?"bad":""}">${trend.direction==="down"?"Baisse":trend.direction==="up"?"Hausse":"Stable"} de ${money.format(Math.abs(trend.delta))} (${Math.abs(trend.percent).toLocaleString("fr-FR",{maximumFractionDigits:1})} %) dans le même magasin : ${escapeHtml(trend.latest.storeName || "magasin identifié")}.</div>`
+    : '<div class="history-trend">Tendance indisponible : il faut deux dates de prix distinctes dans le même magasin physique identifié.</div>';
 
   els.productPriceHistory.innerHTML=`
     <div class="product-offers-head">
@@ -1145,13 +1145,13 @@ function renderPriceAlerts(){
   els.priceAlerts.innerHTML=`
     <div class="product-offers-head">
       <h3>Baisses de prix détectées</h3>
-      <p>Détection locale lors des actualisations. Ce n’est pas une surveillance en arrière-plan.</p>
+      <p>Prix comparés seulement dans un même magasin identifié, sur deux dates différentes. Détection à l’actualisation, sans surveillance en arrière-plan.</p>
     </div>
     ${alerts.slice(0,8).map((alert)=>`
       <article class="price-alert-card">
         <div>
           <strong>${escapeHtml(alert.name)}</strong>
-          <div class="source">${storeLabel(alert.store)} · ${money.format(alert.previousPrice)} → ${money.format(alert.latestPrice)}</div>
+          <div class="source">${storeLabel(alert.store)} · ${escapeHtml(alert.storeName || "Magasin identifié")} · ${money.format(alert.previousPrice)} → ${money.format(alert.latestPrice)}</div>
         </div>
         <span class="badge good">−${alert.dropPercent.toLocaleString("fr-FR",{maximumFractionDigits:1})} %</span>
       </article>`).join("")}`;
