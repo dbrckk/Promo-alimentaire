@@ -1,4 +1,4 @@
-const CACHE="promo-alimentaire-v16";
+const CACHE="promo-alimentaire-v17";
 const STATIC_ASSETS=[
   "./","./index.html","./styles.css","./src/app.js","./src/data.js","./src/domain.js",
   "./src/open-data.js","./src/stacking.js","./src/matching.js","./src/retailer-promo.js","./src/bundle.js","./src/basket.js",
