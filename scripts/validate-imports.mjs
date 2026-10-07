@@ -5,7 +5,7 @@ import { validateImportBatch } from "../src/ingestion.js";
 const directory=new URL("../data/import/",import.meta.url);
 let files=[];
 try{
-  files=(await readdir(directory)).filter((name)=>name.endsWith(".json")).sort();
+  files=(await readdir(directory)).filter((name)=>name.endsWith(".json") && name!=="index.json").sort();
 }catch(error){
   if(error.code!=="ENOENT") throw error;
 }
