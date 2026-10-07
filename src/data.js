@@ -112,7 +112,7 @@ export const offers = [
   {
     id:"fidme-carrefour-giftcard-4", provider:"Fidme Courses", providerId:"fidme-courses",
     title:"Bon d'achat Carrefour remisé", type:"bon d'achat", category:"panier",
-    stores:["carrefour"], savingPercent:4, savingAmount:null, basePrice:null,
+    stores:["carrefour"], channels:["store"], savingPercent:4, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.fidme.com/nos-services/app-fidme-course/",
     scope:"panier", stacking:"généralement cumulable avec promos magasin, vérifier les exclusions",
     mechanism:"gift_card", stackGroup:"payment-discount", stackOrder:30, savingBasis:"current",
@@ -122,7 +122,7 @@ export const offers = [
   {
     id:"widilo-carrefour-giftcard-4", provider:"Widilo", providerId:"widilo",
     title:"Carte cadeau Carrefour", type:"bon d'achat", category:"panier",
-    stores:["carrefour"], savingPercent:4, savingAmount:null, basePrice:null,
+    stores:["carrefour"], channels:["store"], savingPercent:4, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.widilo.fr/bon-d-achat/carrefour",
     scope:"panier", stacking:"paiement par bon ; cumul selon conditions Carrefour",
     mechanism:"gift_card", stackGroup:"payment-discount", stackOrder:30, savingBasis:"current",
@@ -132,7 +132,7 @@ export const offers = [
   {
     id:"ebuyclub-carrefour-giftcard-36", provider:"eBuyClub", providerId:"ebuyclub",
     title:"Carte cadeau Carrefour", type:"bon d'achat", category:"panier",
-    stores:["carrefour"], savingPercent:3.6, savingAmount:null, basePrice:null,
+    stores:["carrefour"], channels:["store"], savingPercent:3.6, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.ebuyclub.com/selection-bons-d-achat/carrefour-10310",
     scope:"panier", stacking:"paiement par bon ; vérifier exclusions",
     mechanism:"gift_card", stackGroup:"payment-discount", stackOrder:30, savingBasis:"current",
@@ -142,7 +142,7 @@ export const offers = [
   {
     id:"poulpeo-carrefour-giftcard-36", provider:"Poulpeo", providerId:"poulpeo",
     title:"Bon d'achat Carrefour", type:"bon d'achat", category:"panier",
-    stores:["carrefour"], savingPercent:3.6, savingAmount:null, basePrice:null,
+    stores:["carrefour"], channels:["store"], savingPercent:3.6, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.poulpeo.com/cashback-bon-d-achat.html",
     scope:"panier", stacking:"paiement par bon ; vérifier exclusions",
     mechanism:"gift_card", stackGroup:"payment-discount", stackOrder:30, savingBasis:"current",
@@ -152,7 +152,7 @@ export const offers = [
   {
     id:"ebuyclub-carrefour-connected-005", provider:"eBuyClub", providerId:"ebuyclub",
     title:"Cashback connecté Carrefour", type:"cashback carte", category:"panier",
-    stores:["carrefour"], savingPercent:0.05, savingAmount:null, basePrice:null,
+    stores:["carrefour"], channels:["store"], savingPercent:0.05, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.ebuyclub.com/cashback-connecte",
     scope:"panier", stacking:"à vérifier selon transaction et autres activations",
     mechanism:"card_cashback", stackGroup:"card-cashback", stackOrder:60, savingBasis:"current",
@@ -162,7 +162,7 @@ export const offers = [
   {
     id:"ebuyclub-leclerc-connected-005", provider:"eBuyClub", providerId:"ebuyclub",
     title:"Cashback connecté E.Leclerc", type:"cashback carte", category:"panier",
-    stores:["leclerc"], savingPercent:0.05, savingAmount:null, basePrice:null,
+    stores:["leclerc"], channels:["store"], savingPercent:0.05, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.ebuyclub.com/cashback-connecte",
     scope:"panier", stacking:"à vérifier selon transaction et autres activations",
     mechanism:"card_cashback", stackGroup:"card-cashback", stackOrder:60, savingBasis:"current",
