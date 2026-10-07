@@ -10,6 +10,7 @@ Fonctionnalités actuelles :
 - recherche d'offres ;
 - chargement runtime de snapshots publics validés (Shopmium, La Belle Adresse, Coupon Network et Envie de Plus au 07/10/2026) avec expiration automatique ;
 - contrôle quotidien de fraîcheur des snapshots via GitHub Actions, avec signalement des sources devenues entièrement obsolètes ;
+- synchronisation Coupon Network deux fois par semaine depuis la page publique, avec seuil minimal d'extraction et validation complète avant remplacement du snapshot ;
 - annuaire de sources complémentaires ;
 - recherche produit par EAN/UPC ;
 - scanner code-barres natif sur les navigateurs compatibles Android ;
@@ -66,6 +67,8 @@ Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Wi
 - `src/gtin.js` : normalisation et checksum GTIN/EAN.
 - `src/ingestion.js` : validation des lots d'offres traçables.
 - `src/import-loader.js` : chargement des snapshots actifs et rejet des lots invalides.
+- `src/adapters/coupon-network.js` : extraction prudente des remboursements publics Coupon Network.
+- `scripts/sync-coupon-network.mjs` : synchronisation fail-safe du snapshot Coupon Network.
 - `scripts/validate-imports.mjs` : porte CI pour les fichiers `data/import/*.json`.
 - `src/app.js` : interface, scanner, liste de courses et état local.
 - `tests/` : tests du domaine, ingestion ouverte et moteur de cumul.
@@ -93,6 +96,12 @@ Contrôle manuel de fraîcheur :
 
 ```bash
 npm run check:freshness
+```
+
+Test manuel du connecteur Coupon Network sans écriture :
+
+```bash
+npm run sync:coupon-network
 ```
 
 ## Priorités suivantes
