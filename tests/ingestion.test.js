@@ -39,3 +39,27 @@ test("isOfferActive respecte les dates",()=>{
   assert.equal(isOfferActive(valid,new Date("2026-10-07T12:00:00Z")),true);
   assert.equal(isOfferActive(valid,new Date("2026-11-02T12:00:00Z")),false);
 });
+
+
+test("normalizeImportedOffer conserve productMatch et quantityTiers",()=>{
+  const result=normalizeImportedOffer({
+    ...valid,
+    savingPercent:null,
+    productMatch:{brands:["Barilla"],any:["Al Bronzo"]},
+    quantityTiers:[
+      {minQty:1,maxQty:2,savingPercent:20},
+      {minQty:3,maxQty:3,savingPercent:30}
+    ],
+    eans:[],
+    eanEvidenceUrl:null
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.productMatch.brands[0],"Barilla");
+  assert.equal(result.value.quantityTiers[1].savingPercent,30);
+});
+
+test("isOfferActive respecte reviewAfter",()=>{
+  const offer={...valid,expiresAt:null,reviewAfter:"2026-10-20"};
+  assert.equal(isOfferActive(offer,new Date("2026-10-19T12:00:00Z")),true);
+  assert.equal(isOfferActive(offer,new Date("2026-10-22T12:00:00Z")),false);
+});
