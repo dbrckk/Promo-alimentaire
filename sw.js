@@ -4,7 +4,7 @@ const STATIC_ASSETS=[
   "./src/open-data.js","./src/stacking.js","./src/matching.js","./src/bundle.js","./src/basket.js",
   "./src/confidence.js","./src/history.js","./src/product-history.js","./src/gtin.js",
   "./src/ingestion.js","./src/import-loader.js","./data/import/index.json",
-  "./manifest.webmanifest","./icon.svg"
+  "./data/import/payment-discounts-auto.json","./manifest.webmanifest","./icon.svg"
 ];
 
 self.addEventListener("install",(event)=>{
