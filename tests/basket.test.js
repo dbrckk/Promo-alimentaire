@@ -540,3 +540,44 @@ test("ne soustrait pas deux fois une promo déjà incluse dans Open Prices",()=>
   assert.equal(regular.finalCost,7);
   assert.equal(regular.guaranteedSaving,3);
 });
+
+
+test("le meilleur cas prudent ne déduit pas deux fois une réduction déjà appliquée",()=>{
+  const p={code:"3017624010701",name:"Produit",brands:"Marque",categories:[]};
+  const exact={
+    id:"applied",scope:"produit",stores:["carrefour"],
+    eans:[p.code],savingPercent:20,autoStack:true,
+    stackGroup:"retailer-loyalty",savingBasis:"current",stackOrder:10
+  };
+  const s=evaluateBasketStore([{product:p,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{[p.code]:[{price:10,date:"2026-10-07"}]},
+    offers:[exact],now:new Date("2026-10-08T12:00:00Z")
+  });
+  assert.equal(s.guaranteedSaving,2);
+  assert.equal(s.potentialProductSaving,2);
+  assert.equal(s.potentialAdditionalProductSaving,0);
+  assert.equal(s.conservativePotentialExtraSaving,0);
+  assert.equal(s.conservativeBestCaseCost,8);
+});
+
+test("le gain prudent est la différence entre ODR candidate et avantage garanti",()=>{
+  const p={code:"3017624010701",name:"Produit Marque",brands:"Marque",categories:[]};
+  const applied={
+    id:"applied",scope:"produit",stores:["carrefour"],eans:[p.code],
+    savingPercent:20,autoStack:true,stackGroup:"loyalty",stackOrder:10
+  };
+  const hypothetical={
+    id:"potential",scope:"produit",stores:["carrefour"],
+    savingPercent:50,autoStack:false,productMatch:{brands:["Marque"]}
+  };
+  const s=evaluateBasketStore([{product:p,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{[p.code]:[{price:10,date:"2026-10-07"}]},
+    offers:[applied,hypothetical],now:new Date("2026-10-08T12:00:00Z")
+  });
+  assert.equal(s.finalCost,8);
+  assert.equal(s.potentialProductSaving,5);
+  assert.equal(s.potentialAdditionalProductSaving,3);
+  assert.equal(s.conservativeBestCaseCost,5);
+});
