@@ -84,6 +84,7 @@
       <div id="productResult" class="product-result hidden"></div>
       <div id="productOffers" class="product-offers"></div>
       <div id="priceResults" class="price-results"></div>
+      <section id="productPriceHistory" class="product-price-history"></section>
     </section>
 
     <section id="listView" class="hidden">
@@ -103,11 +104,18 @@
             <option value="50">50 km</option>
           </select>
           <button id="clearList" class="secondary danger-action" type="button">Vider</button>
+          <select id="dropThreshold" aria-label="Seuil d'alerte de baisse">
+            <option value="5">Alerte -5 %</option>
+            <option value="10" selected>Alerte -10 %</option>
+            <option value="15">Alerte -15 %</option>
+            <option value="20">Alerte -20 %</option>
+          </select>
           <button id="clearHistory" class="secondary danger-action" type="button">Effacer l'historique</button>
         </div>
         <p class="help">La liste de produits et les quantités sont enregistrées sur cet appareil. La position, elle, n'est jamais persistée.</p>
         <div id="listStatus" class="status" aria-live="polite"></div>
       </div>
+      <div id="priceAlerts" class="price-alerts"></div>
       <div id="shoppingListItems" class="shopping-list"></div>
       <div id="basketComparison" class="basket-comparison"></div>
       <section id="comparisonHistory" class="comparison-history"></section>
