@@ -1,0 +1,4486 @@
+[
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108567",
+    "title": "Bonduelle - Carottes râpées au Citron de Sicile 0,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bonduelle-coupon/108567",
+    "scope": "produit",
+    "referenceNames": [
+      "Bonduelle - Carottes râpées au Citron de Sicile 0,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bonduelle"
+      ],
+      "all": [
+        "Carottes",
+        "rapees"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une barquette de carottes râpées Bonduelle au citron de Sicile. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108006",
+    "title": "Cassegrain - Innovation Traiteur 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/cassegrain-coupon/108006",
+    "scope": "produit",
+    "referenceNames": [
+      "Cassegrain - Innovation Traiteur 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Cassegrain"
+      ],
+      "all": [
+        "Innovation",
+        "Traiteur"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Traiteur Cassegrain au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107715",
+    "title": "Zespri™ - Kiwis 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/zespri-coupon/107715",
+    "scope": "produit",
+    "referenceNames": [
+      "Zespri™ - Kiwis 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Zespri"
+      ],
+      "all": [
+        "Kiwis",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d’une barquette de kiwis Zespri™. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108489",
+    "title": "Président - Poche 30cl 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/president-coupon/108489",
+    "scope": "produit",
+    "referenceNames": [
+      "Président - Poche 30cl 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Président"
+      ],
+      "all": [
+        "Poche",
+        "30cl"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une poche 30cl Président fraîche et épaisse 25% MG. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108434",
+    "title": "Bridélice - Poche 30cl 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bridelice-coupon/108434",
+    "scope": "produit",
+    "referenceNames": [
+      "Bridélice - Poche 30cl 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bridélice"
+      ],
+      "all": [
+        "Poche",
+        "30cl"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une poche 30cl Bridélice légère et épaisse 12% MG. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108166",
+    "title": "Les 300 Laitiers Bio - Yaourts, Desserts, Fromages Blancs ou Skyrs 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/les-300-laitiers-bio-coupon/108166",
+    "scope": "produit",
+    "referenceNames": [
+      "Les 300 Laitiers Bio - Yaourts, Desserts, Fromages Blancs ou Skyrs 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Les 300 Laitiers Bio"
+      ],
+      "all": [
+        "Yaourts",
+        "Desserts"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack les 300 Laitiers Bio: Yaourts, Desserts, Fromages Blancs ou Skyrs. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107934",
+    "title": "Alpro - brassés végétaux 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/alpro-coupon/107934",
+    "scope": "produit",
+    "referenceNames": [
+      "Alpro - brassés végétaux 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Alpro"
+      ],
+      "all": [
+        "brasses",
+        "vegetaux"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l’achat d’un produit alpro de la gamme brassés végétaux. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107694",
+    "title": "Perle de Lait - 8x125g 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/perle-de-lait-coupon/107694",
+    "scope": "produit",
+    "referenceNames": [
+      "Perle de Lait - 8x125g 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Perle de Lait"
+      ],
+      "all": [
+        "8x125g",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Perle de Lait 8x125g. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107722",
+    "title": "Danone - Yaourt 0% M.G 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/107722",
+    "scope": "produit",
+    "referenceNames": [
+      "Danone - Yaourt 0% M.G 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Danone"
+      ],
+      "all": [
+        "Yaourt",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de yaourts 0% M.G x4. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108582",
+    "title": "Pasquier - Tartines et Pain Grillé 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pasquier-coupon/108582",
+    "scope": "produit",
+    "referenceNames": [
+      "Pasquier - Tartines et Pain Grillé 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Pasquier"
+      ],
+      "all": [
+        "Tartines",
+        "Pain"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l’achat d'un produit Tartines de Pain/Pain Grillé Pasquier au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108496",
+    "title": "Carambar - Atomic 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/carambar-coupon/108496",
+    "scope": "produit",
+    "referenceNames": [
+      "Carambar - Atomic 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Carambar"
+      ],
+      "all": [
+        "Atomic",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un paquet de Carambar Atomic classique. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108482",
+    "title": "Pasquier - Brioche Tranchée 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pasquier-coupon/108482",
+    "scope": "produit",
+    "referenceNames": [
+      "Pasquier - Brioche Tranchée 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Pasquier"
+      ],
+      "all": [
+        "Brioche",
+        "Tranchee"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un paquet de la gamme des tranchées de Brioche Pasquier. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108413",
+    "title": "Lesieur - Lesieur touche d'olive 0,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lesieur-coupon/108413",
+    "scope": "produit",
+    "referenceNames": [
+      "Lesieur - Lesieur touche d'olive 0,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lesieur"
+      ],
+      "all": [
+        "Lesieur",
+        "touche"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille de touche d'olive Lesieur. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108384",
+    "title": "Ricoré® - Chicorée Nature 85g. 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ricore-coupon/108384",
+    "scope": "produit",
+    "referenceNames": [
+      "Ricoré® - Chicorée Nature 85g. 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Ricoré"
+      ],
+      "all": [
+        "Chicoree",
+        "85g"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une boîte de RICORÉ® Chicorée Nature 85g. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108339",
+    "title": "Lutti - Boîte de bonbons 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lutti-coupon/108339",
+    "scope": "produit",
+    "referenceNames": [
+      "Lutti - Boîte de bonbons 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lutti"
+      ],
+      "all": [
+        "Boite",
+        "bonbons"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une boîte de bonbons Lutti au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107999",
+    "title": "Bjorg - Sans Gluten 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bjorg-coupon/107999",
+    "scope": "produit",
+    "referenceNames": [
+      "Bjorg - Sans Gluten 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bjorg"
+      ],
+      "all": [
+        "Gluten",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Bjorg Sans Gluten au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108103",
+    "title": "Lesieur - Lesieur huile d'olive vierge 1,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lesieur-coupon/108103",
+    "scope": "produit",
+    "referenceNames": [
+      "Lesieur - Lesieur huile d'olive vierge 1,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lesieur"
+      ],
+      "all": [
+        "Lesieur",
+        "huile"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille d'huile d'olive vierge Lesieur. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107927",
+    "title": "Grand'Mère - Café moulu 1,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 2,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/grand-mere-coupon/107927",
+    "scope": "produit",
+    "referenceNames": [
+      "Grand'Mère - Café moulu 1,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Grand'Mère"
+      ],
+      "all": [
+        "Cafe",
+        "moulu"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat de 2 paquets de café moulu Grand'Mère familial, valable sur l'ensemble des formats. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107769",
+    "title": "Nesquik - Céréales 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/nestle-coupon/107769",
+    "scope": "produit",
+    "referenceNames": [
+      "Nesquik - Céréales 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Nesquik"
+      ],
+      "all": [
+        "Cereales",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de céréales Nesquik® goût fraise. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107804",
+    "title": "STARBUCKS® x10 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/starbucks-coupon/107804",
+    "scope": "produit",
+    "referenceNames": [
+      "STARBUCKS® x10 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "STARBUCKS"
+      ],
+      "all": [
+        "x10",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l’achat d'une boîte de 10 capsules STARBUCKS® pour machine Nespresso®. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107818",
+    "title": "Les Dieux - Global Gamme 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 2,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/les-dieux-coupon/107818",
+    "scope": "produit",
+    "referenceNames": [
+      "Les Dieux - Global Gamme 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Les Dieux"
+      ],
+      "all": [
+        "0",
+        "40"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat de 2 boîtes de sardines Les Dieux au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107750",
+    "title": "STARBUCKS® x18 1 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/starbucks-coupon/107750",
+    "scope": "produit",
+    "referenceNames": [
+      "STARBUCKS® x18 1 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "STARBUCKS"
+      ],
+      "all": [
+        "x18",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une boîte de 18 capsules STARBUCKS® pour machine Nespresso®. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107661",
+    "title": "Materne - Sans sucres ajoutés* x12 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/materne-coupon/107661",
+    "scope": "produit",
+    "referenceNames": [
+      "Materne - Sans sucres ajoutés* x12 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Materne"
+      ],
+      "all": [
+        "sucres",
+        "ajoutes"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de 12 coupelles Materne® Sans Sucres Ajoutés* au choix dans la gamme**. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107598",
+    "title": "Pasquier - Crousti'Déj 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pasquier-coupon/107598",
+    "scope": "produit",
+    "referenceNames": [
+      "Pasquier - Crousti'Déj 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Pasquier"
+      ],
+      "all": [
+        "Crousti",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un paquet de Crousti'Déj. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-105420",
+    "title": "William Saurin - Cocotte micro-ondable 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/william-saurin-coupon/105420",
+    "scope": "produit",
+    "referenceNames": [
+      "William Saurin - Cocotte micro-ondable 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "William Saurin"
+      ],
+      "all": [
+        "Cocotte",
+        "micro"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une cocotte micro-ondable William Saurin au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108096",
+    "title": "Rozana - 6x50cl 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/rozana-coupon/108096",
+    "scope": "produit",
+    "referenceNames": [
+      "Rozana - 6x50cl 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Rozana"
+      ],
+      "all": [
+        "6x50cl",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de Rozana 6x50cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108089",
+    "title": "Lipton - Lipton pétillant 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lipton-coupon/108089",
+    "scope": "produit",
+    "referenceNames": [
+      "Lipton - Lipton pétillant 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lipton"
+      ],
+      "all": [
+        "Lipton",
+        "petillant"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit de la gamme Lipton pétillant. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107811",
+    "title": "Sous le Pommier - Pur jus de Pomme Nature ou Pomme Poire 1L 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 2,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sous-le-pommier-coupon/107811",
+    "scope": "produit",
+    "referenceNames": [
+      "Sous le Pommier - Pur jus de Pomme Nature ou Pomme Poire 1L 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Sous le Pommier"
+      ],
+      "all": [
+        "Pomme",
+        "Pomme"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat de 2 purs jus Sous le Pommier 1L Pomme Nature ou Pomme-Poire. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107736",
+    "title": "alpro - Boissons Végétales 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/alpro-coupon/107736",
+    "scope": "produit",
+    "referenceNames": [
+      "alpro - Boissons Végétales 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "alpro"
+      ],
+      "all": [
+        "Boissons",
+        "Vegetales"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit alpro de la gamme boissons végétales. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107743",
+    "title": "Volvic Vitamin + 0,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/volvic-coupon/107743",
+    "scope": "produit",
+    "referenceNames": [
+      "Volvic Vitamin + 0,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Volvic"
+      ],
+      "all": [
+        "Vitamin",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille Volvic Vitamin+ 75cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107453",
+    "title": "Maison Perrier Forever 0,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/maison-perrier-coupon/107453",
+    "scope": "produit",
+    "referenceNames": [
+      "Maison Perrier Forever 0,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Maison"
+      ],
+      "all": [
+        "Perrier",
+        "Forever"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit de la gamme Maison Perrier Forever. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107790",
+    "title": "Ajinomoto - Gyoza 0,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ajinomoto-coupon/107790",
+    "scope": "produit",
+    "referenceNames": [
+      "Ajinomoto - Gyoza 0,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Ajinomoto"
+      ],
+      "all": [
+        "Gyoza",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une boîte ou sachet de Gyoza Ajinomoto au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108441",
+    "title": "Bref WC - Blocs WC 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bref-wc-coupon/108441",
+    "scope": "produit",
+    "referenceNames": [
+      "Bref WC - Blocs WC 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bref WC"
+      ],
+      "all": [
+        "Blocs",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un bloc WC au choix dans les gammes Bref WC. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107446",
+    "title": "Maison Verte - Lessives 1,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/maison-verte-coupon/107446",
+    "scope": "produit",
+    "referenceNames": [
+      "Maison Verte - Lessives 1,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Maison Verte"
+      ],
+      "all": [
+        "Lessives",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une lessive Maison Verte au choix : en bouteille, en recharge ou en capsules sur l'ensemble de la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107909",
+    "title": "COLGATE® – Max White 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/colgate-coupon/107909",
+    "scope": "produit",
+    "referenceNames": [
+      "COLGATE® – Max White 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "COLGATE"
+      ],
+      "all": [
+        "White",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un dentifrice Colgate® au choix dans la gamme blancheur. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107647",
+    "title": "Tena - Tena Pants + 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/tena-coupon/107647",
+    "scope": "produit",
+    "referenceNames": [
+      "Tena - Tena Pants + 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Tena"
+      ],
+      "all": [
+        "Tena",
+        "Pants"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un paquet de sous-vêtements absorbants TENA Pants Plus au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107640",
+    "title": "Tena - Tena Silhouette 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 2,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/tena-coupon/107640",
+    "scope": "produit",
+    "referenceNames": [
+      "Tena - Tena Silhouette 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Tena"
+      ],
+      "all": [
+        "Tena",
+        "Silhouette"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat de deux paquets de TENA® Silhouette au choix dans la gamme de sous-vêtements. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107226",
+    "title": "Renova - Toucher Magique 0,60 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.6,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/renova-coupon/107226",
+    "scope": "produit",
+    "referenceNames": [
+      "Renova - Toucher Magique 0,60 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Renova"
+      ],
+      "all": [
+        "Toucher",
+        "Magique"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de Renova Toucher Magique Ultra Propre ou Ultra Soin ou Ultra Confort ou Unique. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108406",
+    "title": "Guigoz - Lait infantile 2 € REMBOURSÉS",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/nestle-coupon/108406",
+    "scope": "produit",
+    "referenceNames": [
+      "Guigoz - Lait infantile 2 € REMBOURSÉS"
+    ],
+    "productMatch": {
+      "brands": [
+        "Guigoz"
+      ],
+      "all": [
+        "Lait",
+        "infantile"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Guigoz lait infantile 2ème ou 3ème âge. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108352",
+    "title": "Nidal - Lait infantile 2ème ou 3ème âge 2 € REMBOURSÉS",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/nestle-coupon/108352",
+    "scope": "produit",
+    "referenceNames": [
+      "Nidal - Lait infantile 2ème ou 3ème âge 2 € REMBOURSÉS"
+    ],
+    "productMatch": {
+      "brands": [
+        "Nidal"
+      ],
+      "all": [
+        "Lait",
+        "infantile"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Nidal lait infantile 2ème ou 3ème âge. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108515",
+    "title": "Ballantine's - Finest 1 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ballantine-s-coupon/108515",
+    "scope": "produit",
+    "referenceNames": [
+      "Ballantine's - Finest 1 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Ballantine's"
+      ],
+      "all": [
+        "Finest",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille de Ballantine's Finest 1L ou 1,5L. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108367",
+    "title": "Jack Daniel's - Aromatisée 70cl 1,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/jack-daniel-s-coupon/108367",
+    "scope": "produit",
+    "referenceNames": [
+      "Jack Daniel's - Aromatisée 70cl 1,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Jack Daniel's"
+      ],
+      "all": [
+        "Aromatisee",
+        "70cl"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille de Jack Daniel's 70cl au choix dans la gamme Aromatisée. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108124",
+    "title": "Revesco - Les bulles d'apéritif 0,90 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.9,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/revesco-coupon/108124",
+    "scope": "produit",
+    "referenceNames": [
+      "Revesco - Les bulles d'apéritif 0,90 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Revesco"
+      ],
+      "all": [
+        "bulles",
+        "aperitif"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille de Revesco 75cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108047",
+    "title": "Altos - Tequila Blanco 0.7L 1,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/altos-coupon/108047",
+    "scope": "produit",
+    "referenceNames": [
+      "Altos - Tequila Blanco 0.7L 1,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Altos"
+      ],
+      "all": [
+        "Tequila",
+        "Blanco"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille de tequila Altos Blanco 0,70L. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108036",
+    "title": "Jim Beam - Jim Beam 1,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/jim-beam-coupon/108036",
+    "scope": "produit",
+    "referenceNames": [
+      "Jim Beam - Jim Beam 1,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Jim Beam"
+      ],
+      "all": [
+        "Beam",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l’achat d’une bouteille Jim Beam au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107986",
+    "title": "Sobieski - Sobieski vodka 70cl 1,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sobieski-coupon/107986",
+    "scope": "produit",
+    "referenceNames": [
+      "Sobieski - Sobieski vodka 70cl 1,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Sobieski"
+      ],
+      "all": [
+        "Sobieski",
+        "vodka"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une SOBIESKI 70cl au choix dans la gamme. Hors format 100cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108020",
+    "title": "Ballantine's - Sweet Blend 1 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ballantine-s-coupon/108020",
+    "scope": "produit",
+    "referenceNames": [
+      "Ballantine's - Sweet Blend 1 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Ballantine's"
+      ],
+      "all": [
+        "Sweet",
+        "Blend"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille Ballantine's Sweet Blend 0,7L. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107668",
+    "title": "Les Calandières - vin blanc & rosé 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/calandiere-coupon/107668",
+    "scope": "produit",
+    "referenceNames": [
+      "Les Calandières - vin blanc & rosé 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Les Calandières"
+      ],
+      "all": [
+        "blanc",
+        "rose"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille Les Calandières rosé ou blanc 75cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-106975",
+    "title": "Pelican - Blonde et Rouge 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pelican-coupon/106975",
+    "scope": "produit",
+    "referenceNames": [
+      "Pelican - Blonde et Rouge 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Pelican"
+      ],
+      "all": [
+        "Blonde",
+        "Rouge"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille de Pelican blonde ou rouge 66cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-106961",
+    "title": "Pelican - Blonde et Rouge 1,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pelican-coupon/106961",
+    "scope": "produit",
+    "referenceNames": [
+      "Pelican - Blonde et Rouge 1,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Pelican"
+      ],
+      "all": [
+        "Blonde",
+        "Rouge"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de Pelican blonde ou rouge 6x33cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108574",
+    "title": "Lily's Kitchen - Friandises pour chien 0,60 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.6,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lily-s-kitchen-coupon/108574",
+    "scope": "produit",
+    "referenceNames": [
+      "Lily's Kitchen - Friandises pour chien 0,60 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lily's Kitchen"
+      ],
+      "all": [
+        "Friandises",
+        "chien"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un paquet de friandises pour chien Lily's Kitchen au choix. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107776",
+    "title": "Ultima - Croquettes pour petit chien 1 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ultima-coupon/107776",
+    "scope": "produit",
+    "referenceNames": [
+      "Ultima - Croquettes pour petit chien 1 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Ultima"
+      ],
+      "all": [
+        "Croquettes",
+        "petit"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Ultima croquettes pour petit chien au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107176",
+    "title": "Ultima - Friandises pour chien 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ultima-coupon/107176",
+    "scope": "produit",
+    "referenceNames": [
+      "Ultima - Friandises pour chien 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Ultima"
+      ],
+      "all": [
+        "Friandises",
+        "chien"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit friandises pour chien Ultima au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-107902",
+    "title": "BRITA - Filtres à eau 1,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/brita-coupon/107902",
+    "scope": "produit",
+    "referenceNames": [
+      "BRITA - Filtres à eau 1,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "BRITA"
+      ],
+      "all": [
+        "Filtres",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de filtres à eau BRITA. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109394",
+    "title": "Le Gaulois - Charcuterie de volaille 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/le-gaulois-coupon/109394",
+    "scope": "produit",
+    "referenceNames": [
+      "Le Gaulois - Charcuterie de volaille 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Le Gaulois"
+      ],
+      "all": [
+        "Charcuterie",
+        "volaille"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d’un produit de la gamme de charcuterie de volaille Le Gaulois. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109289",
+    "title": "Le Gaulois - Aide Culinaire 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/le-gaulois-coupon/109289",
+    "scope": "produit",
+    "referenceNames": [
+      "Le Gaulois - Aide Culinaire 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Le Gaulois"
+      ],
+      "all": [
+        "Aide",
+        "Culinaire"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit aide culinaire Le Gaulois au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109107",
+    "title": "Madrange - Le Jambon Blanc et Le Jambon Supérieur 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/madrange-coupon/109107",
+    "scope": "produit",
+    "referenceNames": [
+      "Madrange - Le Jambon Blanc et Le Jambon Supérieur 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Madrange"
+      ],
+      "all": [
+        "Jambon",
+        "Blanc"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Le Jambon Blanc ou Le Jambon Supérieur Madrange, au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108914",
+    "title": "La Cuisine d'Océane - Plats cuisinés 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/la-cuisine-doceane-coupon/108914",
+    "scope": "produit",
+    "referenceNames": [
+      "La Cuisine d'Océane - Plats cuisinés 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "La Cuisine d'Océane"
+      ],
+      "all": [
+        "Plats",
+        "cuisines"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d’un plat cuisiné La Cuisine d’Océane au choix dans les gammes Terroir, Bord de mer, Exotique ou Italienne au rayon conserves. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108668",
+    "title": "Maître CoQ - Gamme CoQenBox 1 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/maitre-coq-coupon/108668",
+    "scope": "produit",
+    "referenceNames": [
+      "Maître CoQ - Gamme CoQenBox 1 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Maître CoQ"
+      ],
+      "all": [
+        "CoQenBox",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Maître Coq de la gamme CoQenBox. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108610",
+    "title": "Bonduelle - Protein Bowl 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bonduelle-coupon/108610",
+    "scope": "produit",
+    "referenceNames": [
+      "Bonduelle - Protein Bowl 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bonduelle"
+      ],
+      "all": [
+        "Protein",
+        "Bowl"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un Protein Bowl Bonduelle au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109557",
+    "title": "Danone - Le petit protéiné x12 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/109557",
+    "scope": "produit",
+    "referenceNames": [
+      "Danone - Le petit protéiné x12 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Danone"
+      ],
+      "all": [
+        "petit",
+        "proteine"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de Danone protéiné Le Petit Protéiné x12. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109566",
+    "title": "St Hubert - St Hubert Épaisse® 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/st-hubert-coupon/109566",
+    "scope": "produit",
+    "referenceNames": [
+      "St Hubert - St Hubert Épaisse® 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "St Hubert"
+      ],
+      "all": [
+        "Hubert",
+        "Epaisse"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pot de St Hubert Épaisse® au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109481",
+    "title": "Lactel - Gamme Lactel Protéines 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lactel-coupon/109481",
+    "scope": "produit",
+    "referenceNames": [
+      "Lactel - Gamme Lactel Protéines 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lactel"
+      ],
+      "all": [
+        "Lactel",
+        "Proteines"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de Lactel protéines 6x1L ou aromatisés 3x200mL vanille ou chocolat. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109439",
+    "title": "Kiri® - Kiri® Crème 0,90 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.9,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 2,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/kiri-coupon/109439",
+    "scope": "produit",
+    "referenceNames": [
+      "Kiri® - Kiri® Crème 0,90 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Kiri"
+      ],
+      "all": [
+        "Kiri",
+        "Creme"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat de 2 boîtes de Kiri® Crème 8 ou 12 ou 24 portions. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109376",
+    "title": "ProActiv - Margarine 0,60 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.6,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pro-activ-coupon/109376",
+    "scope": "produit",
+    "referenceNames": [
+      "ProActiv - Margarine 0,60 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "ProActiv"
+      ],
+      "all": [
+        "Margarine",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit ProActiv au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109280",
+    "title": "Candia + Le Lait sans Lactose - 4x50cl 0,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/candia-coupon/109280",
+    "scope": "produit",
+    "referenceNames": [
+      "Candia + Le Lait sans Lactose - 4x50cl 0,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Candia + Le Lait sans Lactose"
+      ],
+      "all": [
+        "4x50cl",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de 4 bouteilles de 50cl de Candia+ Le Lait Sans Lactose au choix. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109144",
+    "title": "Soignon - Bûche de chèvre Tradition ou Extra-Fondante 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/soignon-coupon/109144",
+    "scope": "produit",
+    "referenceNames": [
+      "Soignon - Bûche de chèvre Tradition ou Extra-Fondante 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Soignon"
+      ],
+      "all": [
+        "Buche",
+        "chevre"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bûche de chèvre Soignon Tradition 200g ou Extra Fondante 180g. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109162",
+    "title": "Danone - Danone à la Grecque 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/109162",
+    "scope": "produit",
+    "referenceNames": [
+      "Danone - Danone à la Grecque 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Danone"
+      ],
+      "all": [
+        "Danone",
+        "Grecque"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Danone À la Grecque au choix. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109116",
+    "title": "Lactel - Vitamine D 6x50cL 1,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lactel-coupon/109116",
+    "scope": "produit",
+    "referenceNames": [
+      "Lactel - Vitamine D 6x50cL 1,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lactel"
+      ],
+      "all": [
+        "Vitamine",
+        "6x50cL"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de 6x50cL de lait Lactel Vitamine D. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109125",
+    "title": "Danette - Crème dessert 0,60 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.6,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danette-coupon/109125",
+    "scope": "produit",
+    "referenceNames": [
+      "Danette - Crème dessert 0,60 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Danette"
+      ],
+      "all": [
+        "Creme",
+        "dessert"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack Danette x12 ou x16 au choix dans la gamme crème dessert. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109053",
+    "title": "Danone - Yaourts protéinés 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/109053",
+    "scope": "produit",
+    "referenceNames": [
+      "Danone - Yaourts protéinés 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Danone"
+      ],
+      "all": [
+        "Yaourts",
+        "proteines"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Danone protéiné x4 ou x8 au choix dans la gamme, ou desserts saveur chocolat x4. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108887",
+    "title": "Lactel - Lait Bio 1,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lactel-coupon/108887",
+    "scope": "produit",
+    "referenceNames": [
+      "Lactel - Lait Bio 1,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lactel"
+      ],
+      "all": [
+        "Lait",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d’un pack 6x1L de lait Lactel Bio au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108896",
+    "title": "Chaussée aux Moines - 340g 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/chaussee-aux-moines-coupon/108896",
+    "scope": "produit",
+    "referenceNames": [
+      "Chaussée aux Moines - 340g 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Chaussée aux Moines"
+      ],
+      "all": [
+        "340g",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un fromage Chaussée aux Moines 340g. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108878",
+    "title": "Danone - Danone Skyr 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/108878",
+    "scope": "produit",
+    "referenceNames": [
+      "Danone - Danone Skyr 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Danone"
+      ],
+      "all": [
+        "Danone",
+        "Skyr"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit de la gamme Danone Skyr. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108731",
+    "title": "E.Graindorge - Camembert de Normandie AOP 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/graindorge-coupon/108731",
+    "scope": "produit",
+    "referenceNames": [
+      "E.Graindorge - Camembert de Normandie AOP 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "E.Graindorge"
+      ],
+      "all": [
+        "Camembert",
+        "Normandie"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un Camembert de Normandie AOP E.Graindorge. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108619",
+    "title": "Frutii' - Compotes 4x100g 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/frutii-coupon/108619",
+    "scope": "produit",
+    "referenceNames": [
+      "Frutii' - Compotes 4x100g 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Frutii'"
+      ],
+      "all": [
+        "Compotes",
+        "4x100g"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack 4x100g de compotes Frutii' au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109699",
+    "title": "Lay's - Lay's Gourmet 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lays-aromatise-coupon/109699",
+    "scope": "produit",
+    "referenceNames": [
+      "Lay's - Lay's Gourmet 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lay's"
+      ],
+      "all": [
+        "Gourmet",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un paquet de chips Lay's Gourmet au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109708",
+    "title": "Mutti – Tetra 600g et 500g 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/mutti-coupon/109708",
+    "scope": "produit",
+    "referenceNames": [
+      "Mutti – Tetra 600g et 500g 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Mutti"
+      ],
+      "all": [
+        "Tetra",
+        "600g"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une purée de tomates zéro résidu de pesticides Mutti 500g ou 600g. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109593",
+    "title": "Samia - Produits Orientaux 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/samia-coupon/109593",
+    "scope": "produit",
+    "referenceNames": [
+      "Samia - Produits Orientaux 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Samia"
+      ],
+      "all": [
+        "Orientaux",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Samia d'une valeur supérieure à 1,80€ au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109490",
+    "title": "Nescafé® Dolce Gusto® - Dosettes NEO 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/dolce-gusto-coupon/109490",
+    "scope": "produit",
+    "referenceNames": [
+      "Nescafé® Dolce Gusto® - Dosettes NEO 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Nescafé Dolce Gusto"
+      ],
+      "all": [
+        "Dosettes",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une boite de dosettes NEO Nescafé® Dolce Gusto® au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109528",
+    "title": "Le Savoureux - Thon à l'huile d'olive 0,60 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.6,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/le-savoureux-coupon/109528",
+    "scope": "produit",
+    "referenceNames": [
+      "Le Savoureux - Thon à l'huile d'olive 0,60 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Le Savoureux"
+      ],
+      "all": [
+        "Thon",
+        "huile"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit de thon à l'huile d'olive Le Savoureux, au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109519",
+    "title": "Régilait – Sachet 175g de Yaourt Maison 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/regilait-coupon/109519",
+    "scope": "produit",
+    "referenceNames": [
+      "Régilait – Sachet 175g de Yaourt Maison 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Régilait"
+      ],
+      "all": [
+        "Sachet",
+        "175g"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un sachet 175g de Yaourt maison Régilait. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109463",
+    "title": "Harrys - 100% Mie 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/harrys-coupon/109463",
+    "scope": "produit",
+    "referenceNames": [
+      "Harrys - 100% Mie 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Harrys"
+      ],
+      "all": [
+        "100",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit 100% Mie Harrys. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109430",
+    "title": "L'Or - Espresso Concentrate 0,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/l-or-coupon/109430",
+    "scope": "produit",
+    "referenceNames": [
+      "L'Or - Espresso Concentrate 0,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "L'Or"
+      ],
+      "all": [
+        "Espresso",
+        "Concentrate"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit L'Or Espresso Concentrate au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109421",
+    "title": "Lactel - Caffè Latte Classico et Caffè Latte Cappuccino 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lactel-coupon/109421",
+    "scope": "produit",
+    "referenceNames": [
+      "Lactel - Caffè Latte Classico et Caffè Latte Cappuccino 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lactel"
+      ],
+      "all": [
+        "Caffe",
+        "Latte"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de Lactel Caffè Latte 3x200ml au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109171",
+    "title": "Grand'Mère - Café en grains 1,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 2,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/grand-mere-coupon/109171",
+    "scope": "produit",
+    "referenceNames": [
+      "Grand'Mère - Café en grains 1,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Grand'Mère"
+      ],
+      "all": [
+        "Cafe",
+        "grains"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat de 2 paquets de café en grains Grand'Mère 1kg. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109071",
+    "title": "L'OR - Café en grains 1,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 2,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/l-or-coupon/109071",
+    "scope": "produit",
+    "referenceNames": [
+      "L'OR - Café en grains 1,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "L'OR"
+      ],
+      "all": [
+        "Cafe",
+        "grains"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat de 2 paquets de café en grains valable sur toute la gamme L'OR Grains. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109098",
+    "title": "Poulain - Tablettes de chocolat 1848 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/poulain-coupon/109098",
+    "scope": "produit",
+    "referenceNames": [
+      "Poulain - Tablettes de chocolat 1848 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Poulain"
+      ],
+      "all": [
+        "Tablettes",
+        "chocolat"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une tablette Poulain 1848 des gammes FONDANT, CRAQUANT ou RECTO VERSO. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108800",
+    "title": "Pasquier - Grilletine 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pasquier-coupon/108800",
+    "scope": "produit",
+    "referenceNames": [
+      "Pasquier - Grilletine 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Pasquier"
+      ],
+      "all": [
+        "Grilletine",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un paquet de Grilletine Pasquier. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108791",
+    "title": "Cérébos - Sels 0,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/cerebos-coupon/108791",
+    "scope": "produit",
+    "referenceNames": [
+      "Cérébos - Sels 0,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Cérébos"
+      ],
+      "all": [
+        "Sels",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Cérébos au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108722",
+    "title": "NESCAFÉ® Farmers Origins - Capsules pour machine NESPRESSO® 1,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/nescafe-coupon/108722",
+    "scope": "produit",
+    "referenceNames": [
+      "NESCAFÉ® Farmers Origins - Capsules pour machine NESPRESSO® 1,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "NESCAFÉ Farmers Origins"
+      ],
+      "all": [
+        "Capsules",
+        "machine"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit de la gamme de capsules NESCAFÉ® Farmers Origins x36 pour machine NESPRESSO®. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108686",
+    "title": "Les Vergers de Chateaubourg Astérix - Compotes en gourdes x4, x12 ou x20 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/les-vergers-de-chateaubourg-coupon/108686",
+    "scope": "produit",
+    "referenceNames": [
+      "Les Vergers de Chateaubourg Astérix - Compotes en gourdes x4, x12 ou x20 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Les Vergers de Chateaubourg Astérix"
+      ],
+      "all": [
+        "Compotes",
+        "gourdes"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de compotes en gourdes x4, x12 ou x20 Les Vergers de Chateaubourg Astérix. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108601",
+    "title": "Bonduelle – Maïs sans résidu de pesticides¹ et sans sucres ajoutés 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bonduelle-coupon/108601",
+    "scope": "produit",
+    "referenceNames": [
+      "Bonduelle – Maïs sans résidu de pesticides¹ et sans sucres ajoutés 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bonduelle"
+      ],
+      "all": [
+        "Mais",
+        "residu"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit de maïs Bonduelle sans résidu de pesticides¹ ou sans sucres ajoutés au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109638",
+    "title": "innocent - jus de fruit 900ml 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/innocent-coupon/109638",
+    "scope": "produit",
+    "referenceNames": [
+      "innocent - jus de fruit 900ml 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "innocent"
+      ],
+      "all": [
+        "fruit",
+        "900ml"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille de jus de fruits innocent 900ml. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108637",
+    "title": "Volvic - Volvic Tea 1,5L 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/volvic-coupon/108637",
+    "scope": "produit",
+    "referenceNames": [
+      "Volvic - Volvic Tea 1,5L 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Volvic"
+      ],
+      "all": [
+        "Volvic",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille Volvic Tea 1,5L. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109602",
+    "title": "Sun - Capsules gamme Pro-Expert 1,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sun-coupon/109602",
+    "scope": "produit",
+    "referenceNames": [
+      "Sun - Capsules gamme Pro-Expert 1,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Sun"
+      ],
+      "all": [
+        "Capsules",
+        "Expert"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack de capsules lave-vaisselle Sun gamme Pro-Expert. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109472",
+    "title": "Rubson - Absorbeurs et recharges 2 € REMBOURSÉS",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/rubson-aero-coupon/109472",
+    "scope": "produit",
+    "referenceNames": [
+      "Rubson - Absorbeurs et recharges 2 € REMBOURSÉS"
+    ],
+    "productMatch": {
+      "brands": [
+        "Rubson"
+      ],
+      "all": [
+        "Absorbeurs",
+        "recharges"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un absorbeur Aero 360° ou d'un pack de recharges x4 ou x6 de la gamme Aero 360° Rubson. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108764",
+    "title": "Soupline - Adoucissant gamme Parfum de Linge 0,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/soupline-coupon/108764",
+    "scope": "produit",
+    "referenceNames": [
+      "Soupline - Adoucissant gamme Parfum de Linge 0,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Soupline"
+      ],
+      "all": [
+        "Adoucissant",
+        "Parfum"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille d’adoucissant de la gamme Soupline Parfum de Linge. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108713",
+    "title": "Soupline - Adoucissant gamme Fraicheur Infinie 1,10 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/soupline-coupon/108713",
+    "scope": "produit",
+    "referenceNames": [
+      "Soupline - Adoucissant gamme Fraicheur Infinie 1,10 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Soupline"
+      ],
+      "all": [
+        "Adoucissant",
+        "Fraicheur"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d’une bouteille d’adoucissant de la gamme Soupline Fraicheur Infinie. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109153",
+    "title": "Schwarzkopf Gliss - Shampooings 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/schwarzkopf-coupon/109153",
+    "scope": "produit",
+    "referenceNames": [
+      "Schwarzkopf Gliss - Shampooings 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Schwarzkopf Gliss"
+      ],
+      "all": [
+        "Shampooings",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un shampooing Schwarzkopf Gliss au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108923",
+    "title": "Sanex - Déodorants 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sanex-coupon/108923",
+    "scope": "produit",
+    "referenceNames": [
+      "Sanex - Déodorants 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Sanex"
+      ],
+      "all": [
+        "Deodorants",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un déodorant ou anti-transpirant Sanex au choix dans les gammes. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108869",
+    "title": "Schwarzkopf Gliss - Après-shampooings et laits démêlants 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/schwarzkopf-coupon/108869",
+    "scope": "produit",
+    "referenceNames": [
+      "Schwarzkopf Gliss - Après-shampooings et laits démêlants 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Schwarzkopf Gliss"
+      ],
+      "all": [
+        "Apres",
+        "shampooings"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un après-shampooing ou lait démêlant Schwarzkopf Gliss au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108827",
+    "title": "Schwarzkopf Gliss - Soins 1,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/schwarzkopf-coupon/108827",
+    "scope": "produit",
+    "referenceNames": [
+      "Schwarzkopf Gliss - Soins 1,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Schwarzkopf Gliss"
+      ],
+      "all": [
+        "Soins",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un soin Schwarzkopf Gliss au choix dans la gamme. Hors shampooing et après-shampooing. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108818",
+    "title": "Sanex - Gels Douche 0,80 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.8,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sanex-coupon/108818",
+    "scope": "produit",
+    "referenceNames": [
+      "Sanex - Gels Douche 0,80 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Sanex"
+      ],
+      "all": [
+        "Gels",
+        "Douche"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un gel douche Sanex au choix dans les gammes. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108695",
+    "title": "Elmex - Dentifrices 0,90 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.9,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/elmex-coupon/108695",
+    "scope": "produit",
+    "referenceNames": [
+      "Elmex - Dentifrices 0,90 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Elmex"
+      ],
+      "all": [
+        "Dentifrices",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un dentifrice Elmex au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108740",
+    "title": "Blédina - Blédichef Midi et Soir 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bledina-coupon/108740",
+    "scope": "produit",
+    "referenceNames": [
+      "Blédina - Blédichef Midi et Soir 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Blédina"
+      ],
+      "all": [
+        "Bledichef",
+        "Midi"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Blédina dans la gamme Assiettes Blédichef. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109584",
+    "title": "Bumbu - Rhum 70cl 1 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bumbu-coupon/109584",
+    "scope": "produit",
+    "referenceNames": [
+      "Bumbu - Rhum 70cl 1 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bumbu"
+      ],
+      "all": [
+        "Rhum",
+        "70cl"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille de Bumbu 70cl, au choix parmi Original, XO ou Cream. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109134",
+    "title": "Grain d'Envie - Global Gamme 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/grain-d-envie-coupon/109134",
+    "scope": "produit",
+    "referenceNames": [
+      "Grain d'Envie - Global Gamme 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Grain d'Envie"
+      ],
+      "all": [
+        "0",
+        "70"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille 75cl Grain d'Envie au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109089",
+    "title": "Roche Mazet - Bouteille 75cl 0,60 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.6,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/roche-mazet-coupon/109089",
+    "scope": "produit",
+    "referenceNames": [
+      "Roche Mazet - Bouteille 75cl 0,60 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Roche Mazet"
+      ],
+      "all": [
+        "Bouteille",
+        "75cl"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bouteille 75cl Roche Mazet au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108860",
+    "title": "Mont Blanc - La Blonde 75cl 0,70 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.7,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/brasserie-du-mont-blanc-coupon/108860",
+    "scope": "produit",
+    "referenceNames": [
+      "Mont Blanc - La Blonde 75cl 0,70 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Mont Blanc"
+      ],
+      "all": [
+        "Blonde",
+        "75cl"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bière Mont Blanc La Blonde 75cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108905",
+    "title": "La Chouffe - Bière blonde 33cl 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/chouffe-coupon/108905",
+    "scope": "produit",
+    "referenceNames": [
+      "La Chouffe - Bière blonde 33cl 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "La Chouffe"
+      ],
+      "all": [
+        "Biere",
+        "blonde"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bière La Chouffe blonde 33cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108782",
+    "title": "Chouffe - Bières sans alcool 1,20 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.2,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/chouffe-coupon/108782",
+    "scope": "produit",
+    "referenceNames": [
+      "Chouffe - Bières sans alcool 1,20 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Chouffe"
+      ],
+      "all": [
+        "Bieres",
+        "alcool"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack 4x33cl de La Chouffe 0,0% ou Chouffe Cherry 0,0%. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108755",
+    "title": "Duvel - Bière blonde 33cl 0,30 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/duvel-coupon/108755",
+    "scope": "produit",
+    "referenceNames": [
+      "Duvel - Bière blonde 33cl 0,30 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Duvel"
+      ],
+      "all": [
+        "Biere",
+        "blonde"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'une bière Duvel blonde 33cl. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109620",
+    "title": "PURINA® ONE® - Croquettes pour chat 3kg + 7,5kg 1 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/purina-one-coupon/109620",
+    "scope": "produit",
+    "referenceNames": [
+      "PURINA® ONE® - Croquettes pour chat 3kg + 7,5kg 1 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "PURINA ONE"
+      ],
+      "all": [
+        "Croquettes",
+        "chat"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un sachet de croquettes 3kg ou 7,5kg de la gamme PURINA® ONE® BIFENSIS®. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109611",
+    "title": "PURINA® ONE® - Croquettes pour chien mini 1,5kg 0,50 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/purina-one-coupon/109611",
+    "scope": "produit",
+    "referenceNames": [
+      "PURINA® ONE® - Croquettes pour chien mini 1,5kg 0,50 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "PURINA ONE"
+      ],
+      "all": [
+        "Croquettes",
+        "chien"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un pack PURINA® ONE® chien mini 1,5kg. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108773",
+    "title": "Ultima - Delicious et Expert Nutrition 0,40 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ultima-coupon/108773",
+    "scope": "produit",
+    "referenceNames": [
+      "Ultima - Delicious et Expert Nutrition 0,40 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Ultima"
+      ],
+      "all": [
+        "Delicious",
+        "Expert"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Ultima Fit and Delicious ou Expert Nutrition, au choix dans les gammes. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-108592",
+    "title": "Cesar® - Croquettes 1,4kg 1 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/cesar-coupon/108592",
+    "scope": "produit",
+    "referenceNames": [
+      "Cesar® - Croquettes 1,4kg 1 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "Cesar"
+      ],
+      "all": [
+        "Croquettes",
+        "1"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un paquet de croquettes Cesar® format 1,4kg au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "detail-109403",
+    "title": "BIC - Vibbies 0,60 € REMBOURSÉ",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.6,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bic-coupon/109403",
+    "scope": "produit",
+    "referenceNames": [
+      "BIC - Vibbies 0,60 € REMBOURSÉ"
+    ],
+    "productMatch": {
+      "brands": [
+        "BIC"
+      ],
+      "all": [
+        "Vibbies",
+        "0"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit BIC Vibbies au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  }
+]
