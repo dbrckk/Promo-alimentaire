@@ -43,11 +43,17 @@ export function estimateBundleSaving(items,lines,offer) {
   );
   if(!target) return null;
 
-  const targetLine=(lines || []).find(
-    (line)=>String(line.product?.code || line.code)===String(target.item?.product?.code || "")
-      && !line.missingPrice
-      && line.bestPrice
-  );
+  // A bundle cannot be priced from only one member if the other mandatory
+  // references have no known price or reliable checkout evidence.
+  const allRequiredLines=bundle.matches.map((matched)=>(lines || []).find(
+    (line)=>String(line.product?.code || line.code)===String(matched.item?.product?.code || "")
+      && !line.missingPrice && line.bestPrice
+      && Number.isFinite(Number(line.bestPrice.price))
+      && Number(line.bestPrice.price)>0
+  ));
+  if(allRequiredLines.some((line)=>!line)) return null;
+  const targetIndex=bundle.matches.indexOf(target);
+  const targetLine=allRequiredLines[targetIndex];
   if(!targetLine) return null;
 
   const targetUnits=Math.max(1,Math.min(
