@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "31 5 * * *"
   workflow_dispatch:
+  push:
+    paths:
+      - "scripts/sync-payment-discounts.mjs"
+      - "src/adapters/payment-discounts.js"
+      - ".github/workflows/sync-payment-discounts.yml"
 
 permissions:
   contents: write
