@@ -8,7 +8,7 @@ Fonctionnalités actuelles :
 - choix Carrefour / E.Leclerc ;
 - tri par pourcentage d'économie, économie en euros ou fraîcheur ;
 - recherche d'offres ;
-- chargement runtime de snapshots publics validés (Shopmium, La Belle Adresse et Coupon Network au 07/10/2026) avec expiration automatique ;
+- chargement runtime de snapshots publics validés (Shopmium, La Belle Adresse, Coupon Network et Envie de Plus au 07/10/2026) avec expiration automatique ;
 - annuaire de sources complémentaires ;
 - recherche produit par EAN/UPC ;
 - scanner code-barres natif sur les navigateurs compatibles Android ;
@@ -17,6 +17,7 @@ Fonctionnalités actuelles :
 - mode proximité volontaire avec rayon 5/10/25/50 km, distance magasin et aucune persistance des coordonnées ;
 - rapprochement d'un produit scanné avec les offres du registre (EAN exact ou candidat marque/nom) ;
 - estimation prudente du gain potentiel sur un prix récent ;
+- offres multi-produits modélisées séparément (ex. Dash + Lenor), sans les intégrer automatiquement au coût garanti ;
 - moteur de cumul prudent qui choisit le meilleur chemin valide sans additionner les offres incompatibles ;
 - simulateur d'optimisation d'un panier ;
 - liste de courses persistante sur l'appareil avec quantités ;
@@ -56,6 +57,7 @@ Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Wi
 - `src/open-data.js` : Open Food Facts + Open Prices, normalisation EAN/prix.
 - `src/stacking.js` : moteur de compatibilité et de cumul.
 - `src/matching.js` : rapprochement EAN/GTIN et règles marque/nom.
+- `src/bundle.js` : détection et estimation prudente des offres multi-produits.
 - `src/basket.js` : évaluation d'une liste par enseigne et comparaison prudente.
 - `src/confidence.js` : score de confiance explicable des scénarios.
 - `src/history.js` : snapshots locaux et tendances de comparaison.
