@@ -49,6 +49,7 @@ export function evaluateBasketStore(items,{
         guaranteedSaving:0,
         potentialProductSaving:null,
         bestProductCandidate:null,
+        bestSavingCandidate:null,
         matches,
         missingPrice:true
       };
@@ -74,7 +75,13 @@ export function evaluateBasketStore(items,{
         return (b.match.score||0)-(a.match.score||0);
       });
     const bestProductCandidate=potentialCandidates[0] || null;
-    const potentialProductSaving=bestProductCandidate?.saving ?? null;
+    const bestSavingCandidate=[...potentialCandidates]
+      .sort((a,b)=>{
+        if(a.saving!==b.saving) return b.saving-a.saving;
+        if(a.match.exact!==b.match.exact) return a.match.exact ? -1 : 1;
+        return (b.match.score||0)-(a.match.score||0);
+      })[0] || null;
+    const potentialProductSaving=bestSavingCandidate?.saving ?? null;
 
     const loyaltyCredit=roundMoney(
       lineOptimization.selected
@@ -106,6 +113,7 @@ export function evaluateBasketStore(items,{
       guaranteedSaving:lineOptimization.totalSaving,
       potentialProductSaving,
       bestProductCandidate,
+      bestSavingCandidate,
       matches,
       missingPrice:false
     };
