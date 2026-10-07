@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { computeSaving, effectivePercent, filterOffers, rankOffers } from "../src/domain.js";
+import { computeSaving, effectivePercent, filterOffers, offerDeadline, rankOffers } from "../src/domain.js";
 
 test("computeSaving calcule un pourcentage sur un prix",()=>{
   assert.equal(computeSaving({basePrice:12.5,savingPercent:40}),5);
@@ -57,4 +57,28 @@ test("filterOffers respecte le canal",()=>{
     filterOffers(list,{store:"carrefour",channel:"store"}).map((x)=>x.title),
     ["Magasin","Tous"]
   );
+});
+
+
+test("offerDeadline choisit l'échéance la plus proche",()=>{
+  const deadline=offerDeadline({
+    expiresAt:"2026-10-31",
+    reviewAfter:"2026-10-09"
+  },new Date("2026-10-07T12:00:00Z"));
+  assert.equal(deadline.kind,"review");
+  assert.equal(deadline.daysUntil,3);
+  assert.equal(deadline.urgent,true);
+});
+
+test("offerDeadline signale une expiration demain",()=>{
+  const deadline=offerDeadline({
+    expiresAt:"2026-10-08"
+  },new Date("2026-10-07T12:00:00Z"));
+  assert.equal(deadline.kind,"expires");
+  assert.equal(deadline.daysUntil,2);
+  assert.match(deadline.label,/Expire/);
+});
+
+test("offerDeadline retourne null sans échéance",()=>{
+  assert.equal(offerDeadline({},new Date("2026-10-07T12:00:00Z")),null);
 });
