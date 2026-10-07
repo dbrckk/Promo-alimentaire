@@ -1,0 +1,85 @@
+[
+  {
+    "providerId": "envie-plus",
+    "provider": "Envie de Plus",
+    "externalId": "ariel-liquide-40-2026",
+    "title": "Ariel Liquide — 40 % remboursés",
+    "type": "ODR",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-07-01",
+    "expiresAt": "2027-06-30",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.enviedeplus.com/bon-de-reduction-et-coupons",
+    "scope": "produit",
+    "productMatch": {
+      "brands": [
+        "Ariel"
+      ],
+      "all": [
+        "Liquide"
+      ],
+      "minScore": 65
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec une autre offre ou promotion ; produit acheté hors promotion",
+    "conditions": "40 % remboursés sur une lessive liquide Ariel éligible. Référence exacte et modalités à vérifier sur la source au moment de l'achat."
+  },
+  {
+    "providerId": "envie-plus",
+    "provider": "Envie de Plus",
+    "externalId": "dash-lenor-100-2026-2027",
+    "title": "Dash + Lenor — Lenor 100 % remboursé",
+    "type": "ODR bundle",
+    "category": "entretien",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 100,
+    "savingCapAmount": 10,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-07-01",
+    "expiresAt": "2027-09-30",
+    "reviewAfter": "2026-10-21",
+    "sourceUrl": "https://www.enviedeplus.com/dash-lenor-remboursement",
+    "scope": "bundle",
+    "bundleRequirements": [
+      {
+        "id": "dash",
+        "minQty": 1,
+        "productMatch": {
+          "brands": [
+            "Dash"
+          ],
+          "minScore": 55
+        }
+      },
+      {
+        "id": "lenor",
+        "minQty": 1,
+        "productMatch": {
+          "brands": [
+            "Lenor"
+          ],
+          "minScore": 55
+        }
+      }
+    ],
+    "bundleTargetRequirementId": "lenor",
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "achat simultané hors promotion ; non cumulable avec une autre promotion sur les produits concernés",
+    "conditions": "Acheter simultanément 1 Dash et 1 Lenor éligibles hors promotion. Le Lenor est remboursé à 100 % dans la limite de 10 €. Maximum 2 participations par compte."
+  }
+]
