@@ -1,12 +1,24 @@
 function textContent(html){
-  return String(html ?? "")
+  const raw=decodeUnicodeEscapes(String(html ?? ""));
+  const visible=raw
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ")
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
-    .replace(/<[^>]+>/g," ")
+    .replace(/<[^>]+>/g," ");
+  const embedded=raw
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
+    .replace(/<[^>]+>/g," ");
+  return (visible+" "+embedded)
     .replace(/&nbsp;|&#160;/gi," ")
     .replace(/&amp;/gi,"&")
+    .replace(/&quot;|&#34;/gi,'"')
     .replace(/\s+/g," ")
     .trim();
+}
+
+function decodeUnicodeEscapes(value){
+  return String(value).replace(/\\u([0-9a-fA-F]{4})/g,(_,hex)=>
+    String.fromCharCode(parseInt(hex,16))
+  );
 }
 
 export function verifyLeclercCatalogOffer(html,offer){
