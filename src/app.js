@@ -1316,6 +1316,7 @@ function renderBasketScenario(scenario){
       candidate
       && candidate.match.exact
       && candidate.offer?.requiresStoreVerification
+      && state.channel==="store"
       && state.nearbyEnabled
       && scenario.locationReliable
       && scenario.locationKey
@@ -1335,6 +1336,7 @@ function renderBasketScenario(scenario){
     const localVerificationHint=candidate
       && candidate.match.exact
       && candidate.offer?.requiresStoreVerification
+      && state.channel==="store"
       && scenario.locationReliable
       && !state.nearbyEnabled
       ? '<span class="local-verify-hint">Active « Autour de moi » pour confirmer cette promo dans un magasin précis.</span>'
