@@ -5,7 +5,8 @@ import {
   fetchProductByBarcode,
   isFreshObservation,
   normalizeBarcode,
-  normalizePriceObservation
+  normalizePriceObservation,
+  haversineKm
 } from "../src/open-data.js";
 
 test("normalizeBarcode nettoie un EAN valide",()=>{
@@ -87,4 +88,18 @@ test("fetchPricesByBarcode refuse des coordonnées invalides",async()=>{
     }),
     /Coordonnées géographiques invalides/
   );
+});
+
+
+test("haversineKm retourne zéro au même point",()=>{
+  assert.equal(haversineKm(45.44,4.39,45.44,4.39),0);
+});
+
+test("normalizePriceObservation calcule la distance si la position est fournie",()=>{
+  const value=normalizePriceObservation({
+    id:99,price:2,date:"2026-10-01",
+    location:{osm_brand:"Carrefour",osm_lat:45.44,osm_lon:4.39}
+  },{latitude:45.44,longitude:4.39});
+  assert.equal(value.distanceKm,0);
+  assert.equal(value.locationLat,45.44);
 });
