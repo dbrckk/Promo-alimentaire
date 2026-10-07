@@ -1180,6 +1180,10 @@ function renderBasketScenario(scenario){
     }
     const place=line.bestPrice?.storeName ? ` · ${escapeHtml(line.bestPrice.storeName)}` : "";
     const candidate=line.bestProductCandidate;
+    const maxCandidate=line.bestSavingCandidate;
+    const maxCandidateDiff=maxCandidate && candidate
+      && maxCandidate.offer?.id!==candidate.offer?.id
+      && maxCandidate.saving>candidate.saving;
     const candidateHtml=candidate
       ? `<div class="line-offer">
            <span class="badge ${candidate.match.exact?"good":"warn"}">${candidate.match.exact?"EAN exact":"à vérifier"}</span>
@@ -1190,6 +1194,11 @@ function renderBasketScenario(scenario){
     return `<div class="scenario-line-wrap">
       <div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>
       ${candidateHtml}
+      ${maxCandidateDiff?`<div class="line-offer potential-max">
+        <span class="badge warn">Gain max à vérifier</span>
+        <span>${escapeHtml(maxCandidate.offer.provider)} · ${escapeHtml(maxCandidate.offer.title)}</span>
+        <strong>≈ −${money.format(maxCandidate.saving)}</strong>
+      </div>`:""}
     </div>`;
   }).join("");
   const basketRoute=scenario.basketOptimization.selected.length
