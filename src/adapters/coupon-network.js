@@ -167,20 +167,21 @@ function todayIso(){ return new Date().toISOString().slice(0,10); }
 function roundMoney(value){ return Math.round((Number(value)+Number.EPSILON)*100)/100; }
 
 export function extractCouponNetworkDetailUrls(html){
-  const urls=new Set();
+  const urlsById=new Map();
   const source=String(html ?? "");
-  const regex=/href=["']([^"']*\/[^/"']*cashback-coupons\/[^"']+\/\d+)["']/gi;
+  const regex=/href=["']([^"']*\/[^/"']*cashback-coupons\/[^"']+\/(\d+))["']/gi;
   let match;
   while((match=regex.exec(source))){
-    let href=decodeHtml(match[1]).trim();
-    if(!href) continue;
+    const href=decodeHtml(match[1]).trim();
+    const id=match[2];
+    if(!href || !id || urlsById.has(id)) continue;
     try{
       const url=new URL(href,"https://www.couponnetwork.fr/");
       if(url.hostname!=="www.couponnetwork.fr") continue;
-      urls.add(url.toString());
+      urlsById.set(id,url.toString());
     }catch{}
   }
-  return [...urls];
+  return [...urlsById.values()];
 }
 
 export function parseCouponNetworkDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={}){
