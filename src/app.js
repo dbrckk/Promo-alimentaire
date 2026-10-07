@@ -241,6 +241,12 @@ function renderOffer(offer){
   const stackBadge=offer.autoStack===true
     ? '<span class="badge good">Cumul automatisable</span>'
     : '<span class="badge warn">Cumul à vérifier</span>';
+  const storeCheckBadge=offer.requiresStoreVerification
+    ? '<span class="badge warn">Magasin à confirmer</span>'
+    : "";
+  const loyaltyBadge=offer.requiresLoyalty
+    ? `<span class="badge ${offer.loyaltyEligibility==="eligible"?"good":"warn"}">${offer.loyaltyEligibility==="eligible"?"Carte confirmée":"Carte à confirmer"}</span>`
+    : "";
   const deadline=offerDeadline(offer);
   const deadlineBadge=deadline
     ? `<span class="badge ${deadline.urgent||deadline.overdue?"warn":""}">${escapeHtml(deadline.label)}</span>`
@@ -258,6 +264,8 @@ function renderOffer(offer){
         <span class="badge">${offer.scope==="panier"?"Panier entier":offer.scope==="bundle"?"Multi-produits":"Produit ciblé"}</span>
         <span class="badge">${escapeHtml(offer.category)}</span>
         ${stackBadge}
+        ${storeCheckBadge}
+        ${loyaltyBadge}
         ${deadlineBadge}
       </div>
       <div class="meta">
