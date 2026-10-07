@@ -25,11 +25,15 @@ for(const offer of offers){
     continue;
   }
 
-  if(searched>0) await sleep(6500);
+  if(searched>0) await sleep(11000);
   searched+=1;
 
   try{
-    const {terms,candidates}=await fetchOpenFoodFactsCandidates(offer,{pageSize:20});
+    const {terms,candidates}=await fetchOpenFoodFactsCandidates(offer,{
+      pageSize:20,
+      maxRetries:2,
+      retryBaseMs:10000
+    });
     const resolution=selectUniqueEanCandidate(offer,candidates,{
       minScore:80,
       minMargin:12
