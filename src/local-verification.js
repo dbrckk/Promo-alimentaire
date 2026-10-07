@@ -26,6 +26,7 @@ export function createStoreConfirmation(offer,{
   return {
     key:confirmationKey({offerId:offer.id,store,locationKey}),
     offerId:offer.id,
+    offerFingerprint:offerFingerprint(offer),
     store,
     locationKey,
     locationName:String(locationName||""),
@@ -41,6 +42,7 @@ export function isStoreConfirmationActive(confirmation,offer,{
 }={}){
   if(!confirmation || !offer) return false;
   if(confirmation.offerId!==offer.id) return false;
+  if(!confirmation.offerFingerprint || confirmation.offerFingerprint!==offerFingerprint(offer)) return false;
   if(confirmation.store!==store) return false;
   if(confirmation.locationKey!==locationKey) return false;
   if(!Array.isArray(offer.eans) || offer.eans.length===0) return false;
@@ -98,4 +100,20 @@ function endOfOffer(value){
   const raw=String(value);
   const date=new Date(raw.length===10 ? raw+"T23:59:59.999Z" : raw);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+
+export function offerFingerprint(offer){
+  if(!offer || !Array.isArray(offer.eans) || !offer.eans.length) return null;
+  return JSON.stringify({
+    id:offer.id,
+    eans:[...new Set(offer.eans.map(String))].sort(),
+    expiresAt:offer.expiresAt || null,
+    startsAt:offer.startsAt || null,
+    savingPercent:offer.savingPercent ?? null,
+    savingAmount:offer.savingAmount ?? null,
+    promoFormula:offer.promoFormula || null,
+    requiresLoyalty:offer.requiresLoyalty || null,
+    sourceUrl:offer.sourceUrl || null
+  });
 }
