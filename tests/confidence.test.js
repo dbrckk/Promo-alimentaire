@@ -27,3 +27,15 @@ test("un panier incomplet et ancien reste faible",()=>{
   const result=scoreBasketConfidence(scenario,{now:new Date("2026-10-07T12:00:00Z")});
   assert.ok(result.score<40);
 });
+
+
+test("un prix d'un autre canal pénalise la confiance",()=>{
+  const scenario={
+    distinctCount:1,pricedCount:1,locationReliable:true,locationKey:"id:1",
+    priceChannelReliable:false,
+    lines:[{missingPrice:false,bestPrice:{date:"2026-10-05",proofType:"RECEIPT"}}]
+  };
+  const result=scoreBasketConfidence(scenario,{now:new Date("2026-10-07T12:00:00Z")});
+  assert.equal(result.priceChannelReliable,false);
+  assert.ok(result.score<85);
+});
