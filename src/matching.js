@@ -63,10 +63,14 @@ export function matchOfferToProduct(product,offer) {
   };
 }
 
-export function findProductOffers(product,offers,{store}={}) {
+export function findProductOffers(product,offers,{store,channel=null}={}) {
   return offers
     .filter((offer)=>offer.scope==="produit")
     .filter((offer)=>!store || offer.stores?.includes(store) || offer.stores?.includes("all"))
+    .filter((offer)=>{
+      const channels=Array.isArray(offer.channels) ? offer.channels : [];
+      return !channel || channels.length===0 || channels.includes(channel) || channels.includes("all");
+    })
     .map((offer)=>({offer,match:matchOfferToProduct(product,offer)}))
     .filter((entry)=>entry.match.matched)
     .sort((a,b)=>{
