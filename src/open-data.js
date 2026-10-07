@@ -37,7 +37,7 @@ export async function fetchProductByBarcode(value, fetchImpl=fetch) {
   };
 }
 
-export async function fetchPricesByBarcode(value,{store,size=100,fetchImpl=fetch}={}) {
+export async function fetchPricesByBarcode(value,{store,size=100,coords=null,radiusKm=25,fetchImpl=fetch}={}) {
   const code=normalizeBarcode(value);
   const params=new URLSearchParams({
     product_code:code,
@@ -46,6 +46,17 @@ export async function fetchPricesByBarcode(value,{store,size=100,fetchImpl=fetch
     order_by:"-date",
     size:String(Math.min(Math.max(Number(size)||100,1),100))
   });
+  if(coords){
+    const lat=Number(coords.latitude ?? coords.lat);
+    const lon=Number(coords.longitude ?? coords.lon);
+    if(!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lon) || lon < -180 || lon > 180){
+      throw new Error("Coordonnées géographiques invalides.");
+    }
+    const radius=Math.min(Math.max(Number(radiusKm)||25,1),100);
+    params.set("lat",String(lat));
+    params.set("lon",String(lon));
+    params.set("radius_km",String(radius));
+  }
   const url=`${OPEN_PRICES_API}?${params}`;
   const response=await fetchImpl(url,{headers:{Accept:"application/json"}});
   if(!response.ok) throw new Error(`Open Prices indisponible (${response.status}).`);
@@ -65,6 +76,7 @@ export function normalizePriceObservation(item) {
   ].filter(Boolean).join(" · ");
   return {
     id:item.id,
+    locationId:item.location_id || location.id || null,
     productCode:item.product_code || item?.product?.code || "",
     productName:item.product_name || item?.product?.product_name || "",
     price:Number(item.price),
