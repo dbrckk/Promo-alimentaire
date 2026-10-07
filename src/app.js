@@ -2,6 +2,7 @@ import { DATASET_DATE, offers, providers } from "./data.js";
 import { computeSaving, effectivePercent, filterOffers, rankOffers } from "./domain.js";
 import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
+import { estimateOfferSaving, findProductOffers } from "./matching.js";
 
 const money = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 const els = {
@@ -20,6 +21,7 @@ const els = {
   scanButton:document.querySelector("#scanButton"),
   productStatus:document.querySelector("#productStatus"),
   productResult:document.querySelector("#productResult"),
+  productOffers:document.querySelector("#productOffers"),
   priceResults:document.querySelector("#priceResults"),
   basketAmount:document.querySelector("#basketAmount"),
   optimizerResult:document.querySelector("#optimizerResult"),
@@ -42,6 +44,7 @@ const state = {
   tab:"offers",
   productCode:null,
   product:null,
+  priceObservations:[],
   lookupToken:0
 };
 
@@ -54,6 +57,7 @@ els.store.addEventListener("change",async()=>{
   localStorage.setItem("promo-store",state.store);
   render();
   renderOptimizer();
+  if(state.product) renderProductOffers(state.product,state.priceObservations);
   if(state.productCode) await refreshPrices(state.productCode);
 });
 els.sort.addEventListener("change",()=>{
@@ -158,7 +162,9 @@ async function lookupBarcode(rawValue){
   const token=++state.lookupToken;
   setProductStatus("Recherche du produit et des prix…");
   els.productResult.classList.add("hidden");
+  els.productOffers.innerHTML="";
   els.priceResults.innerHTML="";
+  state.priceObservations=[];
 
   const [productResult,pricesResult]=await Promise.allSettled([
     fetchProductByBarcode(code),
@@ -169,14 +175,18 @@ async function lookupBarcode(rawValue){
   if(productResult.status==="fulfilled"){
     state.product=productResult.value;
     renderProduct(productResult.value);
+    renderProductOffers(productResult.value,state.priceObservations);
   }else{
     state.product=null;
+    els.productOffers.innerHTML="";
     els.productResult.innerHTML=`<div class="source">Code-barres ${escapeHtml(code)} · fiche produit indisponible</div>`;
     els.productResult.classList.remove("hidden");
   }
 
   if(pricesResult.status==="fulfilled"){
-    renderPrices(pricesResult.value.observations,pricesResult.value.sourceUrl);
+    state.priceObservations=pricesResult.value.observations;
+    renderPrices(state.priceObservations,pricesResult.value.sourceUrl);
+    if(state.product) renderProductOffers(state.product,state.priceObservations);
   }else{
     els.priceResults.innerHTML=`<div class="panel price-source">Impossible de récupérer Open Prices pour le moment.</div>`;
   }
@@ -194,7 +204,9 @@ async function refreshPrices(code){
   try{
     const result=await fetchPricesByBarcode(code,{store:state.store});
     if(token!==state.lookupToken) return;
-    renderPrices(result.observations,result.sourceUrl);
+    state.priceObservations=result.observations;
+    renderPrices(state.priceObservations,result.sourceUrl);
+    if(state.product) renderProductOffers(state.product,state.priceObservations);
     setProductStatus("");
   }catch(error){
     if(token!==state.lookupToken) return;
@@ -218,6 +230,69 @@ function renderProduct(product){
       </div>
     </div>`;
   els.productResult.classList.remove("hidden");
+}
+
+function renderProductOffers(product,observations=[]){
+  const matches=findProductOffers(product,offers,{store:state.store});
+  if(!matches.length){
+    els.productOffers.innerHTML=`
+      <div class="panel price-source">
+        Aucune offre produit de notre registre ne correspond actuellement à cette référence chez ${storeLabel(state.store)}.
+      </div>`;
+    return;
+  }
+
+  const recentPrice=observations.find((item)=>isFreshObservation(item))?.price ?? null;
+  const cards=matches.map(({offer,match})=>{
+    const potential=recentPrice===null ? null : estimateOfferSaving(recentPrice,offer);
+    const confidenceLabel=match.exact
+      ? "EAN exact"
+      : match.confidence==="probable"
+        ? "Correspondance forte"
+        : "Référence à vérifier";
+    const confidenceClass=match.exact ? "good" : "warn";
+    const savingLabel=Number.isFinite(offer.savingPercent)
+      ? formatPercent(offer.savingPercent)
+      : Number.isFinite(offer.savingAmount)
+        ? money.format(offer.savingAmount)
+        : "—";
+    const amountLine=potential===null
+      ? "Montant potentiel indisponible sans prix récent"
+      : `Potentiel ≈ ${money.format(potential)} sur le dernier prix récent`;
+    const safetyNote=match.exact
+      ? "Correspondance EAN/GTIN explicite. Les conditions de l’offre restent à vérifier."
+      : "Détection par marque/nom uniquement : ne pas considérer l’offre comme garantie avant vérification de la référence éligible.";
+
+    return `
+      <article class="match-card">
+        <div class="match-top">
+          <div>
+            <h3>${escapeHtml(offer.title)}</h3>
+            <div class="source">${escapeHtml(offer.provider)} · ${escapeHtml(offer.type)}</div>
+          </div>
+          <div class="match-saving">
+            <strong>${savingLabel}</strong>
+            <small>${escapeHtml(amountLine)}</small>
+          </div>
+        </div>
+        <div class="badges">
+          <span class="badge ${confidenceClass}">${confidenceLabel}</span>
+          <span class="badge">${escapeHtml(storeLabel(state.store))}</span>
+        </div>
+        <p class="match-note">${escapeHtml(safetyNote)}</p>
+        <div class="actions">
+          <span class="verified">${escapeHtml(match.reason)}</span>
+          <a class="open" href="${escapeHtml(offer.sourceUrl)}" target="_blank" rel="noreferrer">Vérifier l’offre</a>
+        </div>
+      </article>`;
+  }).join("");
+
+  els.productOffers.innerHTML=`
+    <div class="product-offers-head">
+      <h3>Offres compatibles détectées</h3>
+      <p>Les correspondances non exactes sont des candidats à vérifier ; elles ne sont jamais intégrées automatiquement à l’économie garantie.</p>
+    </div>
+    ${cards}`;
 }
 
 function renderPrices(observations,sourceUrl){
