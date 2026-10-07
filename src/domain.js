@@ -60,7 +60,13 @@ export function offerDeadline(offer,now=new Date()){
   if(!candidates.length) return null;
   candidates.sort((a,b)=>a.date-b.date);
   const next=candidates[0];
-  const daysUntil=Math.ceil((next.date-current)/(24*60*60*1000));
+  const currentDay=Date.UTC(
+    current.getUTCFullYear(),current.getUTCMonth(),current.getUTCDate()
+  );
+  const deadlineDay=Date.UTC(
+    next.date.getUTCFullYear(),next.date.getUTCMonth(),next.date.getUTCDate()
+  );
+  const daysUntil=Math.round((deadlineDay-currentDay)/(24*60*60*1000));
   const prefix=next.kind==="expires" ? "Expire" : "Révision";
   const label=daysUntil<0
     ? `${prefix} dépassée`
