@@ -1,11 +1,17 @@
 export function offerEvidenceStatus(offer,{
   match=null,
+  productCode=null,
   loyaltyProfile={},
   storeVerified=false,
   channelPriceVerified=false
 }={}){
-  const productExact=Boolean(match?.exact || (Array.isArray(offer?.eans) && offer.eans.length));
-  const productKnown=productExact || Boolean(offer?.productMatch);
+  const explicitEans=Array.isArray(offer?.eans) ? offer.eans.map(String) : [];
+  const exactByCode=productCode!==null
+    && productCode!==undefined
+    && explicitEans.includes(String(productCode));
+  // A GTIN listed by an offer is not proof that this scanned product matches it.
+  const productExact=Boolean(exactByCode || (match?.exact===true && explicitEans.length>0));
+  const productKnown=productExact || Boolean(offer?.productMatch) || explicitEans.length>0;
   const requiresStore=offer?.requiresStoreVerification===true;
   const storeOk=!requiresStore || storeVerified===true || offer?.storeVerified===true;
 
