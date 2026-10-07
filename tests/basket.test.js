@@ -4,6 +4,7 @@ import {
   compareBasketStores,
   evaluateBasketLocations,
   evaluateBasketStore,
+  estimateBasketCandidateSaving,
   normalizeQuantity,
   observationLocationKey,
   selectBestLocationScenario
@@ -193,4 +194,32 @@ test("evaluateBasketStore expose la ventilation des économies",()=>{
   assert.equal(scenario.savingsBreakdown.productGuaranteed,0);
   assert.equal(scenario.savingsBreakdown.paymentGuaranteed,0.4);
   assert.equal(scenario.savingsBreakdown.otherBasketGuaranteed,0);
+});
+
+
+test("estimateBasketCandidateSaving calcule un cashback panier potentiel",()=>{
+  assert.equal(estimateBasketCandidateSaving(100,{savingPercent:2.5}),2.5);
+  assert.equal(estimateBasketCandidateSaving(2,{savingAmount:3}),2);
+});
+
+test("le meilleur cas prudent tient compte d'un cashback panier incertain sans le cumuler",()=>{
+  const product={code:"66666666",name:"Produit",brands:"Marque",categories:[]};
+  const productOffer={
+    id:"product",scope:"produit",stores:["carrefour"],channels:["online"],
+    savingPercent:20,autoStack:false,productMatch:{brands:["Marque"]}
+  };
+  const webCashback={
+    id:"web",scope:"panier",stores:["carrefour"],channels:["online"],
+    savingPercent:2.5,autoStack:false,mechanism:"affiliate_cashback"
+  };
+  const scenario=evaluateBasketStore([{product,quantity:1}],{
+    store:"carrefour",channel:"online",
+    priceByCode:{"66666666":[{price:100,date:"2026-10-01"}]},
+    offers:[productOffer,webCashback],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.potentialProductSaving,20);
+  assert.equal(scenario.savingsBreakdown.basketPotential,2.5);
+  assert.equal(scenario.conservativePotentialExtraSaving,20);
+  assert.equal(scenario.conservativeBestCaseCost,80);
 });
