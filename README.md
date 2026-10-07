@@ -24,6 +24,7 @@ Fonctionnalités actuelles :
 - offres multi-produits modélisées séparément (ex. Dash + Lenor), sans les intégrer automatiquement au coût garanti ;
 - moteur de cumul prudent qui choisit le meilleur chemin valide sans additionner les offres incompatibles ;
 - simulateur d'optimisation d'un panier ;
+- recommandation explicite du meilleur moyen de paiement remisé, avec alternatives et économie estimée ;
 - liste de courses persistante sur l'appareil avec quantités ;
 - actualisation des mêmes références chez Carrefour et E.Leclerc ;
 - comparaison des deux paniers avec refus de déclarer un gagnant si la couverture prix est incomplète ;
@@ -120,4 +121,10 @@ Voir `docs/SOURCES.md` pour la stratégie d'intégration, `docs/MATCHING.md` pou
 ### Limite La Belle Adresse
 
 La Belle Adresse charge actuellement ses remboursements via une API membre protégée. Le projet ne contourne pas cette authentification. La synchronisation tente uniquement les pages publiques ; si elles ne contiennent pas les cartes, elle conserve le dernier snapshot manuel vérifié au lieu d'échouer ou d'inventer des offres.
+
+
+
+### Taux de paiement
+
+Les taux publics Carrefour de Fidme, Widilo, eBuyClub et Poulpeo, ainsi que le cashback connecté eBuyClub Carrefour/E.Leclerc, disposent désormais d'un snapshot dédié et d'une synchronisation quotidienne. Les valeurs importées remplacent les taux statiques équivalents sans créer de doublons.
 
