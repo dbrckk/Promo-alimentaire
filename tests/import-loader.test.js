@@ -79,3 +79,40 @@ test("loadImportedOffers expose le mode automatique/manuelle du snapshot",async(
   assert.equal(result.sourceStats[0].mode,"automatic");
   assert.equal(result.sourceStats[1].mode,"manual");
 });
+
+
+test("loadImportedOffers expose la qualité de preuve produit du snapshot",async()=>{
+  const qualityPayload=[
+    {
+      providerId:"leclerc",externalId:"exact",title:"Exact",
+      stores:["leclerc"],savingPercent:20,verifiedAt:"2026-10-07",
+      expiresAt:"2026-10-31",sourceUrl:"https://example.com/exact",
+      eans:["4006381333931"],eanEvidenceUrl:"https://example.com/ean",
+      requiresStoreVerification:true
+    },
+    {
+      providerId:"leclerc",externalId:"heuristic",title:"Heuristique",
+      stores:["leclerc"],savingPercent:20,verifiedAt:"2026-10-07",
+      expiresAt:"2026-10-31",sourceUrl:"https://example.com/h",
+      productMatch:{brands:["Marque"]},
+      eanResolutionBlocked:true,
+      eanResolutionReason:"Gamme ambiguë."
+    }
+  ];
+  const fetchImpl=async(url)=>{
+    const text=String(url);
+    if(text.endsWith("/index.json")){
+      return {ok:true,json:async()=>({verifiedAt:"2026-10-07",files:["quality.json"]})};
+    }
+    return {ok:true,json:async()=>qualityPayload};
+  };
+  const result=await loadImportedOffers({
+    fetchImpl,
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  const stats=result.sourceStats[0];
+  assert.equal(stats.exactEanCount,1);
+  assert.equal(stats.heuristicCount,1);
+  assert.equal(stats.resolutionBlockedCount,1);
+  assert.equal(stats.storeVerificationCount,1);
+});
