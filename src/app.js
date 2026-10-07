@@ -17,6 +17,11 @@ import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js"
 import { buildSavingsActionPlan } from "./action-plan.js";
 import { summarizeBasketStrategies } from "./strategy.js";
 import {
+  buildProductLoyaltyOffers,
+  normalizeLoyaltyProfile,
+  resolveOffersForLoyalty
+} from "./loyalty.js";
+import {
   addPriceObservation,
   detectPriceDrops,
   productHistory,
@@ -28,6 +33,8 @@ let offers=[...baseOffers];
 const els = {
   store:document.querySelector("#store"),
   channel:document.querySelector("#channel"),
+  carrefourLoyalty:document.querySelector("#carrefourLoyalty"),
+  leclercLoyalty:document.querySelector("#leclercLoyalty"),
   sort:document.querySelector("#sort"),
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
@@ -78,6 +85,7 @@ const views = {
 const state = {
   store:localStorage.getItem("promo-store") || "carrefour",
   channel:localStorage.getItem("promo-channel") || "store",
+  loyaltyProfile:loadLoyaltyProfile(),
   sort:localStorage.getItem("promo-sort") || "percent",
   search:"",
   tab:"offers",
@@ -99,6 +107,8 @@ const state = {
 
 els.store.value=state.store;
 els.channel.value=state.channel;
+els.carrefourLoyalty.value=state.loyaltyProfile.carrefour;
+els.leclercLoyalty.value=state.loyaltyProfile.leclerc;
 els.sort.value=state.sort;
 els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
@@ -121,6 +131,8 @@ els.channel.addEventListener("change",()=>{
   renderShoppingList();
   if(state.product) renderProductOffers(state.product,state.priceObservations);
 });
+els.carrefourLoyalty.addEventListener("change",()=>updateLoyaltyProfile("carrefour",els.carrefourLoyalty.value));
+els.leclercLoyalty.addEventListener("change",()=>updateLoyaltyProfile("leclerc",els.leclercLoyalty.value));
 els.sort.addEventListener("change",()=>{
   state.sort=els.sort.value;
   localStorage.setItem("promo-sort",state.sort);
@@ -196,7 +208,8 @@ function setTab(tab){
 }
 
 function render(){
-  const filtered=filterOffers(offers,{store:state.store,channel:state.channel,search:state.search});
+  const resolvedOffers=resolveOffersForLoyalty(offers,state.loyaltyProfile);
+  const filtered=filterOffers(resolvedOffers,{store:state.store,channel:state.channel,search:state.search});
   const ranked=rankOffers(filtered,state.sort);
   els.offers.innerHTML=ranked.map(renderOffer).join("");
   els.empty.classList.toggle("hidden",ranked.length>0);
@@ -414,7 +427,16 @@ function renderProduct(product){
 }
 
 function renderProductOffers(product,observations=[]){
-  const rawMatches=findProductOffers(product,offers,{store:state.store,channel:state.channel});
+  const resolvedOffers=resolveOffersForLoyalty(offers,state.loyaltyProfile);
+  const loyaltyOffers=buildProductLoyaltyOffers(product,{
+    store:state.store,
+    profile:state.loyaltyProfile
+  });
+  const rawMatches=findProductOffers(
+    product,
+    [...resolvedOffers,...loyaltyOffers],
+    {store:state.store,channel:state.channel}
+  );
   const bestObserved=selectBestRecentPrice(observations);
   const recentPrice=bestObserved?.price ?? null;
   const matches=rankMatchedOffers(rawMatches,{price:recentPrice,quantity:1});
@@ -579,7 +601,8 @@ function renderOptimizer(){
     els.optimizerResult.innerHTML='<div class="panel price-source">Entre un montant de panier supérieur à 0 €.</div>';
     return;
   }
-  const basketOffers=offers.filter((offer)=>offer.scope==="panier");
+  const basketOffers=resolveOffersForLoyalty(offers,state.loyaltyProfile)
+    .filter((offer)=>offer.scope==="panier");
   const result=optimizeStack(amount,basketOffers,{store:state.store,channel:state.channel});
   const route=result.selected.length
     ? result.selected.map((offer)=>`
@@ -848,7 +871,8 @@ function evaluateCurrentBasketScenarios(){
       store,
       channel:state.channel,
       priceByCode:state.basketPriceData[store],
-      offers
+      offers,
+      loyaltyProfile:state.loyaltyProfile
     });
     const locationScenario=selectBestLocationScenario(locationScenarios);
     let scenario;
@@ -863,7 +887,8 @@ function evaluateCurrentBasketScenarios(){
           store,
           channel:state.channel,
           priceByCode:state.basketPriceData[store],
-          offers
+          offers,
+          loyaltyProfile:state.loyaltyProfile
         }),
         location:null,
         locationKey:null,
@@ -879,6 +904,31 @@ function evaluateCurrentBasketScenarios(){
       confidence:scoreBasketConfidence(enrichedScenario)
     };
   });
+}
+
+function loadLoyaltyProfile(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem("promo-loyalty-profile-v1") || "{}");
+    return normalizeLoyaltyProfile(parsed);
+  }catch{
+    return normalizeLoyaltyProfile({});
+  }
+}
+
+function saveLoyaltyProfile(){
+  localStorage.setItem("promo-loyalty-profile-v1",JSON.stringify(state.loyaltyProfile));
+}
+
+function updateLoyaltyProfile(key,value){
+  state.loyaltyProfile=normalizeLoyaltyProfile({
+    ...state.loyaltyProfile,
+    [key]:value
+  });
+  saveLoyaltyProfile();
+  render();
+  renderOptimizer();
+  renderShoppingList();
+  if(state.product) renderProductOffers(state.product,state.priceObservations);
 }
 
 function loadProductPriceHistory(){
