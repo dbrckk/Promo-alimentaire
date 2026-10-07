@@ -55,6 +55,7 @@ export function evaluateBasketStore(items,{
         finalCost:null,
         guaranteedSaving:0,
         potentialProductSaving:null,
+        potentialAdditionalProductSaving:0,
         bestProductCandidate:null,
         bestSavingCandidate:null,
         matches,
@@ -106,6 +107,11 @@ export function evaluateBasketStore(items,{
         return (b.match.score||0)-(a.match.score||0);
       })[0] || null;
     const potentialProductSaving=bestSavingCandidate?.saving ?? null;
+    // The safest hypothetical is to replace an already applied product benefit,
+    // not subtract that benefit a second time.
+    const potentialAdditionalProductSaving=roundMoney(Math.max(
+      0,(potentialProductSaving || 0)-lineOptimization.totalSaving
+    ));
 
     const loyaltyCredit=roundMoney(
       lineOptimization.selected
@@ -137,6 +143,7 @@ export function evaluateBasketStore(items,{
       finalCost:lineOptimization.finalCost,
       guaranteedSaving:lineOptimization.totalSaving,
       potentialProductSaving,
+      potentialAdditionalProductSaving,
       bestProductCandidate,
       bestSavingCandidate,
       matches,
@@ -157,6 +164,13 @@ export function evaluateBasketStore(items,{
   const potentialBundleSaving=bundleCandidates.length
     ? roundMoney(Math.max(...bundleCandidates.map((candidate)=>candidate.saving)))
     : 0;
+  // Bundles discount the target reference; subtract any benefit already counted
+  // on that line before describing the bundle as additional saving.
+  const potentialAdditionalBundleSaving=roundMoney(Math.max(
+    0,...bundleCandidates.map((candidate)=>
+      candidate.saving-(candidate.targetLine?.guaranteedSaving || 0)
+    )
+  ));
 
   const finalCost=roundMoney(basketOptimization.finalCost);
   const guaranteedSaving=roundMoney(observedSubtotal-finalCost);
@@ -201,6 +215,9 @@ export function evaluateBasketStore(items,{
   const potentialProductSaving=roundMoney(pricedLines.reduce(
     (sum,line)=>sum+(line.potentialProductSaving || 0),0
   ));
+  const potentialAdditionalProductSaving=roundMoney(pricedLines.reduce(
+    (sum,line)=>sum+(line.potentialAdditionalProductSaving || 0),0
+  ));
   const uncertainBasketCandidates=basketOptimization.considered
     .filter((offer)=>offer.autoStack!==true)
     .map((offer)=>({
@@ -213,7 +230,7 @@ export function evaluateBasketStore(items,{
     ? roundMoney(uncertainBasketCandidates[0].saving)
     : 0;
   const conservativePotentialExtraSaving=roundMoney(
-    Math.max(potentialProductSaving,potentialBundleSaving,potentialBasketSaving)
+    Math.max(potentialAdditionalProductSaving,potentialAdditionalBundleSaving,potentialBasketSaving)
   );
   const conservativeBestCaseCost=roundMoney(
     Math.max(0,finalCost-conservativePotentialExtraSaving)
@@ -241,6 +258,8 @@ export function evaluateBasketStore(items,{
       : 0,
     potentialProductSaving,
     potentialBundleSaving,
+    potentialAdditionalProductSaving,
+    potentialAdditionalBundleSaving,
     savingsBreakdown:{
       productGuaranteed:productGuaranteedSaving,
       productImmediateGuaranteed:productImmediateSaving,
@@ -251,6 +270,8 @@ export function evaluateBasketStore(items,{
       otherBasketGuaranteed:otherBasketGuaranteedSaving,
       productPotential:potentialProductSaving,
       bundlePotential:potentialBundleSaving,
+      productPotentialExtra:potentialAdditionalProductSaving,
+      bundlePotentialExtra:potentialAdditionalBundleSaving,
       basketPotential:potentialBasketSaving,
       uncertainBasketCount:basketOptimization.considered.filter((offer)=>offer.autoStack!==true).length
     },
