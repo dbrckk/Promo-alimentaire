@@ -21,7 +21,10 @@
     "autoStack": true,
     "stackingConfidence": "high",
     "stacking": "une seule remise de paiement est retenue ; vérifier les conditions du bon",
-    "conditions": "Bon Carrefour de 100 € affiché à 96 €, soit 4 % de réduction."
+    "conditions": "Bon Carrefour de 100 € affiché à 96 €, soit 4 % de réduction.",
+    "channels": [
+      "store"
+    ]
   },
   {
     "providerId": "widilo",
@@ -45,7 +48,10 @@
     "autoStack": true,
     "stackingConfidence": "high",
     "stacking": "une seule remise de paiement est retenue ; vérifier les conditions du bon",
-    "conditions": "Carte cadeau Carrefour affichée à 4 % de cashback."
+    "conditions": "Carte cadeau Carrefour affichée à 4 % de cashback.",
+    "channels": [
+      "store"
+    ]
   },
   {
     "providerId": "ebuyclub",
@@ -69,7 +75,10 @@
     "autoStack": true,
     "stackingConfidence": "high",
     "stacking": "une seule remise de paiement est retenue ; vérifier les conditions du bon",
-    "conditions": "Carte cadeau Carrefour affichée à 3,6 % remboursés immédiatement."
+    "conditions": "Carte cadeau Carrefour affichée à 3,6 % remboursés immédiatement.",
+    "channels": [
+      "store"
+    ]
   },
   {
     "providerId": "poulpeo",
@@ -93,7 +102,10 @@
     "autoStack": true,
     "stackingConfidence": "high",
     "stacking": "une seule remise de paiement est retenue ; vérifier les conditions du bon",
-    "conditions": "Bon d'achat Carrefour affiché à 3,6 % de cashback immédiat."
+    "conditions": "Bon d'achat Carrefour affiché à 3,6 % de cashback immédiat.",
+    "channels": [
+      "store"
+    ]
   },
   {
     "providerId": "ebuyclub",
@@ -117,7 +129,10 @@
     "autoStack": false,
     "stackingConfidence": "unknown",
     "stacking": "cumul à vérifier selon la transaction et les autres activations",
-    "conditions": "Cashback connecté eBuyClub affiché à 0,05 % en magasin."
+    "conditions": "Cashback connecté eBuyClub affiché à 0,05 % en magasin.",
+    "channels": [
+      "store"
+    ]
   },
   {
     "providerId": "ebuyclub",
@@ -141,6 +156,64 @@
     "autoStack": false,
     "stackingConfidence": "unknown",
     "stacking": "cumul à vérifier selon la transaction et les autres activations",
-    "conditions": "Cashback connecté eBuyClub affiché à 0,05 % en magasin."
+    "conditions": "Cashback connecté eBuyClub affiché à 0,05 % en magasin.",
+    "channels": [
+      "store"
+    ]
+  },
+  {
+    "providerId": "ebuyclub",
+    "provider": "eBuyClub",
+    "externalId": "carrefour-online-cashback-current",
+    "title": "Cashback en ligne Carrefour",
+    "type": "cashback en ligne",
+    "category": "panier",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "online"
+    ],
+    "savingAmount": 3,
+    "savingAmountMode": "per-offer",
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.ebuyclub.com/cashback",
+    "scope": "panier",
+    "mechanism": "affiliate_cashback",
+    "stackGroup": "affiliate-cashback",
+    "stackOrder": 70,
+    "savingBasis": "current",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "cumul et catégories éligibles à vérifier avant commande",
+    "conditions": "Jusqu'à 3 € remboursés sur les achats en ligne Carrefour éligibles."
+  },
+  {
+    "providerId": "ebuyclub",
+    "provider": "eBuyClub",
+    "externalId": "leclerc-online-cashback-current",
+    "title": "Cashback en ligne E.Leclerc",
+    "type": "cashback en ligne",
+    "category": "panier",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "online"
+    ],
+    "savingPercent": 2.5,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.ebuyclub.com/cashback",
+    "scope": "panier",
+    "mechanism": "affiliate_cashback",
+    "stackGroup": "affiliate-cashback",
+    "stackOrder": 70,
+    "savingBasis": "current",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "cumul et catégories éligibles à vérifier avant commande",
+    "conditions": "Jusqu'à 2,5 % remboursés sur les achats en ligne E.Leclerc éligibles."
   }
 ]
