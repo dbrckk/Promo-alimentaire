@@ -1,15 +1,16 @@
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { isOfferActive, validateImportBatch } from "../src/ingestion.js";
 
 const directory=new URL("../data/import/",import.meta.url);
+const manifest=JSON.parse(await readFile(new URL("index.json",directory),"utf8"));
+const files=[...new Set(Array.isArray(manifest?.files) ? manifest.files : [])]
+  .filter((name)=>typeof name==="string" && name.endsWith(".json") && name!=="index.json")
+  .sort();
+
 const now=new Date(process.env.CHECK_DATE || new Date().toISOString());
 const strict=process.argv.includes("--strict");
 const warningDays=Number(process.env.WARNING_DAYS || 3);
-
-const files=(await readdir(directory))
-  .filter((name)=>name.endsWith(".json") && name!=="index.json")
-  .sort();
 
 let staleFiles=0;
 let activeTotal=0;
@@ -17,7 +18,15 @@ const report=[];
 
 for(const file of files){
   const path=join(directory.pathname,file);
-  const parsed=JSON.parse(await readFile(path,"utf8"));
+  let parsed;
+  try{
+    parsed=JSON.parse(await readFile(path,"utf8"));
+  }catch(error){
+    report.push({file,status:"missing-or-invalid",active:0,total:0,error:error.message});
+    staleFiles+=1;
+    continue;
+  }
+
   const records=Array.isArray(parsed) ? parsed : parsed.offers;
   const validation=validateImportBatch(records);
   if(!validation.ok){
@@ -58,8 +67,9 @@ for(const file of files){
 
 for(const item of report){
   const deadline=item.nextDeadline ? ` · échéance ${item.nextDeadline.slice(0,10)} (${item.daysUntil} j)` : "";
-  console.log(`[freshness] ${item.file}: ${item.status} · ${item.active}/${item.total} actives${deadline}`);
+  const error=item.error ? ` · ${item.error}` : "";
+  console.log(`[freshness] ${item.file}: ${item.status} · ${item.active}/${item.total} actives${deadline}${error}`);
 }
-console.log(`[freshness] Total: ${activeTotal} offres actives · ${staleFiles} fichier(s) sans offre active`);
+console.log(`[freshness] Manifeste: ${files.length} fichier(s) · ${activeTotal} offres actives · ${staleFiles} source(s) problématique(s)`);
 
 if(strict && staleFiles>0) process.exitCode=1;
