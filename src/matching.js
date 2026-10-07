@@ -75,12 +75,24 @@ export function findProductOffers(product,offers,{store}={}) {
     });
 }
 
-export function estimateOfferSaving(price,offer) {
+export function effectiveOfferPercent(offer,quantity=1) {
+  const qty=Math.max(1,Math.trunc(Number(quantity)||1));
+  const tiers=Array.isArray(offer.quantityTiers) ? offer.quantityTiers : [];
+  const tier=tiers
+    .filter((item)=>qty>=item.minQty && (item.maxQty===null || item.maxQty===undefined || qty<=item.maxQty))
+    .sort((a,b)=>b.minQty-a.minQty)[0];
+  if(tier && Number.isFinite(tier.savingPercent)) return tier.savingPercent;
+  return Number.isFinite(offer.savingPercent) ? offer.savingPercent : null;
+}
+
+export function estimateOfferSaving(price,offer,quantity=1) {
   const value=Number(price);
+  const qty=Math.max(1,Math.trunc(Number(quantity)||1));
   if(!Number.isFinite(value) || value<=0) return null;
-  if(Number.isFinite(offer.savingAmount)) return Math.min(value,round(offer.savingAmount));
-  if(Number.isFinite(offer.savingPercent)) {
-    return Math.min(value,round(value*offer.savingPercent/100));
+  if(Number.isFinite(offer.savingAmount)) return Math.min(value*qty,round(offer.savingAmount*qty));
+  const percent=effectiveOfferPercent(offer,qty);
+  if(Number.isFinite(percent)) {
+    return Math.min(value*qty,round(value*qty*percent/100));
   }
   return null;
 }
