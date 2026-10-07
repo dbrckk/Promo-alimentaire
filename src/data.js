@@ -1,4 +1,4 @@
-export const DATASET_DATE = "2026-10-06";
+export const DATASET_DATE = "2026-10-07";
 
 export const providers = [
   {
@@ -115,6 +115,8 @@ export const offers = [
     stores:["carrefour"], savingPercent:4, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.fidme.com/nos-services/app-fidme-course/",
     scope:"panier", stacking:"généralement cumulable avec promos magasin, vérifier les exclusions",
+    mechanism:"gift_card", stackGroup:"payment-discount", stackOrder:30, savingBasis:"current",
+    autoStack:true, stackingConfidence:"high",
     conditions:"Exemple officiel Fidme : bon Carrefour de 100 € acheté 96 €. Conditions exactes à contrôler avant achat."
   },
   {
@@ -123,6 +125,8 @@ export const offers = [
     stores:["carrefour"], savingPercent:4, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.widilo.fr/bon-d-achat/carrefour",
     scope:"panier", stacking:"paiement par bon ; cumul selon conditions Carrefour",
+    mechanism:"gift_card", stackGroup:"payment-discount", stackOrder:30, savingBasis:"current",
+    autoStack:true, stackingConfidence:"high",
     conditions:"Widilo affiche 4 % de cashback sur la carte cadeau Carrefour. Validité et canaux d'utilisation à vérifier sur la fiche."
   },
   {
@@ -131,6 +135,8 @@ export const offers = [
     stores:["carrefour"], savingPercent:3.6, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.ebuyclub.com/selection-bons-d-achat/carrefour-10310",
     scope:"panier", stacking:"paiement par bon ; vérifier exclusions",
+    mechanism:"gift_card", stackGroup:"payment-discount", stackOrder:30, savingBasis:"current",
+    autoStack:true, stackingConfidence:"high",
     conditions:"eBuyClub affiche 3,6 % remboursés immédiatement sur la carte cadeau Carrefour."
   },
   {
@@ -139,6 +145,8 @@ export const offers = [
     stores:["carrefour"], savingPercent:3.6, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.poulpeo.com/cashback-bon-d-achat.html",
     scope:"panier", stacking:"paiement par bon ; vérifier exclusions",
+    mechanism:"gift_card", stackGroup:"payment-discount", stackOrder:30, savingBasis:"current",
+    autoStack:true, stackingConfidence:"high",
     conditions:"Poulpeo affiche 3,6 % de cashback immédiat sur le bon d'achat Carrefour en magasin."
   },
   {
@@ -147,6 +155,8 @@ export const offers = [
     stores:["carrefour"], savingPercent:0.05, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.ebuyclub.com/cashback-connecte",
     scope:"panier", stacking:"à vérifier selon transaction et autres activations",
+    mechanism:"card_cashback", stackGroup:"card-cashback", stackOrder:60, savingBasis:"current",
+    autoStack:false, stackingConfidence:"unknown",
     conditions:"Taux affiché au moment de la vérification : 0,05 % en magasin."
   },
   {
@@ -155,6 +165,8 @@ export const offers = [
     stores:["leclerc"], savingPercent:0.05, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.ebuyclub.com/cashback-connecte",
     scope:"panier", stacking:"à vérifier selon transaction et autres activations",
+    mechanism:"card_cashback", stackGroup:"card-cashback", stackOrder:60, savingBasis:"current",
+    autoStack:false, stackingConfidence:"unknown",
     conditions:"Taux affiché au moment de la vérification : 0,05 % en magasin."
   },
   {
@@ -163,6 +175,8 @@ export const offers = [
     stores:["carrefour","leclerc"], savingPercent:40, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.labelleadresse.com/economies/remboursement",
     scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
+    mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
+    autoStack:false, stackingConfidence:"restricted",
     conditions:"La Belle Adresse affiche plusieurs références X.TRA à 40 % remboursé. Vérifier la référence exacte et les modalités."
   },
   {
@@ -171,6 +185,8 @@ export const offers = [
     stores:["carrefour","leclerc"], savingPercent:40, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.labelleadresse.com/economies/remboursement",
     scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
+    mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
+    autoStack:false, stackingConfidence:"restricted",
     conditions:"Offre affichée à 40 % remboursé ; les réductions La Belle Adresse ne sont généralement pas cumulables avec une promotion."
   },
   {
@@ -179,6 +195,8 @@ export const offers = [
     stores:["carrefour","leclerc"], savingPercent:40, savingAmount:null, basePrice:null,
     verifiedAt:"2026-10-06", sourceUrl:"https://www.labelleadresse.com/economies/remboursement",
     scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
+    mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
+    autoStack:false, stackingConfidence:"restricted",
     conditions:"Plusieurs références Mir étaient affichées à 40 % remboursé lors de la vérification."
   }
 ];
