@@ -3,6 +3,10 @@ import { selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { roundMoney } from "./domain.js";
 import { findBundleCandidates } from "./bundle.js";
+import {
+  buildProductLoyaltyOffers,
+  resolveOffersForLoyalty
+} from "./loyalty.js";
 
 export function normalizeQuantity(value) {
   const quantity=Math.trunc(Number(value));
@@ -15,14 +19,24 @@ export function evaluateBasketStore(items,{
   channel=null,
   priceByCode={},
   offers=[],
+  loyaltyProfile={},
   now=new Date(),
   maxPriceAgeDays=120
 }={}) {
+  const resolvedOffers=resolveOffersForLoyalty(offers,loyaltyProfile);
   const lines=(items || []).map((item)=>{
     const quantity=normalizeQuantity(item.quantity);
     const observations=priceByCode[item.product?.code] || [];
     const best=selectBestRecentPrice(observations,maxPriceAgeDays,now);
-    const matches=findProductOffers(item.product,offers,{store,channel});
+    const contextualOffers=buildProductLoyaltyOffers(item.product,{
+      store,
+      profile:loyaltyProfile
+    });
+    const matches=findProductOffers(
+      item.product,
+      [...resolvedOffers,...contextualOffers],
+      {store,channel}
+    );
 
     if(!best){
       return {
@@ -81,12 +95,12 @@ export function evaluateBasketStore(items,{
   const missingLines=lines.filter((line)=>line.missingPrice);
   const observedSubtotal=roundMoney(pricedLines.reduce((sum,line)=>sum+line.baseCost,0));
   const productAdjustedSubtotal=roundMoney(pricedLines.reduce((sum,line)=>sum+line.finalCost,0));
-  const basketOffers=offers.filter((offer)=>offer.scope==="panier");
+  const basketOffers=resolvedOffers.filter((offer)=>offer.scope==="panier");
   const basketOptimization=productAdjustedSubtotal>0
     ? optimizeStack(productAdjustedSubtotal,basketOffers,{store,channel})
     : {finalCost:0,totalSaving:0,selected:[],considered:[],savingPercent:0};
 
-  const bundleCandidates=findBundleCandidates(items,lines,offers,{store,channel});
+  const bundleCandidates=findBundleCandidates(items,lines,resolvedOffers,{store,channel});
   const potentialBundleSaving=bundleCandidates.length
     ? roundMoney(Math.max(...bundleCandidates.map((candidate)=>candidate.saving)))
     : 0;
@@ -198,6 +212,7 @@ export function evaluateBasketLocations(items,{
   channel=null,
   priceByCode={},
   offers=[],
+  loyaltyProfile={},
   now=new Date(),
   maxPriceAgeDays=120
 }={}) {
@@ -238,6 +253,7 @@ export function evaluateBasketLocations(items,{
       channel,
       priceByCode:entry.priceByCode,
       offers,
+      loyaltyProfile,
       now,
       maxPriceAgeDays
     }),
