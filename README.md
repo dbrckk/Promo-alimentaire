@@ -174,3 +174,10 @@ Un workflow séparé cherche les GTIN manquants via Open Food Facts. Il reste vo
 - une offre générique avec plusieurs produits plausibles reste ambiguë.
 
 Aucun EAN n'est écrit lorsqu'une ambiguïté subsiste.
+
+
+### Fiabilité des validations locales et des alertes prix
+
+Une confirmation locale ne s'applique qu'à l'offre exacte et au même point de vente. Elle devient invalide si changent l'EAN, les canaux, les exclusions, les conditions de cumul, le montant, la formule ou la prochaine date de révision. Une confirmation expirée ne peut pas être prolongée localement sans nouvelle vérification. Vérifier le magasin ne valide **pas** à lui seul un prix Drive / livraison dont la source exige une confirmation spécifique.
+
+Les alertes de baisse comparent uniquement deux observations à des **dates différentes dans un même magasin physique identifié** (identifiant magasin, ou nom et code postal). Deux magasins distincts d'une même enseigne ne peuvent pas produire une fausse baisse. Un prix sans magasin suffisamment identifié n'alimente pas les alertes. Les contrôles sont locaux et ne tournent pas en arrière-plan.
