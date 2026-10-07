@@ -83,6 +83,12 @@ export function evaluateBasketStore(items,{
   const potentialProductSaving=roundMoney(pricedLines.reduce(
     (sum,line)=>sum+(line.potentialProductSaving || 0),0
   ));
+  const conservativePotentialExtraSaving=roundMoney(
+    Math.max(potentialProductSaving,potentialBundleSaving)
+  );
+  const conservativeBestCaseCost=roundMoney(
+    Math.max(0,finalCost-conservativePotentialExtraSaving)
+  );
 
   return {
     store,
@@ -102,6 +108,8 @@ export function evaluateBasketStore(items,{
       : 0,
     potentialProductSaving,
     potentialBundleSaving,
+    conservativePotentialExtraSaving,
+    conservativeBestCaseCost,
     bundleCandidates
   };
 }
