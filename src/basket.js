@@ -76,12 +76,32 @@ export function evaluateBasketStore(items,{
     const bestProductCandidate=potentialCandidates[0] || null;
     const potentialProductSaving=bestProductCandidate?.saving ?? null;
 
+    const loyaltyCredit=roundMoney(
+      lineOptimization.selected
+        .filter(isLoyaltyCredit)
+        .reduce((sum,offer)=>sum+(offer.calculatedSaving||0),0)
+    );
+    const deferredRefund=roundMoney(
+      lineOptimization.selected
+        .filter(isDeferredRefund)
+        .reduce((sum,offer)=>sum+(offer.calculatedSaving||0),0)
+    );
+    const immediateSaving=roundMoney(
+      lineOptimization.totalSaving-loyaltyCredit-deferredRefund
+    );
+    const checkoutCost=roundMoney(Math.max(0,baseCost-immediateSaving));
+
     return {
       code:item.product?.code || "",
       product:item.product,
       quantity,
       bestPrice:best,
       baseCost,
+      checkoutCost,
+      loyaltyCredit,
+      deferredRefund,
+      immediateSaving,
+      appliedOffers:lineOptimization.selected,
       finalCost:lineOptimization.finalCost,
       guaranteedSaving:lineOptimization.totalSaving,
       potentialProductSaving,
@@ -115,11 +135,36 @@ export function evaluateBasketStore(items,{
       .filter((offer)=>offer.mechanism==="gift_card")
       .reduce((sum,offer)=>sum+(offer.calculatedSaving||0),0)
   );
+  const basketLoyaltyCredit=roundMoney(
+    basketOptimization.selected
+      .filter(isLoyaltyCredit)
+      .reduce((sum,offer)=>sum+(offer.calculatedSaving||0),0)
+  );
+  const basketDeferredRefund=roundMoney(
+    basketOptimization.selected
+      .filter(isDeferredRefund)
+      .reduce((sum,offer)=>sum+(offer.calculatedSaving||0),0)
+  );
   const otherBasketGuaranteedSaving=roundMoney(
     basketOptimization.selected
       .filter((offer)=>offer.mechanism!=="gift_card")
+      .filter((offer)=>!isLoyaltyCredit(offer))
+      .filter((offer)=>!isDeferredRefund(offer))
       .reduce((sum,offer)=>sum+(offer.calculatedSaving||0),0)
   );
+  const productLoyaltyCredit=roundMoney(
+    pricedLines.reduce((sum,line)=>sum+(line.loyaltyCredit||0),0)
+  );
+  const productDeferredRefund=roundMoney(
+    pricedLines.reduce((sum,line)=>sum+(line.deferredRefund||0),0)
+  );
+  const productImmediateSaving=roundMoney(
+    pricedLines.reduce((sum,line)=>sum+(line.immediateSaving||0),0)
+  );
+  const loyaltyCredit=roundMoney(productLoyaltyCredit+basketLoyaltyCredit);
+  const deferredRefund=roundMoney(productDeferredRefund+basketDeferredRefund);
+  const checkoutSaving=roundMoney(productImmediateSaving+otherBasketGuaranteedSaving);
+  const checkoutCost=roundMoney(Math.max(0,observedSubtotal-checkoutSaving));
   const potentialProductSaving=roundMoney(pricedLines.reduce(
     (sum,line)=>sum+(line.potentialProductSaving || 0),0
   ));
@@ -153,6 +198,9 @@ export function evaluateBasketStore(items,{
     observedSubtotal,
     productAdjustedSubtotal,
     basketOptimization,
+    checkoutCost,
+    loyaltyCredit,
+    deferredRefund,
     finalCost,
     guaranteedSaving,
     savingPercent:observedSubtotal>0
@@ -162,6 +210,10 @@ export function evaluateBasketStore(items,{
     potentialBundleSaving,
     savingsBreakdown:{
       productGuaranteed:productGuaranteedSaving,
+      productImmediateGuaranteed:productImmediateSaving,
+      loyaltyGuaranteed:loyaltyCredit,
+      refundGuaranteed:deferredRefund,
+      checkoutGuaranteed:checkoutSaving,
       paymentGuaranteed:paymentGuaranteedSaving,
       otherBasketGuaranteed:otherBasketGuaranteedSaving,
       productPotential:potentialProductSaving,
@@ -288,4 +340,17 @@ export function estimateBasketCandidateSaving(baseCost,offer){
     return roundMoney(Math.min(base,base*Number(offer.savingPercent)/100));
   }
   return null;
+}
+
+
+function isLoyaltyCredit(offer){
+  return offer?.rewardType==="loyalty_credit"
+    || offer?.benefitTiming==="wallet"
+    || offer?.mechanism==="retailer_loyalty";
+}
+
+function isDeferredRefund(offer){
+  return offer?.benefitTiming==="refund"
+    || offer?.mechanism==="odr"
+    || offer?.mechanism==="cashback_ticket";
 }
