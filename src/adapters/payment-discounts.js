@@ -10,36 +10,74 @@ function textContent(html){
 }
 
 export function extractNearbyPercent(html,needle,{window=260}={}){
-  const text=textContent(html);
-  const lower=text.toLocaleLowerCase("fr");
-  const target=String(needle).toLocaleLowerCase("fr");
-  let index=lower.indexOf(target);
-  let best=null;
-  while(index>=0){
-    const snippet=text.slice(Math.max(0,index-window),Math.min(text.length,index+target.length+window));
-    const values=[...snippet.matchAll(/(\d+(?:[,.]\d+)?)\s*%/g)]
-      .map((match)=>Number(match[1].replace(",",".")))
-      .filter((value)=>Number.isFinite(value)&&value>=0&&value<=100);
-    if(values.length){
-      const candidate=Math.max(...values);
-      if(best===null || candidate>best) best=candidate;
-    }
-    index=lower.indexOf(target,index+target.length);
-  }
-  return best;
+  return extractClosestMetric(
+    html,
+    needle,
+    /(\d+(?:[,.]\d+)?)\s*%/g,
+    {window,validate:(value)=>value>=0&&value<=100}
+  );
 }
 
 export function extractNearbyAmount(html,needle,{window=260}={}){
+  return extractClosestMetric(
+    html,
+    needle,
+    /(\d+(?:[,.]\d+)?)\s*€/g,
+    {window,validate:(value)=>value>=0}
+  );
+}
+
+function extractClosestMetric(html,needle,pattern,{window,validate}){
   const text=textContent(html);
   const lower=text.toLocaleLowerCase("fr");
-  const target=String(needle).toLocaleLowerCase("fr");
-  const index=lower.indexOf(target);
-  if(index<0) return null;
-  const snippet=text.slice(Math.max(0,index-window),Math.min(text.length,index+target.length+window));
-  const values=[...snippet.matchAll(/(\d+(?:[,.]\d+)?)\s*€/g)]
-    .map((match)=>Number(match[1].replace(",",".")))
-    .filter((value)=>Number.isFinite(value)&&value>=0);
-  return values.length ? Math.max(...values) : null;
+  const target=String(needle ?? "").trim().toLocaleLowerCase("fr");
+  if(!target) return null;
+
+  const targetPositions=[];
+  let targetIndex=lower.indexOf(target);
+  while(targetIndex>=0){
+    targetPositions.push(targetIndex);
+    targetIndex=lower.indexOf(target,targetIndex+target.length);
+  }
+  if(!targetPositions.length) return null;
+
+  const metrics=[...text.matchAll(pattern)]
+    .map((match)=>{
+      const value=Number(match[1].replace(",","."));
+      return {
+        value,
+        start:match.index,
+        end:match.index+match[0].length
+      };
+    })
+    .filter((metric)=>Number.isFinite(metric.value)&&validate(metric.value));
+
+  let best=null;
+  for(const start of targetPositions){
+    const end=start+target.length;
+    for(const metric of metrics){
+      const after=metric.start>=end;
+      const distance=after
+        ? metric.start-end
+        : start>=metric.end
+          ? start-metric.end+12
+          : 0;
+      if(distance>window) continue;
+      const candidate={...metric,distance,after};
+      if(
+        !best
+        || candidate.distance<best.distance
+        || (
+          candidate.distance===best.distance
+          && candidate.after
+          && !best.after
+        )
+      ){
+        best=candidate;
+      }
+    }
+  }
+  return best?.value ?? null;
 }
 
 export function parsePaymentDiscountPages(pages,{verifiedAt=todayIso()}={}){
