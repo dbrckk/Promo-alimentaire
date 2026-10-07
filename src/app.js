@@ -1070,7 +1070,18 @@ function renderBasketScenario(scenario){
       return `<div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}</span><strong class="missing">prix manquant</strong></div>`;
     }
     const place=line.bestPrice?.storeName ? ` · ${escapeHtml(line.bestPrice.storeName)}` : "";
-    return `<div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>`;
+    const candidate=line.bestProductCandidate;
+    const candidateHtml=candidate
+      ? `<div class="line-offer">
+           <span class="badge ${candidate.match.exact?"good":"warn"}">${candidate.match.exact?"EAN exact":"à vérifier"}</span>
+           <span>${escapeHtml(candidate.offer.provider)} · ${escapeHtml(candidate.offer.title)}</span>
+           <strong>≈ −${money.format(candidate.saving)}</strong>
+         </div>`
+      : "";
+    return `<div class="scenario-line-wrap">
+      <div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>
+      ${candidateHtml}
+    </div>`;
   }).join("");
   const basketRoute=scenario.basketOptimization.selected.length
     ? scenario.basketOptimization.selected.map((offer)=>`${escapeHtml(offer.provider)} −${money.format(offer.calculatedSaving)}`).join(" · ")
