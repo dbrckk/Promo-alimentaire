@@ -14,6 +14,7 @@ const minOffers=Math.max(4,Number(process.env.MIN_LBA_OFFERS||5));
 const verifiedAt=new Date().toISOString().slice(0,10);
 
 const found=[];
+let clientBundleProbed=false;
 for(const url of SOURCE_URLS){
   try{
     const response=await fetch(url,{
@@ -35,6 +36,10 @@ for(const url of SOURCE_URLS){
       }
       const scripts=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)].map((match)=>match[1]).slice(0,25);
       console.log("[la-belle-adresse][scripts] "+JSON.stringify(scripts));
+      if(!clientBundleProbed){
+        clientBundleProbed=true;
+        await probeClientBundles(url,scripts);
+      }
     }
     found.push(...offers);
   }catch(error){
@@ -67,4 +72,42 @@ if(write){
   console.log("[la-belle-adresse] snapshot et manifeste mis à jour.");
 }else{
   console.log("[la-belle-adresse] dry-run : aucun fichier modifié.");
+}
+
+
+async function probeClientBundles(pageUrl,scripts){
+  for(const src of scripts){
+    let bundleUrl;
+    try{ bundleUrl=new URL(src,pageUrl); }catch{ continue; }
+    if(bundleUrl.hostname!=="www.labelleadresse.com") continue;
+    try{
+      const response=await fetch(bundleUrl,{
+        headers:{Accept:"application/javascript,text/javascript,*/*","User-Agent":"PromoAlimentaire/0.1 public-offer-sync"},
+        signal:AbortSignal.timeout(15000)
+      });
+      if(!response.ok) continue;
+      const js=await response.text();
+      console.log("[la-belle-adresse][bundle] "+bundleUrl.pathname+" · "+js.length+" chars");
+      const needles=["/api/","api/","remboursement","cashback","offer","offers","reduction","economies","axios","fetch("];
+      for(const needle of needles){
+        let offset=0,count=0;
+        const lower=js.toLocaleLowerCase("fr");
+        while(count<4){
+          const index=lower.indexOf(needle.toLocaleLowerCase("fr"),offset);
+          if(index<0) break;
+          const snippet=js.slice(Math.max(0,index-220),Math.min(js.length,index+520)).replace(/\s+/g," ");
+          console.log("[la-belle-adresse][bundle:"+needle+"] "+snippet.slice(0,740));
+          offset=index+needle.length;
+          count+=1;
+        }
+      }
+      const absolute=[...js.matchAll(/https?:\\?\/\\?\/[A-Za-z0-9._~:/?#[\]@!$&'()*+,;=%\\-]+/g)]
+        .map((match)=>match[0].replace(/\\\//g,"/"))
+        .filter((value)=>/labelleadresse|api|henkel|offer|cashback|reduc/i.test(value))
+        .slice(0,30);
+      console.log("[la-belle-adresse][bundle-urls] "+JSON.stringify([...new Set(absolute)]));
+    }catch(error){
+      console.warn("[la-belle-adresse][bundle] "+bundleUrl+" : "+error.message);
+    }
+  }
 }
