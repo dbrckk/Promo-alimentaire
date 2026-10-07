@@ -123,7 +123,7 @@ export function buildProductLoyaltyOffers(product,{
       : normalized.carrefour==="club"
         ? "10% avec Club Carrefour sur les catégories éligibles ; conditions et exclusions Carrefour applicables."
         : "10% si Club Carrefour activé ; la Carte PASS peut porter l'avantage à 15%. Profil fidélité à confirmer.",
-    productMatch:{eans:product?.code ? [String(product.code)] : []}
+    eans:product?.code ? [String(product.code)] : []
   }];
 }
 
