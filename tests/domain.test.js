@@ -45,3 +45,16 @@ test("le registre de données reste cohérent", async()=>{
     assert.ok(!Number.isNaN(Date.parse(offer.verifiedAt)));
   }
 });
+
+
+test("filterOffers respecte le canal",()=>{
+  const list=[
+    {title:"Magasin",provider:"A",type:"x",category:"x",stores:["carrefour"],channels:["store"]},
+    {title:"Web",provider:"B",type:"x",category:"x",stores:["carrefour"],channels:["online"]},
+    {title:"Tous",provider:"C",type:"x",category:"x",stores:["carrefour"]}
+  ];
+  assert.deepEqual(
+    filterOffers(list,{store:"carrefour",channel:"store"}).map((x)=>x.title),
+    ["Magasin","Tous"]
+  );
+});
