@@ -329,6 +329,14 @@ function renderSourceHealth(){
             </div>
             <div class="source-health-metrics">
               <span><b>${item.activeCount}</b> actives</span>
+              <span><b>${item.exactEanCount||0}</b> EAN exact(s)</span>
+              <span><b>${item.heuristicCount||0}</b> heuristique(s)</span>
+              ${item.resolutionBlockedCount
+                ? `<span><b>${item.resolutionBlockedCount}</b> gamme(s) bloquée(s)</span>`
+                : ""}
+              ${item.storeVerificationCount
+                ? `<span><b>${item.storeVerificationCount}</b> à confirmer en magasin</span>`
+                : ""}
               <span>vérifié ${item.latestVerifiedAt?formatDate(item.latestVerifiedAt):"—"}</span>
               <span>révision ${item.nextDeadline?formatDate(item.nextDeadline):"—"}</span>
             </div>
