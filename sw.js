@@ -1,7 +1,7 @@
-const CACHE="promo-alimentaire-v3";
+const CACHE="promo-alimentaire-v4";
 const ASSETS=[
   "./","./index.html","./styles.css","./src/app.js","./src/data.js","./src/domain.js",
-  "./src/open-data.js","./src/stacking.js","./src/matching.js","./manifest.webmanifest","./icon.svg"
+  "./src/open-data.js","./src/stacking.js","./src/matching.js","./src/basket.js","./manifest.webmanifest","./icon.svg"
 ];
 self.addEventListener("install",(event)=>event.waitUntil(caches.open(CACHE).then((cache)=>cache.addAll(ASSETS))));
 self.addEventListener("activate",(event)=>event.waitUntil(caches.keys().then((keys)=>Promise.all(keys.filter((k)=>k!==CACHE).map((k)=>caches.delete(k))))));
