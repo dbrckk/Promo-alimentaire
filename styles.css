@@ -257,3 +257,14 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .strategy-facts div{background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px;display:grid;gap:3px}
 .strategy-facts strong{font-size:.76rem}
 @media(max-width:640px){.strategy-facts{grid-template-columns:1fr}}
+
+.loyalty-panel{margin-top:10px;padding:14px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,1fr);gap:14px;align-items:end}
+.loyalty-copy{display:grid;gap:4px}
+.loyalty-copy strong{font-size:.9rem}
+.loyalty-copy p:last-child{margin:0;color:var(--muted);font-size:.74rem;line-height:1.4}
+.loyalty-fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(max-width:720px){
+  .loyalty-panel{grid-template-columns:1fr}
+  .loyalty-fields{grid-template-columns:1fr 1fr}
+}
+@media(max-width:460px){.loyalty-fields{grid-template-columns:1fr}}
