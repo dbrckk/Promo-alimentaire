@@ -1,11 +1,11 @@
 import { roundMoney } from "./domain.js";
 
-export function optimizeStack(basePrice,offers,{store}={}) {
+export function optimizeStack(basePrice,offers,{store,channel=null}={}) {
   const price=Number(basePrice);
   if(!Number.isFinite(price) || price<=0) {
     return {basePrice:0,finalCost:0,totalSaving:0,savingPercent:0,selected:[],considered:[]};
   }
-  const considered=offers.filter((offer)=>isApplicable(offer,store));
+  const considered=offers.filter((offer)=>isApplicable(offer,store,channel));
   const candidates=considered.filter((offer)=>offer.autoStack===true);
   let best=evaluateSelection(price,[]);
 
@@ -39,8 +39,11 @@ export function isCompatible(selection) {
   return true;
 }
 
-function isApplicable(offer,store){
-  return (!store || offer.stores?.includes(store) || offer.stores?.includes("all"))
+function isApplicable(offer,store,channel){
+  const storeMatch=!store || offer.stores?.includes(store) || offer.stores?.includes("all");
+  const channels=Array.isArray(offer.channels) ? offer.channels : [];
+  const channelMatch=!channel || channels.length===0 || channels.includes(channel) || channels.includes("all");
+  return storeMatch && channelMatch
     && (Number.isFinite(offer.savingPercent) || Number.isFinite(offer.savingAmount));
 }
 
