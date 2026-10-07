@@ -23,6 +23,7 @@ test("normalizePriceObservation conserve magasin, ville et remise",()=>{
     location:{osm_brand:"Carrefour",osm_name:"Carrefour Market",osm_address_city:"Lyon",osm_address_postcode:"69003"}
   });
   assert.equal(value.price,3.49);
+  assert.equal(value.locationId,null);
   assert.equal(value.storeName,"Carrefour Market");
   assert.equal(value.city,"Lyon");
   assert.equal(value.isDiscounted,true);
@@ -55,4 +56,35 @@ test("fetchPricesByBarcode ne garde que l'enseigne demandée",async()=>{
   const result=await fetchPricesByBarcode("3017624010701",{store:"leclerc",fetchImpl:mockFetch});
   assert.equal(result.observations.length,1);
   assert.equal(result.observations[0].price,1.8);
+});
+
+
+test("fetchPricesByBarcode ajoute lat lon et rayon seulement sur demande",async()=>{
+  let capturedUrl="";
+  const mockFetch=async(url)=>{
+    capturedUrl=String(url);
+    return {ok:true,json:async()=>({total:0,items:[]})};
+  };
+  await fetchPricesByBarcode("3017624010701",{
+    store:"carrefour",
+    coords:{latitude:45.4397,longitude:4.3872},
+    radiusKm:25,
+    fetchImpl:mockFetch
+  });
+  const url=new URL(capturedUrl);
+  assert.equal(url.searchParams.get("lat"),"45.4397");
+  assert.equal(url.searchParams.get("lon"),"4.3872");
+  assert.equal(url.searchParams.get("radius_km"),"25");
+  assert.equal(url.searchParams.get("product_code"),"3017624010701");
+});
+
+test("fetchPricesByBarcode refuse des coordonnées invalides",async()=>{
+  await assert.rejects(
+    fetchPricesByBarcode("3017624010701",{
+      store:"carrefour",
+      coords:{latitude:200,longitude:4},
+      fetchImpl:async()=>{throw new Error("ne doit pas être appelé");}
+    }),
+    /Coordonnées géographiques invalides/
+  );
 });
