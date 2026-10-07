@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  effectiveOfferPercent,
   estimateOfferSaving,
   findProductOffers,
   matchOfferToProduct,
@@ -52,4 +53,19 @@ test("findProductOffers respecte l'enseigne et trie l'exact avant l'heuristique"
 test("estimateOfferSaving calcule un potentiel sans dépasser le prix",()=>{
   assert.equal(estimateOfferSaving(4.5,{savingPercent:40}),1.8);
   assert.equal(estimateOfferSaving(2,{savingAmount:3}),2);
+});
+
+
+test("estimateOfferSaving applique le palier de quantité",()=>{
+  const offer={
+    quantityTiers:[
+      {minQty:1,maxQty:1,savingPercent:25},
+      {minQty:2,maxQty:2,savingPercent:30},
+      {minQty:3,maxQty:null,savingPercent:34}
+    ]
+  };
+  assert.equal(effectiveOfferPercent(offer,1),25);
+  assert.equal(effectiveOfferPercent(offer,2),30);
+  assert.equal(effectiveOfferPercent(offer,3),34);
+  assert.equal(estimateOfferSaving(2,offer,3),2.04);
 });
