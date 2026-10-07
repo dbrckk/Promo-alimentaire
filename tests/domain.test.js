@@ -89,6 +89,6 @@ test("rankOffers peut trier par échéance la plus proche",()=>{
     {id:"later",savingPercent:20,expiresAt:"2026-10-20"},
     {id:"soon",savingPercent:10,expiresAt:"2026-10-09"},
     {id:"none",savingPercent:50}
-  ],"deadline");
+  ],"deadline",new Date("2026-10-07T12:00:00Z"));
   assert.deepEqual(result.map((x)=>x.id),["soon","later","none"]);
 });
