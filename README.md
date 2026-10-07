@@ -13,7 +13,7 @@ Fonctionnalités actuelles :
 - scanner code-barres natif sur les navigateurs compatibles Android ;
 - fiche produit via Open Food Facts ;
 - observations de prix Carrefour/E.Leclerc via Open Prices ;
-- mode proximité volontaire (rayon 25 km) sans persistance des coordonnées ;
+- mode proximité volontaire avec rayon 5/10/25/50 km, distance magasin et aucune persistance des coordonnées ;
 - rapprochement d'un produit scanné avec les offres du registre (EAN exact ou candidat marque/nom) ;
 - estimation prudente du gain potentiel sur un prix récent ;
 - moteur de cumul prudent qui choisit le meilleur chemin valide sans additionner les offres incompatibles ;
@@ -69,7 +69,7 @@ npm run verify
 
 1. Alimenter les offres avec des EAN/GTIN **vérifiés par la source** afin de faire passer les candidats en correspondances exactes.
 2. Ajouter historique des prix et score de fraîcheur/confiance.
-3. Permettre de choisir le rayon de proximité et de comparer plusieurs magasins proches.
+3. Ajouter une vue de comparaison explicite entre plusieurs magasins proches pour un même produit.
 4. Ajouter des connecteurs d'ingestion autorisés pour les catalogues et offres.
 5. Déployer la PWA en HTTPS pour test Android réel.
 
