@@ -20,6 +20,14 @@ for(const offer of offers){
     next.push(offer);
     continue;
   }
+  if(offer.eanResolutionBlocked===true){
+    console.log(
+      "[ean] bloquée · "+offer.title+
+      " · "+(offer.eanResolutionReason || "résolution automatique désactivée")
+    );
+    next.push(offer);
+    continue;
+  }
   if(!offer.productMatch){
     next.push(offer);
     continue;
