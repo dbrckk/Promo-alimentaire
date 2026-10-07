@@ -35,6 +35,8 @@ export function normalizeImportedOffer(raw) {
 
   const savingPercent=nullableNumber(value.savingPercent);
   const savingAmount=nullableNumber(value.savingAmount);
+  const savingAmountMode=value.savingAmountMode==="per-unit" ? "per-unit" : "per-offer";
+  const minPurchaseQty=Math.max(1,Math.trunc(Number(value.minPurchaseQty)||1));
   const savingCapAmount=nullableNumber(value.savingCapAmount);
   const quantityTiers=normalizeQuantityTiers(value.quantityTiers,errors);
   const bundleRequirements=normalizeBundleRequirements(value.bundleRequirements,errors);
@@ -84,6 +86,8 @@ export function normalizeImportedOffer(raw) {
       stores,
       savingPercent:Number.isFinite(savingPercent) ? savingPercent : null,
       savingAmount:Number.isFinite(savingAmount) ? savingAmount : null,
+      savingAmountMode,
+      minPurchaseQty,
       savingCapAmount:Number.isFinite(savingCapAmount) ? savingCapAmount : null,
       basePrice:null,
       verifiedAt,
