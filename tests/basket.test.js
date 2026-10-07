@@ -142,3 +142,37 @@ test("evaluateBasketStore expose une offre bundle comme potentiel seulement",()=
   assert.equal(scenario.potentialBundleSaving,6);
   assert.equal(scenario.bundleCandidates.length,1);
 });
+
+
+test("le meilleur cas prudent ne double-compte pas produit et bundle",()=>{
+  const product={code:"33333333",name:"Lenor",brands:"Lenor",categories:[]};
+  const dash={code:"44444444",name:"Dash",brands:"Dash",categories:[]};
+  const productOffer={
+    id:"lenor-50",scope:"produit",stores:["carrefour"],savingPercent:50,
+    autoStack:false,productMatch:{brands:["Lenor"]}
+  };
+  const bundle={
+    id:"dash-lenor",scope:"bundle",stores:["carrefour"],savingPercent:100,savingCapAmount:10,
+    bundleRequirements:[
+      {id:"dash",minQty:1,productMatch:{brands:["Dash"]}},
+      {id:"lenor",minQty:1,productMatch:{brands:["Lenor"]}}
+    ],
+    bundleTargetRequirementId:"lenor",autoStack:false
+  };
+  const scenario=evaluateBasketStore([
+    {product:dash,quantity:1},
+    {product,quantity:1}
+  ],{
+    store:"carrefour",
+    priceByCode:{
+      "44444444":[{price:8,date:"2026-10-01"}],
+      "33333333":[{price:6,date:"2026-10-01"}]
+    },
+    offers:[productOffer,bundle],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.potentialProductSaving,3);
+  assert.equal(scenario.potentialBundleSaving,6);
+  assert.equal(scenario.conservativePotentialExtraSaving,6);
+  assert.equal(scenario.conservativeBestCaseCost,8);
+});
