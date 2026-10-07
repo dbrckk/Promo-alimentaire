@@ -239,3 +239,10 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .potential-advice span{font-size:.7rem;color:var(--muted)}
 .potential-advice strong{font-size:.95rem;color:#8a6500}
 .potential-advice small{font-size:.7rem;color:var(--muted)}
+
+.scenario-line-wrap{border-top:1px solid var(--line);padding:7px 0}
+.scenario-line-wrap:first-child{border-top:0}
+.scenario-line-wrap .scenario-line{border-top:0;padding:2px 0}
+.line-offer{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;margin-top:5px;padding:6px 8px;border-radius:9px;background:#fff8e9;font-size:.68rem;color:var(--muted)}
+.line-offer strong{color:#8a6500;white-space:nowrap}
+@media(max-width:640px){.line-offer{grid-template-columns:auto 1fr}.line-offer strong{grid-column:2}}
