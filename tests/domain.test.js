@@ -66,7 +66,7 @@ test("offerDeadline choisit l'échéance la plus proche",()=>{
     reviewAfter:"2026-10-09"
   },new Date("2026-10-07T12:00:00Z"));
   assert.equal(deadline.kind,"review");
-  assert.equal(deadline.daysUntil,3);
+  assert.equal(deadline.daysUntil,2);
   assert.equal(deadline.urgent,true);
 });
 
@@ -75,8 +75,8 @@ test("offerDeadline signale une expiration demain",()=>{
     expiresAt:"2026-10-08"
   },new Date("2026-10-07T12:00:00Z"));
   assert.equal(deadline.kind,"expires");
-  assert.equal(deadline.daysUntil,2);
-  assert.match(deadline.label,/Expire/);
+  assert.equal(deadline.daysUntil,1);
+  assert.equal(deadline.label,"Expire demain");
 });
 
 test("offerDeadline retourne null sans échéance",()=>{
