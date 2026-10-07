@@ -44,9 +44,9 @@ export function evaluateBasketStore(items,{
     const lineOptimization=optimizeStack(baseCost,guaranteedProductOffers,{store});
 
     const potentialSavings=matches
-      .map(({offer})=>estimateOfferSaving(best.price,offer))
+      .map(({offer})=>estimateOfferSaving(best.price,offer,quantity))
       .filter(Number.isFinite)
-      .map((saving)=>roundMoney(saving*quantity));
+      .map((saving)=>roundMoney(saving));
     const potentialProductSaving=potentialSavings.length ? Math.max(...potentialSavings) : null;
 
     return {
