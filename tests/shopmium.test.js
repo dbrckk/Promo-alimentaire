@@ -58,3 +58,15 @@ test("parseShopmiumDetailHtml produit une offre prudente active",()=>{
   assert.equal(offer.stores[0],"all");
   assert.equal(offer.autoStack,false);
 });
+
+
+test("deriveShopmiumProductMatch ignore les mots grammaticaux français",()=>{
+  assert.equal(
+    deriveShopmiumProductMatch("À chacun son Daddy",["Cassonade pure canne 750g"]).brands[0],
+    "Daddy"
+  );
+  assert.equal(
+    deriveShopmiumProductMatch("Une pause gourmande Milka",["Mini Muffins Milka x6"]).brands[0],
+    "Milka"
+  );
+});
