@@ -113,3 +113,56 @@ function noMatch(reason) {
 function round(value) {
   return Math.round((Number(value)+Number.EPSILON)*100)/100;
 }
+
+
+export function rankMatchedOffers(matches,{price=null,quantity=1}={}) {
+  const qty=Math.max(1,Math.trunc(Number(quantity)||1));
+  return (matches || [])
+    .map((entry)=>{
+      const minQty=requiredQuantity(entry.offer);
+      const quantitySatisfied=qty>=minQty;
+      const estimatedSaving=Number.isFinite(Number(price))
+        ? estimateOfferSaving(Number(price),entry.offer,qty)
+        : null;
+      const percent=effectiveOfferPercent(entry.offer,qty);
+      let priority=entry.match.exact ? 100 : entry.match.confidence==="probable" ? 70 : 50;
+      priority+=Math.min(20,Math.max(0,entry.match.score||0)/5);
+      if(quantitySatisfied) priority+=8;
+      else priority-=8;
+      if(Number.isFinite(estimatedSaving)) priority+=Math.min(15,estimatedSaving*3);
+      if(Number.isFinite(percent)) priority+=Math.min(10,percent/10);
+      return {
+        ...entry,
+        action:{
+          priority:Math.round(priority*10)/10,
+          minQty,
+          missingQty:Math.max(0,minQty-qty),
+          quantitySatisfied,
+          estimatedSaving,
+          effectivePercent:percent,
+          label:entry.match.exact
+            ? "Meilleure offre vérifiable"
+            : entry.match.confidence==="probable"
+              ? "Candidat fort"
+              : "Candidat à vérifier"
+        }
+      };
+    })
+    .sort((a,b)=>{
+      if(a.match.exact!==b.match.exact) return a.match.exact ? -1 : 1;
+      if(a.action.quantitySatisfied!==b.action.quantitySatisfied) return a.action.quantitySatisfied ? -1 : 1;
+      const aSaving=Number.isFinite(a.action.estimatedSaving) ? a.action.estimatedSaving : -1;
+      const bSaving=Number.isFinite(b.action.estimatedSaving) ? b.action.estimatedSaving : -1;
+      if(aSaving!==bSaving) return bSaving-aSaving;
+      if(a.action.priority!==b.action.priority) return b.action.priority-a.action.priority;
+      return (b.match.score||0)-(a.match.score||0);
+    });
+}
+
+export function requiredQuantity(offer) {
+  const explicit=Math.max(1,Math.trunc(Number(offer?.minPurchaseQty)||1));
+  const tiers=Array.isArray(offer?.quantityTiers) ? offer.quantityTiers : [];
+  if(!tiers.length) return explicit;
+  const tierMin=Math.min(...tiers.map((tier)=>Math.max(1,Math.trunc(Number(tier.minQty)||1))));
+  return Math.max(explicit,tierMin);
+}
