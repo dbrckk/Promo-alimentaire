@@ -1308,6 +1308,7 @@ function renderBasketScenario(scenario){
       candidate
       && candidate.match.exact
       && candidate.offer?.requiresStoreVerification
+      && state.nearbyEnabled
       && scenario.locationReliable
       && scenario.locationKey
     );
@@ -1323,12 +1324,20 @@ function renderBasketScenario(scenario){
           data-location-name="${escapeHtml(scenario.location?.name || "")}"
         >${locallyConfirmed?"Confirmée dans ce magasin ✓":"J’ai vérifié cette promo ici"}</button>`
       : "";
+    const localVerificationHint=candidate
+      && candidate.match.exact
+      && candidate.offer?.requiresStoreVerification
+      && scenario.locationReliable
+      && !state.nearbyEnabled
+      ? '<span class="local-verify-hint">Active « Autour de moi » pour confirmer cette promo dans un magasin précis.</span>'
+      : "";
     const candidateHtml=candidate
       ? `<div class="line-offer">
            <span class="badge ${candidate.match.exact?"good":"warn"}">${candidate.match.exact?"EAN exact":"à vérifier"}</span>
            <span>${escapeHtml(candidate.offer.provider)} · ${escapeHtml(candidate.offer.title)}${offerDeadline(candidate.offer)?` · ${escapeHtml(offerDeadline(candidate.offer).label)}`:""}</span>
            <strong>≈ −${money.format(candidate.saving)}</strong>
            ${confirmationButton}
+           ${localVerificationHint}
          </div>`
       : "";
     return `<div class="scenario-line-wrap">
