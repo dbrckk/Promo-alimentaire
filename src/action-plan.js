@@ -106,15 +106,38 @@ export function buildSavingsActionPlan({
     "receipt"
   );
 
-  if(productCandidates.length){
-    const providersList=[...new Set(productCandidates.map((entry)=>entry.offer?.provider).filter(Boolean))];
+  const refundCandidates=(productCandidates || []).filter((entry)=>{
+    const mechanism=entry.offer?.mechanism;
+    const type=String(entry.offer?.type || "").toLocaleLowerCase("fr");
+    return ["odr","cashback_ticket","coupon_refund"].includes(mechanism)
+      || type.includes("odr")
+      || type.includes("remboursement");
+  });
+  if(refundCandidates.length){
+    const providersList=[...new Set(refundCandidates.map((entry)=>entry.offer?.provider).filter(Boolean))];
     push(
       "après",
       "Envoyer les ODR produit",
       "Traite les remboursements candidats après l’achat : "+providersList.join(", ")+
         ". Vérifie chaque condition avant de soumettre la même preuve à plusieurs services.",
       "refund",
-      productCandidates[0]?.offer?.sourceUrl || null
+      refundCandidates[0]?.offer?.sourceUrl || null
+    );
+  }
+
+  const loyaltyCandidates=(productCandidates || []).filter((entry)=>
+    entry.offer?.mechanism==="retailer_loyalty"
+  );
+  if(loyaltyCandidates.length){
+    const known=loyaltyCandidates.some((entry)=>entry.offer?.loyaltyEligibility==="eligible");
+    push(
+      "achat",
+      known ? "Présenter la carte fidélité" : "Vérifier la carte fidélité",
+      known
+        ? "L’avantage fidélité détecté dépend de la carte renseignée. Présente-la ou associe-la à la commande avant validation."
+        : "Une remise fidélité est possible sur au moins un produit, mais ton profil carte n’est pas confirmé.",
+      "check",
+      loyaltyCandidates[0]?.offer?.sourceUrl || null
     );
   }
 
