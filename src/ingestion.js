@@ -127,8 +127,11 @@ export function normalizeImportedOffer(raw) {
       stackOrder:Number.isFinite(Number(value.stackOrder)) ? Number(value.stackOrder) : 50,
       savingBasis:value.savingBasis==="base" ? "base" : "current",
       autoStack:value.autoStack===true
+        && (scope!=="produit" || (eans.length>0 && Boolean(eanEvidenceUrl)))
         && value.requiresStoreVerification!==true
-        && value.requiresChannelPriceVerification!==true,
+        && value.requiresChannelPriceVerification!==true
+        && value.multiReference!==true
+        && !value.requiresLoyalty,
       stackingConfidence:value.stackingConfidence || "unknown",
       stacking:value.stacking || "conditions à vérifier",
       conditions:value.conditions || "",
@@ -145,6 +148,9 @@ export function validateImportBatch(records) {
   const normalized=[];
   const errors=[];
   const ids=new Set();
+  if(!Array.isArray(records)){
+    errors.push({index:-1,errors:["Le lot d'import doit être un tableau d'offres."]});
+  }
 
   values.forEach((record,index)=>{
     const result=normalizeImportedOffer(record);
