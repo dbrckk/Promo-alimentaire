@@ -176,3 +176,21 @@ test("le meilleur cas prudent ne double-compte pas produit et bundle",()=>{
   assert.equal(scenario.conservativePotentialExtraSaving,6);
   assert.equal(scenario.conservativeBestCaseCost,8);
 });
+
+
+test("evaluateBasketStore expose la ventilation des économies",()=>{
+  const product={code:"55555555",name:"Produit",brands:"Marque",categories:[]};
+  const gift={
+    id:"gift",scope:"panier",stores:["carrefour"],savingPercent:4,
+    autoStack:true,mechanism:"gift_card",stackGroup:"payment",savingBasis:"current",stackOrder:30
+  };
+  const scenario=evaluateBasketStore([{product,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{"55555555":[{price:10,date:"2026-10-01"}]},
+    offers:[gift],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.savingsBreakdown.productGuaranteed,0);
+  assert.equal(scenario.savingsBreakdown.paymentGuaranteed,0.4);
+  assert.equal(scenario.savingsBreakdown.otherBasketGuaranteed,0);
+});
