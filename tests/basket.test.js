@@ -112,3 +112,33 @@ test("selectBestLocationScenario choisit un magasin complet avant un panier part
   assert.equal(best.finalCost,8);
   assert.equal(best.isComplete,true);
 });
+
+
+test("evaluateBasketStore expose une offre bundle comme potentiel seulement",()=>{
+  const dash={code:"11111111",name:"Dash Pods",brands:"Dash",categories:[]};
+  const lenor={code:"22222222",name:"Lenor",brands:"Lenor",categories:[]};
+  const bundle={
+    id:"bundle",scope:"bundle",stores:["carrefour"],savingPercent:100,savingCapAmount:10,
+    bundleRequirements:[
+      {id:"dash",minQty:1,productMatch:{brands:["Dash"]}},
+      {id:"lenor",minQty:1,productMatch:{brands:["Lenor"]}}
+    ],
+    bundleTargetRequirementId:"lenor",autoStack:false
+  };
+  const scenario=evaluateBasketStore([
+    {product:dash,quantity:1},
+    {product:lenor,quantity:1}
+  ],{
+    store:"carrefour",
+    priceByCode:{
+      "11111111":[{price:8,date:"2026-10-01"}],
+      "22222222":[{price:6,date:"2026-10-01"}]
+    },
+    offers:[bundle],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.finalCost,14);
+  assert.equal(scenario.guaranteedSaving,0);
+  assert.equal(scenario.potentialBundleSaving,6);
+  assert.equal(scenario.bundleCandidates.length,1);
+});
