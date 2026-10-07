@@ -1,6 +1,6 @@
 import { DATASET_DATE, offers, providers } from "./data.js";
 import { computeSaving, effectivePercent, filterOffers, rankOffers } from "./domain.js";
-import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, selectBestRecentPrice } from "./open-data.js";
+import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { estimateOfferSaving, findProductOffers } from "./matching.js";
 import {
@@ -422,6 +422,7 @@ function renderPrices(observations,sourceUrl){
 
   const cards=observations.slice(0,12).map((item)=>{
     const fresh=isFreshObservation(item);
+    const freshness=priceFreshness(item);
     const previous=item.priceWithoutDiscount && item.priceWithoutDiscount>item.price
       ? ` · avant ${money.format(item.priceWithoutDiscount)}`
       : "";
@@ -435,7 +436,7 @@ function renderPrices(observations,sourceUrl){
         </div>
         <div class="price-place">
           <strong>${escapeHtml(place || storeLabel(state.store))}</strong>
-          <span>${formatDate(item.date)} · ${fresh?"récent":"ancien"}${distance}</span>
+          <span>${formatDate(item.date)} · ${freshness.label}${distance}</span>
         </div>
       </article>`;
   }).join("");
