@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isOfferActive, normalizeImportedOffer, validateImportBatch } from "../src/ingestion.js";
+import { filterActiveOffers, isOfferActive, normalizeImportedOffer, validateImportBatch } from "../src/ingestion.js";
 
 const valid={
   providerId:"provider",
@@ -241,4 +241,16 @@ test("un produit importé sans EAN prouvé ne peut pas se déclarer cumulable au
   assert.equal(exact.value.autoStack,true);
   const card=normalizeImportedOffer({...base,scope:"panier"});
   assert.equal(card.value.autoStack,true);
+});
+
+
+test("filterActiveOffers retire une offre dès sa revue dépassée sans recharger la PWA",()=>{
+  const input=[
+    {id:"live",reviewAfter:"2026-10-10"},
+    {id:"stale",reviewAfter:"2026-10-07"},
+    {id:"future",startsAt:"2026-10-09"},
+    {id:"permanent"}
+  ];
+  const result=filterActiveOffers(input,new Date("2026-10-08T12:00:00"));
+  assert.deepEqual(result.map((offer)=>offer.id),["live","permanent"]);
 });
