@@ -223,3 +223,24 @@ test("le meilleur cas prudent tient compte d'un cashback panier incertain sans l
   assert.equal(scenario.conservativePotentialExtraSaving,20);
   assert.equal(scenario.conservativeBestCaseCost,80);
 });
+
+
+test("une ligne expose sa meilleure ODR candidate avec niveau de correspondance",()=>{
+  const exactOffer={
+    id:"exact",scope:"produit",stores:["carrefour"],eans:["3017624010701"],
+    savingPercent:20,autoStack:false
+  };
+  const heuristicOffer={
+    id:"heuristic",scope:"produit",stores:["carrefour"],
+    productMatch:{brands:["Marque"]},savingPercent:50,autoStack:false
+  };
+  const scenario=evaluateBasketStore([{product,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{"3017624010701":[{price:10,date:"2026-10-01"}]},
+    offers:[heuristicOffer,exactOffer],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.lines[0].bestProductCandidate.offer.id,"exact");
+  assert.equal(scenario.lines[0].bestProductCandidate.match.exact,true);
+  assert.equal(scenario.lines[0].bestProductCandidate.saving,2);
+});
