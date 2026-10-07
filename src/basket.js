@@ -109,3 +109,88 @@ export function compareBasketStores(scenarios) {
     return a.finalCost-b.finalCost;
   });
 }
+
+
+export function observationLocationKey(observation) {
+  if(!observation) return null;
+  if(observation.locationId!==null && observation.locationId!==undefined) {
+    return `id:${observation.locationId}`;
+  }
+  const lat=Number(observation.locationLat);
+  const lon=Number(observation.locationLon);
+  if(Number.isFinite(lat) && Number.isFinite(lon)) {
+    return `geo:${lat.toFixed(5)},${lon.toFixed(5)}`;
+  }
+  const fallback=[
+    observation.storeName,
+    observation.postcode,
+    observation.city
+  ].map((value)=>String(value ?? "").trim().toLocaleLowerCase("fr")).filter(Boolean).join("|");
+  return fallback ? `text:${fallback}` : null;
+}
+
+export function evaluateBasketLocations(items,{
+  store,
+  priceByCode={},
+  offers=[],
+  now=new Date(),
+  maxPriceAgeDays=120
+}={}) {
+  const locations=new Map();
+
+  for(const item of items || []){
+    const code=item.product?.code;
+    for(const observation of priceByCode[code] || []){
+      const key=observationLocationKey(observation);
+      if(!key) continue;
+      if(!locations.has(key)){
+        locations.set(key,{
+          key,
+          location:{
+            id:observation.locationId ?? null,
+            name:observation.storeName || "",
+            city:observation.city || "",
+            postcode:observation.postcode || "",
+            distanceKm:Number.isFinite(observation.distanceKm) ? observation.distanceKm : null
+          },
+          priceByCode:{}
+        });
+      }
+      const entry=locations.get(key);
+      if(!entry.priceByCode[code]) entry.priceByCode[code]=[];
+      entry.priceByCode[code].push(observation);
+      if(Number.isFinite(observation.distanceKm)){
+        if(!Number.isFinite(entry.location.distanceKm) || observation.distanceKm<entry.location.distanceKm){
+          entry.location.distanceKm=observation.distanceKm;
+        }
+      }
+    }
+  }
+
+  return [...locations.values()].map((entry)=>({
+    ...evaluateBasketStore(items,{
+      store,
+      priceByCode:entry.priceByCode,
+      offers,
+      now,
+      maxPriceAgeDays
+    }),
+    locationKey:entry.key,
+    location:entry.location
+  }));
+}
+
+export function selectBestLocationScenario(scenarios) {
+  const values=(scenarios || []).filter(Boolean);
+  if(!values.length) return null;
+  const complete=values.filter((scenario)=>scenario.isComplete);
+  const pool=complete.length ? complete : values;
+  return [...pool].sort((a,b)=>{
+    if(a.isComplete!==b.isComplete) return a.isComplete ? -1 : 1;
+    if(a.pricedCount!==b.pricedCount) return b.pricedCount-a.pricedCount;
+    if(a.finalCost!==b.finalCost) return a.finalCost-b.finalCost;
+    const da=Number.isFinite(a.location?.distanceKm) ? a.location.distanceKm : Infinity;
+    const db=Number.isFinite(b.location?.distanceKm) ? b.location.distanceKm : Infinity;
+    return da-db;
+  })[0];
+}
