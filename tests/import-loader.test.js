@@ -65,3 +65,17 @@ test("loadImportedOffers marque une source expirée comme stale",async()=>{
   assert.equal(result.sourceStats[0].status,"stale");
   assert.equal(result.sourceStats[0].activeCount,0);
 });
+
+
+test("loadImportedOffers expose le mode automatique/manuelle du snapshot",async()=>{
+  const fetchImpl=async(url)=>{
+    const text=String(url);
+    if(text.endsWith("/index.json")) {
+      return {ok:true,json:async()=>({verifiedAt:"2026-10-07",files:["one-auto.json","manual-2026.json"]})};
+    }
+    return {ok:true,json:async()=>payload};
+  };
+  const result=await loadImportedOffers({fetchImpl,now:new Date("2026-10-07T12:00:00Z")});
+  assert.equal(result.sourceStats[0].mode,"automatic");
+  assert.equal(result.sourceStats[1].mode,"manual");
+});
