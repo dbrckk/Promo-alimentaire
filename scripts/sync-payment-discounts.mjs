@@ -46,7 +46,19 @@ for(const [key,url] of Object.entries(SOURCES)){
   }
 }
 
-const fresh=parsePaymentDiscountPages(pages,{verifiedAt});
+const parsedFresh=parsePaymentDiscountPages(pages,{verifiedAt});
+const previousByIdentity=new Map(previous.map((offer)=>[identity(offer),offer]));
+const fresh=[];
+for(const offer of parsedFresh){
+  const prior=previousByIdentity.get(identity(offer));
+  const sanity=validateRateSanity(offer,prior);
+  if(!sanity.ok){
+    failures.push({key:identity(offer),error:sanity.reason});
+    console.warn("[payments] valeur suspecte rejetée : "+identity(offer)+" · "+sanity.reason);
+    continue;
+  }
+  fresh.push(offer);
+}
 const merged=new Map();
 for(const offer of previous) merged.set(identity(offer),offer);
 for(const offer of fresh) merged.set(identity(offer),offer);
@@ -99,4 +111,44 @@ function identity(offer){
     [...(offer?.stores || [])].sort().join(","),
     [...(offer?.channels || [])].sort().join(",")
   ].join("|");
+}
+
+
+function validateRateSanity(offer,previousOffer=null){
+  const percent=Number(offer?.savingPercent);
+  const amount=Number(offer?.savingAmount);
+
+  const percentCaps={
+    gift_card:15,
+    card_cashback:5,
+    affiliate_cashback:20
+  };
+  const cap=percentCaps[offer?.mechanism];
+  if(Number.isFinite(percent) && Number.isFinite(cap) && percent>cap){
+    return {ok:false,reason:"taux "+percent+"% supérieur au plafond de sécurité "+cap+"%"};
+  }
+  if(Number.isFinite(amount) && amount>50){
+    return {ok:false,reason:"montant "+amount+"€ supérieur au plafond de sécurité"};
+  }
+
+  const previousPercent=Number(previousOffer?.savingPercent);
+  if(Number.isFinite(percent) && Number.isFinite(previousPercent) && previousPercent>0){
+    const largeIncrease=percent>previousPercent*2 && percent>previousPercent+2;
+    const largeDecrease=percent<previousPercent*0.2 && previousPercent-percent>1;
+    if(largeIncrease || largeDecrease){
+      return {
+        ok:false,
+        reason:"variation anormale "+previousPercent+"% → "+percent+"%"
+      };
+    }
+  }
+
+  const previousAmount=Number(previousOffer?.savingAmount);
+  if(Number.isFinite(amount) && Number.isFinite(previousAmount) && previousAmount>0){
+    const largeIncrease=amount>previousAmount*3 && amount>previousAmount+10;
+    if(largeIncrease){
+      return {ok:false,reason:"variation anormale "+previousAmount+"€ → "+amount+"€"};
+    }
+  }
+  return {ok:true};
 }
