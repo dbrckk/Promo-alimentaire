@@ -21,6 +21,8 @@ Fonctionnalités actuelles :
 - liste de courses persistante sur l'appareil avec quantités ;
 - actualisation des mêmes références chez Carrefour et E.Leclerc ;
 - comparaison des deux paniers avec refus de déclarer un gagnant si la couverture prix est incomplète ;
+- regroupement des prix par point de vente physique pour éviter de mélanger plusieurs magasins d'une même enseigne ;
+- préférence automatique pour les prix ≤30 jours, avec repli jusqu'à 120 jours seulement si nécessaire ;
 - PWA installable et fonctionnement hors ligne pour l'interface ;
 - tests métier sans dépendance externe.
 
@@ -73,7 +75,7 @@ npm run verify
 
 1. Alimenter les offres avec des EAN/GTIN **vérifiés par la source** afin de faire passer les candidats en correspondances exactes.
 2. Ajouter historique des prix et score de fraîcheur/confiance.
-3. Grouper les observations par magasin précis afin de comparer un **panier complet dans un même point de vente** plutôt qu'une agrégation d'enseigne.
+3. Ajouter un historique local des comparaisons de panier et un indicateur de confiance global.
 4. Ajouter des connecteurs d'ingestion autorisés pour les catalogues et offres.
 5. Déployer la PWA en HTTPS pour test Android réel.
 
