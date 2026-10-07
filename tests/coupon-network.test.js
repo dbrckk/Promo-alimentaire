@@ -129,3 +129,12 @@ test("deriveProductMatch déduplique les termes répétitifs",()=>{
   );
   assert.equal(new Set(match.all.map((x)=>x.toLowerCase())).size,match.all.length);
 });
+
+
+test("deriveProductMatch ignore les quantités numériques seules",()=>{
+  const match=deriveProductMatch(
+    "Les Dieux - Global Gamme",
+    "Sur l'achat de 2 boîtes de sardines Les Dieux au choix dans la gamme."
+  );
+  assert.deepEqual(match.all,["sardines"]);
+});
