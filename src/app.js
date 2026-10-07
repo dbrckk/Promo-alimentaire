@@ -831,9 +831,13 @@ function evaluateCurrentBasketScenarios(){
         locationReliable:false
       };
     }
-    return {
+    const enrichedScenario={
       ...scenario,
-      confidence:scoreBasketConfidence(scenario)
+      priceChannelReliable:state.channel==="store"
+    };
+    return {
+      ...enrichedScenario,
+      confidence:scoreBasketConfidence(enrichedScenario)
     };
   });
 }
@@ -945,7 +949,8 @@ function recordComparisonHistory(scenarios){
     scenarios,
     shoppingList:state.shoppingList,
     radiusKm:state.radiusKm,
-    nearbyEnabled:state.nearbyEnabled
+    nearbyEnabled:state.nearbyEnabled,
+    channel:state.channel
   });
   state.comparisonHistory=addHistoryEntry(state.comparisonHistory,entry,{limit:20});
   saveComparisonHistory();
@@ -992,7 +997,9 @@ function renderBasketComparison(scenarios){
   const allComplete=scenarios.length>0 && scenarios.every((scenario)=>scenario.isComplete);
   const allLocationsReliable=scenarios.length>0 && scenarios.every((scenario)=>scenario.locationReliable);
   let recommendation="";
-  if(!state.nearbyEnabled){
+  if(state.channel!=="store"){
+    recommendation='<div class="basket-recommendation"><strong>Prix indicatifs seulement.</strong> Open Prices contient des observations de magasins physiques ; en mode Drive ou En ligne, ces prix ne permettent pas de déclarer une enseigne gagnante. Les offres du canal sélectionné restent filtrées correctement.</div>';
+  }else if(!state.nearbyEnabled){
     recommendation='<div class="basket-recommendation"><strong>Comparaison locale non activée.</strong> Active « Autour de moi » puis actualise pour comparer des magasins dans le même secteur.</div>';
   }else if(!allComplete){
     recommendation='<div class="basket-recommendation"><strong>Comparaison incomplète.</strong> Au moins une enseigne manque d’un prix récent pour un produit ; aucun gagnant n’est déclaré.</div>';
@@ -1016,7 +1023,9 @@ function renderBasketComparison(scenarios){
 
 function renderBasketScenario(scenario){
   const coverageClass=scenario.isComplete ? "coverage-good" : "coverage-warn";
-  const totalLabel=scenario.isComplete ? "Coût effectif" : "Total partiel";
+  const totalLabel=scenario.priceChannelReliable===false
+    ? "Total indicatif"
+    : scenario.isComplete ? "Coût effectif" : "Total partiel";
   const locationText=scenario.location
     ? [scenario.location.name,scenario.location.postcode,scenario.location.city].filter(Boolean).join(" · ")
     : "Point de vente non identifié";
@@ -1083,7 +1092,10 @@ function renderBasketScenario(scenario){
         <h3>${storeLabel(scenario.store)}</h3>
         <div class="source">${escapeHtml(locationText)}${distanceText}</div>
         <div class="${coverageClass} source">${scenario.pricedCount}/${scenario.distinctCount} références avec prix récent</div>
-        <div class="badges">${locationWarning}</div>
+        <div class="badges">
+          ${locationWarning}
+          ${scenario.priceChannelReliable===false?'<span class="badge warn">prix magasin indicatif pour ce canal</span>':""}
+        </div>
       </div>
       <div class="confidence-box">
         <div class="confidence-score ${confidence.level}">${confidence.score}/100</div>
