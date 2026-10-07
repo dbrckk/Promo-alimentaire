@@ -4,6 +4,7 @@ import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normal
 import { optimizeStack } from "./stacking.js";
 import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
+import { filterActiveOffers } from "./ingestion.js";
 import {
   compareBasketStores,
   evaluateBasketLocations,
@@ -36,6 +37,11 @@ import {
 
 const money = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 let offers=[...baseOffers];
+function activeOffers(){
+  // Recheck deadlines at each interaction: long-running installed PWAs must
+  // not continue counting an offer whose review date passed overnight.
+  return filterActiveOffers(offers,new Date());
+}
 const els = {
   store:document.querySelector("#store"),
   channel:document.querySelector("#channel"),
@@ -217,7 +223,7 @@ function setTab(tab){
 }
 
 function render(){
-  const resolvedOffers=resolveOffersForLoyalty(offers,state.loyaltyProfile);
+  const resolvedOffers=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
   const filtered=filterOffers(resolvedOffers,{store:state.store,channel:state.channel,search:state.search});
   const ranked=rankOffers(filtered,state.sort);
   els.offers.innerHTML=ranked.map(renderOffer).join("");
@@ -452,7 +458,7 @@ function renderProduct(product){
 }
 
 function renderProductOffers(product,observations=[]){
-  const resolvedOffers=resolveOffersForLoyalty(offers,state.loyaltyProfile);
+  const resolvedOffers=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
   const loyaltyOffers=buildProductLoyaltyOffers(product,{
     store:state.store,
     profile:state.loyaltyProfile
@@ -648,7 +654,7 @@ function renderOptimizer(){
     els.optimizerResult.innerHTML='<div class="panel price-source">Entre un montant de panier supérieur à 0 €.</div>';
     return;
   }
-  const basketOffers=resolveOffersForLoyalty(offers,state.loyaltyProfile)
+  const basketOffers=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile)
     .filter((offer)=>offer.scope==="panier");
   const result=optimizeStack(amount,basketOffers,{store:state.store,channel:state.channel});
   const route=result.selected.length
@@ -919,7 +925,7 @@ function evaluateCurrentBasketScenarios(){
       store,
       channel:state.channel,
       priceByCode:state.basketPriceData[store],
-      offers,
+      offers:activeOffers(),
       loyaltyProfile:state.loyaltyProfile,
       storeConfirmations:state.storeConfirmations
     });
@@ -994,7 +1000,7 @@ function handleBasketComparisonAction(event){
     return;
   }
 
-  const offer=offers.find((entry)=>entry.id===offerId);
+  const offer=activeOffers().find((entry)=>entry.id===offerId);
   if(!offer){
     setListStatus("Offre introuvable dans les données actuelles.",true);
     return;
@@ -1380,15 +1386,15 @@ function renderBasketScenario(scenario){
       <div class="lever guaranteed"><span>Fidélité cagnottée</span><strong>+${money.format(breakdown.loyaltyGuaranteed||0)}</strong></div>
       <div class="lever guaranteed"><span>Paiement remisé</span><strong>−${money.format(breakdown.paymentGuaranteed)}</strong></div>
       <div class="lever guaranteed"><span>Autres garanties</span><strong>−${money.format(breakdown.otherBasketGuaranteed)}</strong></div>
-      <div class="lever potential"><span>ODR candidates</span><strong>jusqu’à ${money.format(breakdown.productPotential)}</strong></div>
-      <div class="lever potential"><span>Bundles candidats</span><strong>jusqu’à ${money.format(breakdown.bundlePotential)}</strong></div>
+      <div class="lever potential"><span>Offres produits · gain additionnel</span><strong>jusqu’à ${money.format(breakdown.productPotentialExtra||0)}</strong></div>
+      <div class="lever potential"><span>Bundles · gain additionnel</span><strong>jusqu’à ${money.format(breakdown.bundlePotentialExtra||0)}</strong></div>
       <div class="lever potential"><span>Cashback panier candidat</span><strong>jusqu’à ${money.format(breakdown.basketPotential||0)}</strong></div>
     </div>`;
   const potential=scenario.potentialProductSaving>0
-    ? `<p class="help">ODR/coupons produits candidats : jusqu’à ${money.format(scenario.potentialProductSaving)} potentiels, non inclus tant que l’éligibilité/cumul n’est pas confirmé.</p>`
+    ? `<p class="help">Offres produits candidates : économie brute maximale ${money.format(scenario.potentialProductSaving)} ; gain restant après remises déjà retenues jusqu’à ${money.format(scenario.potentialAdditionalProductSaving||0)}. Les références et les cumuls doivent être confirmés.</p>`
     : "";
   const bundlePotential=scenario.potentialBundleSaving>0
-    ? `<p class="help"><strong>Offre multi-produits potentielle :</strong> jusqu’à ${money.format(scenario.potentialBundleSaving)} supplémentaires. Elle n’est jamais intégrée au coût garanti avant confirmation des références, de l’achat simultané et des règles de cumul.</p>`
+    ? `<p class="help"><strong>Offre multi-produits potentielle :</strong> ${money.format(scenario.potentialBundleSaving)} brut, jusqu’à ${money.format(scenario.potentialAdditionalBundleSaving||0)} de gain supplémentaire après remises produit déjà retenues. Références, achat simultané et cumul à vérifier.</p>`
     : "";
   const basketPotential=breakdown.basketPotential>0
     ? `<p class="help"><strong>Cashback panier potentiel :</strong> jusqu’à ${money.format(breakdown.basketPotential)} selon le meilleur cashback non garanti compatible avec ce canal. Il reste exclu du coût garanti.</p>`
