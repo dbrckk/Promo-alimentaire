@@ -192,3 +192,28 @@ test("normalizeImportedOffer conserve le besoin de vérifier le prix du canal",(
   assert.equal(result.value.requiresChannelPriceVerification,true);
   assert.equal(result.value.autoStack,false);
 });
+
+
+test("normalizeImportedOffer conserve les prix source d'une promo Carrefour",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"carrefour",
+    externalId:"exact-promo",
+    title:"Promo exacte",
+    sourceUrl:"https://www.carrefour.fr/p/test-4006381333931",
+    verifiedAt:"2026-10-07",
+    reviewAfter:"2026-10-09",
+    stores:["carrefour"],
+    channels:["drive","online"],
+    scope:"produit",
+    savingPercent:30,
+    basePrice:1.59,
+    sourceRegularPrice:1.59,
+    sourcePromoPrice:1.11,
+    eans:["4006381333931"],
+    eanEvidenceUrl:"https://www.carrefour.fr/p/test-4006381333931",
+    requiresChannelPriceVerification:true
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.sourceRegularPrice,1.59);
+  assert.equal(result.value.sourcePromoPrice,1.11);
+});
