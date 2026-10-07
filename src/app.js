@@ -1,5 +1,5 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
-import { computeSaving, effectivePercent, filterOffers, rankOffers } from "./domain.js";
+import { computeSaving, effectivePercent, filterOffers, offerDeadline, rankOffers } from "./domain.js";
 import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
@@ -227,6 +227,10 @@ function renderOffer(offer){
   const stackBadge=offer.autoStack===true
     ? '<span class="badge good">Cumul automatisable</span>'
     : '<span class="badge warn">Cumul à vérifier</span>';
+  const deadline=offerDeadline(offer);
+  const deadlineBadge=deadline
+    ? `<span class="badge ${deadline.urgent||deadline.overdue?"warn":""}">${escapeHtml(deadline.label)}</span>`
+    : "";
   return `
     <article class="card">
       <div class="card-head">
@@ -240,6 +244,7 @@ function renderOffer(offer){
         <span class="badge">${offer.scope==="panier"?"Panier entier":offer.scope==="bundle"?"Multi-produits":"Produit ciblé"}</span>
         <span class="badge">${escapeHtml(offer.category)}</span>
         ${stackBadge}
+        ${deadlineBadge}
       </div>
       <div class="meta">
         <div><span>Économie en €</span>${amount===null?"Dépend du prix":money.format(amount)}</div>
@@ -456,6 +461,7 @@ function renderProductOffers(product,observations=[]){
           <span class="badge ${confidenceClass}">${confidenceLabel}</span>
           <span class="badge">${escapeHtml(storeLabel(state.store))}</span>
           <span class="badge ${action.quantitySatisfied?"good":"warn"}">${escapeHtml(quantityLine)}</span>
+          ${offerDeadline(offer)?`<span class="badge ${offerDeadline(offer).urgent?"warn":""}">${escapeHtml(offerDeadline(offer).label)}</span>`:""}
         </div>
         <p class="match-note">${escapeHtml(safetyNote)}</p>
         <div class="actions">
@@ -1074,7 +1080,7 @@ function renderBasketScenario(scenario){
     const candidateHtml=candidate
       ? `<div class="line-offer">
            <span class="badge ${candidate.match.exact?"good":"warn"}">${candidate.match.exact?"EAN exact":"à vérifier"}</span>
-           <span>${escapeHtml(candidate.offer.provider)} · ${escapeHtml(candidate.offer.title)}</span>
+           <span>${escapeHtml(candidate.offer.provider)} · ${escapeHtml(candidate.offer.title)}${offerDeadline(candidate.offer)?` · ${escapeHtml(offerDeadline(candidate.offer).label)}`:""}</span>
            <strong>≈ −${money.format(candidate.saving)}</strong>
          </div>`
       : "";
