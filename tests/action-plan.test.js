@@ -48,3 +48,19 @@ test("le plan online avertit de choisir un seul portail cashback",()=>{
   assert.ok(result.steps.some((step)=>/un seul portail cashback/.test(step.title)));
   assert.match(result.steps[0].detail,/extension cashback concurrente/);
 });
+
+
+test("le plan online mentionne les sources dynamiques non chiffrées",()=>{
+  const result=buildSavingsActionPlan({
+    store:"leclerc",
+    channel:"online",
+    providers:[
+      {id:"joko",name:"Joko",stores:["leclerc"],url:"https://www.joko.com/"},
+      {id:"igraal",name:"iGraal",stores:["leclerc"],url:"https://fr.igraal.com/"}
+    ]
+  });
+  const step=result.steps.find((item)=>/cashbacks dynamiques/.test(item.title));
+  assert.ok(step);
+  assert.match(step.detail,/Joko/);
+  assert.match(step.detail,/iGraal/);
+});
