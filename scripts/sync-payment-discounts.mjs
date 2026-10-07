@@ -1,5 +1,8 @@
 import { readFile,writeFile } from "node:fs/promises";
-import { parsePaymentDiscountPages } from "../src/adapters/payment-discounts.js";
+import {
+  parsePaymentDiscountPages,
+  validatePaymentRateSafety
+} from "../src/adapters/payment-discounts.js";
 import { validateImportBatch } from "../src/ingestion.js";
 
 const SOURCES={
@@ -51,7 +54,8 @@ const previousByIdentity=new Map(previous.map((offer)=>[identity(offer),offer]))
 const fresh=[];
 for(const offer of parsedFresh){
   const prior=previousByIdentity.get(identity(offer));
-  const sanity=validateRateSanity(offer,prior);
+  const baseSafety=validatePaymentRateSafety(offer);
+  const sanity=baseSafety.ok ? validateRateSanity(offer,prior) : baseSafety;
   if(!sanity.ok){
     failures.push({key:identity(offer),error:sanity.reason});
     console.warn("[payments] valeur suspecte rejetée : "+identity(offer)+" · "+sanity.reason);
