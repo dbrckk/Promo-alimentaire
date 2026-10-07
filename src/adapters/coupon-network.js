@@ -56,6 +56,8 @@ export function buildCouponNetworkCandidate({title,description,amount,verifiedAt
     category:"autre",
     stores:["all"],
     savingAmount:roundMoney(amount),
+    savingAmountMode:"per-offer",
+    minPurchaseQty:inferMinPurchaseQty(description),
     verifiedAt,
     reviewAfter:addDays(verifiedAt,7),
     sourceUrl:sourceUrl || "https://www.couponnetwork.fr/index.rss",
@@ -70,6 +72,22 @@ export function buildCouponNetworkCandidate({title,description,amount,verifiedAt
     stacking:"activation et conditions Coupon Network à vérifier",
     conditions:description+" Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
   };
+}
+
+export function inferMinPurchaseQty(description){
+  const text=cleanLine(description)
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLocaleLowerCase("fr");
+  const digit=text.match(/\b(?:achat|l'achat|d'achat)\s+(?:de|d')\s*(\d{1,2})\b/i)
+    || text.match(/\bsur\s+l['’]?achat\s+de\s+(\d{1,2})\b/i);
+  if(digit){
+    const value=Number(digit[1]);
+    return Number.isFinite(value) && value>=1 ? Math.min(value,99) : 1;
+  }
+  const words=new Map([["un",1],["une",1],["deux",2],["trois",3],["quatre",4],["cinq",5],["six",6]]);
+  const wordMatch=text.match(/\bsur\s+l['’]?achat\s+(?:de|d')\s*(un|une|deux|trois|quatre|cinq|six)\b/i);
+  if(wordMatch) return words.get(wordMatch[1]) || 1;
+  return 1;
 }
 
 export function deriveProductMatch(title){
