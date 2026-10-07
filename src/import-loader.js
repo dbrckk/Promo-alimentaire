@@ -34,17 +34,17 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       }
       const activeOffers=result.normalized.filter((offer)=>isOfferActive(offer,now));
       const providerIds=[...new Set(result.normalized.map((offer)=>offer.providerId).filter(Boolean))];
-      const exactEanCount=result.normalized.filter((offer)=>
+      const exactEanCount=activeOffers.filter((offer)=>
         Array.isArray(offer.eans) && offer.eans.length>0
       ).length;
-      const heuristicCount=result.normalized.filter((offer)=>
+      const heuristicCount=activeOffers.filter((offer)=>
         (!Array.isArray(offer.eans) || offer.eans.length===0)
         && Boolean(offer.productMatch)
       ).length;
-      const resolutionBlockedCount=result.normalized.filter((offer)=>
+      const resolutionBlockedCount=activeOffers.filter((offer)=>
         offer.eanResolutionBlocked===true
       ).length;
-      const storeVerificationCount=result.normalized.filter((offer)=>
+      const storeVerificationCount=activeOffers.filter((offer)=>
         offer.requiresStoreVerification===true
       ).length;
       const verifiedDates=result.normalized.map((offer)=>offer.verifiedAt).filter(Boolean).sort();
@@ -97,11 +97,29 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
   };
 }
 
+export function offerIdentity(offer){
+  if(!offer?.id) return "";
+  const scope=offer.scope;
+  const mechanism=offer.mechanism;
+  const providerId=offer.providerId;
+  // Static payment fallbacks must yield to a newer public payment snapshot,
+  // but different product promotions/ODRs must never be collapsed by heuristics.
+  if(scope==="panier" && providerId
+    && ["gift_card","card_cashback","affiliate_cashback"].includes(mechanism)){
+    const stores=[...(offer.stores || [])].map(String).sort().join(",");
+    const channels=[...(offer.channels || [])].map(String).sort().join(",");
+    if(stores && channels) return [
+      "payment",providerId,mechanism,stores,channels
+    ].join("|");
+  }
+  return String(offer.id);
+}
+
 export function mergeOffers(baseOffers,importedOffers) {
   const map=new Map();
   for(const offer of [...(baseOffers || []),...(importedOffers || [])]){
     if(!offer?.id) continue;
-    map.set(offer.id,offer);
+    map.set(offerIdentity(offer),offer);
   }
   return [...map.values()];
 }
