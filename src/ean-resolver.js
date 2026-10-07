@@ -94,7 +94,11 @@ export function selectUniqueEanCandidate(offer,candidates,{
 
   const first=ranked[0];
   const second=ranked[1] || null;
-  if(second && first.evaluation.score-second.evaluation.score<minMargin){
+  const rules=offer?.productMatch || {};
+  const required=(rules.all || []).map((value)=>String(value).trim()).filter(Boolean);
+  const optional=(rules.any || []).map((value)=>String(value).trim()).filter(Boolean);
+  const lowSpecificity=required.length===0 && optional.length<=1;
+  if(second && (lowSpecificity || first.evaluation.score-second.evaluation.score<minMargin)){
     return {
       status:"ambiguous",
       candidate:null,
