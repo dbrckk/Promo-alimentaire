@@ -5,7 +5,7 @@ export function priceLocationKey(observation){
   }
   const name=String(observation.storeName || "").trim().toLocaleLowerCase("fr");
   const postcode=String(observation.postcode || "").trim();
-  if(!name || /non précisé|unknown|inconnu/.test(name) || !/^\\d{5}$/.test(postcode)) return null;
+  if(!name || /non précisé|unknown|inconnu/.test(name) || !/^\d{5}$/.test(postcode)) return null;
   return "named:"+name+"|"+postcode;
 }
 
