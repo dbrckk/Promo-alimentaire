@@ -517,7 +517,7 @@ function addCurrentProduct(){
       quantity:1
     });
   }
-  state.basketPriceData.carrefour[code]=state.priceObservations;
+  state.basketPriceData[state.store][code]=state.priceObservations;
   saveShoppingList();
   renderShoppingList();
   setProductStatus("Produit ajouté à la liste.");
