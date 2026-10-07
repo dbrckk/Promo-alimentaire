@@ -25,6 +25,7 @@ const money = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 let offers=[...baseOffers];
 const els = {
   store:document.querySelector("#store"),
+  channel:document.querySelector("#channel"),
   sort:document.querySelector("#sort"),
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
@@ -74,6 +75,7 @@ const views = {
 
 const state = {
   store:localStorage.getItem("promo-store") || "carrefour",
+  channel:localStorage.getItem("promo-channel") || "store",
   sort:localStorage.getItem("promo-sort") || "percent",
   search:"",
   tab:"offers",
@@ -94,6 +96,7 @@ const state = {
 };
 
 els.store.value=state.store;
+els.channel.value=state.channel;
 els.sort.value=state.sort;
 els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
@@ -107,6 +110,14 @@ els.store.addEventListener("change",async()=>{
   renderOptimizer();
   if(state.product) renderProductOffers(state.product,state.priceObservations);
   if(state.productCode) await refreshPrices(state.productCode);
+});
+els.channel.addEventListener("change",()=>{
+  state.channel=els.channel.value;
+  localStorage.setItem("promo-channel",state.channel);
+  render();
+  renderOptimizer();
+  renderShoppingList();
+  if(state.product) renderProductOffers(state.product,state.priceObservations);
 });
 els.sort.addEventListener("change",()=>{
   state.sort=els.sort.value;
@@ -183,7 +194,7 @@ function setTab(tab){
 }
 
 function render(){
-  const filtered=filterOffers(offers,{store:state.store,search:state.search});
+  const filtered=filterOffers(offers,{store:state.store,channel:state.channel,search:state.search});
   const ranked=rankOffers(filtered,state.sort);
   els.offers.innerHTML=ranked.map(renderOffer).join("");
   els.empty.classList.toggle("hidden",ranked.length>0);
@@ -393,7 +404,7 @@ function renderProduct(product){
 }
 
 function renderProductOffers(product,observations=[]){
-  const rawMatches=findProductOffers(product,offers,{store:state.store});
+  const rawMatches=findProductOffers(product,offers,{store:state.store,channel:state.channel});
   const bestObserved=selectBestRecentPrice(observations);
   const recentPrice=bestObserved?.price ?? null;
   const matches=rankMatchedOffers(rawMatches,{price:recentPrice,quantity:1});
@@ -558,7 +569,7 @@ function renderOptimizer(){
     return;
   }
   const basketOffers=offers.filter((offer)=>offer.scope==="panier");
-  const result=optimizeStack(amount,basketOffers,{store:state.store});
+  const result=optimizeStack(amount,basketOffers,{store:state.store,channel:state.channel});
   const route=result.selected.length
     ? result.selected.map((offer)=>`
       <div class="route-step">
@@ -571,6 +582,10 @@ function renderOptimizer(){
   const paymentAlternatives=basketOffers
     .filter((offer)=>offer.mechanism==="gift_card")
     .filter((offer)=>offer.stores?.includes(state.store)||offer.stores?.includes("all"))
+    .filter((offer)=>{
+      const channels=Array.isArray(offer.channels) ? offer.channels : [];
+      return channels.length===0 || channels.includes(state.channel) || channels.includes("all");
+    })
     .sort((a,b)=>(b.savingPercent||0)-(a.savingPercent||0));
   const paymentAdvice=selectedPayment
     ? `<div class="payment-advice">
@@ -792,6 +807,7 @@ function evaluateCurrentBasketScenarios(){
   return ["carrefour","leclerc"].map((store)=>{
     const locationScenarios=evaluateBasketLocations(state.shoppingList,{
       store,
+      channel:state.channel,
       priceByCode:state.basketPriceData[store],
       offers
     });
@@ -806,6 +822,7 @@ function evaluateCurrentBasketScenarios(){
       scenario={
         ...evaluateBasketStore(state.shoppingList,{
           store,
+          channel:state.channel,
           priceByCode:state.basketPriceData[store],
           offers
         }),
