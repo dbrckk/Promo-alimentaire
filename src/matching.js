@@ -88,8 +88,12 @@ export function effectiveOfferPercent(offer,quantity=1) {
 export function estimateOfferSaving(price,offer,quantity=1) {
   const value=Number(price);
   const qty=Math.max(1,Math.trunc(Number(quantity)||1));
-  if(!Number.isFinite(value) || value<=0) return null;
-  if(Number.isFinite(offer.savingAmount)) return Math.min(value*qty,round(offer.savingAmount*qty));
+  const minPurchaseQty=Math.max(1,Math.trunc(Number(offer.minPurchaseQty)||1));
+  if(!Number.isFinite(value) || value<=0 || qty<minPurchaseQty) return null;
+  if(Number.isFinite(offer.savingAmount)) {
+    const multiplier=offer.savingAmountMode==="per-unit" ? qty : 1;
+    return Math.min(value*qty,round(offer.savingAmount*multiplier));
+  }
   const percent=effectiveOfferPercent(offer,qty);
   if(Number.isFinite(percent)) {
     return Math.min(value*qty,round(value*qty*percent/100));
