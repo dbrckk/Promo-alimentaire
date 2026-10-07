@@ -271,7 +271,10 @@ function renderSourceHealth(){
               <strong>${escapeHtml(label)}</strong>
               <div class="source">${escapeHtml(item.file)}</div>
             </div>
-            <span class="badge ${badgeClass}">${stateLabel}</span>
+            <div class="badges">
+              <span class="badge ${badgeClass}">${stateLabel}</span>
+              <span class="badge">${item.mode==="automatic"?"Synchronisation auto":"Snapshot manuel"}</span>
+            </div>
             <div class="source-health-metrics">
               <span><b>${item.activeCount}</b> actives</span>
               <span>vérifié ${item.latestVerifiedAt?formatDate(item.latestVerifiedAt):"—"}</span>
@@ -993,6 +996,13 @@ function renderBasketScenario(scenario){
   const bundlePotential=scenario.potentialBundleSaving>0
     ? `<p class="help"><strong>Offre multi-produits potentielle :</strong> jusqu’à ${money.format(scenario.potentialBundleSaving)} supplémentaires. Elle n’est jamais intégrée au coût garanti avant confirmation des références, de l’achat simultané et des règles de cumul.</p>`
     : "";
+  const prudentBestCase=scenario.conservativePotentialExtraSaving>0
+    ? `<div class="best-case-box">
+         <span>Meilleur cas prudent</span>
+         <strong>${money.format(scenario.conservativeBestCaseCost)}</strong>
+         <small>Après la meilleure économie candidate retenue sans additionner produit + bundle potentiellement incompatibles.</small>
+       </div>`
+    : "";
 
   return `
     <article class="scenario-card">
@@ -1023,6 +1033,7 @@ function renderBasketScenario(scenario){
       <p class="help">${basketRoute}</p>
       ${potential}
       ${bundlePotential}
+      ${prudentBestCase}
     </article>`;
 }
 
