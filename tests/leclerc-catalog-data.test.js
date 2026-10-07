@@ -31,3 +31,18 @@ test("la promo Gullón gamme reste sans EAN unique",()=>{
   const offer=byExternalId("26G133G-gullon-biscuits-68-second");
   assert.ok(!Array.isArray(offer.eans) || offer.eans.length===0);
 });
+
+
+test("les gammes ambiguës sont explicitement bloquées pour la résolution EAN automatique",()=>{
+  const ids=[
+    "26G122G-heudebert-biscottes-2plus1",
+    "26G133G-gullon-biscuits-68-second",
+    "26G122G-nescafe-espresso-concentrate-34"
+  ];
+  for(const id of ids){
+    const offer=byExternalId(id);
+    assert.equal(offer.multiReference,true);
+    assert.equal(offer.eanResolutionBlocked,true);
+    assert.ok(offer.eanResolutionReason.length>20);
+  }
+});
