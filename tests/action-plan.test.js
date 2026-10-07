@@ -34,3 +34,17 @@ test("les cashbacks carte incertains restent des vérifications",()=>{
   const step=result.steps.find((item)=>/cashbacks carte/.test(item.title));
   assert.equal(step.kind,"check");
 });
+
+
+test("le plan online avertit de choisir un seul portail cashback",()=>{
+  const result=buildSavingsActionPlan({
+    store:"carrefour",
+    channel:"online",
+    providers:[{id:"joko",stores:["carrefour"],url:"https://www.joko.com/"}],
+    uncertainBasketOffers:[
+      {mechanism:"affiliate_cashback",provider:"eBuyClub",savingAmount:3,sourceUrl:"https://example.com"}
+    ]
+  });
+  assert.ok(result.steps.some((step)=>/un seul portail cashback/.test(step.title)));
+  assert.match(result.steps[0].detail,/extension cashback concurrente/);
+});
