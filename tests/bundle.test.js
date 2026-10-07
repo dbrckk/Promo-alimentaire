@@ -64,3 +64,24 @@ test("findBundleCandidates respecte le canal",()=>{
   assert.equal(findBundleCandidates(items,lines,[webOffer],{store:"carrefour",channel:"store"}).length,0);
   assert.equal(findBundleCandidates(items,lines,[webOffer],{store:"carrefour",channel:"online"}).length,1);
 });
+
+
+test("un bundle reste non chiffrable si un article obligatoire n'a pas de prix",()=>{
+  const items=[
+    {product:{code:"a",name:"Dash",brands:"Dash",categories:[]},quantity:1},
+    {product:{code:"b",name:"Lenor",brands:"Lenor",categories:[]},quantity:1}
+  ];
+  const offer={
+    id:"b",scope:"bundle",stores:["carrefour"],
+    savingPercent:100,bundleTargetRequirementId:"lenor",
+    bundleRequirements:[
+      {id:"dash",minQty:1,productMatch:{brands:["Dash"]}},
+      {id:"lenor",minQty:1,productMatch:{brands:["Lenor"]}}
+    ]
+  };
+  const lines=[
+    {product:items[0].product,missingPrice:true,bestPrice:null},
+    {product:items[1].product,missingPrice:false,bestPrice:{price:4}}
+  ];
+  assert.equal(findBundleCandidates(items,lines,[offer],{store:"carrefour"}).length,0);
+});
