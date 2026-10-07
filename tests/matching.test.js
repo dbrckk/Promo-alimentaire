@@ -122,3 +122,22 @@ test("findProductOffers respecte le canal",()=>{
     ["store"]
   );
 });
+
+
+test("estimateOfferSaving respecte −68% sur le 2e",()=>{
+  const offer={
+    minPurchaseQty:2,
+    promoFormula:{type:"nth_percent",nth:2,cycle:2,percent:68}
+  };
+  assert.equal(estimateOfferSaving(2.39,offer,1),null);
+  assert.equal(estimateOfferSaving(2.39,offer,2),1.63);
+  assert.equal(requiredQuantity(offer),2);
+});
+
+test("estimateOfferSaving respecte 2+1 offert",()=>{
+  const offer={
+    promoFormula:{type:"buy_x_get_y_free",buy:2,free:1}
+  };
+  assert.equal(requiredQuantity(offer),3);
+  assert.equal(estimateOfferSaving(1.67,offer,3),1.67);
+});
