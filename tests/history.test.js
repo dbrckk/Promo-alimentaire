@@ -34,3 +34,19 @@ test("historyTrend compare les deux derniers coûts complets",()=>{
   assert.equal(trend.delta,-2);
   assert.equal(trend.direction,"down");
 });
+
+
+test("un scénario Drive basé sur prix magasin ne crée pas de meilleur magasin",()=>{
+  const entry=createHistoryEntry({
+    channel:"drive",
+    shoppingList:[{product:{code:"123",name:"A"},quantity:1}],
+    scenarios:[{
+      store:"carrefour",channel:"drive",isComplete:true,locationReliable:true,
+      priceChannelReliable:false,location:{name:"Carrefour"},
+      pricedCount:1,distinctCount:1,observedSubtotal:10,finalCost:9
+    }],
+    createdAt:new Date("2026-10-07T10:00:00Z")
+  });
+  assert.equal(entry.bestStore,null);
+  assert.equal(entry.channel,"drive");
+});
