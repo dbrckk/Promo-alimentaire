@@ -45,12 +45,12 @@ export function parseCouponNetworkHtml(html,{verifiedAt=todayIso()}={}){
   return offers;
 }
 
-export function buildCouponNetworkCandidate({title,description,amount,verifiedAt=todayIso(),fingerprint}){
+export function buildCouponNetworkCandidate({title,description,amount,verifiedAt=todayIso(),fingerprint,externalId=null,sourceUrl=null}){
   const productMatch=deriveProductMatch(title);
   return {
     providerId:"coupon-network",
     provider:"Coupon Network",
-    externalId:"auto-"+slugify(title).slice(0,52)+"-"+(fingerprint || stableHash(title+"|"+description+"|"+amount)),
+    externalId:externalId || "auto-"+slugify(title).slice(0,52)+"-"+(fingerprint || stableHash(title+"|"+description+"|"+amount)),
     title,
     type:"ODR",
     category:"autre",
@@ -58,7 +58,7 @@ export function buildCouponNetworkCandidate({title,description,amount,verifiedAt
     savingAmount:roundMoney(amount),
     verifiedAt,
     reviewAfter:addDays(verifiedAt,7),
-    sourceUrl:"https://www.couponnetwork.fr/index.rss",
+    sourceUrl:sourceUrl || "https://www.couponnetwork.fr/index.rss",
     scope:"produit",
     referenceNames:[title],
     ...(productMatch?{productMatch}:{}),
@@ -165,3 +165,67 @@ function addDays(iso,days){
 
 function todayIso(){ return new Date().toISOString().slice(0,10); }
 function roundMoney(value){ return Math.round((Number(value)+Number.EPSILON)*100)/100; }
+
+export function extractCouponNetworkDetailUrls(html){
+  const urls=new Set();
+  const source=String(html ?? "");
+  const regex=/href=["']([^"']*\/[^/"']*cashback-coupons\/[^"']+\/\d+)["']/gi;
+  let match;
+  while((match=regex.exec(source))){
+    let href=decodeHtml(match[1]).trim();
+    if(!href) continue;
+    try{
+      const url=new URL(href,"https://www.couponnetwork.fr/");
+      if(url.hostname!=="www.couponnetwork.fr") continue;
+      urls.add(url.toString());
+    }catch{}
+  }
+  return [...urls];
+}
+
+export function parseCouponNetworkDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={}){
+  const raw=String(html ?? "");
+  const title=extractDetailTitle(raw);
+  const amount=parseDetailAmount(raw);
+  const description=extractDetailDescription(raw);
+  if(!title || amount===null || !description) return null;
+  const id=String(sourceUrl ?? "").match(/\/(\d+)(?:[/?#]|$)/)?.[1] || stableHash(title+"|"+description);
+  return buildCouponNetworkCandidate({
+    title,description,amount,verifiedAt,
+    externalId:"detail-"+id,
+    sourceUrl
+  });
+}
+
+function extractDetailTitle(html){
+  const h1=html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
+  if(h1){
+    const text=cleanLine(decodeHtml(String(h1).replace(/<[^>]+>/g," ")));
+    if(text) return text;
+  }
+  const titleTag=html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1];
+  if(titleTag){
+    const text=cleanLine(decodeHtml(String(titleTag).replace(/<[^>]+>/g," ")));
+    const match=text.match(/Bons de réduction gratuits\s+(.+?)\s+à sélectionner/i);
+    if(match?.[1]) return cleanLine(match[1]);
+  }
+  return null;
+}
+
+function parseDetailAmount(html){
+  const text=decodeHtml(String(html).replace(/<[^>]+>/g," "));
+  const match=text.match(/(\d+(?:[,.]\d{1,2})?)\s*€\s*rembours/i);
+  if(!match) return null;
+  const value=Number(match[1].replace(",","."));
+  return Number.isFinite(value) && value>0 ? value : null;
+}
+
+function extractDetailDescription(html){
+  const headings=[...String(html).matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi)];
+  for(const match of headings){
+    const text=cleanLine(decodeHtml(String(match[1]).replace(/<[^>]+>/g," ")));
+    if(/^sur l['’]achat\b/i.test(text)) return text;
+  }
+  const lines=htmlToTextLines(html);
+  return lines.find((line)=>/^sur l['’]achat\b/i.test(line)) || null;
+}
