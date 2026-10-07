@@ -273,9 +273,12 @@ function renderSourceHealth(){
     </div>
     <div class="source-health-grid">
       ${rows.map((item)=>{
-        const providerId=item.providerIds?.[0];
-        const provider=providers.find((entry)=>entry.id===providerId);
-        const label=provider?.name || providerId || item.file;
+        const providerNames=(item.providerIds || [])
+          .map((providerId)=>providers.find((entry)=>entry.id===providerId)?.name || providerId)
+          .filter(Boolean);
+        const label=providerNames.length>1
+          ? providerNames.slice(0,3).join(" · ")+(providerNames.length>3?` +${providerNames.length-3}`:"")
+          : providerNames[0] || item.file;
         const stateLabel={
           ok:"À jour",
           "review-soon":"À revoir bientôt",
