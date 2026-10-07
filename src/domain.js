@@ -14,13 +14,13 @@ export function effectivePercent(offer) {
   return null;
 }
 
-export function rankOffers(offers, sort = "percent") {
+export function rankOffers(offers, sort = "percent", now=new Date()) {
   return [...offers].sort((a, b) => {
     if (sort === "amount") return nullableNumber(computeSaving(b)) - nullableNumber(computeSaving(a));
     if (sort === "freshness") return new Date(b.verifiedAt) - new Date(a.verifiedAt);
     if (sort === "deadline") {
-      const ad=offerDeadline(a);
-      const bd=offerDeadline(b);
+      const ad=offerDeadline(a,now);
+      const bd=offerDeadline(b,now);
       const av=ad && ad.daysUntil>=0 ? ad.daysUntil : Infinity;
       const bv=bd && bd.daysUntil>=0 ? bd.daysUntil : Infinity;
       if(av!==bv) return av-bv;
