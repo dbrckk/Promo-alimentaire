@@ -1,0 +1,254 @@
+[
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "bonduelle-carottes-citron-sicile-2026-10-07",
+    "title": "Bonduelle — Carottes râpées au Citron de Sicile",
+    "type": "ODR",
+    "category": "frais",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.2,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "scope": "produit",
+    "referenceNames": [
+      "Bonduelle Carottes râpées au Citron de Sicile"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bonduelle"
+      ],
+      "all": [
+        "Carottes",
+        "Citron"
+      ],
+      "minScore": 70
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "conditions": "0,20 € remboursé sur une barquette de carottes râpées Bonduelle au citron de Sicile."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "cassegrain-innovation-traiteur-2026-10-07",
+    "title": "Cassegrain — Innovation Traiteur",
+    "type": "ODR",
+    "category": "frais",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "scope": "produit",
+    "referenceNames": [
+      "Cassegrain Innovation Traiteur"
+    ],
+    "productMatch": {
+      "brands": [
+        "Cassegrain"
+      ],
+      "all": [
+        "Traiteur"
+      ],
+      "minScore": 65
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "conditions": "0,50 € remboursé sur un produit Traiteur Cassegrain au choix dans la gamme."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "zespri-kiwis-2026-10-07",
+    "title": "Zespri — Kiwis",
+    "type": "ODR",
+    "category": "fruits",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.5,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "scope": "produit",
+    "referenceNames": [
+      "Barquette de kiwis Zespri"
+    ],
+    "productMatch": {
+      "brands": [
+        "Zespri"
+      ],
+      "any": [
+        "Kiwi",
+        "Kiwis"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "conditions": "0,50 € remboursé sur une barquette de kiwis Zespri."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "candia-plus-1l-2026-10-07",
+    "title": "Candia — Candia+ Bouteille 1 L",
+    "type": "ODR",
+    "category": "crèmerie",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "scope": "produit",
+    "referenceNames": [
+      "Candia+ Bouteille 1L"
+    ],
+    "productMatch": {
+      "brands": [
+        "Candia"
+      ],
+      "all": [
+        "Candia",
+        "1L"
+      ],
+      "minScore": 65
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "conditions": "0,40 € remboursé sur une bouteille de 1 L Candia+ au choix dans la gamme."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "yoplait-skyr-2026-10-07",
+    "title": "Yoplait — Skyr",
+    "type": "ODR",
+    "category": "crèmerie",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.4,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "scope": "produit",
+    "referenceNames": [
+      "Yoplait Skyr 4x100g",
+      "Yoplait Skyr Vitaminé 4x120g"
+    ],
+    "productMatch": {
+      "brands": [
+        "Yoplait"
+      ],
+      "all": [
+        "Skyr"
+      ],
+      "minScore": 65
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "conditions": "0,40 € remboursé sur un pack Yoplait Skyr 4x100g ou Vitaminé 4x120g."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "president-poche-30cl-2026-10-07",
+    "title": "Président — Poche 30 cl",
+    "type": "ODR",
+    "category": "crèmerie",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 0.3,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "scope": "produit",
+    "referenceNames": [
+      "Président fraîche et épaisse 25% MG Poche 30cl"
+    ],
+    "productMatch": {
+      "brands": [
+        "Président",
+        "President"
+      ],
+      "all": [
+        "30cl"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "conditions": "0,30 € remboursé sur une poche 30 cl Président fraîche et épaisse 25 % MG."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "lactel-vita-vie-6x1l-2026-10-07",
+    "title": "Lactel — Vita'Vie 6x1 L",
+    "type": "ODR",
+    "category": "crèmerie",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-14",
+    "sourceUrl": "https://www.couponnetwork.fr/index.rss",
+    "scope": "produit",
+    "referenceNames": [
+      "Lactel Vita'Vie 6x1L"
+    ],
+    "productMatch": {
+      "brands": [
+        "Lactel"
+      ],
+      "all": [
+        "Vita",
+        "Vie",
+        "6x1L"
+      ],
+      "minScore": 70
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation de l'offre requise ; conditions Coupon Network à vérifier",
+    "conditions": "1 € remboursé sur un pack 6x1 L de lait Lactel Vita'Vie."
+  }
+]
