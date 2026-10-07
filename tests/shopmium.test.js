@@ -70,3 +70,39 @@ test("deriveShopmiumProductMatch ignore les mots grammaticaux français",()=>{
     "Milka"
   );
 });
+
+
+test("deriveShopmiumProductMatch utilise les références pour confirmer la marque",()=>{
+  assert.equal(
+    deriveShopmiumProductMatch("RÉGILAIT YAOURT MAISON",["Régilait Yaourt Maison, sachet 175g"]).brands[0],
+    "Régilait"
+  );
+  assert.equal(
+    deriveShopmiumProductMatch("Gels Douche Sanex Derma Thérapie",[
+      "SANEX DERMA THÉRAPIE ANTI-DESSÈCHEMENT 425ML",
+      "SANEX DERMA THÉRAPIE ANTI-DÉMANGEAISON 425ML"
+    ]).brands[0],
+    "SANEX"
+  );
+});
+
+test("deriveShopmiumProductMatch garde les marques courtes tout en majuscules",()=>{
+  assert.equal(
+    deriveShopmiumProductMatch("FRUIT SHOOT",["Pêche Abricot 6x20cl","Tropical 6x20cl"]).brands[0],
+    "FRUIT SHOOT"
+  );
+  assert.equal(
+    deriveShopmiumProductMatch("OH PURÉE!",["OH PUREE! AIL SACHET109g"]).brands[0],
+    "OH PUREE"
+  );
+});
+
+test("deriveShopmiumProductMatch trouve Fleury Michon en suffixe",()=>{
+  assert.equal(
+    deriveShopmiumProductMatch("Tranches Végé Fleury Michon",[
+      "Tranches Végé Lentilles Corail 120g",
+      "Tranches Végé Pois Chiches 120g"
+    ]).brands[0],
+    "Fleury Michon"
+  );
+});
