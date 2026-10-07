@@ -99,3 +99,17 @@ Open Prices fournit des observations de prix ouvertes et datées, associées à 
 - Un prix ancien n'est jamais présenté comme prix actuel.
 - L'absence d'observation n'est jamais interprétée comme absence du produit en magasin.
 - Les prix propriétaires récupérés via endpoints mobiles privés ou contournements anti-bot sont exclus.
+
+
+## Recherche de prix à proximité
+
+L'API Open Prices accepte directement les paramètres géographiques sur `GET /api/v1/prices` :
+
+- `lat`
+- `lon`
+- `radius_km`
+- `product_code`
+
+Dans l'interface, ces paramètres ne sont envoyés qu'après une action volontaire « Autour de moi ». Les coordonnées restent uniquement en mémoire de la page et sont supprimées quand le mode proximité est désactivé.
+
+Le rayon initial est de 25 km. L'application continue ensuite à filtrer les résultats sur l'enseigne sélectionnée (Carrefour ou E.Leclerc).
