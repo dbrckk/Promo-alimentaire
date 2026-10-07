@@ -10,6 +10,7 @@ Fonctionnalités actuelles :
 - recherche d'offres ;
 - chargement runtime de snapshots publics validés (Shopmium, La Belle Adresse, Coupon Network et Envie de Plus au 07/10/2026) avec expiration automatique ;
 - contrôle quotidien de fraîcheur des snapshots via GitHub Actions, avec signalement des sources devenues entièrement obsolètes ;
+- sync Shopmium public planifié deux fois par semaine avec extraction des dates, paliers et références éligibles ;
 - synchronisation Coupon Network deux fois par semaine depuis la page publique, avec seuil minimal d'extraction et validation complète avant remplacement du snapshot ;
 - annuaire de sources complémentaires ;
 - recherche produit par EAN/UPC ;
