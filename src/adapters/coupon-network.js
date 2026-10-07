@@ -53,7 +53,7 @@ export function cleanOfferTitle(title){
 
 export function buildCouponNetworkCandidate({title,description,amount,verifiedAt=todayIso(),fingerprint,externalId=null,sourceUrl=null}){
   title=cleanOfferTitle(title);
-  const productMatch=deriveProductMatch(title);
+  const productMatch=deriveProductMatch(title,description);
   return {
     providerId:"coupon-network",
     provider:"Coupon Network",
@@ -97,7 +97,7 @@ export function inferMinPurchaseQty(description){
   return 1;
 }
 
-export function deriveProductMatch(title){
+export function deriveProductMatch(title,description=""){
   const normalized=cleanLine(title);
   if(!normalized) return null;
   const separator=normalized.match(/\s[-–—]\s/);
@@ -117,7 +117,16 @@ export function deriveProductMatch(title){
   brand=brand.replace(/[™®©]/g,"").trim();
   if(!brand || brand.length<2) return null;
 
-  const terms=distinctiveTerms(product).slice(0,2);
+  let terms=distinctiveTerms(product).slice(0,2);
+  if(!terms.length && description){
+    const brandWords=new Set(
+      brand.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .toLocaleLowerCase("fr").split(/[^a-z0-9]+/).filter(Boolean)
+    );
+    terms=distinctiveTerms(description)
+      .filter((term)=>!brandWords.has(term.toLocaleLowerCase("fr")))
+      .slice(0,2);
+  }
   if(!terms.length) return {brands:[brand],minScore:55};
   return {brands:[brand],all:terms,minScore:Math.min(75,55+terms.length*10)};
 }
@@ -136,15 +145,29 @@ function isTitleCandidate(line){
 }
 
 function distinctiveTerms(product){
-  const stop=new Set(["global","gamme","produit","produits","classique","choix","dans","avec","pour","sans","sur","une","des","les","aux","plus","nature","nouveau","nouveaux"]);
-  return product
+  const stop=new Set([
+    "global","gamme","produit","produits","classique","choix","dans","avec","pour","sans",
+    "sur","une","des","les","aux","plus","nature","nouveau","nouveaux","achat","article",
+    "articles","pack","paquet","paquets","boite","boites","bouteille","bouteilles","format",
+    "formats","ensemble","valable","toute","toutes","tout","parmi"
+  ]);
+  const seen=new Set();
+  const result=[];
+  for(const word of String(product)
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .replace(/[™®©*]/g," ")
     .split(/[^a-zA-Z0-9]+/)
-    .map((word)=>word.trim())
-    .filter((word)=>word && !stop.has(word.toLocaleLowerCase("fr")))
-    .filter((word)=>word.length>=4 || /\d/.test(word))
-    .slice(0,4);
+    .map((value)=>value.trim())
+    .filter(Boolean)){
+      const key=word.toLocaleLowerCase("fr");
+      if(stop.has(key)) continue;
+      if(word.length<4 && !/\d/.test(word)) continue;
+      if(seen.has(key)) continue;
+      seen.add(key);
+      result.push(word);
+      if(result.length>=4) break;
+  }
+  return result;
 }
 
 function slugify(value){
