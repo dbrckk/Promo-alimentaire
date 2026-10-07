@@ -1,6 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { compareBasketStores, evaluateBasketStore, normalizeQuantity } from "../src/basket.js";
+import {
+  compareBasketStores,
+  evaluateBasketLocations,
+  evaluateBasketStore,
+  normalizeQuantity,
+  observationLocationKey,
+  selectBestLocationScenario
+} from "../src/basket.js";
 
 const product={code:"3017624010701",name:"Produit test",brands:"Marque",categories:[]};
 const gift={
@@ -63,4 +70,45 @@ test("compareBasketStores privilégie un scénario complet",()=>{
     {store:"leclerc",distinctCount:2,pricedCount:1,isComplete:false,finalCost:8}
   ]);
   assert.equal(result[0].store,"carrefour");
+});
+
+
+test("observationLocationKey privilégie locationId",()=>{
+  assert.equal(observationLocationKey({locationId:42,storeName:"X"}),"id:42");
+});
+
+test("evaluateBasketLocations ne mélange pas deux magasins physiques",()=>{
+  const items=[
+    {product:{code:"1",name:"A",brands:"",categories:[]},quantity:1},
+    {product:{code:"2",name:"B",brands:"",categories:[]},quantity:1}
+  ];
+  const priceByCode={
+    "1":[
+      {price:2,date:"2026-10-01",locationId:10,storeName:"Carrefour A"},
+      {price:1,date:"2026-10-01",locationId:20,storeName:"Carrefour B"}
+    ],
+    "2":[
+      {price:1,date:"2026-10-01",locationId:10,storeName:"Carrefour A"},
+      {price:5,date:"2026-10-01",locationId:20,storeName:"Carrefour B"}
+    ]
+  };
+  const scenarios=evaluateBasketLocations(items,{
+    store:"carrefour",
+    priceByCode,
+    offers:[],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  const a=scenarios.find((scenario)=>scenario.location.id===10);
+  const b=scenarios.find((scenario)=>scenario.location.id===20);
+  assert.equal(a.finalCost,3);
+  assert.equal(b.finalCost,6);
+});
+
+test("selectBestLocationScenario choisit un magasin complet avant un panier partiel moins cher",()=>{
+  const best=selectBestLocationScenario([
+    {isComplete:false,pricedCount:1,finalCost:2,location:{distanceKm:1}},
+    {isComplete:true,pricedCount:2,finalCost:8,location:{distanceKm:5}}
+  ]);
+  assert.equal(best.finalCost,8);
+  assert.equal(best.isComplete,true);
 });
