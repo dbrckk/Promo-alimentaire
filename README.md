@@ -115,3 +115,9 @@ npm run sync:coupon-network
 5. Déployer la PWA en HTTPS pour test Android réel.
 
 Voir `docs/SOURCES.md` pour la stratégie d'intégration, `docs/MATCHING.md` pour le rapprochement produit/offre et `docs/INGESTION.md` pour le pipeline EAN vérifié.
+
+
+### Limite La Belle Adresse
+
+La Belle Adresse charge actuellement ses remboursements via une API membre protégée. Le projet ne contourne pas cette authentification. La synchronisation tente uniquement les pages publiques ; si elles ne contiennent pas les cartes, elle conserve le dernier snapshot manuel vérifié au lieu d'échouer ou d'inventer des offres.
+
