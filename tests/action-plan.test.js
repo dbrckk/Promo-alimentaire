@@ -111,3 +111,21 @@ test("le profil PASS ajoute un rappel Journée PASS sans économie automatique",
   assert.equal(step.kind,"check");
   assert.match(step.detail,/n’est pas ajouté automatiquement/);
 });
+
+
+test("la carte fidélité doit être présentée en caisse avant le ticket et les ODR",()=>{
+  const plan=buildSavingsActionPlan({
+    store:"leclerc",providers:[],
+    productCandidates:[
+      {offer:{mechanism:"retailer_loyalty",loyaltyEligibility:"eligible"}},
+      {offer:{mechanism:"odr",provider:"Shopmium",type:"ODR"}}
+    ]
+  });
+  const titles=plan.steps.map((step)=>step.title);
+  const loyalty=titles.findIndex((title)=>title.includes("carte fidélité"));
+  const receipt=titles.findIndex((title)=>title.includes("preuve d’achat"));
+  const refund=titles.findIndex((title)=>title.includes("ODR produit"));
+  assert.ok(loyalty>=0 && loyalty<receipt && receipt<refund);
+  const phases=plan.steps.map((step)=>["avant","paiement","achat","après"].indexOf(step.phase));
+  assert.deepEqual(phases,[...phases].sort((a,b)=>a-b));
+});
