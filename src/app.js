@@ -136,9 +136,6 @@ els.clearHistory.addEventListener("click",()=>{
   saveComparisonHistory();
   saveProductPriceHistory();
   renderComparisonHistory();
-renderProductPriceHistory();
-renderPriceAlerts();
-hydrateImportedOffers();
   renderProductPriceHistory();
   renderPriceAlerts();
   setListStatus("Historiques locaux effacés.");
@@ -1101,3 +1098,6 @@ render();
 renderOptimizer();
 renderShoppingList();
 renderComparisonHistory();
+renderProductPriceHistory();
+renderPriceAlerts();
+hydrateImportedOffers();
