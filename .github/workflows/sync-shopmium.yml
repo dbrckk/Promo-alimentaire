@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: "41 5 * * 2,5"
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/sync-shopmium.yml"
 
 permissions:
   contents: write
