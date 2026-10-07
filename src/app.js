@@ -13,6 +13,12 @@ import {
 } from "./basket.js";
 import { scoreBasketConfidence } from "./confidence.js";
 import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js";
+import {
+  addPriceObservation,
+  detectPriceDrops,
+  productHistory,
+  productPriceTrend
+} from "./product-history.js";
 
 const money = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 let offers=[...baseOffers];
@@ -36,16 +42,19 @@ const els = {
   productResult:document.querySelector("#productResult"),
   productOffers:document.querySelector("#productOffers"),
   priceResults:document.querySelector("#priceResults"),
+  productPriceHistory:document.querySelector("#productPriceHistory"),
   listCount:document.querySelector("#listCount"),
   refreshList:document.querySelector("#refreshList"),
   listNearbyButton:document.querySelector("#listNearbyButton"),
   listRadiusSelect:document.querySelector("#listRadiusSelect"),
   clearList:document.querySelector("#clearList"),
   clearHistory:document.querySelector("#clearHistory"),
+  dropThreshold:document.querySelector("#dropThreshold"),
   listStatus:document.querySelector("#listStatus"),
   shoppingListItems:document.querySelector("#shoppingListItems"),
   basketComparison:document.querySelector("#basketComparison"),
   comparisonHistory:document.querySelector("#comparisonHistory"),
+  priceAlerts:document.querySelector("#priceAlerts"),
   basketAmount:document.querySelector("#basketAmount"),
   optimizerResult:document.querySelector("#optimizerResult"),
   scanDialog:document.querySelector("#scanDialog"),
@@ -75,6 +84,8 @@ const state = {
   shoppingList:loadShoppingList(),
   basketPriceData:{carrefour:{},leclerc:{}},
   comparisonHistory:loadComparisonHistory(),
+  productPriceHistory:loadProductPriceHistory(),
+  dropThreshold:Number(localStorage.getItem("promo-drop-threshold") || 10),
   basketRefreshing:false,
   lookupToken:0
 };
@@ -83,6 +94,7 @@ els.store.value=state.store;
 els.sort.value=state.sort;
 els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
+els.dropThreshold.value=String(state.dropThreshold);
 els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")}`;
 
 els.store.addEventListener("change",async()=>{
@@ -120,15 +132,26 @@ els.clearList.addEventListener("click",()=>{
 });
 els.clearHistory.addEventListener("click",()=>{
   state.comparisonHistory=[];
+  state.productPriceHistory=[];
   saveComparisonHistory();
+  saveProductPriceHistory();
   renderComparisonHistory();
+renderProductPriceHistory();
+renderPriceAlerts();
 hydrateImportedOffers();
-  setListStatus("Historique local effacé.");
+  renderProductPriceHistory();
+  renderPriceAlerts();
+  setListStatus("Historiques locaux effacés.");
 });
 els.productResult.addEventListener("click",(event)=>{
   if(event.target.closest('[data-action="add-current-product"]')) addCurrentProduct();
 });
 els.shoppingListItems.addEventListener("click",handleShoppingListAction);
+els.dropThreshold.addEventListener("change",()=>{
+  state.dropThreshold=Number(els.dropThreshold.value)||10;
+  localStorage.setItem("promo-drop-threshold",String(state.dropThreshold));
+  renderPriceAlerts();
+});
 els.radiusSelect.addEventListener("change",async()=>{
   state.radiusKm=Number(els.radiusSelect.value)||25;
   els.listRadiusSelect.value=String(state.radiusKm);
@@ -260,7 +283,11 @@ async function lookupBarcode(rawValue){
   if(pricesResult.status==="fulfilled"){
     state.priceObservations=pricesResult.value.observations;
     renderPrices(state.priceObservations,pricesResult.value.sourceUrl);
-    if(state.product) renderProductOffers(state.product,state.priceObservations);
+    if(state.product){
+      recordProductObservation(state.product,state.store,state.priceObservations);
+      renderProductOffers(state.product,state.priceObservations);
+      renderProductPriceHistory();
+    }
   }else{
     els.priceResults.innerHTML=`<div class="panel price-source">Impossible de récupérer Open Prices pour le moment.</div>`;
   }
@@ -280,7 +307,11 @@ async function refreshPrices(code){
     if(token!==state.lookupToken) return;
     state.priceObservations=result.observations;
     renderPrices(state.priceObservations,result.sourceUrl);
-    if(state.product) renderProductOffers(state.product,state.priceObservations);
+    if(state.product){
+      recordProductObservation(state.product,state.store,state.priceObservations);
+      renderProductOffers(state.product,state.priceObservations);
+      renderProductPriceHistory();
+    }
     setProductStatus("");
   }catch(error){
     if(token!==state.lookupToken) return;
@@ -307,6 +338,7 @@ function renderProduct(product){
       </div>
     </div>`;
   els.productResult.classList.remove("hidden");
+  renderProductPriceHistory();
 }
 
 function renderProductOffers(product,observations=[]){
@@ -599,6 +631,7 @@ function renderShoppingList(){
   const scenarios=evaluateCurrentBasketScenarios();
   renderBasketComparison(scenarios);
   renderComparisonHistory();
+  renderPriceAlerts();
 }
 
 async function refreshShoppingList(){
@@ -616,10 +649,14 @@ async function refreshShoppingList(){
         fetchPricesByBarcode(item.product.code,basketQueryOptions("carrefour")),
         fetchPricesByBarcode(item.product.code,basketQueryOptions("leclerc"))
       ]);
-      if(carrefour.status==="fulfilled") next.carrefour[item.product.code]=carrefour.value.observations;
-      else { next.carrefour[item.product.code]=[]; failures+=1; }
-      if(leclerc.status==="fulfilled") next.leclerc[item.product.code]=leclerc.value.observations;
-      else { next.leclerc[item.product.code]=[]; failures+=1; }
+      if(carrefour.status==="fulfilled"){
+        next.carrefour[item.product.code]=carrefour.value.observations;
+        recordProductObservation(item.product,"carrefour",carrefour.value.observations);
+      }else { next.carrefour[item.product.code]=[]; failures+=1; }
+      if(leclerc.status==="fulfilled"){
+        next.leclerc[item.product.code]=leclerc.value.observations;
+        recordProductObservation(item.product,"leclerc",leclerc.value.observations);
+      }else { next.leclerc[item.product.code]=[]; failures+=1; }
     }
     state.basketPriceData=next;
     const scenarios=evaluateCurrentBasketScenarios();
@@ -693,6 +730,92 @@ function evaluateCurrentBasketScenarios(){
       confidence:scoreBasketConfidence(scenario)
     };
   });
+}
+
+function loadProductPriceHistory(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem("promo-product-price-history-v1") || "[]");
+    return Array.isArray(parsed) ? parsed.slice(0,500) : [];
+  }catch{
+    return [];
+  }
+}
+
+function saveProductPriceHistory(){
+  localStorage.setItem("promo-product-price-history-v1",JSON.stringify(state.productPriceHistory));
+}
+
+function recordProductObservation(product,store,observations){
+  const best=selectBestRecentPrice(observations);
+  if(!best || !product?.code) return;
+  state.productPriceHistory=addPriceObservation(state.productPriceHistory,{
+    product,store,observation:best
+  });
+  saveProductPriceHistory();
+}
+
+function renderProductPriceHistory(){
+  if(!els.productPriceHistory) return;
+  if(!state.product?.code){
+    els.productPriceHistory.innerHTML="";
+    return;
+  }
+  const rows=productHistory(state.productPriceHistory,{
+    code:state.product.code,
+    store:state.store,
+    limit:6
+  });
+  if(!rows.length){
+    els.productPriceHistory.innerHTML='<div class="panel price-source">Pas encore d’historique local pour ce produit et cette enseigne.</div>';
+    return;
+  }
+  const trend=productPriceTrend(state.productPriceHistory,{
+    code:state.product.code,
+    store:state.store
+  });
+  const trendHtml=trend
+    ? `<div class="history-trend ${trend.direction==="down"?"good":trend.direction==="up"?"bad":""}">${trend.direction==="down"?"Baisse":trend.direction==="up"?"Hausse":"Stable"} de ${money.format(Math.abs(trend.delta))} (${Math.abs(trend.percent).toLocaleString("fr-FR",{maximumFractionDigits:1})} %) depuis l’observation précédente.</div>`
+    : '<div class="history-trend">Une seconde observation différente permettra de calculer une tendance.</div>';
+
+  els.productPriceHistory.innerHTML=`
+    <div class="product-offers-head">
+      <h3>Historique prix local · ${storeLabel(state.store)}</h3>
+      <p>Les coordonnées GPS ne sont pas stockées. Seuls le prix, la date et l’identifiant/nom du magasin sont conservés localement.</p>
+    </div>
+    ${trendHtml}
+    <div class="price-history-list">
+      ${rows.map((row)=>`
+        <div class="price-history-row">
+          <strong>${money.format(row.price)}</strong>
+          <span>${formatDate(row.date)} · ${escapeHtml(row.storeName || storeLabel(row.store))}${row.city?` · ${escapeHtml(row.city)}`:""}</span>
+        </div>`).join("")}
+    </div>`;
+}
+
+function renderPriceAlerts(){
+  if(!els.priceAlerts) return;
+  const listCodes=new Set(state.shoppingList.map((item)=>String(item.product.code)));
+  const alerts=detectPriceDrops(state.productPriceHistory,{
+    thresholdPercent:state.dropThreshold
+  }).filter((alert)=>listCodes.has(String(alert.code)));
+
+  if(!alerts.length){
+    els.priceAlerts.innerHTML="";
+    return;
+  }
+  els.priceAlerts.innerHTML=`
+    <div class="product-offers-head">
+      <h3>Baisses de prix détectées</h3>
+      <p>Détection locale lors des actualisations. Ce n’est pas une surveillance en arrière-plan.</p>
+    </div>
+    ${alerts.slice(0,8).map((alert)=>`
+      <article class="price-alert-card">
+        <div>
+          <strong>${escapeHtml(alert.name)}</strong>
+          <div class="source">${storeLabel(alert.store)} · ${money.format(alert.previousPrice)} → ${money.format(alert.latestPrice)}</div>
+        </div>
+        <span class="badge good">−${alert.dropPercent.toLocaleString("fr-FR",{maximumFractionDigits:1})} %</span>
+      </article>`).join("")}`;
 }
 
 function loadComparisonHistory(){
