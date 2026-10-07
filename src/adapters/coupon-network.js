@@ -45,7 +45,14 @@ export function parseCouponNetworkHtml(html,{verifiedAt=todayIso()}={}){
   return offers;
 }
 
+export function cleanOfferTitle(title){
+  return cleanLine(title)
+    .replace(/\s+\d+(?:[,.]\d{1,2})?\s*€\s*rembours(?:é|és|ée|ées)?\s*$/i,"")
+    .trim();
+}
+
 export function buildCouponNetworkCandidate({title,description,amount,verifiedAt=todayIso(),fingerprint,externalId=null,sourceUrl=null}){
+  title=cleanOfferTitle(title);
   const productMatch=deriveProductMatch(title);
   return {
     providerId:"coupon-network",
