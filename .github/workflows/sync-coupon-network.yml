@@ -9,6 +9,7 @@ on:
       - "src/adapters/coupon-network.js"
       - "scripts/sync-coupon-network.mjs"
       - ".github/workflows/sync-coupon-network.yml"
+      - "package.json"
 
 permissions:
   contents: write
