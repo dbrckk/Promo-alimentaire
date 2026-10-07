@@ -63,20 +63,42 @@ export async function fetchPricesByBarcode(value,{store,size=100,coords=null,rad
   const payload=await response.json();
   const matcher=STORE_MATCHERS[store] || /.*/;
   const observations=(payload?.items || [])
-    .map(normalizePriceObservation)
+    .map((item)=>normalizePriceObservation(item,coords))
     .filter((item)=>matcher.test(item.retailerText))
-    .sort((a,b)=>new Date(b.date)-new Date(a.date));
+    .sort((a,b)=>{
+      if(coords){
+        const da=Number.isFinite(a.distanceKm) ? a.distanceKm : Infinity;
+        const db=Number.isFinite(b.distanceKm) ? b.distanceKm : Infinity;
+        if(da!==db) return da-db;
+      }
+      return new Date(b.date)-new Date(a.date);
+    });
   return {observations,total:payload?.total ?? observations.length,sourceUrl:url};
 }
 
-export function normalizePriceObservation(item) {
+export function normalizePriceObservation(item,originCoords=null) {
   const location=item?.location || {};
   const retailerText=[
     location.osm_brand,location.osm_name,location.osm_display_name,location.osm_tag_value
   ].filter(Boolean).join(" · ");
+  const locationLat=Number(location.osm_lat);
+  const locationLon=Number(location.osm_lon);
+  const hasLocation=Number.isFinite(locationLat) && locationLat>=-90 && locationLat<=90
+    && Number.isFinite(locationLon) && locationLon>=-180 && locationLon<=180;
+  const distanceKm=originCoords && hasLocation
+    ? haversineKm(
+        Number(originCoords.latitude ?? originCoords.lat),
+        Number(originCoords.longitude ?? originCoords.lon),
+        locationLat,
+        locationLon
+      )
+    : null;
   return {
     id:item.id,
     locationId:item.location_id || location.id || null,
+    locationLat:hasLocation ? locationLat : null,
+    locationLon:hasLocation ? locationLon : null,
+    distanceKm:Number.isFinite(distanceKm) ? Math.round(distanceKm*10)/10 : null,
     productCode:item.product_code || item?.product?.code || "",
     productName:item.product_name || item?.product?.product_name || "",
     price:Number(item.price),
@@ -99,4 +121,17 @@ export function isFreshObservation(observation,maxAgeDays=120,now=new Date()) {
   if(Number.isNaN(date.getTime())) return false;
   const ageMs=now-date;
   return ageMs >= 0 && ageMs <= maxAgeDays*24*60*60*1000;
+}
+
+
+export function haversineKm(lat1,lon1,lat2,lon2) {
+  const values=[lat1,lon1,lat2,lon2].map(Number);
+  if(values.some((value)=>!Number.isFinite(value))) return null;
+  const [aLat,aLon,bLat,bLon]=values;
+  const toRad=(degrees)=>degrees*Math.PI/180;
+  const dLat=toRad(bLat-aLat);
+  const dLon=toRad(bLon-aLon);
+  const a=Math.sin(dLat/2)**2
+    + Math.cos(toRad(aLat))*Math.cos(toRad(bLat))*Math.sin(dLon/2)**2;
+  return 6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
