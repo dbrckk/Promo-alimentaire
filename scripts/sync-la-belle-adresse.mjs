@@ -50,6 +50,7 @@ for(const url of SOURCE_URLS){
 const unique=new Map(found.map((offer)=>[offer.externalId,offer]));
 const offers=[...unique.values()];
 if(offers.length<minOffers){
+  await probePublicCashbackApi();
   throw new Error("Extraction La Belle Adresse insuffisante : "+offers.length+" offre(s), minimum "+minOffers+".");
 }
 const validation=validateImportBatch(offers);
@@ -108,6 +109,37 @@ async function probeClientBundles(pageUrl,scripts){
       console.log("[la-belle-adresse][bundle-urls] "+JSON.stringify([...new Set(absolute)]));
     }catch(error){
       console.warn("[la-belle-adresse][bundle] "+bundleUrl+" : "+error.message);
+    }
+  }
+}
+
+
+async function probePublicCashbackApi(){
+  const candidates=[
+    "https://back.labelleadresse.com/api/lba-cashback/filter/",
+    "https://back.labelleadresse.com/api/lba-cashback/filter",
+    "https://back.labelleadresse.com/api/lba-cashback/",
+    "https://back.labelleadresse.com/api/lba-cashback",
+    "https://back.labelleadresse.com/api/lba-cashback/filter/?filter=brand",
+    "https://back.labelleadresse.com/api/lba-cashback/filter/?filter=univers"
+  ];
+  for(const url of candidates){
+    try{
+      const response=await fetch(url,{
+        headers:{
+          Accept:"application/json,text/plain,*/*",
+          Referer:"https://www.labelleadresse.com/",
+          Origin:"https://www.labelleadresse.com",
+          "User-Agent":"PromoAlimentaire/0.1 public-offer-sync"
+        },
+        redirect:"follow",
+        signal:AbortSignal.timeout(12000)
+      });
+      const text=await response.text();
+      console.log("[la-belle-adresse][api] "+url+" -> "+response.status+" "+(response.headers.get("content-type")||"")+" · "+text.length+" chars");
+      console.log("[la-belle-adresse][api-body] "+text.slice(0,1800).replace(/\s+/g," "));
+    }catch(error){
+      console.warn("[la-belle-adresse][api] "+url+" -> "+error.message);
     }
   }
 }
