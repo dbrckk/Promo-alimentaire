@@ -190,3 +190,37 @@ function onlinePercentCashback({store,title,rate,verifiedAt}){
 
 function addDays(iso,days){const d=new Date(iso+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
 function todayIso(){return new Date().toISOString().slice(0,10);}
+
+
+export function validatePaymentRateSafety(offer){
+  if(!offer || offer.scope!=="panier") return {ok:true};
+  const percent=Number(offer.savingPercent);
+  const amount=Number(offer.savingAmount);
+
+  const percentCaps={
+    gift_card:15,
+    card_cashback:5,
+    affiliate_cashback:5
+  };
+  const amountCaps={
+    affiliate_cashback:20
+  };
+
+  const percentCap=percentCaps[offer.mechanism];
+  if(Number.isFinite(percent) && Number.isFinite(percentCap) && percent>percentCap){
+    return {
+      ok:false,
+      reason:`${offer.mechanism} à ${percent}% dépasse le plafond de sécurité ${percentCap}%`
+    };
+  }
+
+  const amountCap=amountCaps[offer.mechanism];
+  if(Number.isFinite(amount) && Number.isFinite(amountCap) && amount>amountCap){
+    return {
+      ok:false,
+      reason:`${offer.mechanism} à ${amount}€ dépasse le plafond de sécurité ${amountCap}€`
+    };
+  }
+
+  return {ok:true};
+}
