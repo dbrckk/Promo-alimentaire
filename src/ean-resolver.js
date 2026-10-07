@@ -80,13 +80,14 @@ export function selectUniqueEanCandidate(offer,candidates,{
   minScore=80,
   minMargin=12
 }={}){
-  const ranked=(candidates || [])
+  const evaluated=(candidates || [])
     .map((candidate)=>({
       candidate,
       evaluation:scoreOpenFoodFactsCandidate(offer,candidate)
     }))
-    .filter((entry)=>entry.evaluation.accepted && entry.evaluation.score>=minScore)
     .sort((a,b)=>b.evaluation.score-a.evaluation.score);
+  const ranked=evaluated
+    .filter((entry)=>entry.evaluation.accepted && entry.evaluation.score>=minScore);
 
   if(!ranked.length){
     return {status:"none",candidate:null,ranked};
@@ -98,11 +99,19 @@ export function selectUniqueEanCandidate(offer,candidates,{
   const required=(rules.all || []).map((value)=>String(value).trim()).filter(Boolean);
   const optional=(rules.any || []).map((value)=>String(value).trim()).filter(Boolean);
   const lowSpecificity=required.length===0 && optional.length<=1;
-  if(second && (lowSpecificity || first.evaluation.score-second.evaluation.score<minMargin)){
+  const plausible=evaluated.filter((entry)=>
+    entry.evaluation.details?.brandMatched
+    && entry.evaluation.score>=55
+  );
+  if(
+    (lowSpecificity && plausible.length>1)
+    || (second && first.evaluation.score-second.evaluation.score<minMargin)
+  ){
     return {
       status:"ambiguous",
       candidate:null,
-      ranked
+      ranked,
+      plausible
     };
   }
 
@@ -111,7 +120,8 @@ export function selectUniqueEanCandidate(offer,candidates,{
     candidate:first.candidate,
     score:first.evaluation.score,
     margin:second ? first.evaluation.score-second.evaluation.score : first.evaluation.score,
-    ranked
+    ranked,
+    plausible
   };
 }
 
