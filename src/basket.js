@@ -2,6 +2,7 @@ import { findProductOffers, estimateOfferSaving } from "./matching.js";
 import { selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { roundMoney } from "./domain.js";
+import { findBundleCandidates } from "./bundle.js";
 
 export function normalizeQuantity(value) {
   const quantity=Math.trunc(Number(value));
@@ -72,6 +73,11 @@ export function evaluateBasketStore(items,{
     ? optimizeStack(productAdjustedSubtotal,basketOffers,{store})
     : {finalCost:0,totalSaving:0,selected:[],considered:[],savingPercent:0};
 
+  const bundleCandidates=findBundleCandidates(items,lines,offers,{store});
+  const potentialBundleSaving=bundleCandidates.length
+    ? roundMoney(Math.max(...bundleCandidates.map((candidate)=>candidate.saving)))
+    : 0;
+
   const finalCost=roundMoney(basketOptimization.finalCost);
   const guaranteedSaving=roundMoney(observedSubtotal-finalCost);
   const potentialProductSaving=roundMoney(pricedLines.reduce(
@@ -94,7 +100,9 @@ export function evaluateBasketStore(items,{
     savingPercent:observedSubtotal>0
       ? Math.round((guaranteedSaving/observedSubtotal)*10000)/100
       : 0,
-    potentialProductSaving
+    potentialProductSaving,
+    potentialBundleSaving,
+    bundleCandidates
   };
 }
 
