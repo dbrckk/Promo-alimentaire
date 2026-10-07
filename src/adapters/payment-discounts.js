@@ -29,6 +29,19 @@ export function extractNearbyPercent(html,needle,{window=260}={}){
   return best;
 }
 
+export function extractNearbyAmount(html,needle,{window=260}={}){
+  const text=textContent(html);
+  const lower=text.toLocaleLowerCase("fr");
+  const target=String(needle).toLocaleLowerCase("fr");
+  const index=lower.indexOf(target);
+  if(index<0) return null;
+  const snippet=text.slice(Math.max(0,index-window),Math.min(text.length,index+target.length+window));
+  const values=[...snippet.matchAll(/(\d+(?:[,.]\d+)?)\s*€/g)]
+    .map((match)=>Number(match[1].replace(",",".")))
+    .filter((value)=>Number.isFinite(value)&&value>=0);
+  return values.length ? Math.max(...values) : null;
+}
+
 export function parsePaymentDiscountPages(pages,{verifiedAt=todayIso()}={}){
   const offers=[];
   const fidme=extractNearbyPercent(pages.fidme,"Carrefour");
@@ -70,6 +83,15 @@ export function parsePaymentDiscountPages(pages,{verifiedAt=todayIso()}={}){
     verifiedAt
   }));
 
+  const carrefourOnlineAmount=extractNearbyAmount(pages.ebuyclubOnline,"Carrefour");
+  if(Number.isFinite(carrefourOnlineAmount)) offers.push(onlineAmountCashback({
+    store:"carrefour",title:"Cashback en ligne Carrefour",amount:carrefourOnlineAmount,verifiedAt
+  }));
+  const leclercOnlinePercent=extractNearbyPercent(pages.ebuyclubOnline,"E.Leclerc");
+  if(Number.isFinite(leclercOnlinePercent)) offers.push(onlinePercentCashback({
+    store:"leclerc",title:"Cashback en ligne E.Leclerc",rate:leclercOnlinePercent,verifiedAt
+  }));
+
   return offers;
 }
 
@@ -77,7 +99,7 @@ function giftCard({providerId,provider,rate,verifiedAt,sourceUrl,conditions}){
   return {
     providerId,provider,externalId:"carrefour-gift-card-current",
     title:"Bon d'achat Carrefour",type:"bon d'achat",category:"panier",
-    stores:["carrefour"],savingPercent:rate,verifiedAt,reviewAfter:addDays(verifiedAt,7),
+    stores:["carrefour"],channels:["store"],savingPercent:rate,verifiedAt,reviewAfter:addDays(verifiedAt,7),
     sourceUrl,scope:"panier",mechanism:"gift_card",stackGroup:"payment-discount",
     stackOrder:30,savingBasis:"current",autoStack:true,stackingConfidence:"high",
     stacking:"une seule remise de paiement est retenue ; vérifier les conditions du bon",
@@ -89,13 +111,42 @@ function cardCashback({store,title,rate,verifiedAt}){
   return {
     providerId:"ebuyclub",provider:"eBuyClub",
     externalId:store+"-connected-cashback-current",
-    title,type:"cashback carte",category:"panier",stores:[store],
+    title,type:"cashback carte",category:"panier",stores:[store],channels:["store"],
     savingPercent:rate,verifiedAt,reviewAfter:addDays(verifiedAt,7),
     sourceUrl:"https://www.ebuyclub.com/cashback-connecte",
     scope:"panier",mechanism:"card_cashback",stackGroup:"card-cashback",
     stackOrder:60,savingBasis:"current",autoStack:false,stackingConfidence:"unknown",
     stacking:"cumul à vérifier selon la transaction et les autres activations",
     conditions:"Taux public du cashback connecté eBuyClub ; vérifier l'éligibilité avant paiement."
+  };
+}
+
+function onlineAmountCashback({store,title,amount,verifiedAt}){
+  return {
+    providerId:"ebuyclub",provider:"eBuyClub",
+    externalId:store+"-online-cashback-current",
+    title,type:"cashback en ligne",category:"panier",stores:[store],channels:["online"],
+    savingAmount:amount,savingAmountMode:"per-offer",
+    verifiedAt,reviewAfter:addDays(verifiedAt,7),
+    sourceUrl:"https://www.ebuyclub.com/cashback",
+    scope:"panier",mechanism:"affiliate_cashback",stackGroup:"affiliate-cashback",
+    stackOrder:70,savingBasis:"current",autoStack:false,stackingConfidence:"unknown",
+    stacking:"cumul et catégories éligibles à vérifier avant commande",
+    conditions:"Jusqu'à "+amount+" € remboursés sur les achats en ligne éligibles. Offre variable selon conditions."
+  };
+}
+
+function onlinePercentCashback({store,title,rate,verifiedAt}){
+  return {
+    providerId:"ebuyclub",provider:"eBuyClub",
+    externalId:store+"-online-cashback-current",
+    title,type:"cashback en ligne",category:"panier",stores:[store],channels:["online"],
+    savingPercent:rate,verifiedAt,reviewAfter:addDays(verifiedAt,7),
+    sourceUrl:"https://www.ebuyclub.com/cashback",
+    scope:"panier",mechanism:"affiliate_cashback",stackGroup:"affiliate-cashback",
+    stackOrder:70,savingBasis:"current",autoStack:false,stackingConfidence:"unknown",
+    stacking:"cumul et catégories éligibles à vérifier avant commande",
+    conditions:"Jusqu'à "+rate+" % remboursés sur les achats en ligne éligibles. Offre variable selon conditions."
   };
 }
 
