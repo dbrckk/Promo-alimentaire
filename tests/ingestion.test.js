@@ -106,3 +106,46 @@ test("normalizeImportedOffer conserve minPurchaseQty et savingAmountMode",()=>{
   assert.equal(result.value.minPurchaseQty,2);
   assert.equal(result.value.savingAmountMode,"per-offer");
 });
+
+
+test("normalizeImportedOffer conserve les règles promo enseigne",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"leclerc",
+    externalId:"promo-2plus1",
+    title:"2+1 offert",
+    sourceUrl:"https://www.e.leclerc/",
+    verifiedAt:"2026-10-07",
+    expiresAt:"2026-10-17",
+    stores:["leclerc"],
+    channels:["store"],
+    scope:"produit",
+    savingPercent:33.33,
+    basePrice:1.67,
+    mechanism:"retailer_promo",
+    requiresStoreVerification:true,
+    promoFormula:{type:"buy_x_get_y_free",buy:2,free:1}
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.basePrice,1.67);
+  assert.equal(result.value.promoFormula.type,"buy_x_get_y_free");
+  assert.equal(result.value.autoStack,false);
+  assert.equal(result.value.requiresStoreVerification,true);
+});
+
+test("normalizeImportedOffer conserve l'exigence de carte fidélité",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"leclerc",
+    externalId:"ticket",
+    title:"20% Ticket E.Leclerc",
+    sourceUrl:"https://www.e.leclerc/",
+    verifiedAt:"2026-10-07",
+    stores:["leclerc"],
+    scope:"produit",
+    savingPercent:20,
+    requiresLoyalty:"leclerc-card",
+    autoStackWhenEligible:true
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.requiresLoyalty,"leclerc-card");
+  assert.equal(result.value.autoStackWhenEligible,true);
+});
