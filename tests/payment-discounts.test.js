@@ -40,3 +40,25 @@ test("les cashbacks web sont limités au canal online",()=>{
   assert.equal(web.length,2);
   assert.ok(web.every((x)=>x.channels.includes("online")));
 });
+
+
+test("extractNearbyPercent choisit le taux le plus proche et non le maximum",()=>{
+  const html="Marchand voisin 44% de réduction … Carte cadeau Carrefour 4% de cashback";
+  assert.equal(extractNearbyPercent(html,"Carte cadeau Carrefour"),4);
+});
+
+test("extractNearbyPercent ne vole pas le taux d'un marchand adjacent",()=>{
+  const html="CLEOR 6% remboursés · Carrefour 0,05% remboursés · E.Leclerc 0,05% remboursés";
+  assert.equal(extractNearbyPercent(html,"Carrefour"),0.05);
+  assert.equal(extractNearbyPercent(html,"E.Leclerc"),0.05);
+});
+
+test("extractNearbyPercent isole E.Leclerc sur une page multi-marchands",()=>{
+  const html="YSL 6,5% remboursés · E.Leclerc Jusqu'à 2,5% remboursés · Carrefour Jusqu'à 3€ remboursés";
+  assert.equal(extractNearbyPercent(html,"E.Leclerc"),2.5);
+});
+
+test("extractNearbyAmount choisit le montant le plus proche et non le maximum",()=>{
+  const html="Autre offre 300€ · Carrefour Jusqu'à 3€ remboursés";
+  assert.equal(extractNearbyAmount(html,"Carrefour"),3);
+});
