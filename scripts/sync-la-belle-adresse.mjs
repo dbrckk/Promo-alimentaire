@@ -25,6 +25,17 @@ for(const url of SOURCE_URLS){
     if(html.length<3000) throw new Error("réponse anormalement courte");
     const offers=parseLaBelleAdresseHtml(html,{verifiedAt,sourceUrl:url});
     console.log("[la-belle-adresse] "+url+" -> "+offers.length+" offre(s)");
+    if(offers.length===0){
+      const lower=html.toLocaleLowerCase("fr");
+      const probes=["rembours","le chat","x.tra","drupalsettings","/api/","ajax","graphql","__next_data__"];
+      for(const probe of probes){
+        const index=lower.indexOf(probe.toLocaleLowerCase("fr"));
+        console.log("[la-belle-adresse][probe] "+probe+" -> "+index);
+        if(index>=0) console.log("[la-belle-adresse][snippet] "+html.slice(Math.max(0,index-220),index+520).replace(/\s+/g," ").slice(0,740));
+      }
+      const scripts=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)].map((match)=>match[1]).slice(0,25);
+      console.log("[la-belle-adresse][scripts] "+JSON.stringify(scripts));
+    }
     found.push(...offers);
   }catch(error){
     console.warn("[la-belle-adresse] "+url+" indisponible: "+error.message);
