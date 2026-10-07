@@ -124,3 +124,26 @@ Au 7 octobre 2026, les pages publiques de remboursement sont rendues côté clie
 3. conserve le dernier snapshot manuel vérifié quand l'extraction publique est insuffisante ;
 4. laisse le contrôle de fraîcheur signaler quand ce snapshot doit être revu.
 
+
+
+## Synchronisation des moyens de paiement
+
+Le projet synchronise quotidiennement les taux publics utiles au panier :
+
+- Fidme — bon d'achat Carrefour ;
+- Widilo — carte cadeau Carrefour ;
+- eBuyClub — carte cadeau Carrefour ;
+- Poulpeo — bon d'achat Carrefour ;
+- eBuyClub — cashback connecté Carrefour et E.Leclerc.
+
+Les snapshots importés remplacent automatiquement la valeur statique du même couple fournisseur/mécanisme/enseigne. Plusieurs cartes cadeaux ne sont jamais additionnées entre elles : le moteur choisit uniquement la meilleure offre du groupe `payment-discount`.
+
+## Garanti vs potentiel
+
+L'interface distingue explicitement :
+
+- **garanti** : uniquement les remises que le moteur considère suffisamment sûres et compatibles ;
+- **potentiel produit** : meilleure ODR candidate par ligne, sans cumul automatique ;
+- **potentiel bundle** : offre multi-produits détectée mais non garantie ;
+- **meilleur cas prudent** : coût estimé après la plus forte économie candidate, sans additionner artificiellement produit + bundle quand leur compatibilité n'est pas établie.
+
