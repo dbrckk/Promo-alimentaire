@@ -10,6 +10,8 @@ import {
   normalizeQuantity,
   selectBestLocationScenario
 } from "./basket.js";
+import { scoreBasketConfidence } from "./confidence.js";
+import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js";
 
 const money = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 const els = {
@@ -37,9 +39,11 @@ const els = {
   listNearbyButton:document.querySelector("#listNearbyButton"),
   listRadiusSelect:document.querySelector("#listRadiusSelect"),
   clearList:document.querySelector("#clearList"),
+  clearHistory:document.querySelector("#clearHistory"),
   listStatus:document.querySelector("#listStatus"),
   shoppingListItems:document.querySelector("#shoppingListItems"),
   basketComparison:document.querySelector("#basketComparison"),
+  comparisonHistory:document.querySelector("#comparisonHistory"),
   basketAmount:document.querySelector("#basketAmount"),
   optimizerResult:document.querySelector("#optimizerResult"),
   scanDialog:document.querySelector("#scanDialog"),
@@ -68,6 +72,7 @@ const state = {
   radiusKm:25,
   shoppingList:loadShoppingList(),
   basketPriceData:{carrefour:{},leclerc:{}},
+  comparisonHistory:loadComparisonHistory(),
   basketRefreshing:false,
   lookupToken:0
 };
@@ -110,6 +115,12 @@ els.clearList.addEventListener("click",()=>{
   saveShoppingList();
   renderShoppingList();
   setListStatus("Liste vidée.");
+});
+els.clearHistory.addEventListener("click",()=>{
+  state.comparisonHistory=[];
+  saveComparisonHistory();
+  renderComparisonHistory();
+  setListStatus("Historique local effacé.");
 });
 els.productResult.addEventListener("click",(event)=>{
   if(event.target.closest('[data-action="add-current-product"]')) addCurrentProduct();
@@ -585,31 +596,9 @@ function renderShoppingList(){
       </article>`;
   }).join("");
 
-  const scenarios=["carrefour","leclerc"].map((store)=>{
-    const locationScenarios=evaluateBasketLocations(state.shoppingList,{
-      store,
-      priceByCode:state.basketPriceData[store],
-      offers
-    });
-    const locationScenario=selectBestLocationScenario(locationScenarios);
-    if(locationScenario){
-      return {
-        ...locationScenario,
-        locationReliable:/^(id|geo):/.test(locationScenario.locationKey || "")
-      };
-    }
-    return {
-      ...evaluateBasketStore(state.shoppingList,{
-        store,
-        priceByCode:state.basketPriceData[store],
-        offers
-      }),
-      location:null,
-      locationKey:null,
-      locationReliable:false
-    };
-  });
+  const scenarios=evaluateCurrentBasketScenarios();
   renderBasketComparison(scenarios);
+  renderComparisonHistory();
 }
 
 async function refreshShoppingList(){
@@ -633,6 +622,8 @@ async function refreshShoppingList(){
       else { next.leclerc[item.product.code]=[]; failures+=1; }
     }
     state.basketPriceData=next;
+    const scenarios=evaluateCurrentBasketScenarios();
+    recordComparisonHistory(scenarios);
     renderShoppingList();
     const locality=state.nearbyEnabled ? ` dans un rayon de ${state.radiusKm} km` : " sans filtre géographique";
     setListStatus(
@@ -669,6 +660,102 @@ function syncNearbyControls(){
   }
   els.radiusSelect.value=String(state.radiusKm);
   els.listRadiusSelect.value=String(state.radiusKm);
+}
+
+function evaluateCurrentBasketScenarios(){
+  return ["carrefour","leclerc"].map((store)=>{
+    const locationScenarios=evaluateBasketLocations(state.shoppingList,{
+      store,
+      priceByCode:state.basketPriceData[store],
+      offers
+    });
+    const locationScenario=selectBestLocationScenario(locationScenarios);
+    let scenario;
+    if(locationScenario){
+      scenario={
+        ...locationScenario,
+        locationReliable:/^(id|geo):/.test(locationScenario.locationKey || "")
+      };
+    }else{
+      scenario={
+        ...evaluateBasketStore(state.shoppingList,{
+          store,
+          priceByCode:state.basketPriceData[store],
+          offers
+        }),
+        location:null,
+        locationKey:null,
+        locationReliable:false
+      };
+    }
+    return {
+      ...scenario,
+      confidence:scoreBasketConfidence(scenario)
+    };
+  });
+}
+
+function loadComparisonHistory(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem("promo-comparison-history-v1") || "[]");
+    return Array.isArray(parsed) ? parsed.slice(0,20) : [];
+  }catch{
+    return [];
+  }
+}
+
+function saveComparisonHistory(){
+  localStorage.setItem("promo-comparison-history-v1",JSON.stringify(state.comparisonHistory));
+}
+
+function recordComparisonHistory(scenarios){
+  if(!state.shoppingList.length) return;
+  const hasAnyPrice=scenarios.some((scenario)=>scenario.pricedCount>0);
+  if(!hasAnyPrice) return;
+  const entry=createHistoryEntry({
+    scenarios,
+    shoppingList:state.shoppingList,
+    radiusKm:state.radiusKm,
+    nearbyEnabled:state.nearbyEnabled
+  });
+  state.comparisonHistory=addHistoryEntry(state.comparisonHistory,entry,{limit:20});
+  saveComparisonHistory();
+}
+
+function renderComparisonHistory(){
+  if(!els.comparisonHistory) return;
+  if(!state.comparisonHistory.length){
+    els.comparisonHistory.innerHTML='<div class="panel price-source">Aucun historique de comparaison pour le moment.</div>';
+    return;
+  }
+  const trend=historyTrend(state.comparisonHistory);
+  const trendHtml=trend
+    ? `<div class="history-trend ${trend.direction==="down"?"good":trend.direction==="up"?"bad":""}">${trend.direction==="down"?"Baisse":trend.direction==="up"?"Hausse":"Stable"} de ${money.format(Math.abs(trend.delta))} par rapport à la comparaison valide précédente.</div>`
+    : '<div class="history-trend">Pas encore assez de comparaisons valides pour calculer une tendance.</div>';
+
+  els.comparisonHistory.innerHTML=`
+    <div class="product-offers-head">
+      <h3>Historique local</h3>
+      <p>Maximum 20 comparaisons. Aucun historique n'est envoyé à un serveur par l'application.</p>
+    </div>
+    ${trendHtml}
+    ${state.comparisonHistory.slice(0,6).map((entry)=>{
+      const best=entry.bestStore
+        ? `${storeLabel(entry.bestStore)} · ${money.format(entry.bestFinalCost)}`
+        : "Comparaison incomplète";
+      return `
+        <article class="history-card">
+          <div class="history-head">
+            <strong>${best}</strong>
+            <time datetime="${escapeHtml(entry.createdAt)}">${formatDateTime(entry.createdAt)}</time>
+          </div>
+          <div class="history-meta">
+            <span class="badge">${entry.distinctCount} référence(s)</span>
+            <span class="badge">${entry.itemCount} article(s)</span>
+            <span class="badge">${entry.nearbyEnabled?`${entry.radiusKm} km`:"sans proximité"}</span>
+          </div>
+        </article>`;
+    }).join("")}`;
 }
 
 function renderBasketComparison(scenarios){
@@ -710,6 +797,7 @@ function renderBasketScenario(scenario){
   const locationWarning=scenario.locationReliable
     ? ""
     : '<span class="badge warn">magasin à confirmer</span>';
+  const confidence=scenario.confidence || scoreBasketConfidence(scenario);
   const lines=scenario.lines.map((line)=>{
     if(line.missingPrice){
       return `<div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}</span><strong class="missing">prix manquant</strong></div>`;
@@ -731,6 +819,18 @@ function renderBasketScenario(scenario){
         <div class="source">${escapeHtml(locationText)}${distanceText}</div>
         <div class="${coverageClass} source">${scenario.pricedCount}/${scenario.distinctCount} références avec prix récent</div>
         <div class="badges">${locationWarning}</div>
+      </div>
+      <div class="confidence-box">
+        <div class="confidence-score ${confidence.level}">${confidence.score}/100</div>
+        <div>
+          <strong>Confiance ${confidence.label.toLocaleLowerCase("fr")}</strong>
+          <div class="confidence-parts">
+            <span>Couverture ${confidence.parts.coverage}/50</span>
+            <span>Fraîcheur ${confidence.parts.freshness}/25</span>
+            <span>Magasin ${confidence.parts.location}/15</span>
+            <span>Preuve ${confidence.parts.proof}/10</span>
+          </div>
+        </div>
       </div>
       <div class="scenario-summary">
         <div><span>Sous-total observé</span><strong>${money.format(scenario.observedSubtotal)}</strong></div>
@@ -810,6 +910,12 @@ function setProductStatus(message,isError=false){
 
 function stat(value,label){return `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`;}
 function formatPercent(value){return `${new Intl.NumberFormat("fr-FR",{maximumFractionDigits:2}).format(value)} %`;}
+function formatDateTime(value){
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())
+    ? "Date inconnue"
+    : date.toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"});
+}
 function formatDate(value){
   if(!value) return "Date inconnue";
   const date=new Date(String(value).length===10 ? value+"T12:00:00" : value);
@@ -840,3 +946,4 @@ syncNearbyControls();
 render();
 renderOptimizer();
 renderShoppingList();
+renderComparisonHistory();
