@@ -7,6 +7,8 @@ import {
   normalizeBarcode,
   normalizePriceObservation,
   haversineKm,
+  observationAgeDays,
+  priceFreshness,
   selectBestRecentPrice
 } from "../src/open-data.js";
 
@@ -115,4 +117,21 @@ test("selectBestRecentPrice choisit le prix récent le plus bas",()=>{
   ],120,now);
   assert.equal(best.storeName,"B");
   assert.equal(best.price,2.9);
+});
+
+
+test("selectBestRecentPrice préfère la fenêtre de 30 jours si elle existe",()=>{
+  const now=new Date("2026-10-07T12:00:00Z");
+  const best=selectBestRecentPrice([
+    {price:1,date:"2026-07-15",storeName:"Ancien moins cher"},
+    {price:2,date:"2026-10-01",storeName:"Récent"}
+  ],120,now,30);
+  assert.equal(best.storeName,"Récent");
+});
+
+test("priceFreshness expose un âge et un niveau",()=>{
+  const now=new Date("2026-10-07T12:00:00Z");
+  assert.equal(observationAgeDays({date:"2026-10-05"},now),2);
+  assert.equal(priceFreshness({date:"2026-10-05"},now).level,"very-recent");
+  assert.equal(priceFreshness({date:"2026-08-01"},now).level,"old");
 });
