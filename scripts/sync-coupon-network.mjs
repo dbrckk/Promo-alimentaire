@@ -22,6 +22,16 @@ if(html.length<5000) throw new Error("Réponse Coupon Network anormalement court
 
 const offers=parseCouponNetworkHtml(html,{verifiedAt});
 if(offers.length<minOffers){
+  const detailLinks=(html.match(/autres-enseignes-cashback-coupons[^"'<>\s]+\/\d+/gi)||[]);
+  const couponIds=(html.match(/coupon\/\d+/gi)||[]);
+  const refundMarkers=(html.match(/REMBOURS/gi)||[]);
+  console.error("[coupon-network] diagnostic raw HTML:",{
+    length:html.length,
+    detailLinks:detailLinks.length,
+    couponIds:couponIds.length,
+    refundMarkers:refundMarkers.length,
+    contentType:response.headers.get("content-type")
+  });
   throw new Error("Extraction Coupon Network insuffisante : "+offers.length+" offre(s), minimum "+minOffers+". Ancien snapshot conservé.");
 }
 
