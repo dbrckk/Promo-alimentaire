@@ -1,0 +1,53 @@
+name: Enrich E.Leclerc EANs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "43 6 * * 2"
+  push:
+    paths:
+      - "src/ean-resolver.js"
+      - "scripts/enrich-leclerc-eans.mjs"
+      - "data/import/leclerc-catalog-2026-10-07.json"
+      - ".github/workflows/enrich-leclerc-eans.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: leclerc-ean-enrichment
+  cancel-in-progress: true
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Resolve exact GTINs conservatively
+        run: npm run enrich:leclerc-eans -- --write
+      - name: Validate repository
+        run: npm run verify
+      - name: Commit only uniquely resolved GTINs
+        shell: bash
+        run: |
+          if git diff --quiet -- data/import/leclerc-catalog-2026-10-07.json; then
+            echo "No unambiguous GTIN found."
+            exit 0
+          fi
+          git config user.name "promo-alimentaire-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/import/leclerc-catalog-2026-10-07.json
+          git commit -m "data: enrich E.Leclerc offers with exact GTIN evidence"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if git rebase origin/main; then
+              if git push origin HEAD:main; then exit 0; fi
+            else
+              git rebase --abort || true
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
