@@ -24,6 +24,9 @@ test("loadImportedOffers valide et filtre les lots actifs",async()=>{
   assert.equal(result.offers.length,1);
   assert.equal(result.offers[0].id,"shopmium-x");
   assert.equal(result.errors.length,0);
+  assert.equal(result.sourceStats.length,1);
+  assert.equal(result.sourceStats[0].activeCount,1);
+  assert.equal(result.sourceStats[0].providerIds[0],"shopmium");
 });
 
 test("loadImportedOffers masque une offre expirée",async()=>{
@@ -46,4 +49,19 @@ test("mergeOffers remplace un id existant par l'import",()=>{
   );
   assert.equal(result.length,2);
   assert.equal(result.find((x)=>x.id==="a").title,"nouveau");
+});
+
+
+test("loadImportedOffers marque une source expirée comme stale",async()=>{
+  const fetchImpl=async(url)=>{
+    const text=String(url);
+    if(text.endsWith("/index.json")) return {ok:true,json:async()=>manifest};
+    return {ok:true,json:async()=>payload};
+  };
+  const result=await loadImportedOffers({
+    fetchImpl,
+    now:new Date("2026-11-05T12:00:00Z")
+  });
+  assert.equal(result.sourceStats[0].status,"stale");
+  assert.equal(result.sourceStats[0].activeCount,0);
 });
