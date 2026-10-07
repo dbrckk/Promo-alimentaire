@@ -28,6 +28,7 @@ const els = {
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
   providers:document.querySelector("#providers"),
+  sourceHealth:document.querySelector("#sourceHealth"),
   empty:document.querySelector("#empty"),
   stats:document.querySelector("#stats"),
   datasetDate:document.querySelector("#datasetDate"),
@@ -87,6 +88,7 @@ const state = {
   productPriceHistory:loadProductPriceHistory(),
   dropThreshold:Number(localStorage.getItem("promo-drop-threshold") || 10),
   basketRefreshing:false,
+  sourceHealth:[],
   lookupToken:0
 };
 
@@ -236,6 +238,48 @@ function renderOffer(offer){
         <a class="open" href="${escapeHtml(offer.sourceUrl)}" target="_blank" rel="noreferrer">Voir la source</a>
       </div>
     </article>`;
+}
+
+function renderSourceHealth(){
+  if(!els.sourceHealth) return;
+  if(!state.sourceHealth.length){
+    els.sourceHealth.innerHTML='<div class="panel price-source">État des snapshots indisponible.</div>';
+    return;
+  }
+  const order={error:0,stale:1,"review-soon":2,ok:3};
+  const rows=[...state.sourceHealth].sort((a,b)=>(order[a.status]??9)-(order[b.status]??9));
+  els.sourceHealth.innerHTML=`
+    <div class="product-offers-head">
+      <h3>État des données importées</h3>
+      <p>Nombre d’offres actuellement actives, date de vérification et prochaine échéance de révision.</p>
+    </div>
+    <div class="source-health-grid">
+      ${rows.map((item)=>{
+        const providerId=item.providerIds?.[0];
+        const provider=providers.find((entry)=>entry.id===providerId);
+        const label=provider?.name || providerId || item.file;
+        const stateLabel={
+          ok:"À jour",
+          "review-soon":"À revoir bientôt",
+          stale:"Obsolète",
+          error:"Erreur"
+        }[item.status] || item.status;
+        const badgeClass=item.status==="ok" ? "good" : "warn";
+        return `
+          <article class="source-health-card">
+            <div>
+              <strong>${escapeHtml(label)}</strong>
+              <div class="source">${escapeHtml(item.file)}</div>
+            </div>
+            <span class="badge ${badgeClass}">${stateLabel}</span>
+            <div class="source-health-metrics">
+              <span><b>${item.activeCount}</b> actives</span>
+              <span>vérifié ${item.latestVerifiedAt?formatDate(item.latestVerifiedAt):"—"}</span>
+              <span>révision ${item.nextDeadline?formatDate(item.nextDeadline):"—"}</span>
+            </div>
+          </article>`;
+      }).join("")}
+    </div>`;
 }
 
 function renderProvider(provider){
@@ -1056,15 +1100,19 @@ async function hydrateImportedOffers(){
   try{
     const result=await loadImportedOffers();
     offers=mergeOffers(baseOffers,result.offers);
+    state.sourceHealth=result.sourceStats || [];
     const suffix=result.errors.length
       ? ` · ${result.offers.length} offres publiques chargées, ${result.errors.length} lot(s) en erreur`
       : ` · ${result.offers.length} offres publiques chargées`;
     els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")}${suffix}`;
     render();
+    renderSourceHealth();
     renderOptimizer();
     renderShoppingList();
     if(state.product) renderProductOffers(state.product,state.priceObservations);
   }catch(error){
+    state.sourceHealth=[];
+    renderSourceHealth();
     els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")} · imports indisponibles`;
   }
 }
@@ -1108,6 +1156,7 @@ render();
 renderOptimizer();
 renderShoppingList();
 renderComparisonHistory();
+renderSourceHealth();
 renderProductPriceHistory();
 renderPriceAlerts();
 hydrateImportedOffers();
