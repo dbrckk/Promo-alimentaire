@@ -1,6 +1,7 @@
 const GENERIC_TITLE_WORDS=new Set([
-  "a","au","aux","avec","chacun","chaque","coeurs","coeur","assiette","apero","vegetal","vegetale",
-  "original","nouveau","nouveaux","nouvelle","nouvelles","decouvrez","gamme","global","produit","produits",
+  "a","au","aux","avec","chacun","chaque","son","sa","ses","notre","nos","votre","vos","mon","ma","mes",
+  "le","la","les","de","du","des","d","un","une","et","ou","en","sur","coeurs","coeur","assiette","apero","vegetal","vegetale",
+  "original","pause","gourmande","gourmand","nouveau","nouveaux","nouvelle","nouvelles","decouvrez","gamme","global","produit","produits",
   "mini","muffins","muffin","boissons","boisson","fruits","fruit","plats","plat","cuisines","cuisine",
   "proteine","protein","plus","american","sandwich","sandwiches","recettes","sans","viande","poisson"
 ]);
