@@ -44,3 +44,23 @@ test("findBundleCandidates filtre l'enseigne",()=>{
   assert.equal(findBundleCandidates([dash,lenor],lines,[onlyCarrefour],{store:"carrefour"}).length,1);
   assert.equal(findBundleCandidates([dash,lenor],lines,[onlyCarrefour],{store:"leclerc"}).length,0);
 });
+
+
+test("findBundleCandidates respecte le canal",()=>{
+  const items=[
+    {product:{code:"1",name:"Dash",brands:"Dash",categories:[]},quantity:1},
+    {product:{code:"2",name:"Lenor",brands:"Lenor",categories:[]},quantity:1}
+  ];
+  const lines=[
+    {product:items[0].product,bestPrice:{price:8},missingPrice:false},
+    {product:items[1].product,bestPrice:{price:4},missingPrice:false}
+  ];
+  const webOffer={
+    ...offer,
+    id:"web",
+    stores:["carrefour"],
+    channels:["online"]
+  };
+  assert.equal(findBundleCandidates(items,lines,[webOffer],{store:"carrefour",channel:"store"}).length,0);
+  assert.equal(findBundleCandidates(items,lines,[webOffer],{store:"carrefour",channel:"online"}).length,1);
+});
