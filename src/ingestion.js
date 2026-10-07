@@ -173,6 +173,10 @@ export function validateImportBatch(records) {
   };
 }
 
+export function filterActiveOffers(offers,now=new Date()){
+  return (offers || []).filter((offer)=>isOfferActive(offer,now));
+}
+
 export function isOfferActive(offer,now=new Date()) {
   const current=new Date(now);
   if(Number.isNaN(current.getTime())) return false;
