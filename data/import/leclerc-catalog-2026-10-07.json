@@ -42,6 +42,15 @@
         "porc"
       ],
       "minScore": 65
+    },
+    "eans": [
+      "3564700602706"
+    ],
+    "eanEvidenceUrl": "https://www.e.leclerc/fp/mini-nems-poulet-et-porc-x10-220g-tables-du-monde-3564700602706",
+    "eanResolution": {
+      "source": "E.Leclerc product page",
+      "resolvedAt": "2026-10-07",
+      "evidence": "Catalogue et fiche produit concordants : TABLES DU MONDE, 10 mini nems poulet et porc x10, 220 g."
     }
   },
   {
@@ -86,6 +95,15 @@
         "lait caramel"
       ],
       "minScore": 65
+    },
+    "eans": [
+      "3564706822009"
+    ],
+    "eanEvidenceUrl": "https://www.e.leclerc/fp/tablette-sans-cacao-lait-au-caramel-et-fleur-de-sel-100g-tablette-d-or-3564706822009",
+    "eanResolution": {
+      "source": "E.Leclerc product page",
+      "resolvedAt": "2026-10-07",
+      "evidence": "Catalogue et fiche produit concordants : TABLETTE D'OR sans cacao lait caramel, 100 g, 1,09 €."
     }
   },
   {
