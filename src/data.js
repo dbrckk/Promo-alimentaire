@@ -169,37 +169,4 @@ export const offers = [
     autoStack:false, stackingConfidence:"unknown",
     conditions:"Taux affiché au moment de la vérification : 0,05 % en magasin."
   },
-  {
-    id:"belle-adresse-xtra-40", provider:"La Belle Adresse", providerId:"belle-adresse",
-    title:"X.TRA — offre de remboursement", type:"ODR", category:"entretien",
-    stores:["carrefour","leclerc"], savingPercent:40, savingAmount:null, basePrice:null,
-    verifiedAt:"2026-10-06", sourceUrl:"https://www.labelleadresse.com/economies/remboursement",
-    scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
-    mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
-    autoStack:false, stackingConfidence:"restricted",
-    productMatch:{brands:["X.TRA","X-tra","Xtra"],minScore:55},
-    conditions:"La Belle Adresse affiche plusieurs références X.TRA à 40 % remboursé. Vérifier la référence exacte et les modalités."
-  },
-  {
-    id:"belle-adresse-lechat-40", provider:"La Belle Adresse", providerId:"belle-adresse",
-    title:"Le Chat Discs — offre de remboursement", type:"ODR", category:"entretien",
-    stores:["carrefour","leclerc"], savingPercent:40, savingAmount:null, basePrice:null,
-    verifiedAt:"2026-10-06", sourceUrl:"https://www.labelleadresse.com/economies/remboursement",
-    scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
-    mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
-    autoStack:false, stackingConfidence:"restricted",
-    productMatch:{brands:["Le Chat"],any:["Disc","Discs","Disques"],minScore:60},
-    conditions:"Offre affichée à 40 % remboursé ; les réductions La Belle Adresse ne sont généralement pas cumulables avec une promotion."
-  },
-  {
-    id:"belle-adresse-mir-40", provider:"La Belle Adresse", providerId:"belle-adresse",
-    title:"Mir — offre de remboursement", type:"ODR", category:"entretien",
-    stores:["carrefour","leclerc"], savingPercent:40, savingAmount:null, basePrice:null,
-    verifiedAt:"2026-10-06", sourceUrl:"https://www.labelleadresse.com/economies/remboursement",
-    scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
-    mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
-    autoStack:false, stackingConfidence:"restricted",
-    productMatch:{brands:["Mir"],minScore:55},
-    conditions:"Plusieurs références Mir étaient affichées à 40 % remboursé lors de la vérification."
-  }
 ];
