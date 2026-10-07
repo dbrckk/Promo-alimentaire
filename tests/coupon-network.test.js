@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  cleanOfferTitle,
   deriveProductMatch,
   extractCouponNetworkDetailUrls,
   inferMinPurchaseQty,
@@ -98,4 +99,16 @@ test("parseCouponNetworkHtml conserve un remboursement fixe par offre",()=>{
   const [offer]=parseCouponNetworkHtml(html,{verifiedAt:"2026-10-07"});
   assert.equal(offer.minPurchaseQty,2);
   assert.equal(offer.savingAmountMode,"per-offer");
+});
+
+
+test("cleanOfferTitle retire le badge de remboursement collé au titre",()=>{
+  assert.equal(
+    cleanOfferTitle("STARBUCKS® x10 0,50 € REMBOURSÉ"),
+    "STARBUCKS® x10"
+  );
+  assert.equal(
+    cleanOfferTitle("Les Dieux - Global Gamme 0,40 € REMBOURSÉS"),
+    "Les Dieux - Global Gamme"
+  );
 });
