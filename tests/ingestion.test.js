@@ -170,3 +170,25 @@ test("normalizeImportedOffer conserve le blocage de résolution GTIN",()=>{
   assert.equal(result.value.eanResolutionBlocked,true);
   assert.equal(result.value.eanResolutionReason,"Plusieurs variantes possibles.");
 });
+
+
+test("normalizeImportedOffer conserve le besoin de vérifier le prix du canal",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"carrefour",
+    externalId:"drive-promo",
+    title:"Promo Drive",
+    sourceUrl:"https://www.carrefour.fr/p/test-4006381333931",
+    verifiedAt:"2026-10-07",
+    stores:["carrefour"],
+    channels:["drive","online"],
+    scope:"produit",
+    savingPercent:30,
+    eans:["4006381333931"],
+    eanEvidenceUrl:"https://www.carrefour.fr/p/test-4006381333931",
+    requiresChannelPriceVerification:true,
+    autoStack:true
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.requiresChannelPriceVerification,true);
+  assert.equal(result.value.autoStack,false);
+});
