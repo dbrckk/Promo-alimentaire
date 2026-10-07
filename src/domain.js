@@ -18,6 +18,13 @@ export function rankOffers(offers, sort = "percent") {
   return [...offers].sort((a, b) => {
     if (sort === "amount") return nullableNumber(computeSaving(b)) - nullableNumber(computeSaving(a));
     if (sort === "freshness") return new Date(b.verifiedAt) - new Date(a.verifiedAt);
+    if (sort === "deadline") {
+      const ad=offerDeadline(a);
+      const bd=offerDeadline(b);
+      const av=ad && ad.daysUntil>=0 ? ad.daysUntil : Infinity;
+      const bv=bd && bd.daysUntil>=0 ? bd.daysUntil : Infinity;
+      if(av!==bv) return av-bv;
+    }
     return nullableNumber(effectivePercent(b)) - nullableNumber(effectivePercent(a));
   });
 }
