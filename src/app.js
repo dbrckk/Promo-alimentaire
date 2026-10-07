@@ -545,7 +545,10 @@ function renderProductOffers(product,observations=[]){
         ${evidenceHtml}
         <div class="actions">
           <span class="verified">${escapeHtml(match.reason)}</span>
-          <a class="open" href="${escapeHtml(offer.sourceUrl)}" target="_blank" rel="noreferrer">Vérifier l’offre</a>
+          ${match.exact && offer.eanEvidenceUrl
+            ? `<a class="open" href="${escapeHtml(offer.eanEvidenceUrl)}" target="_blank" rel="noopener noreferrer">Preuve EAN</a>`
+            : ""}
+          <a class="open" href="${escapeHtml(offer.sourceUrl)}" target="_blank" rel="noopener noreferrer">Conditions de l’offre</a>
         </div>
       </article>`;
   }).join("");
