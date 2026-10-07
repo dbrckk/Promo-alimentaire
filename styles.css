@@ -281,3 +281,5 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 
 .confirm-store-offer{grid-column:1/-1;justify-self:start;border:1px solid var(--warn-line);background:#fff;color:#7c5a00;border-radius:9px;padding:6px 8px;font-size:.66rem;font-weight:750;cursor:pointer}
 .confirm-store-offer.active{background:#e6f6ed;border-color:#bfe3cf;color:var(--good)}
+
+.local-verify-hint{grid-column:1/-1;font-size:.64rem;color:var(--muted);line-height:1.35}
