@@ -352,3 +352,25 @@ test("une remise immédiate garantie baisse le prix caisse",()=>{
   assert.equal(scenario.loyaltyCredit,0);
   assert.equal(scenario.finalCost,8);
 });
+
+
+test("le gain potentiel maximal ne se limite pas à la correspondance la plus sûre",()=>{
+  const p={code:"12121212",name:"Produit Marque",brands:"Marque",categories:[]};
+  const exact={
+    id:"exact",scope:"produit",stores:["carrefour"],eans:["12121212"],
+    savingPercent:10,autoStack:false
+  };
+  const bigger={
+    id:"bigger",scope:"produit",stores:["carrefour"],
+    productMatch:{brands:["Marque"]},savingPercent:50,autoStack:false
+  };
+  const scenario=evaluateBasketStore([{product:p,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{"12121212":[{price:10,date:"2026-10-01"}]},
+    offers:[bigger,exact],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.lines[0].bestProductCandidate.offer.id,"exact");
+  assert.equal(scenario.lines[0].bestSavingCandidate.offer.id,"bigger");
+  assert.equal(scenario.potentialProductSaving,5);
+});
