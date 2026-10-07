@@ -109,3 +109,16 @@ test("rankMatchedOffers indique la quantité manquante",()=>{
   assert.equal(ranked[0].action.missingQty,1);
   assert.equal(ranked[0].action.estimatedSaving,null);
 });
+
+
+test("findProductOffers respecte le canal",()=>{
+  const product={code:"1",name:"Mir",brands:"Mir",categories:[]};
+  const offers=[
+    {id:"store",scope:"produit",stores:["carrefour"],channels:["store"],productMatch:{brands:["Mir"]}},
+    {id:"online",scope:"produit",stores:["carrefour"],channels:["online"],productMatch:{brands:["Mir"]}}
+  ];
+  assert.deepEqual(
+    findProductOffers(product,offers,{store:"carrefour",channel:"store"}).map((x)=>x.offer.id),
+    ["store"]
+  );
+});
