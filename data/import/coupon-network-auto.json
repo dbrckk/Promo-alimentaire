@@ -553,10 +553,9 @@
         "Lutti"
       ],
       "all": [
-        "Boite",
         "bonbons"
       ],
-      "minScore": 75
+      "minScore": 65
     },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
@@ -777,7 +776,11 @@
       "brands": [
         "Les Dieux"
       ],
-      "minScore": 55
+      "all": [
+        "2",
+        "sardines"
+      ],
+      "minScore": 75
     },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
@@ -1038,7 +1041,7 @@
       ],
       "all": [
         "Pomme",
-        "Pomme"
+        "Poire"
       ],
       "minScore": 75
     },
@@ -4053,7 +4056,10 @@
       "brands": [
         "Grain d'Envie"
       ],
-      "minScore": 55
+      "all": [
+        "75cl"
+      ],
+      "minScore": 65
     },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
@@ -4088,10 +4094,9 @@
         "Roche Mazet"
       ],
       "all": [
-        "Bouteille",
         "75cl"
       ],
-      "minScore": 75
+      "minScore": 65
     },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
