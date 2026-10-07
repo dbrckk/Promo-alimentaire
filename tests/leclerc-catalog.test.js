@@ -38,3 +38,13 @@ test("refuse un taux voisin si le taux attendu manque",()=>{
   assert.equal(result.ok,false);
   assert.ok(result.reasons.includes("remise sur le 2e absente"));
 });
+
+
+test("vérifie aussi les preuves dans des données JavaScript embarquées",()=>{
+  const html='<html><body><div id="app"></div><script>window.__DATA__={"name":"GULL\\u00d3N BISCUITS","promo":"68 % SUR LE 2e PRODUIT"}</script></body></html>';
+  const result=verifyLeclercCatalogOffer(html,{
+    promoFormula:{type:"nth_percent",nth:2,cycle:2,percent:68},
+    productMatch:{brands:["Gullón"],any:["biscuits"]}
+  });
+  assert.equal(result.ok,true);
+});
