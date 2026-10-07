@@ -1,5 +1,6 @@
 export function buildSavingsActionPlan({
   store,
+  channel="store",
   selectedPayment=null,
   uncertainBasketOffers=[],
   productCandidates=[],
@@ -15,12 +16,31 @@ export function buildSavingsActionPlan({
   const joko=providers.find((provider)=>provider.id==="joko"
     && (provider.stores?.includes(store)||provider.stores?.includes("all")));
   if(joko){
+    const detail=channel==="online"
+      ? "Si tu choisis Joko pour cette commande en ligne, active son offre avant l’achat et n’utilise pas simultanément une autre extension cashback concurrente."
+      : channel==="drive"
+        ? "Vérifie dans Joko si l’offre de l’enseigne couvre le Drive et active-la avant la transaction si nécessaire."
+        : "Ouvre Joko et vérifie les offres CB / bons d’achat disponibles pour cette enseigne. Une offre CB doit être activée avant la transaction.";
+    push("avant","Vérifier Joko avant de payer",detail,"check",joko.url);
+  }
+
+  const affiliateCashbacks=(uncertainBasketOffers || [])
+    .filter((offer)=>offer.mechanism==="affiliate_cashback");
+  if(channel==="online" && affiliateCashbacks.length){
+    const labels=affiliateCashbacks.map((offer)=>{
+      const value=Number.isFinite(offer.savingPercent)
+        ? offer.savingPercent+" %"
+        : Number.isFinite(offer.savingAmount)
+          ? "jusqu’à "+offer.savingAmount+" €"
+          : "";
+      return offer.provider+(value?" "+value:"");
+    });
     push(
       "avant",
-      "Vérifier Joko avant de payer",
-      "Ouvre Joko et vérifie les offres CB / bons d’achat disponibles pour cette enseigne. Une offre CB doit être activée avant la transaction.",
+      "Choisir un seul portail cashback web",
+      "Compare "+labels.join(" / ")+". Active uniquement le meilleur chemin compatible avec ta commande ; plusieurs portails ou extensions concurrents ne doivent pas être comptés ensemble.",
       "check",
-      joko.url
+      affiliateCashbacks[0].sourceUrl || null
     );
   }
 
@@ -95,6 +115,7 @@ export function buildSavingsActionPlan({
 
   return {
     store,
+    channel,
     steps,
     phaseCounts:steps.reduce((acc,step)=>{
       acc[step.phase]=(acc[step.phase]||0)+1;
