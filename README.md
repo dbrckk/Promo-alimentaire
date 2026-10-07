@@ -8,7 +8,7 @@ Fonctionnalités actuelles :
 - choix Carrefour / E.Leclerc ;
 - tri par pourcentage d'économie, économie en euros ou fraîcheur ;
 - recherche d'offres ;
-- chargement runtime de snapshots publics validés (Shopmium et La Belle Adresse au 07/10/2026) avec expiration automatique ;
+- chargement runtime de snapshots publics validés (Shopmium, La Belle Adresse et Coupon Network au 07/10/2026) avec expiration automatique ;
 - annuaire de sources complémentaires ;
 - recherche produit par EAN/UPC ;
 - scanner code-barres natif sur les navigateurs compatibles Android ;
