@@ -77,3 +77,16 @@ test("une offre générique reste ambiguë même avec un léger avantage de scor
   ],{minMargin:1});
   assert.equal(result.status,"ambiguous");
 });
+
+
+test("un candidat de même marque sous le seuil final suffit à créer l'ambiguïté générique",()=>{
+  const generic={
+    title:"Biscottes Heudebert",
+    productMatch:{brands:["Heudebert"],any:["biscottes"]}
+  };
+  const result=selectUniqueEanCandidate(generic,[
+    {code:"7622210416629",product_name:"La Biscotte 96% céréales",brands:"Heudebert"},
+    {code:"7622210691286",product_name:"Biscottes Bio",brands:"Heudebert"}
+  ]);
+  assert.equal(result.status,"ambiguous");
+});
