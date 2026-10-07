@@ -80,6 +80,19 @@ export function evaluateBasketStore(items,{
 
   const finalCost=roundMoney(basketOptimization.finalCost);
   const guaranteedSaving=roundMoney(observedSubtotal-finalCost);
+  const productGuaranteedSaving=roundMoney(
+    pricedLines.reduce((sum,line)=>sum+(line.guaranteedSaving||0),0)
+  );
+  const paymentGuaranteedSaving=roundMoney(
+    basketOptimization.selected
+      .filter((offer)=>offer.mechanism==="gift_card")
+      .reduce((sum,offer)=>sum+(offer.calculatedSaving||0),0)
+  );
+  const otherBasketGuaranteedSaving=roundMoney(
+    basketOptimization.selected
+      .filter((offer)=>offer.mechanism!=="gift_card")
+      .reduce((sum,offer)=>sum+(offer.calculatedSaving||0),0)
+  );
   const potentialProductSaving=roundMoney(pricedLines.reduce(
     (sum,line)=>sum+(line.potentialProductSaving || 0),0
   ));
@@ -108,6 +121,14 @@ export function evaluateBasketStore(items,{
       : 0,
     potentialProductSaving,
     potentialBundleSaving,
+    savingsBreakdown:{
+      productGuaranteed:productGuaranteedSaving,
+      paymentGuaranteed:paymentGuaranteedSaving,
+      otherBasketGuaranteed:otherBasketGuaranteedSaving,
+      productPotential:potentialProductSaving,
+      bundlePotential:potentialBundleSaving,
+      uncertainBasketCount:basketOptimization.considered.filter((offer)=>offer.autoStack!==true).length
+    },
     conservativePotentialExtraSaving,
     conservativeBestCaseCost,
     bundleCandidates
