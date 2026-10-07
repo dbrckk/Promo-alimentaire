@@ -63,7 +63,13 @@ export function evaluateBasketStore(items,{
     }
 
     const baseCost=roundMoney(best.price*quantity);
-    const guaranteedProductOffers=matches
+    // Open Prices records can already contain the retailer's discounted checkout price.
+    // Never subtract the same retailer promo again from an already discounted observation.
+    const alreadyRetailDiscounted=best.isDiscounted===true;
+    const eligibleMatches=matches.filter(({offer})=>
+      !alreadyRetailDiscounted || offer.mechanism!=="retailer_promo"
+    );
+    const guaranteedProductOffers=eligibleMatches
       .filter(({match,offer})=>match.exact && offer.autoStack===true)
       .map(({offer})=>{
         if(!offer.promoFormula) return offer;
@@ -79,7 +85,7 @@ export function evaluateBasketStore(items,{
       });
     const lineOptimization=optimizeStack(baseCost,guaranteedProductOffers,{store,channel});
 
-    const potentialCandidates=matches
+    const potentialCandidates=eligibleMatches
       .map(({offer,match})=>({
         offer,
         match,
@@ -126,6 +132,7 @@ export function evaluateBasketStore(items,{
       loyaltyCredit,
       deferredRefund,
       immediateSaving,
+      alreadyRetailDiscounted,
       appliedOffers:lineOptimization.selected,
       finalCost:lineOptimization.finalCost,
       guaranteedSaving:lineOptimization.totalSaving,
