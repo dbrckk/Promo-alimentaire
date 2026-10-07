@@ -35,6 +35,7 @@ const els = {
   channel:document.querySelector("#channel"),
   carrefourLoyalty:document.querySelector("#carrefourLoyalty"),
   leclercLoyalty:document.querySelector("#leclercLoyalty"),
+  loyaltySummary:document.querySelector("#loyaltySummary"),
   sort:document.querySelector("#sort"),
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
@@ -674,7 +675,8 @@ function renderOptimizer(){
     uncertainBasketOffers:uncertain,
     productCandidates:[],
     bundleCandidates:[],
-    providers
+    providers,
+    loyaltyProfile:state.loyaltyProfile
   });
   const optimizerPlanHtml=renderSavingsActionPlan(optimizerPlan);
 
@@ -933,10 +935,34 @@ function updateLoyaltyProfile(key,value){
     [key]:value
   });
   saveLoyaltyProfile();
+  renderLoyaltySummary();
   render();
   renderOptimizer();
   renderShoppingList();
   if(state.product) renderProductOffers(state.product,state.priceObservations);
+}
+
+function renderLoyaltySummary(){
+  if(!els.loyaltySummary) return;
+  const c=state.loyaltyProfile.carrefour;
+  const l=state.loyaltyProfile.leclerc;
+  const carrefourText=c==="pass"
+    ? "Carte PASS + Club : 15% sur fruits/légumes et Carrefour Bio éligibles ; Journée PASS à vérifier selon le magasin."
+    : c==="club"
+      ? "Club Carrefour : 10% sur fruits/légumes et Carrefour Bio éligibles."
+      : c==="none"
+        ? "Carrefour : aucun avantage carte compté."
+        : "Carrefour : profil non renseigné — les avantages Club restent potentiels.";
+  const leclercText=l==="card"
+    ? "Carte E.Leclerc : les Tickets fidélité éligibles peuvent être pris en compte après confirmation du produit et du magasin."
+    : l==="none"
+      ? "E.Leclerc : aucun Ticket fidélité compté."
+      : "E.Leclerc : profil non renseigné — les Tickets restent potentiels.";
+
+  els.loyaltySummary.innerHTML=`
+    <div><strong>Carrefour</strong><span>${escapeHtml(carrefourText)}</span></div>
+    <div><strong>E.Leclerc</strong><span>${escapeHtml(leclercText)}</span></div>
+  `;
 }
 
 function loadProductPriceHistory(){
@@ -1449,6 +1475,7 @@ if("serviceWorker" in navigator){
 }
 
 syncNearbyControls();
+renderLoyaltySummary();
 render();
 renderOptimizer();
 renderShoppingList();
