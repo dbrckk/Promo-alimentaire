@@ -192,3 +192,6 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .source-health-metrics{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
 .source-health-metrics span{font-size:.68rem;color:var(--muted);background:#f7faf8;border-radius:7px;padding:5px 7px}
 @media(max-width:720px){.source-health-grid{grid-template-columns:1fr}}
+
+.match-card.best-match{border-color:#9fd1b4;box-shadow:0 12px 34px rgba(13,92,61,.13)}
+.match-card.best-match .match-top h3::before{content:"★ ";color:var(--good)}
