@@ -7,6 +7,7 @@ import {
   buildProductLoyaltyOffers,
   resolveOffersForLoyalty
 } from "./loyalty.js";
+import { applyLocalStoreConfirmations } from "./local-verification.js";
 
 export function normalizeQuantity(value) {
   const quantity=Math.trunc(Number(value));
@@ -20,10 +21,16 @@ export function evaluateBasketStore(items,{
   priceByCode={},
   offers=[],
   loyaltyProfile={},
+  storeConfirmations=[],
+  storeVerificationKey=null,
   now=new Date(),
   maxPriceAgeDays=120
 }={}) {
-  const resolvedOffers=resolveOffersForLoyalty(offers,loyaltyProfile);
+  const resolvedOffers=applyLocalStoreConfirmations(
+    resolveOffersForLoyalty(offers,loyaltyProfile),
+    storeConfirmations,
+    {store,locationKey:storeVerificationKey,now}
+  );
   const lines=(items || []).map((item)=>{
     const quantity=normalizeQuantity(item.quantity);
     const observations=priceByCode[item.product?.code] || [];
@@ -273,6 +280,7 @@ export function evaluateBasketLocations(items,{
   priceByCode={},
   offers=[],
   loyaltyProfile={},
+  storeConfirmations=[],
   now=new Date(),
   maxPriceAgeDays=120
 }={}) {
@@ -314,6 +322,8 @@ export function evaluateBasketLocations(items,{
       priceByCode:entry.priceByCode,
       offers,
       loyaltyProfile,
+      storeConfirmations,
+      storeVerificationKey:entry.key,
       now,
       maxPriceAgeDays
     }),
