@@ -48,6 +48,7 @@
     <nav class="tabs" aria-label="Sections">
       <button class="tab active" data-tab="offers" type="button">Offres</button>
       <button class="tab" data-tab="product" type="button">Produit</button>
+      <button class="tab" data-tab="list" type="button">Liste <span id="listCount" class="tab-count">0</span></button>
       <button class="tab" data-tab="optimizer" type="button">Optimiseur</button>
       <button class="tab" data-tab="providers" type="button">Sources</button>
     </nav>
@@ -83,6 +84,31 @@
       <div id="productResult" class="product-result hidden"></div>
       <div id="productOffers" class="product-offers"></div>
       <div id="priceResults" class="price-results"></div>
+    </section>
+
+    <section id="listView" class="hidden">
+      <div class="panel tool-panel">
+        <div>
+          <p class="eyebrow dark">Liste de courses</p>
+          <h2>Comparer le panier Carrefour / E.Leclerc</h2>
+          <p class="help">Ajoute des produits depuis l'onglet Produit. L'actualisation recherche les prix récents dans les deux enseignes puis applique uniquement les remises compatibles suffisamment sûres.</p>
+        </div>
+        <div class="list-toolbar">
+          <button id="refreshList" class="primary" type="button">Actualiser les prix</button>
+          <button id="listNearbyButton" class="secondary" type="button">Autour de moi</button>
+          <select id="listRadiusSelect" aria-label="Rayon de la liste">
+            <option value="5">5 km</option>
+            <option value="10">10 km</option>
+            <option value="25" selected>25 km</option>
+            <option value="50">50 km</option>
+          </select>
+          <button id="clearList" class="secondary danger-action" type="button">Vider</button>
+        </div>
+        <p class="help">La liste de produits et les quantités sont enregistrées sur cet appareil. La position, elle, n'est jamais persistée.</p>
+        <div id="listStatus" class="status" aria-live="polite"></div>
+      </div>
+      <div id="shoppingListItems" class="shopping-list"></div>
+      <div id="basketComparison" class="basket-comparison"></div>
     </section>
 
     <section id="optimizerView" class="hidden">
