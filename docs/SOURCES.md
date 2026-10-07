@@ -1,6 +1,6 @@
 # Sources et stratégie d'intégration
 
-Dernière revue : 2026-10-06.
+Dernière revue : 2026-10-07.
 
 ## Priorité 1 — indispensables aux courses
 
@@ -73,3 +73,29 @@ Ces deux sources ne comparent pas toujours une référence produit précise : el
   verifiedAt
 }
 ```
+
+
+## Données produit et prix ouvertes
+
+### Open Food Facts
+
+Endpoint recommandé pour un nouveau développement : API v3 produit par code-barres.
+
+- Documentation : https://openfoodfacts.github.io/documentation/docs/Product-Opener/v3/products/get-api-v3-product-code/
+- Usage dans le projet : nom, marque, quantité, image, Nutri-Score et rapprochement EAN/GTIN.
+
+### Open Prices
+
+Open Prices fournit des observations de prix ouvertes et datées, associées à un produit et une localisation.
+
+- Documentation générale : https://openfoodfacts.github.io/documentation/docs/Product-Opener/api/tutorials/product-prices/
+- Liste des prix : https://openfoodfacts.github.io/documentation/docs/Open-prices/prices/prices_list/
+- Filtres utiles : `product_code`, `currency`, `date`, `price_is_discounted`, `location_id`, latitude/longitude/rayon.
+- Le projet filtre ensuite la marque/nom OSM du magasin pour Carrefour ou E.Leclerc.
+
+### Limites assumées
+
+- La couverture Open Prices est communautaire et donc incomplète.
+- Un prix ancien n'est jamais présenté comme prix actuel.
+- L'absence d'observation n'est jamais interprétée comme absence du produit en magasin.
+- Les prix propriétaires récupérés via endpoints mobiles privés ou contournements anti-bot sont exclus.
