@@ -21,6 +21,7 @@ import {
   normalizeLoyaltyProfile,
   resolveOffersForLoyalty
 } from "./loyalty.js";
+import { offerEvidenceStatus } from "./evidence.js";
 import {
   addPriceObservation,
   detectPriceDrops,
@@ -478,6 +479,23 @@ function renderProductOffers(product,observations=[]){
     const safetyNote=match.exact
       ? "Correspondance EAN/GTIN explicite. Les conditions de l’offre restent à vérifier."
       : "Détection par marque/nom uniquement : ne pas considérer l’offre comme garantie avant vérification de la référence éligible.";
+    const evidence=offerEvidenceStatus(offer,{
+      match,
+      loyaltyProfile:state.loyaltyProfile,
+      storeVerified:false
+    });
+    const evidenceHtml=`
+      <div class="evidence-grid">
+        <span class="badge ${evidence.productExact?"good":"warn"}">Produit : ${evidence.productExact?"EAN exact":"heuristique"}</span>
+        <span class="badge ${evidence.storeVerified?"good":"warn"}">Magasin : ${evidence.storeVerified?"confirmé":"à confirmer"}</span>
+        ${offer.requiresLoyalty
+          ? `<span class="badge ${evidence.loyaltyVerified?"good":"warn"}">Fidélité : ${evidence.loyaltyVerified?"confirmée":"à confirmer"}</span>`
+          : ""}
+      </div>
+      ${evidence.blockers.length
+        ? `<p class="evidence-blockers">${evidence.blockers.map(escapeHtml).join(" · ")}</p>`
+        : '<p class="evidence-blockers good-text">Toutes les preuves requises sont présentes.</p>'}
+    `;
 
     return `
       <article class="match-card ${index===0?"best-match":""}">
@@ -499,6 +517,7 @@ function renderProductOffers(product,observations=[]){
           ${offerDeadline(offer)?`<span class="badge ${offerDeadline(offer).urgent?"warn":""}">${escapeHtml(offerDeadline(offer).label)}</span>`:""}
         </div>
         <p class="match-note">${escapeHtml(safetyNote)}</p>
+        ${evidenceHtml}
         <div class="actions">
           <span class="verified">${escapeHtml(match.reason)}</span>
           <a class="open" href="${escapeHtml(offer.sourceUrl)}" target="_blank" rel="noreferrer">Vérifier l’offre</a>
