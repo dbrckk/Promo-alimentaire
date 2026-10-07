@@ -317,3 +317,38 @@ test("Ticket E.Leclerc exige la carte si l'offre le demande",()=>{
   assert.equal(without.guaranteedSaving,0);
   assert.equal(withCard.guaranteedSaving,2);
 });
+
+
+test("PASS sépare prix caisse et cagnotte fidélité",()=>{
+  const bio={
+    code:"10101010",name:"Produit Bio",brands:"Carrefour Bio",categories:[]
+  };
+  const scenario=evaluateBasketStore([{product:bio,quantity:1}],{
+    store:"carrefour",
+    loyaltyProfile:{carrefour:"pass"},
+    priceByCode:{"10101010":[{price:20,date:"2026-10-01"}]},
+    offers:[],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.checkoutCost,20);
+  assert.equal(scenario.loyaltyCredit,3);
+  assert.equal(scenario.finalCost,17);
+  assert.equal(scenario.savingsBreakdown.loyaltyGuaranteed,3);
+});
+
+test("une remise immédiate garantie baisse le prix caisse",()=>{
+  const exactPromo={
+    id:"instant",scope:"produit",stores:["carrefour"],eans:["3017624010701"],
+    savingPercent:20,mechanism:"retailer_promo",autoStack:true,
+    stackGroup:"retailer-promo",savingBasis:"current",stackOrder:10
+  };
+  const scenario=evaluateBasketStore([{product,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{"3017624010701":[{price:10,date:"2026-10-01"}]},
+    offers:[exactPromo],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.checkoutCost,8);
+  assert.equal(scenario.loyaltyCredit,0);
+  assert.equal(scenario.finalCost,8);
+});
