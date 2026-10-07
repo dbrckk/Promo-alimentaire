@@ -326,10 +326,9 @@
         "Danone"
       ],
       "all": [
-        "Yaourt",
-        "0"
+        "Yaourt"
       ],
-      "minScore": 75
+      "minScore": 65
     },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
@@ -777,10 +776,9 @@
         "Les Dieux"
       ],
       "all": [
-        "2",
         "sardines"
       ],
-      "minScore": 75
+      "minScore": 65
     },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
@@ -3113,10 +3111,7 @@
       "brands": [
         "Harrys"
       ],
-      "all": [
-        "100"
-      ],
-      "minScore": 65
+      "minScore": 55
     },
     "mechanism": "manufacturer_refund",
     "stackGroup": "manufacturer-refund",
@@ -3568,7 +3563,7 @@
       ],
       "all": [
         "Volvic",
-        "1"
+        "5L"
       ],
       "minScore": 75
     },
@@ -4398,7 +4393,7 @@
       ],
       "all": [
         "Croquettes",
-        "1"
+        "4kg"
       ],
       "minScore": 75
     },
