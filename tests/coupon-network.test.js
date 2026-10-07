@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   deriveProductMatch,
   extractCouponNetworkDetailUrls,
+  inferMinPurchaseQty,
   htmlToTextLines,
   parseCouponNetworkDetailHtml,
   parseCouponNetworkHtml,
@@ -79,4 +80,22 @@ test("parseCouponNetworkDetailHtml lit une fiche server-rendered",()=>{
   assert.equal(offer.savingAmount,0.3);
   assert.equal(offer.title,"Président - Poche 30cl");
   assert.equal(offer.sourceUrl.endsWith("/108489"),true);
+});
+
+
+test("inferMinPurchaseQty détecte les achats multiples",()=>{
+  assert.equal(inferMinPurchaseQty("Sur l'achat de 2 paquets de café moulu Grand'Mère."),2);
+  assert.equal(inferMinPurchaseQty("Sur l'achat de 3 produits au choix."),3);
+  assert.equal(inferMinPurchaseQty("Sur l'achat d'un produit Alpro."),1);
+});
+
+test("parseCouponNetworkHtml conserve un remboursement fixe par offre",()=>{
+  const html=`
+    <a>1,20€ REMBOURSÉ</a>
+    <h3>Grand'Mère - Café moulu</h3>
+    <p>Sur l'achat de 2 paquets de café moulu Grand'Mère familial.</p>
+  `;
+  const [offer]=parseCouponNetworkHtml(html,{verifiedAt:"2026-10-07"});
+  assert.equal(offer.minPurchaseQty,2);
+  assert.equal(offer.savingAmountMode,"per-offer");
 });
