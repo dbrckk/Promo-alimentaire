@@ -63,3 +63,34 @@ test("isOfferActive respecte reviewAfter",()=>{
   assert.equal(isOfferActive(offer,new Date("2026-10-19T12:00:00Z")),true);
   assert.equal(isOfferActive(offer,new Date("2026-10-22T12:00:00Z")),false);
 });
+
+
+test("normalizeImportedOffer accepte un bundle multi-produits",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"envie-plus",externalId:"dash-lenor",title:"Dash + Lenor",
+    stores:["all"],scope:"bundle",savingPercent:100,savingCapAmount:10,
+    verifiedAt:"2026-10-07",sourceUrl:"https://example.com/bundle",
+    bundleRequirements:[
+      {id:"dash",minQty:1,productMatch:{brands:["Dash"]}},
+      {id:"lenor",minQty:1,productMatch:{brands:["Lenor"]}}
+    ],
+    bundleTargetRequirementId:"lenor"
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.bundleRequirements.length,2);
+  assert.equal(result.value.savingCapAmount,10);
+});
+
+test("un bundle sans cible valide est refusé",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"x",externalId:"b",title:"Bundle",stores:["all"],scope:"bundle",
+    savingPercent:100,verifiedAt:"2026-10-07",sourceUrl:"https://example.com/x",
+    bundleRequirements:[
+      {id:"a",productMatch:{brands:["A"]}},
+      {id:"b",productMatch:{brands:["B"]}}
+    ],
+    bundleTargetRequirementId:"missing"
+  });
+  assert.equal(result.ok,false);
+  assert.ok(result.errors.some((error)=>error.includes("bundleTargetRequirementId")));
+});
