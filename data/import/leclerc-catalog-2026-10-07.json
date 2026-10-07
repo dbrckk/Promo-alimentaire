@@ -1,0 +1,226 @@
+[
+  {
+    "providerId": "leclerc",
+    "externalId": "26G133G-mini-nems-tables-du-monde-20-ticket",
+    "provider": "E.Leclerc",
+    "title": "20% Ticket E.Leclerc · 10 mini nems poulet et porc",
+    "type": "Ticket E.Leclerc",
+    "category": "traiteur",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "savingPercent": 20,
+    "basePrice": 2.99,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1006",
+    "scope": "produit",
+    "mechanism": "retailer_loyalty",
+    "rewardType": "loyalty_credit",
+    "benefitTiming": "wallet",
+    "requiresLoyalty": "leclerc-card",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "leclerc-ticket",
+    "stackOrder": 20,
+    "savingBasis": "current",
+    "stackingConfidence": "low",
+    "stacking": "Ticket E.Leclerc à confirmer dans le magasin sélectionné ; cumul avec autres promotions à vérifier.",
+    "conditions": "Catalogue public E.Leclerc du 6 au 17 octobre 2026. Prix payé 2,99 € ; valeur après Ticket indiquée à 2,39 €. Disponibilité locale à confirmer.",
+    "productMatch": {
+      "brands": [
+        "Tables du Monde"
+      ],
+      "any": [
+        "mini nems",
+        "poulet",
+        "porc"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "externalId": "26G122G-tablette-dor-sans-cacao-25-ticket",
+    "provider": "E.Leclerc",
+    "title": "25% Ticket E.Leclerc · tablette lait caramel sans cacao",
+    "type": "Ticket E.Leclerc",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "savingPercent": 25,
+    "basePrice": 1.09,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-29",
+    "expiresAt": "2026-10-10",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G122G/0342/products",
+    "scope": "produit",
+    "mechanism": "retailer_loyalty",
+    "rewardType": "loyalty_credit",
+    "benefitTiming": "wallet",
+    "requiresLoyalty": "leclerc-card",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "leclerc-ticket",
+    "stackOrder": 20,
+    "savingBasis": "current",
+    "stackingConfidence": "low",
+    "stacking": "Ticket E.Leclerc à confirmer dans le magasin sélectionné.",
+    "conditions": "Catalogue public E.Leclerc du 29 septembre au 10 octobre 2026. Prix payé 1,09 € ; valeur Ticket comprise indiquée à 0,82 €. Disponibilité locale à confirmer.",
+    "productMatch": {
+      "brands": [
+        "Tablette d'Or"
+      ],
+      "any": [
+        "sans cacao",
+        "lait caramel"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "externalId": "26G122G-heudebert-biscottes-2plus1",
+    "provider": "E.Leclerc",
+    "title": "2+1 offert · biscottes Heudebert",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "savingPercent": 33.33,
+    "basePrice": 1.67,
+    "minPurchaseQty": 3,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-29",
+    "expiresAt": "2026-10-10",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G122G/1860",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "promoFormula": {
+      "type": "buy_x_get_y_free",
+      "buy": 2,
+      "free": 1
+    },
+    "autoStack": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "Promotion catalogue à confirmer dans le magasin sélectionné.",
+    "conditions": "Catalogue public E.Leclerc du 29 septembre au 10 octobre 2026 : 2+1 offert, unité affichée à 1,67 €. L'économie exacte dépend de la quantité achetée.",
+    "productMatch": {
+      "brands": [
+        "Heudebert"
+      ],
+      "any": [
+        "biscottes"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "externalId": "26G133G-gullon-biscuits-68-second",
+    "provider": "E.Leclerc",
+    "title": "−68% sur le 2e · biscuits Gullón",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "savingPercent": 34,
+    "basePrice": 2.39,
+    "minPurchaseQty": 2,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "promoFormula": {
+      "type": "nth_percent",
+      "nth": 2,
+      "cycle": 2,
+      "percent": 68
+    },
+    "autoStack": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "Promotion catalogue à confirmer dans le magasin sélectionné.",
+    "conditions": "Catalogue public E.Leclerc du 6 au 17 octobre 2026 : 1er produit 2,39 €, 2e produit à 0,76 €, soit environ 34% d'économie effective sur une paire.",
+    "productMatch": {
+      "brands": [
+        "Gullón"
+      ],
+      "any": [
+        "biscuits",
+        "petit déjeuner",
+        "coeur de céréales"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "externalId": "26G122G-nescafe-espresso-concentrate-34",
+    "provider": "E.Leclerc",
+    "title": "−34% · Nescafé Espresso Concentrate",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "savingPercent": 34,
+    "basePrice": 6.19,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-29",
+    "expiresAt": "2026-10-10",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G122G/0342/products",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "Promotion catalogue à confirmer dans le magasin sélectionné.",
+    "conditions": "Catalogue public E.Leclerc du 29 septembre au 10 octobre 2026 : prix barré 6,19 €, prix promo 4,09 €, affiché −34%.",
+    "productMatch": {
+      "brands": [
+        "Nescafé"
+      ],
+      "all": [
+        "espresso"
+      ],
+      "any": [
+        "concentrate"
+      ],
+      "minScore": 65
+    }
+  }
+]
