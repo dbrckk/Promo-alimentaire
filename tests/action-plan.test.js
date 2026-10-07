@@ -64,3 +64,37 @@ test("le plan online mentionne les sources dynamiques non chiffrées",()=>{
   assert.match(step.detail,/Joko/);
   assert.match(step.detail,/iGraal/);
 });
+
+
+test("une fidélité enseigne n'est jamais présentée comme ODR",()=>{
+  const result=buildSavingsActionPlan({
+    store:"carrefour",
+    providers:[],
+    productCandidates:[{
+      offer:{
+        provider:"Club Carrefour",
+        mechanism:"retailer_loyalty",
+        loyaltyEligibility:"eligible",
+        sourceUrl:"https://example.com"
+      }
+    }]
+  });
+  assert.equal(result.steps.some((step)=>/ODR produit/.test(step.title)),false);
+  assert.ok(result.steps.some((step)=>/carte fidélité/.test(step.title)));
+});
+
+test("une vraie ODR reste une étape après achat",()=>{
+  const result=buildSavingsActionPlan({
+    store:"carrefour",
+    providers:[],
+    productCandidates:[{
+      offer:{
+        provider:"Shopmium",
+        mechanism:"odr",
+        type:"ODR",
+        sourceUrl:"https://example.com"
+      }
+    }]
+  });
+  assert.ok(result.steps.some((step)=>step.phase==="après" && /ODR produit/.test(step.title)));
+});
