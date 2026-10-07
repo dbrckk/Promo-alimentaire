@@ -23,6 +23,9 @@ Fonctionnalités actuelles :
 - comparaison des deux paniers avec refus de déclarer un gagnant si la couverture prix est incomplète ;
 - regroupement des prix par point de vente physique pour éviter de mélanger plusieurs magasins d'une même enseigne ;
 - préférence automatique pour les prix ≤30 jours, avec repli jusqu'à 120 jours seulement si nécessaire ;
+- score de confiance explicable sur 100 par scénario (couverture, fraîcheur, identification du magasin, preuve Open Prices) ;
+- historique local limité aux 20 dernières comparaisons, sans stockage des coordonnées ;
+- tendance du coût entre les dernières comparaisons valides ;
 - PWA installable et fonctionnement hors ligne pour l'interface ;
 - tests métier sans dépendance externe.
 
@@ -51,6 +54,8 @@ Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Wi
 - `src/stacking.js` : moteur de compatibilité et de cumul.
 - `src/matching.js` : rapprochement EAN/GTIN et règles marque/nom.
 - `src/basket.js` : évaluation d'une liste par enseigne et comparaison prudente.
+- `src/confidence.js` : score de confiance explicable des scénarios.
+- `src/history.js` : snapshots locaux et tendances de comparaison.
 - `src/app.js` : interface, scanner, liste de courses et état local.
 - `tests/` : tests du domaine, ingestion ouverte et moteur de cumul.
 - aucun backend requis pour le MVP.
@@ -74,8 +79,8 @@ npm run verify
 ## Priorités suivantes
 
 1. Alimenter les offres avec des EAN/GTIN **vérifiés par la source** afin de faire passer les candidats en correspondances exactes.
-2. Ajouter historique des prix et score de fraîcheur/confiance.
-3. Ajouter un historique local des comparaisons de panier et un indicateur de confiance global.
+2. Enrichir l'historique avec l'évolution **par produit** quand plusieurs observations existent.
+3. Ajouter des alertes locales sur baisse de prix / nouvelle ODR après ingestion fiable.
 4. Ajouter des connecteurs d'ingestion autorisés pour les catalogues et offres.
 5. Déployer la PWA en HTTPS pour test Android réel.
 
