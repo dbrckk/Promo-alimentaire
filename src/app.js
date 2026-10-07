@@ -15,6 +15,7 @@ import {
 import { scoreBasketConfidence } from "./confidence.js";
 import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js";
 import { buildSavingsActionPlan } from "./action-plan.js";
+import { summarizeBasketStrategies } from "./strategy.js";
 import {
   addPriceObservation,
   detectPriceDrops,
@@ -1032,6 +1033,11 @@ function renderComparisonHistory(){
 
 function renderBasketComparison(scenarios){
   const ranked=compareBasketStores(scenarios);
+  const strategySummary=summarizeBasketStrategies(scenarios,{
+    channel:state.channel,
+    nearbyEnabled:state.nearbyEnabled
+  });
+  const strategyHtml=renderStrategySummary(strategySummary);
   const allComplete=scenarios.length>0 && scenarios.every((scenario)=>scenario.isComplete);
   const allLocationsReliable=scenarios.length>0 && scenarios.every((scenario)=>scenario.locationReliable);
   let recommendation="";
@@ -1053,10 +1059,46 @@ function renderBasketComparison(scenarios){
   }
 
   els.basketComparison.innerHTML=`
+    ${strategyHtml}
     ${recommendation}
     <div class="scenario-grid">
       ${scenarios.map(renderBasketScenario).join("")}
     </div>`;
+}
+
+function renderStrategySummary(summary){
+  if(!summary) return "";
+  if(summary.status!=="ready"){
+    return `<div class="strategy-summary muted">
+      <div>
+        <span>Stratégie globale</span>
+        <strong>Comparaison prudente indisponible</strong>
+        <small>${escapeHtml(summary.reason || "")}</small>
+      </div>
+    </div>`;
+  }
+  const g=summary.guaranteed;
+  const p=summary.prudent;
+  const payment=g.payment
+    ? `${escapeHtml(g.payment.provider)} · ${formatPercent(g.payment.savingPercent)}`
+    : "aucun bon remisé retenu";
+  const potentialLine=summary.sameStore
+    ? `Même enseigne en scénario prudent : ${storeLabel(p.store)} · ${money.format(p.cost)}`
+    : `Le meilleur potentiel prudent bascule vers ${storeLabel(p.store)} · ${money.format(p.cost)}`;
+
+  return `<section class="strategy-summary">
+    <div class="strategy-main">
+      <span>Meilleure stratégie garantie</span>
+      <strong>${storeLabel(g.store)} · ${money.format(g.finalCost)}</strong>
+      <small>Économie validée ${money.format(g.saving)} · confiance ${g.confidence ?? "—"}/100</small>
+    </div>
+    <div class="strategy-facts">
+      <div><span>Paiement</span><strong>${payment}</strong></div>
+      <div><span>ODR candidates</span><strong>${g.candidateProductCount}</strong></div>
+      <div><span>Potentiel prudent</span><strong>${money.format(p.cost)}</strong></div>
+    </div>
+    <p>${potentialLine}. Les économies candidates restent à confirmer.</p>
+  </section>`;
 }
 
 function renderBasketScenario(scenario){
