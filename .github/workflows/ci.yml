@@ -13,3 +13,5 @@ jobs:
         with:
           node-version: 22
       - run: npm run verify
+      - name: Temporary La Belle Adresse endpoint diagnostics
+        run: npm run sync:la-belle-adresse || true
