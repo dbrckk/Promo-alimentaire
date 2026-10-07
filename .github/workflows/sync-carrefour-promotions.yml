@@ -1,0 +1,53 @@
+name: Verify Carrefour promotions
+
+on:
+  schedule:
+    - cron: "7 6 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/sync-carrefour-promotions.mjs"
+      - "src/adapters/carrefour-promotions.js"
+      - "data/import/carrefour-promotions-auto.json"
+      - ".github/workflows/sync-carrefour-promotions.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: carrefour-promotion-sync
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify exact Carrefour promotions
+        run: npm run sync:carrefour-promos -- --write
+      - name: Validate repository
+        run: npm run verify
+      - name: Commit refreshed verification window
+        shell: bash
+        run: |
+          if git diff --quiet -- data/import/carrefour-promotions-auto.json; then
+            echo "No confirmed Carrefour promotion change to commit."
+            exit 0
+          fi
+          git config user.name "promo-alimentaire-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/import/carrefour-promotions-auto.json
+          git commit -m "data: reverify Carrefour exact promotions"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if git rebase origin/main; then
+              if git push origin HEAD:main; then exit 0; fi
+            else
+              git rebase --abort || true
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
