@@ -7,7 +7,8 @@ const SOURCES={
   widilo:"https://www.widilo.fr/bon-d-achat/carrefour",
   ebuyclubGiftCard:"https://www.ebuyclub.com/selection-bons-d-achat/carrefour-courses-alimentaires-10310",
   poulpeo:"https://www.poulpeo.com/cashback-bon-d-achat.html",
-  ebuyclubConnected:"https://www.ebuyclub.com/cashback-connecte"
+  ebuyclubConnected:"https://www.ebuyclub.com/cashback-connecte",
+  ebuyclubOnline:"https://www.ebuyclub.com/cashback"
 };
 const OUTPUT_URL=new URL("../data/import/payment-discounts-auto.json",import.meta.url);
 const MANIFEST_URL=new URL("../data/import/index.json",import.meta.url);
@@ -27,7 +28,7 @@ for(const [key,url] of Object.entries(SOURCES)){
 }
 
 const offers=parsePaymentDiscountPages(pages,{verifiedAt});
-if(offers.length<6) throw new Error("Extraction paiements insuffisante : "+offers.length+"/6.");
+if(offers.length<8) throw new Error("Extraction paiements insuffisante : "+offers.length+"/8.");
 const validation=validateImportBatch(offers);
 if(!validation.ok){
   const sample=validation.errors.slice(0,5).map((item)=>"index "+item.index+": "+item.errors.join(" | ")).join("\n");
@@ -35,7 +36,7 @@ if(!validation.ok){
 }
 console.log("[payments] "+validation.normalized.length+" taux publics validés.");
 for(const offer of validation.normalized){
-  console.log("[payments] "+offer.provider+" · "+offer.title+" · "+offer.savingPercent+"%");
+  console.log("[payments] "+offer.provider+" · "+offer.title+" · "+(offer.savingPercent ?? offer.savingAmount ?? "—"));
 }
 
 if(write){
