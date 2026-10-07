@@ -9,6 +9,9 @@
     "stores": [
       "carrefour"
     ],
+    "channels": [
+      "store"
+    ],
     "savingPercent": 4,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
@@ -21,10 +24,7 @@
     "autoStack": true,
     "stackingConfidence": "high",
     "stacking": "une seule remise de paiement est retenue ; vérifier les conditions du bon",
-    "conditions": "Bon Carrefour de 100 € affiché à 96 €, soit 4 % de réduction.",
-    "channels": [
-      "store"
-    ]
+    "conditions": "Bon d'achat Carrefour remisé. Vérifier les conditions et canaux d'utilisation au moment de l'achat."
   },
   {
     "providerId": "widilo",
@@ -36,7 +36,10 @@
     "stores": [
       "carrefour"
     ],
-    "savingPercent": 4,
+    "channels": [
+      "store"
+    ],
+    "savingPercent": 44,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
     "sourceUrl": "https://www.widilo.fr/bon-d-achat/carrefour",
@@ -48,10 +51,7 @@
     "autoStack": true,
     "stackingConfidence": "high",
     "stacking": "une seule remise de paiement est retenue ; vérifier les conditions du bon",
-    "conditions": "Carte cadeau Carrefour affichée à 4 % de cashback.",
-    "channels": [
-      "store"
-    ]
+    "conditions": "Carte cadeau Carrefour avec cashback Widilo. Vérifier les conditions en vigueur."
   },
   {
     "providerId": "ebuyclub",
@@ -62,6 +62,9 @@
     "category": "panier",
     "stores": [
       "carrefour"
+    ],
+    "channels": [
+      "store"
     ],
     "savingPercent": 3.6,
     "verifiedAt": "2026-10-07",
@@ -75,10 +78,7 @@
     "autoStack": true,
     "stackingConfidence": "high",
     "stacking": "une seule remise de paiement est retenue ; vérifier les conditions du bon",
-    "conditions": "Carte cadeau Carrefour affichée à 3,6 % remboursés immédiatement.",
-    "channels": [
-      "store"
-    ]
+    "conditions": "Carte cadeau Carrefour avec remboursement immédiat eBuyClub. Vérifier les conditions en vigueur."
   },
   {
     "providerId": "poulpeo",
@@ -117,7 +117,10 @@
     "stores": [
       "carrefour"
     ],
-    "savingPercent": 0.05,
+    "channels": [
+      "store"
+    ],
+    "savingPercent": 6,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
     "sourceUrl": "https://www.ebuyclub.com/cashback-connecte",
@@ -129,10 +132,7 @@
     "autoStack": false,
     "stackingConfidence": "unknown",
     "stacking": "cumul à vérifier selon la transaction et les autres activations",
-    "conditions": "Cashback connecté eBuyClub affiché à 0,05 % en magasin.",
-    "channels": [
-      "store"
-    ]
+    "conditions": "Taux public du cashback connecté eBuyClub ; vérifier l'éligibilité avant paiement."
   },
   {
     "providerId": "ebuyclub",
@@ -143,6 +143,9 @@
     "category": "panier",
     "stores": [
       "leclerc"
+    ],
+    "channels": [
+      "store"
     ],
     "savingPercent": 0.05,
     "verifiedAt": "2026-10-07",
@@ -156,10 +159,7 @@
     "autoStack": false,
     "stackingConfidence": "unknown",
     "stacking": "cumul à vérifier selon la transaction et les autres activations",
-    "conditions": "Cashback connecté eBuyClub affiché à 0,05 % en magasin.",
-    "channels": [
-      "store"
-    ]
+    "conditions": "Taux public du cashback connecté eBuyClub ; vérifier l'éligibilité avant paiement."
   },
   {
     "providerId": "ebuyclub",
@@ -202,7 +202,7 @@
     "channels": [
       "online"
     ],
-    "savingPercent": 2.5,
+    "savingPercent": 6.5,
     "verifiedAt": "2026-10-07",
     "reviewAfter": "2026-10-14",
     "sourceUrl": "https://www.ebuyclub.com/cashback",
@@ -214,6 +214,6 @@
     "autoStack": false,
     "stackingConfidence": "unknown",
     "stacking": "cumul et catégories éligibles à vérifier avant commande",
-    "conditions": "Jusqu'à 2,5 % remboursés sur les achats en ligne E.Leclerc éligibles."
+    "conditions": "Jusqu'à 6.5 % remboursés sur les achats en ligne éligibles. Offre variable selon conditions."
   }
 ]
