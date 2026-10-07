@@ -5,13 +5,24 @@ export function buildSavingsActionPlan({
   uncertainBasketOffers=[],
   productCandidates=[],
   bundleCandidates=[],
-  providers=[]
+  providers=[],
+  loyaltyProfile={}
 }={}) {
   const steps=[];
   let order=1;
   const push=(phase,title,detail,kind="info",sourceUrl=null)=>steps.push({
     order:order++,phase,title,detail,kind,sourceUrl
   });
+
+  if(store==="carrefour" && loyaltyProfile?.carrefour==="pass"){
+    push(
+      "avant",
+      "Vérifier la Journée PASS",
+      "Carrefour annonce −15% sur les marques Carrefour lors de la Journée PASS. Le jour exact, les magasins participants et les exclusions doivent être vérifiés avant achat ; ce gain n’est pas ajouté automatiquement.",
+      "check",
+      "https://www.carrefour.fr/services/carte-pass"
+    );
+  }
 
   const joko=providers.find((provider)=>provider.id==="joko"
     && (provider.stores?.includes(store)||provider.stores?.includes("all")));
