@@ -1,0 +1,292 @@
+[
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-panzani-fusilli-3038359913242",
+    "provider": "Carrefour",
+    "title": "−30% · Pâtes Fusilli Fermes et Généreuses Panzani 500 g",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 1.59,
+    "sourceRegularPrice": 1.59,
+    "sourcePromoPrice": 1.11,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-09",
+    "sourceUrl": "https://www.carrefour.fr/p/pates-fusilli-fermes-et-genereuses-panzani-3038359913242",
+    "scope": "produit",
+    "eans": [
+      "3038359913242"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/pates-fusilli-fermes-et-genereuses-panzani-3038359913242",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Prix Drive/Livraison dépendant du magasin ; vérifier le prix du canal avant commande.",
+    "conditions": "Fiche produit Carrefour : 1,11 € au lieu de 1,59 €, PROMO 30 %. Prix dépendant du mode de retrait et du magasin.",
+    "productMatch": {
+      "brands": [
+        "Panzani"
+      ],
+      "all": [
+        "fusilli"
+      ],
+      "any": [
+        "500g"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-paysan-breton-vanille-3412290032871",
+    "provider": "Carrefour",
+    "title": "−30% · Yaourt Vanille Bourbon Paysan Breton 500 g",
+    "type": "promotion enseigne",
+    "category": "crèmerie",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 2.79,
+    "sourceRegularPrice": 2.79,
+    "sourcePromoPrice": 1.95,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-09",
+    "sourceUrl": "https://www.carrefour.fr/p/yaourt-vanille-bourbon-paysan-breton-3412290032871",
+    "scope": "produit",
+    "eans": [
+      "3412290032871"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/yaourt-vanille-bourbon-paysan-breton-3412290032871",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Prix Drive/Livraison dépendant du magasin ; vérifier le prix du canal avant commande.",
+    "conditions": "Fiche produit Carrefour : 1,95 € au lieu de 2,79 €, PROMO 30 %. Prix dépendant du mode de retrait et du magasin.",
+    "productMatch": {
+      "brands": [
+        "Paysan Breton"
+      ],
+      "all": [
+        "vanille"
+      ],
+      "any": [
+        "500g"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-paysan-breton-fruits-3412290032888",
+    "provider": "Carrefour",
+    "title": "−30% · Yaourt Fruits Rouges Paysan Breton 500 g",
+    "type": "promotion enseigne",
+    "category": "crèmerie",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 2.79,
+    "sourceRegularPrice": 2.79,
+    "sourcePromoPrice": 1.95,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-09",
+    "sourceUrl": "https://www.carrefour.fr/p/yaourt-fruits-rouges-paysan-breton-3412290032888",
+    "scope": "produit",
+    "eans": [
+      "3412290032888"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/yaourt-fruits-rouges-paysan-breton-3412290032888",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Prix Drive/Livraison dépendant du magasin ; vérifier le prix du canal avant commande.",
+    "conditions": "Fiche produit Carrefour : 1,95 € au lieu de 2,79 €, PROMO 30 %. Prix dépendant du mode de retrait et du magasin.",
+    "productMatch": {
+      "brands": [
+        "Paysan Breton"
+      ],
+      "all": [
+        "fruits rouges"
+      ],
+      "any": [
+        "500g"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-mulino-bianco-nascondini-8076809580618",
+    "provider": "Carrefour",
+    "title": "−30% · Biscuits Nascondini Chocolat Mulino Bianco 330 g",
+    "type": "promotion enseigne",
+    "category": "épicerie sucrée",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 4.99,
+    "sourceRegularPrice": 4.99,
+    "sourcePromoPrice": 3.49,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-09",
+    "sourceUrl": "https://www.carrefour.fr/p/biscuits-nascondini-au-chocolat-mulino-bianco-8076809580618",
+    "scope": "produit",
+    "eans": [
+      "8076809580618"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/biscuits-nascondini-au-chocolat-mulino-bianco-8076809580618",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Prix Drive/Livraison dépendant du magasin ; vérifier le prix du canal avant commande.",
+    "conditions": "Fiche produit Carrefour : 3,49 € au lieu de 4,99 €, PROMO 30 %. Prix dépendant du mode de retrait et du magasin.",
+    "productMatch": {
+      "brands": [
+        "Mulino Bianco"
+      ],
+      "all": [
+        "nascondini"
+      ],
+      "any": [
+        "chocolat"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-granola-6x200-7622210602121",
+    "provider": "Carrefour",
+    "title": "−30% · Biscuits Granola chocolat lait 6×200 g",
+    "type": "promotion enseigne",
+    "category": "épicerie sucrée",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 8.75,
+    "sourceRegularPrice": 8.75,
+    "sourcePromoPrice": 6.12,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-09",
+    "sourceUrl": "https://www.carrefour.fr/p/biscuits-sables-chocolat-lait-granola-7622210602121",
+    "scope": "produit",
+    "eans": [
+      "7622210602121"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/biscuits-sables-chocolat-lait-granola-7622210602121",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Prix Drive/Livraison dépendant du magasin ; vérifier le prix du canal avant commande.",
+    "conditions": "Fiche produit Carrefour : 6,12 € au lieu de 8,75 €, PROMO 30 %. Prix dépendant du mode de retrait et du magasin.",
+    "productMatch": {
+      "brands": [
+        "Granola"
+      ],
+      "all": [
+        "chocolat"
+      ],
+      "any": [
+        "200g"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-bledina-blediner-3041090030185",
+    "provider": "Carrefour",
+    "title": "−30% · Blédiner Pâtes Tomates Courgettes Gruyère 2×200 g",
+    "type": "promotion enseigne",
+    "category": "bébé",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 2.69,
+    "sourceRegularPrice": 2.69,
+    "sourcePromoPrice": 1.88,
+    "verifiedAt": "2026-10-07",
+    "reviewAfter": "2026-10-09",
+    "sourceUrl": "https://www.carrefour.fr/p/plat-bebe-du-soir-des-12-mois-pates-tomates-courgettes-et-gruyere-blediner-bledina-3041090030185",
+    "scope": "produit",
+    "eans": [
+      "3041090030185"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/plat-bebe-du-soir-des-12-mois-pates-tomates-courgettes-et-gruyere-blediner-bledina-3041090030185",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Prix Drive/Livraison dépendant du magasin ; vérifier le prix du canal avant commande.",
+    "conditions": "Fiche produit Carrefour : 1,88 € au lieu de 2,69 €, PROMO 30 %. Prix dépendant du mode de retrait et du magasin.",
+    "productMatch": {
+      "brands": [
+        "Blédina"
+      ],
+      "all": [
+        "pates",
+        "tomates",
+        "courgettes"
+      ],
+      "any": [
+        "gruyere"
+      ],
+      "minScore": 70
+    }
+  }
+]
