@@ -1,0 +1,1065 @@
+[
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-apericube-2",
+    "title": "Apéricube",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-01",
+    "expiresAt": "2026-12-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/apericube-2",
+    "scope": "produit",
+    "referenceNames": [
+      "APERICUBE BELLA ITALIA EDITION VOYAGE APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE BEST OF DES SAVEURS APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 125 GR 24 UNIT",
+      "APERICUBE CAMPAGNE APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 125 GR 24 UNIT",
+      "APERICUBE CLASSICS APERO APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE COCKTAIL APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE EDITION LIMITEE BEST OF DES SAVEURS APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE FROMAGES DU MONDE APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE HOT CHALENGE APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE INCONTOURNABLE APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE LONG DRINK APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE NATURE APERITIF FONDU CUBE NATURE AUTRES EMBALLAGES STD 1 PQT 125 GR 24 UNIT",
+      "APERICUBE P'TITS JAMBON APERITIF FONDU CUBE JAMBON AUTRES EMBALLAGES STD 1 PQT 78 GR 15 UNIT",
+      "APERICUBE P'TITS PLAISIRS APERITIF FONDU CUBE 3 FROMAGES & JAMBON CRU & OLIVE VERTE AUTRES EMBALLAGES STD 1 PQT 78 GR 15 UNIT",
+      "APERICUBE SELECTION FESTIVE EDITION LIMITEE SAISON APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE SOIREE MATCH APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE TONIC APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT",
+      "APERICUBE TOUR DES REGIONS APERITIF FONDU CUBE ASSORTIS AUTRES EMBALLAGES STD 1 PQT 250 GR 48 UNIT"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 4,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Apéricube"
+      ],
+      "any": [
+        "BELLA",
+        "ITALIA",
+        "EDITION",
+        "VOYAGE",
+        "APERITIF"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1-2 article(s): 20% ; 3-4 article(s): 30% 17 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-tranches-vege-fleury-michon-1",
+    "title": "Tranches Végé Fleury Michon",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-01",
+    "expiresAt": "2026-11-20",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/tranches-vege-fleury-michon-1",
+    "scope": "produit",
+    "referenceNames": [
+      "Tranches Végé Lentilles Corail 120g",
+      "Tranches Végé Pois Chiches 120g",
+      "Tranches Végé Haricots Blancs fumé au bois de chêne 120g",
+      "Tranches Végé Haricots Rouges saveur barbecue 120g",
+      "Tranches Végé Lentilles Corail saveur curry cumin 120g",
+      "Tranches Végé Lentilles Corail 180g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Tranches Végé"
+      ],
+      "any": [
+        "Lentilles",
+        "Corail",
+        "120g",
+        "Pois",
+        "Chiches"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 25% ; 3 article(s): 30% 6 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-decouvrez-harrys-american-sandwich-protein",
+    "title": "Harrys",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-01",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/decouvrez-harrys-american-sandwich-protein",
+    "scope": "produit",
+    "referenceNames": [
+      "American Sandwich Protein+ 450 G X6"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Harrys"
+      ],
+      "minScore": 55
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 30% ; 2 article(s): 34% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-harrys-mini-tressee-pepites-de-chocolat",
+    "title": "Harrys",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-01",
+    "expiresAt": "2026-11-29",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/harrys-mini-tressee-pepites-de-chocolat",
+    "scope": "produit",
+    "referenceNames": [
+      "Mini Tressée Pépites de Chocolat"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Harrys"
+      ],
+      "any": [
+        "Tressée",
+        "Pépites",
+        "Chocolat"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 30% ; 2 article(s): 34% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-yaourt-maison-regilait",
+    "title": "RÉGILAIT YAOURT MAISON",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-07",
+    "expiresAt": "2027-04-25",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/yaourt-maison-regilait",
+    "scope": "produit",
+    "referenceNames": [
+      "Régilait Yaourt Maison, sachet 175g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "RÉGILAIT YAOURT"
+      ],
+      "any": [
+        "Maison",
+        "sachet",
+        "175g"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 25% ; 2 article(s): 30% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-innocent-smoothies-gourmands",
+    "title": "innocent - les smoothies gourmands",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-05",
+    "expiresAt": "2026-12-05",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/innocent-smoothies-gourmands",
+    "scope": "produit",
+    "referenceNames": [
+      "smoothie gourmand la fraise velours innocent 750ml",
+      "smoothie gourmand le citron crémeux innocent 750ml",
+      "smoothie gourmand la myrtille onctueuse innocent 750ml"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "innocent"
+      ],
+      "any": [
+        "smoothie",
+        "fraise",
+        "velours",
+        "750ml",
+        "citron"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 25% ; 3 article(s): 30% 3 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-lait-et-boissons-lactees-grandlait-des-p-tits-1",
+    "title": "GrandLait des P'tits",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "carrefour",
+      "leclerc"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-01",
+    "expiresAt": "2026-10-30",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/lait-et-boissons-lactees-grandlait-des-p-tits-1",
+    "scope": "produit",
+    "referenceNames": [
+      "GrandLait des P'tits - lait demi-écrémé - 6x20cl",
+      "GrandLait des P'tits - boisson lactée goût vanille - 6x20cl",
+      "GrandLait des P'tits - boisson lactée goût chocolat - 6x20cl"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "GrandLait"
+      ],
+      "any": [
+        "tits",
+        "lait",
+        "demi",
+        "écrémé",
+        "6x20cl"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 30% ; 2 article(s): 34% 3 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-tourtel-twist-sous-tous-ses-formats-3",
+    "title": "TOURTEL TWIST",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 25,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-08-18",
+    "expiresAt": "2026-11-02",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/tourtel-twist-sous-tous-ses-formats-3",
+    "scope": "produit",
+    "referenceNames": [
+      "Tourtel Twist Framboise Sans Sucres 6x27,5cl",
+      "Tourtel Twist Citron Sans Sucres 6x33cl",
+      "Tourtel Twist Framboise Sans Sucres 6x33cl",
+      "Tourtel Twist Citron 6x27,5cl",
+      "Tourtel Twist Framboises 6x27,5cl",
+      "Tourtel Twist Agrumes 6x27,5cl",
+      "Tourtel Twist Pêche 6x27,5cl",
+      "Tourtel Twist Ananas 6x27,5cl",
+      "Tourtel Twist Mûre Myrtille 6x27,5cl",
+      "Tourtel Twist Mojito 6x27,5cl",
+      "Tourtel Twist Citron Sans Sucres 6x27,5cl"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 25
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "TOURTEL TWIST"
+      ],
+      "any": [
+        "Framboise",
+        "Sucres",
+        "6x27",
+        "Citron",
+        "6x33cl"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1-2 article(s): 20% ; 3 article(s): 25% 11 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-cafes-legal-capsules-compatibles-nespresso",
+    "title": "Cafés Legal",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-15",
+    "expiresAt": "2026-11-15",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/cafes-legal-capsules-compatibles-nespresso",
+    "scope": "produit",
+    "referenceNames": [
+      "Legal Lungo N°5 - capsules aluminium x10",
+      "Legal Décaféiné sans solvant N°6 - capsules aluminium x10",
+      "Legal Espresso équilibré N°7 - capsules aluminium x10",
+      "Legal Espresso intense N°9 - capsules aluminium x10",
+      "Legal Ristretto N°12 - capsules aluminium x10"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Cafés Legal"
+      ],
+      "any": [
+        "Lungo",
+        "capsules",
+        "aluminium",
+        "Décaféiné",
+        "solvant"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 30% 5 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-boissons-fruitees-fruit-shoot",
+    "title": "FRUIT SHOOT",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-08-24",
+    "expiresAt": "2026-10-20",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/boissons-fruitees-fruit-shoot",
+    "scope": "produit",
+    "referenceNames": [
+      "Pêche Abricot 6x20cl",
+      "Tropical 6x20cl",
+      "Multivitaminé 6x20cl",
+      "Fruits rouges 6x20cl",
+      "Pomme sans sucres ajoutés 4x20cl",
+      "Tropical sans sucres ajoutés 4x20cl",
+      "Fraise sans sucres ajoutés 4x20cl"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "SHOOT"
+      ],
+      "any": [
+        "Pêche",
+        "Abricot",
+        "6x20cl",
+        "Tropical",
+        "Multivitaminé"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 25% ; 3 article(s): 30% 7 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-cristaline-fontaine-8l-1",
+    "title": "Cristaline fontaine 8L",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-01",
+    "expiresAt": "2026-10-09",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/cristaline-fontaine-8l-1",
+    "scope": "produit",
+    "referenceNames": [
+      "CRISTALINE eau de source plate 8L"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 2,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 3,
+        "maxQty": 4,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Cristaline"
+      ],
+      "any": [
+        "source",
+        "plate"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1-2 article(s): 30% ; 3-4 article(s): 34% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-boissons-aux-fruits-jardin-bio",
+    "title": "JARDIN BIO BOISSONS AUX FRUITS",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-07-15",
+    "expiresAt": "2026-12-08",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/boissons-aux-fruits-jardin-bio",
+    "scope": "produit",
+    "referenceNames": [
+      "Boisson Fruits Rouges Hibiscus 1L",
+      "Boisson Pomme Vanille 1L",
+      "Boisson Fraise Menthe 1L",
+      "Boisson Orange Passion Sureau 1L",
+      "Boisson Citron de Sicile Yuzu 1L",
+      "Boisson Citron Gingembre 1L"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "JARDIN BIO"
+      ],
+      "any": [
+        "Rouges",
+        "Hibiscus",
+        "Pomme",
+        "Vanille",
+        "Fraise"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 25% ; 3 article(s): 30% 6 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-fleury-michon-plats-cuisines-3",
+    "title": "Fleury Michon Plats Cuisinés",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-01",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/fleury-michon-plats-cuisines-3",
+    "scope": "produit",
+    "referenceNames": [
+      "Paelle de la Mer",
+      "Parmentier de Saumon",
+      "Tartiflette au Reblochon AOP",
+      "Gratin Dauphinois",
+      "Parmentier de Canard Confit",
+      "Poulet Rôti Frites",
+      "Parmentier de Bœuf Charolais",
+      "Moussaka au Bœuf",
+      "Tagliatelles au Poulet",
+      "Lasagnes à la Bolognaise",
+      "Lasagnes Ricotta Epinards"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 4,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 5,
+        "maxQty": 6,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 2,
+    "productMatch": {
+      "brands": [
+        "Fleury Michon"
+      ],
+      "any": [
+        "Paelle",
+        "Parmentier",
+        "Saumon",
+        "Tartiflette",
+        "Reblochon"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "2 article(s): 20% ; 3-4 article(s): 25% ; 5-6 article(s): 30% 11 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-panes-de-poulet-special-burger-pere-dodu",
+    "title": "Père Dodu - Panés de Poulet spécial burger",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-01",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/panes-de-poulet-special-burger-pere-dodu",
+    "scope": "produit",
+    "referenceNames": [
+      "Pané de poulet Père Dodu spécial burger panure corn flakes 180g",
+      "Pané de poulet Père Dodu spécial burger panure oignons 180g",
+      "Pané de poulet Père Dodu spécial burger panure saveur barbecue 180g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Père Dodu"
+      ],
+      "any": [
+        "Pané",
+        "poulet",
+        "spécial",
+        "burger",
+        "panure"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 25% ; 3 article(s): 30% 3 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-puree-de-pomme-de-terre-oh-puree-1",
+    "title": "OH PURÉE!",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-08-25",
+    "expiresAt": "2026-12-09",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/puree-de-pomme-de-terre-oh-puree-1",
+    "scope": "produit",
+    "referenceNames": [
+      "OH PUREE! AIL SACHET109g",
+      "OH PUREE! BEURRE SACHET 109g",
+      "OH PUREE! EMMENTAL 109g",
+      "OH PUREE! NOIX DE MUSCADE SACHET109g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "PURÉE"
+      ],
+      "any": [
+        "SACHET109g",
+        "BEURRE",
+        "SACHET",
+        "109g",
+        "EMMENTAL"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 25% ; 3 article(s): 30% 4 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-gels-douche-sanex-derma-therapie-2",
+    "title": "Gels Douche Sanex Derma Thérapie",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-05",
+    "expiresAt": "2026-11-04",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/gels-douche-sanex-derma-therapie-2",
+    "scope": "produit",
+    "referenceNames": [
+      "SANEX DERMA THÉRAPIE ANTI-DESSÈCHEMENT 425ML",
+      "SANEX DERMA THÉRAPIE ANTI-DÉMANGEAISON 425ML",
+      "SANEX DERMA THÉRAPIE AIDE À RÉDUIRE LE SEBUM 425ML",
+      "SANEX DERMA MÉNOPAUSE 425ML",
+      "SANEX DERMA THERAPIE ANTI-DESSECHEMENT POMPE 725ML",
+      "SANEX DERMA THERAPIE ANTI-DEMANGEAISONS POMPE 725ML",
+      "SANEX DERMA THERAPIE ANTI-DESSECHEMENT RECHARGE 450ML",
+      "SANEX DERMA THERAPIE ANTI-DEMANGEAISONS RECHARGE 450ML"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Gels Douche"
+      ],
+      "any": [
+        "SANEX",
+        "DERMA",
+        "THÉRAPIE",
+        "ANTI",
+        "DESSÈCHEMENT"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 25% ; 3 article(s): 34% 8 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-soupline-adoucissant-parfum-de-linge",
+    "title": "Soupline Parfum de Linge",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 40,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-01",
+    "expiresAt": "2026-10-20",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/soupline-adoucissant-parfum-de-linge",
+    "scope": "produit",
+    "referenceNames": [
+      "Soupline Parfum de Linge Pivoine Impériale 1L",
+      "Soupline Parfum de Linge Jasmin Absolu 1L",
+      "Soupline Parfum de Linge Pistache Divine 1L"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 40
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Soupline Parfum"
+      ],
+      "any": [
+        "Linge",
+        "Pivoine",
+        "Impériale",
+        "Jasmin",
+        "Absolu"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 30% ; 3 article(s): 40% 3 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-monalie-rose-petillant-extra-dry",
+    "title": "MONALIE",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-03",
+    "expiresAt": "2027-02-28",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/monalie-rose-petillant-extra-dry",
+    "scope": "produit",
+    "referenceNames": [
+      "Monalie vin mousseux rosé - 75cl"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "MONALIE"
+      ],
+      "any": [
+        "mousseux",
+        "rosé",
+        "75cl"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 25% ; 2 article(s): 30% ; 3 article(s): 34% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  }
+]
