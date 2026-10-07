@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { loadImportedOffers, mergeOffers } from "../src/import-loader.js";
+import { loadImportedOffers, mergeOffers, offerIdentity } from "../src/import-loader.js";
 
 const manifest={verifiedAt:"2026-10-07",files:["one.json"]};
 const payload=[{
@@ -115,4 +115,62 @@ test("loadImportedOffers expose la qualité de preuve produit du snapshot",async
   assert.equal(stats.heuristicCount,1);
   assert.equal(stats.resolutionBlockedCount,1);
   assert.equal(stats.storeVerificationCount,1);
+});
+
+
+test("un taux paiement importé remplace son fallback statique sans doublon",()=>{
+  const base=[{
+    id:"widilo-old",providerId:"widilo",scope:"panier",
+    mechanism:"gift_card",stores:["carrefour"],channels:["store"],savingPercent:3
+  },{
+    id:"leclerc-product",providerId:"leclerc",scope:"produit",
+    stores:["leclerc"],savingPercent:20
+  }];
+  const imported=[{
+    id:"widilo-latest",providerId:"widilo",scope:"panier",
+    mechanism:"gift_card",stores:["carrefour"],channels:["store"],savingPercent:4
+  }];
+  const result=mergeOffers(base,imported);
+  assert.equal(result.length,2);
+  assert.equal(result.find((x)=>x.providerId==="widilo").savingPercent,4);
+  assert.equal(offerIdentity(imported[0]),offerIdentity(base[0]));
+});
+
+test("les ODR différentes du même fournisseur restent distinctes",()=>{
+  const result=mergeOffers([],[
+    {id:"offer-a",providerId:"shopmium",scope:"produit",stores:["all"]},
+    {id:"offer-b",providerId:"shopmium",scope:"produit",stores:["all"]}
+  ]);
+  assert.equal(result.length,2);
+});
+
+test("les statistiques EAN ne comptent plus les promotions expirées",async()=>{
+  const payload=[
+    {
+      providerId:"leclerc",externalId:"old",title:"Ancienne promo",
+      stores:["leclerc"],savingPercent:20,
+      verifiedAt:"2026-09-01",expiresAt:"2026-09-15",
+      sourceUrl:"https://example.com/old",
+      eans:["4006381333931"],eanEvidenceUrl:"https://example.com/ean",
+      requiresStoreVerification:true
+    },
+    {
+      providerId:"leclerc",externalId:"active",title:"Promo actuelle",
+      stores:["leclerc"],savingPercent:20,
+      verifiedAt:"2026-10-07",expiresAt:"2026-10-31",
+      sourceUrl:"https://example.com/current",
+      productMatch:{brands:["Test"]}
+    }
+  ];
+  const fetchImpl=async(url)=>String(url).endsWith("/index.json")
+    ? {ok:true,json:async()=>({files:["quality.json"]})}
+    : {ok:true,json:async()=>payload};
+  const result=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-08T12:00:00Z")
+  });
+  const s=result.sourceStats[0];
+  assert.equal(s.activeCount,1);
+  assert.equal(s.exactEanCount,0);
+  assert.equal(s.heuristicCount,1);
+  assert.equal(s.storeVerificationCount,0);
 });
