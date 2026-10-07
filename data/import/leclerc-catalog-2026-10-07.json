@@ -149,7 +149,10 @@
         "biscottes"
       ],
       "minScore": 65
-    }
+    },
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Promotion portant sur une gamme de biscottes Heudebert ; plusieurs GTIN plausibles."
   },
   {
     "providerId": "leclerc",
@@ -197,7 +200,10 @@
         "coeur de céréales"
       ],
       "minScore": 65
-    }
+    },
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue insuffisamment précis sur la variante Gullón ; plusieurs biscuits petit-déjeuner plausibles."
   },
   {
     "providerId": "leclerc",
@@ -239,6 +245,9 @@
         "concentrate"
       ],
       "minScore": 65
-    }
+    },
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Le libellé Espresso Concentrate ne précise pas la variante ; Classic, Caramel et Vanille ont des GTIN distincts."
   }
 ]
