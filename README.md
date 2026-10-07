@@ -9,6 +9,7 @@ Fonctionnalités actuelles :
 - tri par pourcentage d'économie, économie en euros ou fraîcheur ;
 - recherche d'offres ;
 - chargement runtime de snapshots publics validés (Shopmium, La Belle Adresse, Coupon Network et Envie de Plus au 07/10/2026) avec expiration automatique ;
+- contrôle quotidien de fraîcheur des snapshots via GitHub Actions, avec signalement des sources devenues entièrement obsolètes ;
 - annuaire de sources complémentaires ;
 - recherche produit par EAN/UPC ;
 - scanner code-barres natif sur les navigateurs compatibles Android ;
@@ -87,6 +88,12 @@ npm run verify
 ```
 
 La commande vérifie aussi automatiquement les futurs lots `data/import/*.json`.
+
+Contrôle manuel de fraîcheur :
+
+```bash
+npm run check:freshness
+```
 
 ## Priorités suivantes
 
