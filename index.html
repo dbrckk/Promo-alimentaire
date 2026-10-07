@@ -43,11 +43,39 @@
           <option value="percent">Pourcentage d'économie</option>
           <option value="amount">Argent économisé</option>
           <option value="freshness">Données les plus récentes</option>
+          <option value="deadline">Échéance</option>
         </select>
       </div>
       <div class="field search-field">
         <label for="search">Recherche</label>
         <input id="search" type="search" placeholder="Produit, marque ou source…" autocomplete="off" />
+      </div>
+    </section>
+
+    <section class="panel loyalty-panel" aria-label="Cartes fidélité">
+      <div class="loyalty-copy">
+        <p class="eyebrow dark">Mon profil fidélité</p>
+        <strong>Compter uniquement les avantages réellement disponibles</strong>
+        <p>Ces réglages restent sur cet appareil. « Non renseigné » laisse l’avantage éventuel en candidat, sans le compter comme garanti.</p>
+      </div>
+      <div class="loyalty-fields">
+        <div class="field">
+          <label for="carrefourLoyalty">Carrefour</label>
+          <select id="carrefourLoyalty">
+            <option value="unknown">Non renseigné</option>
+            <option value="none">Aucune carte</option>
+            <option value="club">Club Carrefour</option>
+            <option value="pass">Carte PASS + Club</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="leclercLoyalty">E.Leclerc</label>
+          <select id="leclercLoyalty">
+            <option value="unknown">Non renseigné</option>
+            <option value="none">Aucune carte</option>
+            <option value="card">Carte E.Leclerc</option>
+          </select>
+        </div>
       </div>
     </section>
 
