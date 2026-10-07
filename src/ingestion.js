@@ -1,7 +1,7 @@
 import { assertValidGtin } from "./gtin.js";
 
 const STORES=new Set(["carrefour","leclerc","all"]);
-const SCOPES=new Set(["produit","panier"]);
+const SCOPES=new Set(["produit","panier","bundle"]);
 
 export function normalizeImportedOffer(raw) {
   const errors=[];
@@ -35,7 +35,12 @@ export function normalizeImportedOffer(raw) {
 
   const savingPercent=nullableNumber(value.savingPercent);
   const savingAmount=nullableNumber(value.savingAmount);
+  const savingCapAmount=nullableNumber(value.savingCapAmount);
   const quantityTiers=normalizeQuantityTiers(value.quantityTiers,errors);
+  const bundleRequirements=normalizeBundleRequirements(value.bundleRequirements,errors);
+  const bundleTargetRequirementId=value.bundleTargetRequirementId
+    ? String(value.bundleTargetRequirementId).trim()
+    : null;
   if(!Number.isFinite(savingPercent) && !Number.isFinite(savingAmount) && !quantityTiers.length){
     errors.push("Une économie savingPercent, savingAmount ou quantityTiers est requise.");
   }
@@ -44,6 +49,15 @@ export function normalizeImportedOffer(raw) {
   }
   if(Number.isFinite(savingAmount) && savingAmount<0){
     errors.push("savingAmount doit être positif.");
+  }
+  if(Number.isFinite(savingCapAmount) && savingCapAmount<=0){
+    errors.push("savingCapAmount doit être strictement positif.");
+  }
+  if(scope==="bundle"){
+    if(bundleRequirements.length<2) errors.push("Une offre bundle nécessite au moins 2 bundleRequirements.");
+    if(!bundleTargetRequirementId || !bundleRequirements.some((item)=>item.id===bundleTargetRequirementId)){
+      errors.push("bundleTargetRequirementId doit référencer une exigence du bundle.");
+    }
   }
   if(startsAt && expiresAt && new Date(startsAt)>new Date(expiresAt)){
     errors.push("startsAt doit précéder expiresAt.");
@@ -70,6 +84,7 @@ export function normalizeImportedOffer(raw) {
       stores,
       savingPercent:Number.isFinite(savingPercent) ? savingPercent : null,
       savingAmount:Number.isFinite(savingAmount) ? savingAmount : null,
+      savingCapAmount:Number.isFinite(savingCapAmount) ? savingCapAmount : null,
       basePrice:null,
       verifiedAt,
       startsAt,
@@ -82,6 +97,8 @@ export function normalizeImportedOffer(raw) {
       productMatch:normalizeProductMatch(value.productMatch),
       referenceNames:Array.isArray(value.referenceNames) ? value.referenceNames.map((x)=>String(x).trim()).filter(Boolean) : [],
       quantityTiers,
+      bundleRequirements,
+      bundleTargetRequirementId,
       channels:Array.isArray(value.channels) ? value.channels.map((x)=>String(x).trim()).filter(Boolean) : [],
       mechanism:value.mechanism || null,
       stackGroup:value.stackGroup || null,
@@ -219,4 +236,35 @@ function normalizeQuantityTiers(value,errors){
     tiers.push({minQty,maxQty,savingPercent});
   }
   return tiers.sort((a,b)=>a.minQty-b.minQty);
+}
+
+
+function normalizeBundleRequirements(value,errors){
+  if(value===null || value===undefined) return [];
+  if(!Array.isArray(value)){
+    errors.push("bundleRequirements doit être un tableau.");
+    return [];
+  }
+  const seen=new Set();
+  const result=[];
+  value.forEach((item,index)=>{
+    const id=String(item?.id ?? "").trim();
+    if(!id){
+      errors.push(`bundleRequirements[${index}].id est requis.`);
+      return;
+    }
+    if(seen.has(id)){
+      errors.push(`bundleRequirements id dupliqué : ${id}`);
+      return;
+    }
+    seen.add(id);
+    const minQty=Math.max(1,Math.trunc(Number(item?.minQty)||1));
+    const productMatch=normalizeProductMatch(item?.productMatch);
+    if(!productMatch){
+      errors.push(`bundleRequirements[${index}].productMatch est requis.`);
+      return;
+    }
+    result.push({id,minQty,productMatch});
+  });
+  return result;
 }
