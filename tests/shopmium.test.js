@@ -1,0 +1,60 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {
+  deriveShopmiumProductMatch,
+  extractShopmiumOfferUrls,
+  parsePercentTiers,
+  parseReferenceNames,
+  parseShopmiumDetailHtml,
+  parseValidityDates
+} from "../src/adapters/shopmium.js";
+
+test("extractShopmiumOfferUrls déduplique les fiches /fr/n",()=>{
+  const html='<a href="/fr/n/a-chacun-son-daddy">A</a><a href="https://offers.shopmium.com/fr/n/a-chacun-son-daddy">B</a><a href="/fr/autre">X</a>';
+  const urls=extractShopmiumOfferUrls(html);
+  assert.deepEqual(urls,["https://offers.shopmium.com/fr/n/a-chacun-son-daddy"]);
+});
+
+test("parseValidityDates convertit les dates françaises",()=>{
+  const dates=parseValidityDates("Valable entre le 01/10/2026 à partir de 08:00 et le 31/10/2026 jusqu'à 23:59");
+  assert.deepEqual(dates,{startsAt:"2026-10-01",expiresAt:"2026-10-31"});
+});
+
+test("parsePercentTiers lit les paliers",()=>{
+  const tiers=parsePercentTiers("1 article acheté = -20% sur le prix. 2 à 3 articles achetés = -25% sur le prix.");
+  assert.deepEqual(tiers,[
+    {minQty:1,maxQty:1,savingPercent:20},
+    {minQty:2,maxQty:3,savingPercent:25}
+  ]);
+});
+
+test("parseReferenceNames extrait les références et retire le prix",()=>{
+  const html='<p>Référence(s) éligible(s) et prix généralement constaté(s) :</p><p>- Cassonade pure canne 750g (2,25€)</p><p>- Muscovado Brun 500g (2,49€)</p><p>Remboursement maximum calculé par article</p>';
+  assert.deepEqual(parseReferenceNames(html),["Cassonade pure canne 750g","Muscovado Brun 500g"]);
+});
+
+test("deriveShopmiumProductMatch déduit Daddy et Fleury Michon",()=>{
+  assert.equal(deriveShopmiumProductMatch("À chacun son Daddy",["Cassonade pure canne 750g"]).brands[0],"Daddy");
+  assert.equal(deriveShopmiumProductMatch("Fleury Michon Plats Cuisinés",["Paella de la Mer"]).brands[0],"Fleury Michon");
+});
+
+test("parseShopmiumDetailHtml produit une offre prudente active",()=>{
+  const html=`
+    <title>Shopmium | À chacun son Daddy</title>
+    <div>1 article acheté = -20%</div>
+    <div>2 articles achetés = -25%</div>
+    <p>Valable entre le 01/10/2026 à partir de 08:00 et le 31/10/2026 jusqu'à 23:59 dans toute enseigne vendante (Drive inclus).</p>
+    <p>Référence(s) éligible(s) et prix généralement constaté(s) :</p>
+    <p>- Cassonade pure canne 750g (2,25€)</p>
+    <p>- Muscovado Brun 500g (2,49€)</p>
+    <p>Remboursement maximum calculé par article</p>
+    <p>Offre non cumulable avec toute autre promotion.</p>
+  `;
+  const offer=parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/a-chacun-son-daddy",{verifiedAt:"2026-10-07"});
+  assert.equal(offer.externalId,"auto-a-chacun-son-daddy");
+  assert.equal(offer.savingPercent,25);
+  assert.equal(offer.quantityTiers.length,2);
+  assert.equal(offer.referenceNames.length,2);
+  assert.equal(offer.stores[0],"all");
+  assert.equal(offer.autoStack,false);
+});
