@@ -26,12 +26,27 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
         sourceStats.push({
           file,mode:/auto\.json$/i.test(file) ? "automatic" : "manual",
           status:"error",activeCount:0,totalCount:Array.isArray(records)?records.length:0,
-          providerIds:[],latestVerifiedAt:null,nextDeadline:null
+          providerIds:[],exactEanCount:0,heuristicCount:0,
+          resolutionBlockedCount:0,storeVerificationCount:0,
+          latestVerifiedAt:null,nextDeadline:null
         });
         continue;
       }
       const activeOffers=result.normalized.filter((offer)=>isOfferActive(offer,now));
       const providerIds=[...new Set(result.normalized.map((offer)=>offer.providerId).filter(Boolean))];
+      const exactEanCount=result.normalized.filter((offer)=>
+        Array.isArray(offer.eans) && offer.eans.length>0
+      ).length;
+      const heuristicCount=result.normalized.filter((offer)=>
+        (!Array.isArray(offer.eans) || offer.eans.length===0)
+        && Boolean(offer.productMatch)
+      ).length;
+      const resolutionBlockedCount=result.normalized.filter((offer)=>
+        offer.eanResolutionBlocked===true
+      ).length;
+      const storeVerificationCount=result.normalized.filter((offer)=>
+        offer.requiresStoreVerification===true
+      ).length;
       const verifiedDates=result.normalized.map((offer)=>offer.verifiedAt).filter(Boolean).sort();
       const deadlines=result.normalized
         .flatMap((offer)=>[offer.reviewAfter,offer.expiresAt].filter(Boolean))
@@ -47,6 +62,10 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
         activeCount:activeOffers.length,
         totalCount:result.normalized.length,
         providerIds,
+        exactEanCount,
+        heuristicCount,
+        resolutionBlockedCount,
+        storeVerificationCount,
         latestVerifiedAt:verifiedDates.at(-1) || null,
         nextDeadline:nextDeadline?.toISOString().slice(0,10) || null
       });
@@ -63,7 +82,8 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       sourceStats.push({
         file,mode:/auto\.json$/i.test(file) ? "automatic" : "manual",
         status:"error",activeCount:0,totalCount:0,providerIds:[],
-        latestVerifiedAt:null,nextDeadline:null
+        exactEanCount:0,heuristicCount:0,resolutionBlockedCount:0,
+        storeVerificationCount:0,latestVerifiedAt:null,nextDeadline:null
       });
     }
   }
