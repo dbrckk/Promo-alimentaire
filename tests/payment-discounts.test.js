@@ -1,6 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { extractNearbyAmount, extractNearbyPercent, parsePaymentDiscountPages } from "../src/adapters/payment-discounts.js";
+import {
+  extractNearbyAmount,
+  extractNearbyPercent,
+  parsePaymentDiscountPages,
+  validatePaymentRateSafety
+} from "../src/adapters/payment-discounts.js";
 
 test("extractNearbyPercent lit le taux proche d'une enseigne",()=>{
   const html="<div>Carrefour - 4% de réduction</div><div>Auchan - 3%</div>";
@@ -61,4 +66,20 @@ test("extractNearbyPercent isole E.Leclerc sur une page multi-marchands",()=>{
 test("extractNearbyAmount choisit le montant le plus proche et non le maximum",()=>{
   const html="Autre offre 300€ · Carrefour Jusqu'à 3€ remboursés";
   assert.equal(extractNearbyAmount(html,"Carrefour"),3);
+});
+
+
+test("validatePaymentRateSafety bloque les taux manifestement contaminés",()=>{
+  assert.equal(validatePaymentRateSafety({
+    scope:"panier",mechanism:"gift_card",savingPercent:44
+  }).ok,false);
+  assert.equal(validatePaymentRateSafety({
+    scope:"panier",mechanism:"card_cashback",savingPercent:6
+  }).ok,false);
+  assert.equal(validatePaymentRateSafety({
+    scope:"panier",mechanism:"affiliate_cashback",savingPercent:6.5
+  }).ok,false);
+  assert.equal(validatePaymentRateSafety({
+    scope:"panier",mechanism:"affiliate_cashback",savingPercent:2.5
+  }).ok,true);
 });
