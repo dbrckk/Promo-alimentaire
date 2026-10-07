@@ -177,6 +177,7 @@ export const offers = [
     scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
     mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
     autoStack:false, stackingConfidence:"restricted",
+    productMatch:{brands:["X.TRA","X-tra","Xtra"],minScore:55},
     conditions:"La Belle Adresse affiche plusieurs références X.TRA à 40 % remboursé. Vérifier la référence exacte et les modalités."
   },
   {
@@ -187,6 +188,7 @@ export const offers = [
     scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
     mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
     autoStack:false, stackingConfidence:"restricted",
+    productMatch:{brands:["Le Chat"],any:["Disc","Discs","Disques"],minScore:60},
     conditions:"Offre affichée à 40 % remboursé ; les réductions La Belle Adresse ne sont généralement pas cumulables avec une promotion."
   },
   {
@@ -197,6 +199,7 @@ export const offers = [
     scope:"produit", stacking:"non cumulable avec certaines promotions/réductions",
     mechanism:"manufacturer_refund", stackGroup:"manufacturer-refund", stackOrder:70, savingBasis:"base",
     autoStack:false, stackingConfidence:"restricted",
+    productMatch:{brands:["Mir"],minScore:55},
     conditions:"Plusieurs références Mir étaient affichées à 40 % remboursé lors de la vérification."
   }
 ];
