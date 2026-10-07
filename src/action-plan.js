@@ -110,6 +110,22 @@ export function buildSavingsActionPlan({
     );
   }
 
+  const loyaltyCandidates=(productCandidates || []).filter((entry)=>
+    entry.offer?.mechanism==="retailer_loyalty"
+  );
+  if(loyaltyCandidates.length){
+    const known=loyaltyCandidates.some((entry)=>entry.offer?.loyaltyEligibility==="eligible");
+    push(
+      "achat",
+      known ? "Présenter la carte fidélité" : "Vérifier la carte fidélité",
+      known
+        ? "L’avantage fidélité détecté dépend de la carte renseignée. Présente-la ou associe-la à la commande avant validation."
+        : "Une remise fidélité est possible sur au moins un produit, mais ton profil carte n’est pas confirmé.",
+      "check",
+      loyaltyCandidates[0]?.offer?.sourceUrl || null
+    );
+  }
+
   push(
     "achat",
     "Conserver la preuve d’achat",
@@ -136,21 +152,7 @@ export function buildSavingsActionPlan({
     );
   }
 
-  const loyaltyCandidates=(productCandidates || []).filter((entry)=>
-    entry.offer?.mechanism==="retailer_loyalty"
-  );
-  if(loyaltyCandidates.length){
-    const known=loyaltyCandidates.some((entry)=>entry.offer?.loyaltyEligibility==="eligible");
-    push(
-      "achat",
-      known ? "Présenter la carte fidélité" : "Vérifier la carte fidélité",
-      known
-        ? "L’avantage fidélité détecté dépend de la carte renseignée. Présente-la ou associe-la à la commande avant validation."
-        : "Une remise fidélité est possible sur au moins un produit, mais ton profil carte n’est pas confirmé.",
-      "check",
-      loyaltyCandidates[0]?.offer?.sourceUrl || null
-    );
-  }
+
 
   if(bundleCandidates.length){
     push(
