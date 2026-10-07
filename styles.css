@@ -278,3 +278,6 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .evidence-grid{display:flex;flex-wrap:wrap;gap:6px}
 .evidence-blockers{margin:0;font-size:.68rem;color:var(--danger);line-height:1.4}
 .good-text{color:var(--good)}
+
+.confirm-store-offer{grid-column:1/-1;justify-self:start;border:1px solid var(--warn-line);background:#fff;color:#7c5a00;border-radius:9px;padding:6px 8px;font-size:.66rem;font-weight:750;cursor:pointer}
+.confirm-store-offer.active{background:#e6f6ed;border-color:#bfe3cf;color:var(--good)}
