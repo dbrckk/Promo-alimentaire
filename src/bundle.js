@@ -76,10 +76,14 @@ export function estimateBundleSaving(items,lines,offer) {
   };
 }
 
-export function findBundleCandidates(items,lines,offers,{store}={}) {
+export function findBundleCandidates(items,lines,offers,{store,channel=null}={}) {
   return (offers || [])
     .filter((offer)=>offer.scope==="bundle")
     .filter((offer)=>!store || offer.stores?.includes(store) || offer.stores?.includes("all"))
+    .filter((offer)=>{
+      const channels=Array.isArray(offer.channels) ? offer.channels : [];
+      return !channel || channels.length===0 || channels.includes(channel) || channels.includes("all");
+    })
     .map((offer)=>estimateBundleSaving(items,lines,offer))
     .filter(Boolean)
     .sort((a,b)=>b.saving-a.saving);
