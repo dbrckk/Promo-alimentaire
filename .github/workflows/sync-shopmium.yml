@@ -5,6 +5,7 @@ on:
     - cron: "41 5 * * 2,5"
   workflow_dispatch:
   push:
+    # one-time parser validation; removed after the first successful live sync
     paths:
       - ".github/workflows/sync-shopmium.yml"
 
