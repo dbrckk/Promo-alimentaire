@@ -1019,6 +1019,19 @@ function renderBasketScenario(scenario){
   const basketRoute=scenario.basketOptimization.selected.length
     ? scenario.basketOptimization.selected.map((offer)=>`${escapeHtml(offer.provider)} −${money.format(offer.calculatedSaving)}`).join(" · ")
     : "Aucune remise panier automatiquement retenue";
+  const breakdown=scenario.savingsBreakdown || {
+    productGuaranteed:0,paymentGuaranteed:0,otherBasketGuaranteed:0,
+    productPotential:scenario.potentialProductSaving||0,bundlePotential:scenario.potentialBundleSaving||0,
+    uncertainBasketCount:0
+  };
+  const levers=`
+    <div class="saving-levers">
+      <div class="lever guaranteed"><span>Produit exact</span><strong>−${money.format(breakdown.productGuaranteed)}</strong></div>
+      <div class="lever guaranteed"><span>Paiement remisé</span><strong>−${money.format(breakdown.paymentGuaranteed)}</strong></div>
+      <div class="lever guaranteed"><span>Autres garanties</span><strong>−${money.format(breakdown.otherBasketGuaranteed)}</strong></div>
+      <div class="lever potential"><span>ODR candidates</span><strong>jusqu’à ${money.format(breakdown.productPotential)}</strong></div>
+      <div class="lever potential"><span>Bundles candidats</span><strong>jusqu’à ${money.format(breakdown.bundlePotential)}</strong></div>
+    </div>`;
   const potential=scenario.potentialProductSaving>0
     ? `<p class="help">ODR/coupons produits candidats : jusqu’à ${money.format(scenario.potentialProductSaving)} potentiels, non inclus tant que l’éligibilité/cumul n’est pas confirmé.</p>`
     : "";
@@ -1058,6 +1071,7 @@ function renderBasketScenario(scenario){
         <div><span>Économie validée</span><strong>−${money.format(scenario.guaranteedSaving)}</strong></div>
         <div><span>${totalLabel}</span><strong>${money.format(scenario.finalCost)}</strong></div>
       </div>
+      ${levers}
       <div class="scenario-lines">${lines}</div>
       <p class="help">${basketRoute}</p>
       ${potential}
