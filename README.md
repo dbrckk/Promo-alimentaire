@@ -181,3 +181,18 @@ Aucun EAN n'est écrit lorsqu'une ambiguïté subsiste.
 Une confirmation locale ne s'applique qu'à l'offre exacte et au même point de vente. Elle devient invalide si changent l'EAN, les canaux, les exclusions, les conditions de cumul, le montant, la formule ou la prochaine date de révision. Une confirmation expirée ne peut pas être prolongée localement sans nouvelle vérification. Vérifier le magasin ne valide **pas** à lui seul un prix Drive / livraison dont la source exige une confirmation spécifique.
 
 Les alertes de baisse comparent uniquement deux observations à des **dates différentes dans un même magasin physique identifié** (identifiant magasin, ou nom et code postal). Deux magasins distincts d'une même enseigne ne peuvent pas produire une fausse baisse. Un prix sans magasin suffisamment identifié n'alimente pas les alertes. Les contrôles sont locaux et ne tournent pas en arrière-plan.
+
+
+### Garde-fous supplémentaires (octobre 2026)
+
+- Une offre importée ne peut être automatiquement cumulable au niveau produit que si sa référence GTIN valide dispose d'une source EAN HTTPS, et si aucune confirmation magasin/prix spécifique n'est encore requise. Les données non prouvées restent candidates.
+- Le niveau de preuve exige une **correspondance entre le GTIN du produit et celui de l'offre** : le simple fait de contenir une liste d'EAN ne prouve rien concernant le produit scanné.
+- Les snapshots mal formés sont rejetés, tandis que les taux paiement importés remplacent leur fallback statique équivalent sans multiplier les cartes identiques.
+- Les taux paiement statiques expirent eux aussi après leur prochaine révision si les sources automatiques sont indisponibles.
+- Les offres expirées ou dont la date de révision est dépassée sont retirées du calcul **à chaque interaction**, même si la PWA reste ouverte.
+- Les économies de produit et de bundle candidates sont distinguées entre **valeur brute** et **gain supplémentaire après les remises déjà retenues** ; elles ne sont jamais soustraites deux fois.
+- Un bundle dont un article obligatoire n'a pas de prix exploitable n'est pas chiffré.
+- L'ordre d'action suit systématiquement les étapes avant achat, paiement, carte fidélité en caisse, preuve d'achat, puis demandes ODR.
+- Sur la fiche produit, le lien de preuve EAN et le lien de l'offre sont distincts : une référence exacte ne garantit pas à elle seule l'application de la promotion.
+
+Ces vérifications sont **conservatrices** et ne remplacent pas la vérification des conditions, du stock, du point de vente et du ticket final.
