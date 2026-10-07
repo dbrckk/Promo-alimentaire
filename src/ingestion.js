@@ -14,6 +14,7 @@ export function normalizeImportedOffer(raw) {
   const verifiedAt=dateValue(value.verifiedAt,"verifiedAt",errors,true);
   const startsAt=dateValue(value.startsAt,"startsAt",errors,false);
   const expiresAt=dateValue(value.expiresAt,"expiresAt",errors,false);
+  const reviewAfter=dateValue(value.reviewAfter,"reviewAfter",errors,false);
   const scope=SCOPES.has(value.scope) ? value.scope : "produit";
 
   const stores=[...new Set(Array.isArray(value.stores) ? value.stores : [])];
@@ -34,8 +35,9 @@ export function normalizeImportedOffer(raw) {
 
   const savingPercent=nullableNumber(value.savingPercent);
   const savingAmount=nullableNumber(value.savingAmount);
-  if(!Number.isFinite(savingPercent) && !Number.isFinite(savingAmount)){
-    errors.push("Une économie savingPercent ou savingAmount est requise.");
+  const quantityTiers=normalizeQuantityTiers(value.quantityTiers,errors);
+  if(!Number.isFinite(savingPercent) && !Number.isFinite(savingAmount) && !quantityTiers.length){
+    errors.push("Une économie savingPercent, savingAmount ou quantityTiers est requise.");
   }
   if(Number.isFinite(savingPercent) && (savingPercent<0 || savingPercent>100)){
     errors.push("savingPercent doit être compris entre 0 et 100.");
@@ -45,6 +47,9 @@ export function normalizeImportedOffer(raw) {
   }
   if(startsAt && expiresAt && new Date(startsAt)>new Date(expiresAt)){
     errors.push("startsAt doit précéder expiresAt.");
+  }
+  if(reviewAfter && verifiedAt && new Date(reviewAfter)<new Date(verifiedAt)){
+    errors.push("reviewAfter ne peut pas précéder verifiedAt.");
   }
 
   if(errors.length){
@@ -69,10 +74,15 @@ export function normalizeImportedOffer(raw) {
       verifiedAt,
       startsAt,
       expiresAt,
+      reviewAfter,
       sourceUrl,
       scope,
       eans:[...new Set(eans)],
       eanEvidenceUrl,
+      productMatch:normalizeProductMatch(value.productMatch),
+      referenceNames:Array.isArray(value.referenceNames) ? value.referenceNames.map((x)=>String(x).trim()).filter(Boolean) : [],
+      quantityTiers,
+      channels:Array.isArray(value.channels) ? value.channels.map((x)=>String(x).trim()).filter(Boolean) : [],
       mechanism:value.mechanism || null,
       stackGroup:value.stackGroup || null,
       stackOrder:Number.isFinite(Number(value.stackOrder)) ? Number(value.stackOrder) : 50,
@@ -124,6 +134,10 @@ export function isOfferActive(offer,now=new Date()) {
     const end=new Date(String(offer.expiresAt).length===10 ? offer.expiresAt+"T23:59:59" : offer.expiresAt);
     if(current>end) return false;
   }
+  if(offer.reviewAfter){
+    const reviewEnd=new Date(String(offer.reviewAfter).length===10 ? offer.reviewAfter+"T23:59:59" : offer.reviewAfter);
+    if(current>reviewEnd) return false;
+  }
   return true;
 }
 
@@ -163,4 +177,46 @@ function nullableNumber(value){
   if(value===null || value===undefined || value==="") return null;
   const number=Number(value);
   return Number.isFinite(number) ? number : null;
+}
+
+
+function normalizeProductMatch(value){
+  if(!value || typeof value!=="object") return null;
+  const list=(field)=>Array.isArray(value[field]) ? value[field].map((x)=>String(x).trim()).filter(Boolean) : [];
+  const result={
+    brands:list("brands"),
+    any:list("any"),
+    all:list("all"),
+    minScore:Number.isFinite(Number(value.minScore)) ? Number(value.minScore) : 55
+  };
+  if(!result.brands.length && !result.any.length && !result.all.length) return null;
+  return result;
+}
+
+function normalizeQuantityTiers(value,errors){
+  if(value===null || value===undefined) return [];
+  if(!Array.isArray(value)){
+    errors.push("quantityTiers doit être un tableau.");
+    return [];
+  }
+  const tiers=[];
+  for(const [index,item] of value.entries()){
+    const minQty=Math.trunc(Number(item?.minQty));
+    const maxQty=item?.maxQty===null || item?.maxQty===undefined ? null : Math.trunc(Number(item.maxQty));
+    const savingPercent=Number(item?.savingPercent);
+    if(!Number.isFinite(minQty) || minQty<1){
+      errors.push(`quantityTiers[${index}].minQty invalide.`);
+      continue;
+    }
+    if(maxQty!==null && (!Number.isFinite(maxQty) || maxQty<minQty)){
+      errors.push(`quantityTiers[${index}].maxQty invalide.`);
+      continue;
+    }
+    if(!Number.isFinite(savingPercent) || savingPercent<0 || savingPercent>100){
+      errors.push(`quantityTiers[${index}].savingPercent invalide.`);
+      continue;
+    }
+    tiers.push({minQty,maxQty,savingPercent});
+  }
+  return tiers.sort((a,b)=>a.minQty-b.minQty);
 }
