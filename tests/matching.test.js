@@ -69,3 +69,16 @@ test("estimateOfferSaving applique le palier de quantité",()=>{
   assert.equal(effectiveOfferPercent(offer,3),34);
   assert.equal(estimateOfferSaving(2,offer,3),2.04);
 });
+
+
+test("un remboursement fixe par offre n'est pas multiplié par la quantité",()=>{
+  const offer={savingAmount:1.2,minPurchaseQty:2,savingAmountMode:"per-offer"};
+  assert.equal(estimateOfferSaving(4,offer,1),null);
+  assert.equal(estimateOfferSaving(4,offer,2),1.2);
+  assert.equal(estimateOfferSaving(4,offer,3),1.2);
+});
+
+test("un remboursement fixe per-unit peut être multiplié explicitement",()=>{
+  const offer={savingAmount:0.5,minPurchaseQty:1,savingAmountMode:"per-unit"};
+  assert.equal(estimateOfferSaving(2,offer,3),1.5);
+});
