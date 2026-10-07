@@ -421,7 +421,6 @@ function renderPrices(observations,sourceUrl){
     : '<div class="panel price-source">Aucune observation assez récente pour établir un meilleur prix.</div>';
 
   const cards=observations.slice(0,12).map((item)=>{
-    const fresh=isFreshObservation(item);
     const freshness=priceFreshness(item);
     const previous=item.priceWithoutDiscount && item.priceWithoutDiscount>item.price
       ? ` · avant ${money.format(item.priceWithoutDiscount)}`
