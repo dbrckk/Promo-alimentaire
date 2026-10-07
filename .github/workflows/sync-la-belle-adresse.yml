@@ -5,6 +5,7 @@ on:
     - cron: "7 6 * * 3,6"
   workflow_dispatch:
   push:
+    # one-time live validation; removed after the first successful sync
     paths:
       - ".github/workflows/sync-la-belle-adresse.yml"
 
