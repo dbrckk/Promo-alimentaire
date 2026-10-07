@@ -942,7 +942,7 @@ function evaluateCurrentBasketScenarios(){
           store,
           channel:state.channel,
           priceByCode:state.basketPriceData[store],
-          offers,
+          offers:activeOffers(),
           loyaltyProfile:state.loyaltyProfile,
           storeConfirmations:state.storeConfirmations
         }),
