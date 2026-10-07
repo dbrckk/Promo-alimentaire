@@ -65,7 +65,18 @@ export function evaluateBasketStore(items,{
     const baseCost=roundMoney(best.price*quantity);
     const guaranteedProductOffers=matches
       .filter(({match,offer})=>match.exact && offer.autoStack===true)
-      .map(({offer})=>offer);
+      .map(({offer})=>{
+        if(!offer.promoFormula) return offer;
+        const exactSaving=estimateOfferSaving(best.price,offer,quantity);
+        if(!Number.isFinite(exactSaving)) return {...offer,autoStack:false};
+        return {
+          ...offer,
+          savingAmount:roundMoney(exactSaving),
+          savingPercent:null,
+          savingBasis:"base",
+          calculatedFromPromoFormula:true
+        };
+      });
     const lineOptimization=optimizeStack(baseCost,guaranteedProductOffers,{store,channel});
 
     const potentialCandidates=matches
