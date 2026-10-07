@@ -442,3 +442,74 @@ test("la même confirmation ne garantit rien dans un autre magasin",()=>{
   });
   assert.equal(scenario.guaranteedSaving,0);
 });
+
+
+test("une promo confirmée −68% sur le 2e ne surcompte pas une quantité impaire",()=>{
+  const promo={
+    id:"second-68",
+    scope:"produit",
+    stores:["leclerc"],
+    channels:["store"],
+    eans:["3017624010701"],
+    savingPercent:34,
+    promoFormula:{type:"nth_percent",nth:2,cycle:2,percent:68},
+    mechanism:"retailer_promo",
+    requiresStoreVerification:true,
+    autoStack:false,
+    stackGroup:"retailer-promo",
+    savingBasis:"base",
+    expiresAt:"2026-10-10"
+  };
+  const confirmation=createStoreConfirmation(promo,{
+    store:"leclerc",
+    locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  const scenario=evaluateBasketStore([{product,quantity:3}],{
+    store:"leclerc",
+    channel:"store",
+    storeVerificationKey:"id:42",
+    storeConfirmations:[confirmation],
+    priceByCode:{"3017624010701":[{price:2.39,date:"2026-10-07"}]},
+    offers:[promo],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.observedSubtotal,7.17);
+  assert.equal(scenario.guaranteedSaving,1.63);
+  assert.equal(scenario.finalCost,5.54);
+});
+
+test("une promo confirmée 2+1 offert calcule exactement le nombre de groupes",()=>{
+  const promo={
+    id:"two-plus-one",
+    scope:"produit",
+    stores:["leclerc"],
+    channels:["store"],
+    eans:["3017624010701"],
+    savingPercent:33.33,
+    promoFormula:{type:"buy_x_get_y_free",buy:2,free:1},
+    mechanism:"retailer_promo",
+    requiresStoreVerification:true,
+    autoStack:false,
+    stackGroup:"retailer-promo",
+    savingBasis:"base",
+    expiresAt:"2026-10-10"
+  };
+  const confirmation=createStoreConfirmation(promo,{
+    store:"leclerc",
+    locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  const scenario=evaluateBasketStore([{product,quantity:4}],{
+    store:"leclerc",
+    channel:"store",
+    storeVerificationKey:"id:42",
+    storeConfirmations:[confirmation],
+    priceByCode:{"3017624010701":[{price:1.67,date:"2026-10-07"}]},
+    offers:[promo],
+    now:new Date("2026-10-07T12:00:00Z")
+  });
+  assert.equal(scenario.observedSubtotal,6.68);
+  assert.equal(scenario.guaranteedSaving,1.67);
+  assert.equal(scenario.finalCost,5.01);
+});
