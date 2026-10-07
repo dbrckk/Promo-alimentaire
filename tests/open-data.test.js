@@ -6,7 +6,8 @@ import {
   isFreshObservation,
   normalizeBarcode,
   normalizePriceObservation,
-  haversineKm
+  haversineKm,
+  selectBestRecentPrice
 } from "../src/open-data.js";
 
 test("normalizeBarcode nettoie un EAN valide",()=>{
@@ -102,4 +103,16 @@ test("normalizePriceObservation calcule la distance si la position est fournie",
   },{latitude:45.44,longitude:4.39});
   assert.equal(value.distanceKm,0);
   assert.equal(value.locationLat,45.44);
+});
+
+
+test("selectBestRecentPrice choisit le prix récent le plus bas",()=>{
+  const now=new Date("2026-10-07T12:00:00Z");
+  const best=selectBestRecentPrice([
+    {price:3.2,date:"2026-10-05",storeName:"A"},
+    {price:2.9,date:"2026-10-01",storeName:"B"},
+    {price:1.5,date:"2025-01-01",storeName:"Ancien"}
+  ],120,now);
+  assert.equal(best.storeName,"B");
+  assert.equal(best.price,2.9);
 });
