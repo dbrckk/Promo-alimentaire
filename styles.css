@@ -274,3 +274,7 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .loyalty-summary strong{font-size:.72rem}
 .loyalty-summary span{font-size:.68rem;color:var(--muted);line-height:1.4}
 @media(max-width:640px){.loyalty-summary{grid-template-columns:1fr}}
+
+.evidence-grid{display:flex;flex-wrap:wrap;gap:6px}
+.evidence-blockers{margin:0;font-size:.68rem;color:var(--danger);line-height:1.4}
+.good-text{color:var(--good)}
