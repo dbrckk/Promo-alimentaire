@@ -113,3 +113,14 @@ L'API Open Prices accepte directement les paramètres géographiques sur `GET /a
 Dans l'interface, ces paramètres ne sont envoyés qu'après une action volontaire « Autour de moi ». Les coordonnées restent uniquement en mémoire de la page et sont supprimées quand le mode proximité est désactivé.
 
 Le rayon initial est de 25 km. L'application continue ensuite à filtrer les résultats sur l'enseigne sélectionnée (Carrefour ou E.Leclerc).
+
+
+## La Belle Adresse — mode dégradé sûr
+
+Au 7 octobre 2026, les pages publiques de remboursement sont rendues côté client et le backend de cashback répond avec une permission membre requise. Le synchroniseur :
+
+1. tente uniquement les pages publiques ;
+2. n'utilise aucun endpoint privé avec contournement d'authentification ;
+3. conserve le dernier snapshot manuel vérifié quand l'extraction publique est insuffisante ;
+4. laisse le contrôle de fraîcheur signaler quand ce snapshot doit être revu.
+
