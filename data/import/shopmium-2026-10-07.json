@@ -1,0 +1,357 @@
+[
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "les-nouveautes-daddy-2026-10",
+    "title": "Daddy — nouveautés",
+    "type": "ODR",
+    "category": "épicerie",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-01",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/les-nouveautes-daddy",
+    "scope": "produit",
+    "referenceNames": [
+      "Mordu de Stévia Roux 300g",
+      "Sirop de canne 235g"
+    ],
+    "productMatch": {
+      "brands": [
+        "Daddy"
+      ],
+      "any": [
+        "Mordu de Stevia",
+        "Sirop de canne"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "30 % remboursés sur 1 article. Offre utilisable une seule fois et valable dans toute enseigne vendante, Drive inclus."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "barilla-al-bronzo-2026-10",
+    "title": "Barilla Al Bronzo",
+    "type": "ODR",
+    "category": "pâtes",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-01",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/barilla-al-bronzo-5",
+    "scope": "produit",
+    "referenceNames": [
+      "Fusilli",
+      "Fusilloni",
+      "Linguine",
+      "Mezzi Rigatoni",
+      "Penne",
+      "Spaghetti Quadrati",
+      "Spaghettoni",
+      "Tortiglioni"
+    ],
+    "productMatch": {
+      "brands": [
+        "Barilla"
+      ],
+      "all": [
+        "Al Bronzo"
+      ],
+      "minScore": 65
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "20 % remboursés pour 1 à 2 articles, 30 % pour 3 articles. Une utilisation."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "a-chacun-son-daddy-2026-10",
+    "title": "Daddy — sucres et cassonades",
+    "type": "ODR",
+    "category": "épicerie",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 25,
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      }
+    ],
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-10-01",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/a-chacun-son-daddy",
+    "scope": "produit",
+    "referenceNames": [
+      "Cassonade pure canne 750g",
+      "Cassonade pure canne BIO 750g",
+      "Muscovado Blond 500g",
+      "Muscovado Brun 500g",
+      "Dack Demerara 500g",
+      "Mordu de Stévia Blanc 300g"
+    ],
+    "productMatch": {
+      "brands": [
+        "Daddy"
+      ],
+      "any": [
+        "Cassonade",
+        "Muscovado",
+        "Demerara",
+        "Mordu de Stevia"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "20 % remboursés pour 1 article, 25 % pour 2 articles. Une utilisation."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "fruit-shoot-2026-08-10",
+    "title": "Fruit Shoot — boissons fruitées",
+    "type": "ODR",
+    "category": "boissons",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-08-24",
+    "expiresAt": "2026-10-23",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/boissons-fruitees-fruit-shoot",
+    "scope": "produit",
+    "referenceNames": [
+      "Pêche Abricot 6x20cl",
+      "Tropical 6x20cl",
+      "Multivitaminé 6x20cl",
+      "Fruits rouges 6x20cl",
+      "Pomme sans sucres ajoutés 4x20cl"
+    ],
+    "productMatch": {
+      "brands": [
+        "Fruit Shoot"
+      ],
+      "any": [
+        "Peche Abricot",
+        "Tropical",
+        "Multivitamine",
+        "Fruits rouges",
+        "Pomme"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "20 % pour 1 article, 25 % pour 2, 30 % pour 3. Une utilisation."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "taboule-bonduelle-2026",
+    "title": "Taboulé Bonduelle",
+    "type": "ODR",
+    "category": "traiteur",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 34,
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 34
+      }
+    ],
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-08-31",
+    "expiresAt": "2026-10-30",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/taboule-bonduelle",
+    "scope": "produit",
+    "referenceNames": [
+      "Taboulé Oriental 300g",
+      "Taboulé Oriental 500g",
+      "Taboulé Poulet Rôti 300g",
+      "Taboulé Poulet Rôti 500g"
+    ],
+    "productMatch": {
+      "brands": [
+        "Bonduelle"
+      ],
+      "all": [
+        "Taboule"
+      ],
+      "minScore": 65
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "conditions Shopmium à vérifier",
+    "conditions": "25 % pour 1 article, 30 % pour 2, 34 % pour 3. Une utilisation."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "barilla-protein-plus-2026",
+    "title": "Barilla Protein+",
+    "type": "ODR",
+    "category": "pâtes",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 4,
+        "savingPercent": 30
+      }
+    ],
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-06-01",
+    "expiresAt": "2026-10-08",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/barilla-protein",
+    "scope": "produit",
+    "referenceNames": [
+      "Fusilli Protein Plus 400g",
+      "Penne Rigate Protein Plus 400g",
+      "Spaghetti Protein Plus 400g"
+    ],
+    "productMatch": {
+      "brands": [
+        "Barilla"
+      ],
+      "any": [
+        "Protein",
+        "Protein Plus"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "20 % pour 1 à 2 articles, 30 % pour 3 à 4. Offre renouvelable dans la limite de 16 articles."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "cookies-milka-2026-09",
+    "title": "Cookies Milka",
+    "type": "ODR",
+    "category": "boulangerie-pâtisserie",
+    "stores": [
+      "all"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-07",
+    "startsAt": "2026-09-01",
+    "expiresAt": "2026-11-01",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/cookies-milka-7",
+    "scope": "produit",
+    "referenceNames": [
+      "Cookies Milka Pépites x2",
+      "Cookies Milka Tout Choco x2"
+    ],
+    "productMatch": {
+      "brands": [
+        "Milka"
+      ],
+      "any": [
+        "Cookies",
+        "Cookie"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "30 % remboursés sur 1 article."
+  }
+]
