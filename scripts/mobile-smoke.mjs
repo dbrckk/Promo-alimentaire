@@ -84,6 +84,7 @@ try{
   await page.locator('[data-action="add-current-product"]').click();
   await page.locator('[data-tab="list"]').click();
   assert.match(await page.locator("#shoppingListItems").innerText(),/Pâte à tartiner témoin/);
+  assert.match(await page.locator("#manualPriceEntries").innerText(),/Carrefour Centre Lyon/);
   assert.match(await page.locator("#listCount").innerText(),/1/);
   await page.locator("#refreshList").click();
   await page.locator("#refreshList").waitFor({state:"visible"});
@@ -91,6 +92,27 @@ try{
   assert.match(await page.locator("#basketComparison").innerText(),/Relevé du/i);
   await assertNoHorizontalOverflow(page,"liste de courses");
   await page.screenshot({path:OUT+"/02-panier.png",fullPage:true});
+
+  // Manual shelf-price note: never a guaranteed retailer promotion.
+  await page.locator("#channel").selectOption("store");
+  await page.locator("#manualPricePanel").evaluate((element)=>{element.open=true;});
+  await page.locator("#manualPriceStore").selectOption("carrefour");
+  await page.locator("#manualPriceAmount").fill("2.69");
+  await page.locator("#manualPriceStoreName").fill("Carrefour Centre Lyon");
+  await page.locator("#manualPricePostcode").fill("69002");
+  const localDate=await page.evaluate(()=>{
+    const now=new Date();
+    return new Date(now.getTime()-now.getTimezoneOffset()*60000)
+      .toISOString().slice(0,10);
+  });
+  await page.locator("#manualPriceDate").fill(localDate);
+  await page.locator("#manualPriceSubmit").click();
+  await page.getByText("Relevé personnel non vérifié").first().waitFor({timeout:8000});
+  assert.match(await page.locator("#manualPriceEntries").innerText(),/2,69/);
+  assert.match(await page.locator("#basketComparison").innerText(),/Budget indicatif/);
+  await assertNoHorizontalOverflow(page,"relevé manuel");
+  await page.screenshot({path:OUT+"/05-releve-manuel.png",fullPage:true});
+  await page.locator("#channel").selectOption("drive");
 
   await page.locator('[data-tab="optimizer"]').click();
   await page.locator("#basketAmount").fill("73.25");
