@@ -48,9 +48,14 @@ export async function fetchPricesByBarcode(value,{store,size=100,coords=null,rad
   });
   let requestedRadius=null;
   if(coords){
-    const lat=Number(coords.latitude ?? coords.lat);
-    const lon=Number(coords.longitude ?? coords.lon);
-    if(!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lon) || lon < -180 || lon > 180){
+    const rawLat=coords.latitude ?? coords.lat;
+    const rawLon=coords.longitude ?? coords.lon;
+    const lat=Number(rawLat);
+    const lon=Number(rawLon);
+    if(rawLat===null || rawLat===undefined || rawLat===""
+      || rawLon===null || rawLon===undefined || rawLon===""
+      || !Number.isFinite(lat) || lat < -90 || lat > 90
+      || !Number.isFinite(lon) || lon < -180 || lon > 180){
       throw new Error("Coordonnées géographiques invalides.");
     }
     const radius=Math.min(Math.max(Number(radiusKm)||25,1),100);
@@ -158,8 +163,12 @@ export function isFreshObservation(observation,maxAgeDays=120,now=new Date()) {
 
 
 export function haversineKm(lat1,lon1,lat2,lon2) {
-  const values=[lat1,lon1,lat2,lon2].map(Number);
+  const raw=[lat1,lon1,lat2,lon2];
+  if(raw.some((value)=>value===null || value===undefined || value==="")) return null;
+  const values=raw.map(Number);
   if(values.some((value)=>!Number.isFinite(value))) return null;
+  if(Math.abs(values[0])>90 || Math.abs(values[2])>90
+    || Math.abs(values[1])>180 || Math.abs(values[3])>180) return null;
   const [aLat,aLon,bLat,bLon]=values;
   const toRad=(degrees)=>degrees*Math.PI/180;
   const dLat=toRad(bLat-aLat);
