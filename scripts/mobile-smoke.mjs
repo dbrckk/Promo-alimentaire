@@ -141,7 +141,7 @@ try{
     page.waitForEvent("download"),
     page.locator("#exportList").click()
   ]);
-  assert.match(download.suggestedFilename(),/promo-alimentaire-liste-.*\\.json/);
+  assert.match(download.suggestedFilename(),/promo-alimentaire-liste-.*\.json/);
   const exported=await readFile(await download.path(),"utf8");
   assert.equal(JSON.parse(exported).budget,6);
   assert.equal(JSON.parse(exported).items.length,1);
