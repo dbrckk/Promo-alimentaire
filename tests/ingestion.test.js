@@ -299,3 +299,33 @@ test("les cadeaux de sources non approuvées restent des candidats",()=>{
     verifiedAt:"2026-10-07",reviewAfter:"2026-10-14",savingPercent:5
   }),false);
 });
+
+
+test("un GTIN suggéré par Open Food Facts n'est pas une preuve de promo E.Leclerc",()=>{
+  const candidate={
+    providerId:"leclerc",externalId:"test-suggestion",title:"Promotion incertaine",
+    sourceUrl:"https://www.e.leclerc/fp/test",verifiedAt:"2026-10-08",
+    stores:["leclerc"],scope:"produit",savingPercent:20,autoStack:true,
+    productMatch:{brands:["Ferrero"],any:["chocolat"]},
+    eanSuggestion:{
+      code:"3017624010701",
+      sourceUrl:"https://world.openfoodfacts.org/product/3017624010701",
+      requiresMerchantConfirmation:true,productName:"Produit candidat"
+    }
+  };
+  const result=normalizeImportedOffer(candidate);
+  assert.equal(result.ok,true);
+  assert.deepEqual(result.value.eans,[]);
+  assert.equal(result.value.autoStack,false);
+  assert.equal(result.value.eanSuggestion.code,"3017624010701");
+
+  const spoof=normalizeImportedOffer({
+    ...candidate,
+    eanSuggestion:{
+      ...candidate.eanSuggestion,
+      sourceUrl:"https://world.openfoodfacts.org.evil.example/product/3017624010701"
+    }
+  });
+  assert.equal(spoof.ok,true);
+  assert.equal(spoof.value.eanSuggestion,null);
+});
