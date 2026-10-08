@@ -61,3 +61,10 @@ Un connecteur futur doit produire une structure de ce type :
 ```
 
 Le pipeline doit refuser les EAN invalides ou non traçables à une source.
+
+
+## Résolution automatique Open Food Facts
+
+Le moteur peut relever un `eanSuggestion` validé par checksum et référencé dans Open Food Facts. Il **ne transforme jamais cette suggestion en `eans` exacts** : la source communautaire identifie le produit mais ne démontre pas que l'enseigne le propose dans une promotion. Seule une fiche catalogue ou produit du distributeur, reliant explicitement la promotion à cette variante, permet d'enrichir le registre exact.
+
+Une recherche OFF dont les résultats sont paginés n'est pas considérée comme exhaustive. Une marque absente ou une correspondance de nom seule ne suffit pas à établir la référence officielle.
