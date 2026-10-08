@@ -8,7 +8,7 @@ test("les sources de découverte ont des IDs, preuves et liens utilisables",()=>
   const ids=providers.map((source)=>source.id);
   assert.equal(new Set(ids).size,ids.length);
   for(const source of providers.filter((s)=>s.discoveryVerifiedAt)){
-    assert.match(source.discoveryVerifiedAt,/^2026-10-08$/);
+    assert.match(source.discoveryVerifiedAt,/^2026-10-(?:08|09)$/);
     assert.ok(source.verificationUrl.startsWith("https://"));
   }
 });
@@ -17,7 +17,7 @@ test("l'annuaire alimentaire inclut dons, essais gratuits et enseignes tierces",
   const sources=filterDiscoveryProviders(providers,{scope:"food"});
   const ids=sources.map((s)=>s.id);
   for(const id of ["carrefour-testeurs","geev","hophopfood","lidl-plus","carte-u",
-    "auchan-waaoh","intermarche-app","nous-antigaspi","trnd","home-tester-club","thefork","soliguide","linkee-etudiants"]){
+    "auchan-waaoh","intermarche-app","nous-antigaspi","trnd","home-tester-club","thefork","soliguide","linkee-etudiants","quoty","sampleo","the-insiders"]){
     assert.ok(ids.includes(id),id);
   }
   assert.equal(ids.includes("veepee"),false);
@@ -64,4 +64,37 @@ test("refuse un service non alimentaire sans seuil prouvé ou lien invalide",()=
     {id:"bad-free",name:"Bad free",segment:"food",url:"https://example.com",potentialFree:true,advertisedMaxPercent:100}
   ];
   assert.ok(validateDiscoveryProviders(invalid).length>=3);
+});
+
+test("le filtre gratuit distingue tests et dons de cashback sur ticket",()=>{
+  const ids=filterDiscoveryProviders(providers,{scope:"free-food"}).map((s)=>s.id);
+  for(const id of ["carrefour-testeurs","geev","hophopfood","trnd",
+    "home-tester-club","sampleo","the-insiders","linkee-etudiants","soliguide"]){
+    assert.ok(ids.includes(id),id);
+  }
+  for(const id of ["quoty","shopmium","veepee","thefork"]){
+    assert.equal(ids.includes(id),false,id);
+  }
+});
+
+test("le filtre remboursement liste Quoty sans le déclarer vérifié",()=>{
+  const ids=filterDiscoveryProviders(providers,{scope:"food-odr"}).map((s)=>s.id);
+  for(const id of ["quoty","shopmium","coupon-network","ebuyclub","belle-adresse"]){
+    assert.ok(ids.includes(id),id);
+  }
+  assert.equal(ids.includes("sampleo"),false);
+  assert.equal(ids.includes("veepee"),false);
+  assert.equal(ids.includes("geev"),false);
+  const quoty=providers.find((s)=>s.id==="quoty");
+  assert.equal(quoty.discoveryStatus,"unconfirmed");
+  assert.equal(quoty.discoveryVerifiedAt,undefined);
+  assert.equal(quoty.savingPercent,undefined);
+});
+
+test("le catalogue refuse une fiche marquée vérifiée si son activité est non confirmée",()=>{
+  const invalid=[{
+    id:"uncertain",name:"Exemple",url:"https://example.com",
+    discoveryStatus:"unconfirmed",discoveryVerifiedAt:"2026-10-09"
+  }];
+  assert.ok(validateDiscoveryProviders(invalid).some((msg)=>msg.includes("non confirmée")));
 });

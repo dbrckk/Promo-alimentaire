@@ -77,6 +77,14 @@ try{
   assert.match(await page.locator("#providers").innerText(),/MonAvisLeRendGratuit/);
   assert.match(await page.locator("#providers").innerText(),/HopHopFood/);
   assert.doesNotMatch(await page.locator("#providers").innerText(),/Showroomprivé/);
+  await page.locator("#sourceScope").selectOption("free-food");
+  assert.match(await page.locator("#providers").innerText(),/Sampleo/);
+  assert.match(await page.locator("#providers").innerText(),/The Insiders/);
+  assert.doesNotMatch(await page.locator("#providers").innerText(),/Quoty/);
+  await page.locator("#sourceScope").selectOption("food-odr");
+  assert.match(await page.locator("#providers").innerText(),/Quoty/);
+  assert.match(await page.locator("#providers").innerText(),/Activité récente non confirmée/);
+  assert.doesNotMatch(await page.locator("#providers").innerText(),/Sampleo/);
   await page.locator("#sourceScope").selectOption("other-50");
   assert.match(await page.locator("#providers").innerText(),/Veepee/);
   assert.match(await page.locator("#providers").innerText(),/Showroomprivé/);
@@ -86,6 +94,7 @@ try{
   await page.locator("#sourceSearch").fill("");
   await page.locator("#sourceScope").selectOption("food");
   await assertNoHorizontalOverflow(page,"annuaire de sources");
+  await page.screenshot({path:OUT+"/06-sources-alimentaires.png",fullPage:true});
   await page.locator('[data-tab="offers"]').click();
 
   await page.locator("#channel").selectOption("drive");
@@ -130,9 +139,16 @@ try{
   });
   await page.locator("#manualPriceDate").fill(localDate);
   await page.locator("#manualPriceSubmit").click();
-  await page.getByText("Relevé personnel non vérifié").first().waitFor({timeout:8000});
-  assert.match(await page.locator("#manualPriceEntries").innerText(),/2,69/);
-  assert.match(await page.locator("#basketComparison").innerText(),/Budget indicatif/);
+  // Wait for the actual save result instead of brittle wording in a distant card.
+  await page.locator("#manualPriceStatus").filter({hasText:/\S/}).waitFor({timeout:8000});
+  const manualSaveStatus=await page.locator("#manualPriceStatus").innerText();
+  assert.match(manualSaveStatus,/Prix personnel enregistré/,"Enregistrement relevé : "+manualSaveStatus);
+  const manualEntry=await page.locator("#manualPriceEntries").innerText();
+  assert.match(manualEntry,/2,69/);
+  assert.match(manualEntry,/Relevé personnel · non vérifié/);
+  // A private shelf observation must remain clearly identified; a verified
+  // Open Prices observation may still be selected instead for the basket.
+  assert.match(await page.locator("#basketComparison").innerText(),/Confiance|Comparaison/);
   await assertNoHorizontalOverflow(page,"relevé manuel");
   await page.screenshot({path:OUT+"/05-releve-manuel.png",fullPage:true});
   await page.locator("#channel").selectOption("drive");
