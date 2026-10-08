@@ -710,3 +710,31 @@ test("un prix promo annule l'ODR Coupon Network potentielle sur le même produit
   assert.equal(regular.potentialProductSaving,2);
   assert.equal(regular.lines[0].incompatibleCouponCount,0);
 });
+
+
+test("une promotion immédiate reste candidate si le prix normal observé a plus de 7 jours",()=>{
+  const p={code:"3038359913242",name:"Pâtes Panzani",brands:"Panzani",categories:[]};
+  const promo={
+    id:"carrefour-active",scope:"produit",stores:["carrefour"],
+    eans:[p.code],savingPercent:30,autoStack:true,
+    mechanism:"retailer_promo",stackGroup:"retailer-promo",
+    sourceRegularPrice:1.59,sourcePromoPrice:1.11
+  };
+  const now=new Date("2026-10-08T12:00:00Z");
+  const stale=evaluateBasketStore([{product:p,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{[p.code]:[{price:1.59,date:"2026-09-25"}]},
+    offers:[promo],now
+  });
+  assert.equal(stale.finalCost,1.59);
+  assert.equal(stale.guaranteedSaving,0);
+  assert.equal(stale.potentialProductSaving,0.48);
+  assert.equal(stale.lines[0].retailerPromoAgeWarning,true);
+  const recent=evaluateBasketStore([{product:p,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{[p.code]:[{price:1.59,date:"2026-10-07"}]},
+    offers:[promo],now
+  });
+  assert.equal(recent.guaranteedSaving,0.48);
+  assert.equal(recent.lines[0].retailerPromoAgeWarning,false);
+});
