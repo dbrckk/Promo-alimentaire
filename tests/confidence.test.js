@@ -39,3 +39,20 @@ test("un prix d'un autre canal pénalise la confiance",()=>{
   assert.equal(result.priceChannelReliable,false);
   assert.ok(result.score<85);
 });
+
+
+test("un prix saisi manuellement ne gagne pas de points de preuve externe",()=>{
+  const scenario={
+    distinctCount:1,pricedCount:1,locationReliable:false,
+    location:{name:"Carrefour Chalon"},
+    priceChannelReliable:true,
+    lines:[{
+      missingPrice:false,
+      bestPrice:{price:2,date:"2026-10-08",proofType:"manual",source:"manual"}
+    }]
+  };
+  const result=scoreBasketConfidence(scenario,{now:new Date("2026-10-08T18:00:00Z")});
+  assert.equal(result.parts.proof,0);
+  assert.equal(result.priceChannelReliable,false);
+  assert.ok(result.score<70);
+});
