@@ -64,7 +64,7 @@ try{
     throw new Error("le champ sources doit être un objet");
   }
   for(const [provider,source] of Object.entries(status.sources)){
-    if(!provider || !["updated","unavailable"].includes(source?.status)
+    if(!provider || !["updated","partial","unavailable"].includes(source?.status)
       || !Number.isFinite(new Date(source?.checkedAt).getTime())
       || !Number.isInteger(source?.extractedCount) || source.extractedCount<0
       || !Number.isInteger(source?.previousSnapshotCount) || source.previousSnapshotCount<0
