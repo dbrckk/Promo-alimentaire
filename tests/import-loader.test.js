@@ -262,3 +262,46 @@ test("les diagnostics par enseigne priment sur le fichier historique partagé",a
   assert.equal(result.sourceStats[0].syncState.status,"partial");
   assert.equal(result.sourceStats[0].syncState.reason,"Nouvel état vérifié");
 });
+
+
+test("une source indisponible conserve un indicateur indépendant de révision proche",async()=>{
+  const today=new Date("2026-10-08T12:00:00Z");
+  const sourceOffers=[{
+    providerId:"leclerc",externalId:"candidate",title:"Ticket test",
+    stores:["leclerc"],scope:"produit",savingPercent:20,
+    verifiedAt:"2026-10-07",reviewAfter:"2026-10-09",
+    sourceUrl:"https://www.e.leclerc/"
+  }];
+  const fetchImpl=async(url)=>{
+    const name=String(url);
+    if(name.endsWith("/index.json")){
+      return {ok:true,json:async()=>({files:["leclerc-auto.json"]})};
+    }
+    if(name.endsWith("/source-sync-leclerc.json")){
+      return {ok:true,json:async()=>({sources:{leclerc:{
+        status:"unavailable",checkedAt:"2026-10-08T14:08:55Z",
+        reason:"Pages catalogue indisponibles",
+        extractedCount:0,previousSnapshotCount:5
+      }}})};
+    }
+    if(name.endsWith("/leclerc-auto.json")){
+      return {ok:true,json:async()=>sourceOffers};
+    }
+    return {ok:false,status:404};
+  };
+  const current=await loadImportedOffers({fetchImpl,now:today});
+  assert.equal(current.offers.length,1);
+  const stat=current.sourceStats[0];
+  assert.equal(stat.status,"sync-warning");
+  assert.equal(stat.validityStatus,"review-soon");
+  assert.equal(stat.nextDeadline,"2026-10-09");
+  assert.equal(stat.syncState.confirmedCount,0);
+  assert.equal(stat.syncState.previousSnapshotCount,5);
+
+  const expired=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-11T12:00:00Z")
+  });
+  assert.equal(expired.offers.length,0);
+  assert.equal(expired.sourceStats[0].status,"stale");
+  assert.equal(expired.sourceStats[0].validityStatus,"stale");
+});
