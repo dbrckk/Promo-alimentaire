@@ -10,6 +10,7 @@ export function createHistoryEntry({
 }={}) {
   const best=[...scenarios]
     .filter((scenario)=>scenario?.isComplete && scenario?.locationReliable && scenario?.priceChannelReliable!==false)
+    .filter((scenario)=>typeof scenario.finalCost==="number" && Number.isFinite(scenario.finalCost) && scenario.finalCost>=0)
     .filter((scenario)=>scenarioLocationIdentity(scenario)!==null)
     .sort((a,b)=>a.finalCost-b.finalCost)[0] || null;
   const basketSignature=basketContentSignature(shoppingList);
@@ -51,7 +52,7 @@ export function historyTrend(history) {
   // Only compare the same basket, purchase channel, radius and physical store.
   // Legacy entries without a context key cannot establish a reliable trend.
   const values=(history || [])
-    .filter((entry)=>Number.isFinite(entry?.bestFinalCost))
+    .filter((entry)=>typeof entry?.bestFinalCost==="number" && Number.isFinite(entry.bestFinalCost) && entry.bestFinalCost>=0)
     .filter((entry)=>entry?.nearbyEnabled===true && entry?.channel==="store")
     .filter((entry)=>Boolean(entry?.basketSignature && entry?.contextKey && entry?.bestLocationKey))
     .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
@@ -60,7 +61,7 @@ export function historyTrend(history) {
   const previous=values.find((entry)=>
     entry.id!==latest.id
     && entry.contextKey===latest.contextKey
-    && new Date(entry.createdAt)<new Date(latest.createdAt)
+    && new Date(entry.createdAt).toISOString().slice(0,10)<new Date(latest.createdAt).toISOString().slice(0,10)
   );
   if(!previous) return null;
   const delta=round(latest.bestFinalCost-previous.bestFinalCost);
@@ -131,8 +132,8 @@ function historyId(date,shoppingList,channel="store",contextKey=null){
     .map((item)=>`${item.product?.code || "?"}x${Number(item.quantity)||1}`)
     .sort()
     .join("|");
-  const minute=new Date(date).toISOString().slice(0,16);
-  return `${minute}:${channel}:${codes}:${contextKey || "no-context"}`;
+  const timestamp=new Date(date).toISOString();
+  return `${timestamp}:${channel}:${codes}:${contextKey || "no-context"}`;
 }
 
 function round(value){
