@@ -323,7 +323,7 @@ export function observationLocationKey(observation) {
   // are present. A generic chain name alone is not a physical store identity.
   const name=String(observation.storeName || "").trim().toLocaleLowerCase("fr");
   const postcode=String(observation.postcode || "").trim();
-  if(!name || !/^\\d{5}$/.test(postcode)) return null;
+  if(!name || !/^\d{5}$/.test(postcode)) return null;
   return `text:${name}|${postcode}`;
 }
 
