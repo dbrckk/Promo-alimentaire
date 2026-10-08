@@ -64,7 +64,8 @@ try{
       {timeout:12000}
     );
     assert.match(await page.locator("#sourceHealth").textContent(),/Coupon Network/i);
-    assert.match(await page.locator("#sourceHealth").textContent(),/échéance/);
+    assert.match(await page.locator("#sourceHealth").textContent(),/échéance|révision/i);
+    assert.match(await page.locator("#sourceHealth").textContent(),/Offres reconfirmées/i);
   }
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.screenshot({path:OUT+"/01-offres.png",fullPage:true});
@@ -78,6 +79,8 @@ try{
   await page.locator('#barcodeForm button[type="submit"]').click();
   await page.locator("#productResult h2").waitFor({timeout:10000});
   assert.match(await page.locator("#productResult").innerText(),/Pâte à tartiner témoin/);
+  await page.locator("#priceResults").getByText("Dernier prix observé",{exact:false}).waitFor({timeout:10000});
+  assert.match(await page.locator("#priceResults").innerText(),/Observation du/i);
   await page.locator('[data-action="add-current-product"]').click();
   await page.locator('[data-tab="list"]').click();
   assert.match(await page.locator("#shoppingListItems").innerText(),/Pâte à tartiner témoin/);
@@ -85,6 +88,7 @@ try{
   await page.locator("#refreshList").click();
   await page.locator("#refreshList").waitFor({state:"visible"});
   await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,{timeout:15000});
+  assert.match(await page.locator("#basketComparison").innerText(),/Relevé du/i);
   await assertNoHorizontalOverflow(page,"liste de courses");
   await page.screenshot({path:OUT+"/02-panier.png",fullPage:true});
 
