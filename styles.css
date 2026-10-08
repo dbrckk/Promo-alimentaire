@@ -302,3 +302,21 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 
 .price-age-note{font-size:.67rem;color:var(--muted);margin:4px 0 5px;line-height:1.45}
 .price-age-note.outdated{color:#8a6500;font-weight:650}
+
+/* Private, non-verified shelf-price notes */
+.manual-price-panel{margin:10px 0 14px;padding:13px}
+.manual-price-panel summary{font-size:.85rem;font-weight:800;cursor:pointer;color:var(--brand)}
+.manual-price-panel summary:focus-visible{outline:2px solid var(--brand);outline-offset:4px}
+.manual-price-panel>.help{margin:9px 0;color:var(--muted)}
+.manual-price-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end}
+.manual-price-form .field{min-width:0}
+.manual-price-form .field input,.manual-price-form .field select{width:100%;min-width:0}
+.manual-price-form>button{min-height:40px}
+.manual-price-entries{display:grid;gap:7px;margin-top:12px}
+.manual-price-entry{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px}
+.manual-price-entry-main{display:grid;gap:3px;min-width:0}
+.manual-price-entry-main strong{font-size:.76rem}
+.manual-price-entry-main span{font-size:.68rem;color:var(--muted)}
+.manual-price-entry button{padding:6px 9px;border-radius:8px}
+@media(max-width:760px){.manual-price-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.manual-price-form{grid-template-columns:1fr}.manual-price-entry{align-items:flex-start}}
