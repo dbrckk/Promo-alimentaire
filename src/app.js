@@ -1456,9 +1456,11 @@ function renderBasketScenario(scenario){
       <div class="scenario-summary">
         <div><span>Prix caisse estimé</span><strong>${money.format(scenario.checkoutCost ?? scenario.observedSubtotal)}</strong></div>
         <div><span>Cagnotte fidélité</span><strong>+${money.format(scenario.loyaltyCredit||0)}</strong></div>
+        <div><span>Remboursement différé</span><strong>+${money.format(scenario.deferredRefund||0)}</strong></div>
         <div><span>Économie validée totale</span><strong>−${money.format(scenario.guaranteedSaving)}</strong></div>
         <div><span>${totalLabel}</span><strong>${money.format(scenario.finalCost)}</strong></div>
       </div>
+      ${scenario.deferredRefund>0?'<p class="help">Le remboursement différé est pris en compte dans le coût économique, pas dans le montant payé en caisse. Vérifie les justificatifs et délais de demande.</p>':""}
       ${levers}
       <div class="scenario-lines">${lines}</div>
       <p class="help">${basketRoute}</p>
