@@ -152,6 +152,42 @@
         <p class="help">La liste de produits et les quantités sont enregistrées sur cet appareil. La position, elle, n'est jamais persistée.</p>
         <div id="listStatus" class="status" aria-live="polite"></div>
       </div>
+      <details id="manualPricePanel" class="panel manual-price-panel">
+        <summary>Ajouter un prix relevé en magasin (sans données Open Prices)</summary>
+        <p class="help">Note le tarif affiché ou payé dans un magasin précis. Le relevé reste sur ce téléphone et expire après 30 jours. Ce n'est ni une preuve officielle ni une promotion garantie ; aucun cumul n'est automatiquement déduit de ce prix.</p>
+        <form id="manualPriceForm" class="manual-price-form">
+          <div class="field">
+            <label for="manualPriceProduct">Produit de la liste</label>
+            <select id="manualPriceProduct" required></select>
+          </div>
+          <div class="field">
+            <label for="manualPriceStore">Enseigne</label>
+            <select id="manualPriceStore" required>
+              <option value="carrefour">Carrefour</option>
+              <option value="leclerc">E.Leclerc</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="manualPriceAmount">Prix unitaire constaté (€)</label>
+            <input id="manualPriceAmount" type="number" min="0.01" max="10000" step="0.01" inputmode="decimal" placeholder="2,69" required />
+          </div>
+          <div class="field">
+            <label for="manualPriceStoreName">Nom du magasin physique</label>
+            <input id="manualPriceStoreName" type="text" minlength="3" maxlength="90" placeholder="Ex. E.Leclerc Chalon Nord" autocomplete="off" required />
+          </div>
+          <div class="field">
+            <label for="manualPricePostcode">Code postal du magasin</label>
+            <input id="manualPricePostcode" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="71100" required />
+          </div>
+          <div class="field">
+            <label for="manualPriceDate">Date du relevé</label>
+            <input id="manualPriceDate" type="date" required />
+          </div>
+          <button id="manualPriceSubmit" class="primary" type="submit">Enregistrer le relevé</button>
+        </form>
+        <div id="manualPriceStatus" class="status" aria-live="polite"></div>
+        <div id="manualPriceEntries" class="manual-price-entries"></div>
+      </details>
       <div id="priceAlerts" class="price-alerts"></div>
       <div id="shoppingListItems" class="shopping-list"></div>
       <div id="basketComparison" class="basket-comparison"></div>
