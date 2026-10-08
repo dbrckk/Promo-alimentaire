@@ -105,12 +105,12 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
   for(const stat of sourceStats){
     const sync=(stat.providerIds || [])
       .map((providerId)=>syncSources[providerId])
-      .find((entry)=>entry?.status==="unavailable"
+      .find((entry)=>["unavailable","partial"].includes(entry?.status)
         && typeof entry.checkedAt==="string"
         && Number.isFinite(new Date(entry.checkedAt).getTime()));
     if(!sync) continue;
     stat.syncState={
-      status:"unavailable",
+      status:sync.status,
       checkedAt:sync.checkedAt,
       reason:String(sync.reason || "Actualisation publique indisponible").slice(0,220)
     };
