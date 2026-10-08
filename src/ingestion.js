@@ -127,7 +127,9 @@ export function normalizeImportedOffer(raw) {
       stackOrder:Number.isFinite(Number(value.stackOrder)) ? Number(value.stackOrder) : 50,
       savingBasis:value.savingBasis==="base" ? "base" : "current",
       autoStack:value.autoStack===true
-        && (scope!=="produit" || (eans.length>0 && Boolean(eanEvidenceUrl)))
+        && (scope==="panier"
+          ? trustedImportedGiftCard({value,stores,sourceUrl,verifiedAt,reviewAfter,savingPercent,savingAmount})
+          : scope==="produit" && eans.length>0 && Boolean(eanEvidenceUrl))
         && value.requiresStoreVerification!==true
         && value.requiresChannelPriceVerification!==true
         && value.multiReference!==true
@@ -141,6 +143,52 @@ export function normalizeImportedOffer(raw) {
       }
     }
   };
+}
+
+// The JSON flag autoStack cannot grant arbitrary imported basket discounts.
+// Only dated, traceable, first-party gift-card listings are eligible.
+export function trustedImportedGiftCard({
+  value,
+  stores=[],
+  sourceUrl=null,
+  verifiedAt=null,
+  reviewAfter=null,
+  savingPercent=null,
+  savingAmount=null
+}={}){
+  const hosts={
+    "fidme-courses":"fidme.com",
+    widilo:"widilo.fr",
+    ebuyclub:"ebuyclub.com",
+    poulpeo:"poulpeo.com"
+  };
+  const expectedHost=hosts[value?.providerId];
+  if(!expectedHost || value?.mechanism!=="gift_card"
+    || value?.scope!=="panier" || value?.stackGroup!=="payment-discount"){
+    return false;
+  }
+  if(stores.length!==1 || !["carrefour","leclerc"].includes(stores[0])){
+    return false;
+  }
+  if(!Array.isArray(value.channels)
+    || value.channels.length!==1 || value.channels[0]!=="store"){
+    return false;
+  }
+  if(!Number.isFinite(savingPercent) || savingPercent<=0 || savingPercent>15
+    || Number.isFinite(savingAmount)){
+    return false;
+  }
+  let hostname;
+  try{hostname=new URL(sourceUrl).hostname.toLocaleLowerCase("en");}
+  catch{return false;}
+  if(hostname!==expectedHost && !hostname.endsWith("."+expectedHost)){
+    return false;
+  }
+  if(!verifiedAt || !reviewAfter) return false;
+  const from=new Date(String(verifiedAt).slice(0,10)+"T00:00:00Z");
+  const until=new Date(String(reviewAfter).slice(0,10)+"T00:00:00Z");
+  const days=(until-from)/(24*60*60*1000);
+  return Number.isFinite(days) && days>=0 && days<=14;
 }
 
 export function validateImportBatch(records) {
