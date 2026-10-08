@@ -238,3 +238,10 @@ Toutes ces règles disposent de tests exécutés dans `npm run verify`.
 Le [guide de test Android](docs/MOBILE_TESTING.md) décrit le parcours navigateur automatisé, les captures de CI et les vérifications à réaliser sur un vrai smartphone (caméra, GPS, PWA installée et hors ligne). Le scénario Chromium imite un écran Android mais ne constitue pas un test matériel.
 
 Le registre Carrefour intègre 11 références avec GTIN lié à une fiche produit et prix affiché sur celle-ci. Les offres restent indicatives pour le Drive/livraison tant que le magasin n'a pas confirmé son prix. Les fiches peuvent répondre HTTP 403 à GitHub Actions : en cas d'échec, les dates de vérification **ne sont pas prolongées**. E.Leclerc : les candidats GTIN Open Food Facts sont conservés comme suggestions, non comme preuves officielles de promotion.
+
+
+### Transparence sur la disponibilité des sources
+
+Les fournisseurs qui bloquent leurs pages publiques ou renvoient des catalogues incomplets apparaissent maintenant dans le panneau de santé des données avec **la date de la dernière tentative** et **le nombre de promotions confirmées**. Une tâche automatisée verte signifie que les contrôles et le traitement ont réussi, **pas** que toutes les remises ont été revalidées. Les dates des offres restent inchangées tant qu'une preuve fournisseur est absente.
+
+Les états Carrefour, E.Leclerc et Coupon Network sont stockés indépendamment afin d'éviter les conflits de synchronisation entre GitHub Actions.
