@@ -275,3 +275,19 @@ Lorsque la couverture Open Prices est insuffisante, l'onglet **Liste** propose u
 - La fonctionnalité reste disponible dans la PWA Android hors ligne après le premier chargement.
 
 Pour vérifier ce parcours automatiquement, consulter le workflow **Android viewport smoke test**, qui produit également une capture `05-releve-manuel.png`.
+
+
+### Plafond de dépenses en caisse
+
+Dans l'onglet **Liste**, indique un budget de courses optionnel (0,01 € à 10 000 €). La valeur reste sur l'appareil et fonctionne hors ligne.
+
+Le calcul compare ce plafond au **montant estimé à régler en caisse**, pas au coût économique après cashback, cagnotte fidélité ou remboursements différés. Ainsi, un remboursement futur ne masque pas un dépassement de trésorerie au moment du passage en caisse.
+
+Chaque enseigne dispose de son propre statut :
+
+- panier complet avec magasin et canal fiables : marge ou dépassement **estimé** ;
+- prix manuels, canal Drive/en ligne ou recherche de prix partielle : résultat **indicatif** ;
+- produit sans prix : aucun message « budget respecté » n'est affiché ;
+- sous-total connu déjà supérieur au budget : alerte de dépassement même si le panier reste incomplet.
+
+Le ticket de caisse réel reste prioritaire. Le comparateur ne réserve pas les prix, ne confirme pas les stocks et n'encaisse aucun paiement.
