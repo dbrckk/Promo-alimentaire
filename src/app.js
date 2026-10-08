@@ -1384,6 +1384,8 @@ function renderBasketComparison(scenarios){
     recommendation='<div class="basket-recommendation"><strong>Recherche Open Prices incomplète.</strong> Une page supplémentaire n’a pas pu être récupérée ; les résultats restent indicatifs et aucun magasin gagnant n’est annoncé.</div>';
   }else if(!state.nearbyEnabled){
     recommendation='<div class="basket-recommendation"><strong>Comparaison locale non activée.</strong> Active « Autour de moi » puis actualise pour comparer des magasins dans le même secteur.</div>';
+  }else if(scenarios.some((scenario)=>scenario.manualPriceCount>0)){
+    recommendation='<div class="basket-recommendation"><strong>Relevé personnel.</strong> Les prix ajoutés par toi servent à estimer un budget ; ils ne constituent pas une preuve commerciale ni un classement fiable des enseignes.</div>';
   }else if(!allComplete){
     recommendation='<div class="basket-recommendation"><strong>Comparaison incomplète.</strong> Au moins une enseigne manque d’un prix récent pour un produit ; aucun gagnant n’est déclaré.</div>';
   }else if(!allLocationsReliable){
@@ -1442,7 +1444,9 @@ function renderStrategySummary(summary){
 
 function renderBasketScenario(scenario){
   const coverageClass=scenario.isComplete ? "coverage-good" : "coverage-warn";
-  const totalLabel=scenario.priceChannelReliable===false
+  const totalLabel=scenario.manualPriceCount>0
+    ? "Budget indicatif"
+    : scenario.priceChannelReliable===false
     ? "Coût effectif indicatif"
     : scenario.isComplete ? "Coût effectif" : "Total partiel";
   const locationText=scenario.location
@@ -1510,6 +1514,7 @@ function renderBasketScenario(scenario){
       : "";
     return `<div class="scenario-line-wrap">
       <div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>
+      ${line.manualPrice?'<div class="source"><strong>Prix saisi personnellement — non vérifié.</strong> Aucun cumul automatique sur cette référence.</div>':""}
       ${priceObservationNote}
       ${line.alreadyRetailDiscounted?'<div class="source">Prix observé déjà remisé en magasin : promotion enseigne non déduite une seconde fois.</div>':""}
       ${line.retailerPromoPriceConflict?'<div class="source">Prix observé différent du tarif normal annoncé : promotion catalogue non redéduite sans nouvelle vérification.</div>':""}
@@ -1585,6 +1590,7 @@ function renderBasketScenario(scenario){
         <div class="${coverageClass} source">${scenario.pricedCount}/${scenario.distinctCount} références avec prix récent</div>
         <div class="badges">
           ${locationWarning}
+          ${scenario.manualPriceCount>0?'<span class="badge warn">Relevé personnel non vérifié</span>':""}
           ${scenario.priceChannelReliable===false
             ? `<span class="badge warn">${state.channel==="store"?"recherche de prix partielle":"prix magasin indicatif pour ce canal"}</span>`
             : ""}
