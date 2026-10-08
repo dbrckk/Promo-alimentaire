@@ -195,3 +195,19 @@ Le workflow respecte volontairement un rythme inférieur aux limites documentée
 ## Promotions multi-achats
 
 Les valeurs affichées comme `2+1 offert`, `-X % sur le 2e` ou prix de lot sont représentées par une formule explicite et recalculées selon la quantité réellement présente dans le panier. Un pourcentage moyen n'est jamais extrapolé aux unités hors groupe promotionnel.
+
+
+## Coupon Network — indisponibilité des pages publiques (8 octobre 2026)
+
+Le dernier synchroniseur a reçu **0 offre exploitable** : le site public présente des offres dynamiques et le flux historique `index.rss` renvoie HTTP 404.
+
+- Le synchroniseur ne remplace **jamais** une collection valide par une liste vide ou brutalement incomplète.
+- En cas d'indisponibilité, il conserve le fichier et ses dates de vérification **inchangés** ; les offres expirent normalement à la date de révision.
+- GitHub Actions émet un avertissement et un résumé indiquant explicitement « source non réactualisée ».
+- Pour diagnostiquer volontairement un échec d'extraction en ligne de commande : `npm run sync:coupon-network -- --strict-source` (statut d'échec, aucune publication).
+- Les offres Coupon Network doivent être **activées avant l'achat**. Les réductions magasin sur le même produit ne sont normalement pas cumulables avec le remboursement Coupon Network, contrairement à certains avantages de carte fidélité.
+- Les achats Drive et livraison nécessitent une **facture**, et pas un simple bon de commande.
+
+Conditions officielles : <https://www.couponnetwork.fr/contact-us> et <https://www.couponnetwork.fr/conditions-generales-utilisation>.
+
+Les offres dont la source publique n'est pas vérifiable restent des opportunités à contrôler dans le service d'origine ; la date du manifeste global ne constitue pas une nouvelle preuve individuelle.
