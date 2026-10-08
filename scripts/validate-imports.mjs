@@ -6,7 +6,9 @@ import { validatePaymentRateSafety } from "../src/adapters/payment-discounts.js"
 const directory=new URL("../data/import/",import.meta.url);
 let files=[];
 try{
-  files=(await readdir(directory)).filter((name)=>name.endsWith(".json") && name!=="index.json").sort();
+  files=(await readdir(directory))
+    .filter((name)=>name.endsWith(".json") && !["index.json","source-sync-status.json"].includes(name))
+    .sort();
 }catch(error){
   if(error.code!=="ENOENT") throw error;
 }
@@ -52,6 +54,28 @@ for(const file of files){
       console.log(`[import] ${file}: ${result.normalized.length} offre(s) valides`);
     }
   }
+}
+
+// Sync diagnostics are metadata, not a batch of product offers.
+try{
+  const status=JSON.parse(await readFile(new URL("source-sync-status.json",directory),"utf8"));
+  if(!status || typeof status!=="object" || Array.isArray(status)
+    || !status.sources || typeof status.sources!=="object" || Array.isArray(status.sources)){
+    throw new Error("le champ sources doit être un objet");
+  }
+  for(const [provider,source] of Object.entries(status.sources)){
+    if(!provider || !["updated","unavailable"].includes(source?.status)
+      || !Number.isFinite(new Date(source?.checkedAt).getTime())
+      || !Number.isInteger(source?.extractedCount) || source.extractedCount<0
+      || !Number.isInteger(source?.previousSnapshotCount) || source.previousSnapshotCount<0
+      || typeof source?.reason!=="string"){
+      throw new Error("statut de synchronisation invalide : "+provider);
+    }
+  }
+  console.log("[sync-health] "+Object.keys(status.sources).length+" statut(s) source valide(s)");
+}catch(error){
+  failed=true;
+  console.error("[sync-health] Métadonnées invalides : "+error.message);
 }
 
 console.log(`[import] ${files.length} fichier(s), ${total} offre(s) examinées`);
