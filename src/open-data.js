@@ -62,8 +62,11 @@ export async function fetchPricesByBarcode(value,{store,size=100,coords=null,rad
   if(!response.ok) throw new Error(`Open Prices indisponible (${response.status}).`);
   const payload=await response.json();
   const matcher=STORE_MATCHERS[store] || /.*/;
-  const observations=(payload?.items || [])
+  const observations=(Array.isArray(payload?.items) ? payload.items : [])
     .map((item)=>normalizePriceObservation(item,coords))
+    .filter((item)=>String(item.productCode)===code)
+    .filter((item)=>item.currency==="EUR")
+    .filter((item)=>Number.isFinite(item.price) && item.price>0)
     .filter((item)=>matcher.test(item.retailerText))
     .sort((a,b)=>{
       if(coords){
@@ -81,9 +84,12 @@ export function normalizePriceObservation(item,originCoords=null) {
   const retailerText=[
     location.osm_brand,location.osm_name,location.osm_display_name,location.osm_tag_value
   ].filter(Boolean).join(" · ");
-  const locationLat=Number(location.osm_lat);
-  const locationLon=Number(location.osm_lon);
-  const hasLocation=Number.isFinite(locationLat) && locationLat>=-90 && locationLat<=90
+  const latPresent=location.osm_lat!==null && location.osm_lat!==undefined && location.osm_lat!=="";
+  const lonPresent=location.osm_lon!==null && location.osm_lon!==undefined && location.osm_lon!=="";
+  const locationLat=latPresent ? Number(location.osm_lat) : NaN;
+  const locationLon=lonPresent ? Number(location.osm_lon) : NaN;
+  const hasLocation=latPresent && lonPresent
+    && Number.isFinite(locationLat) && locationLat>=-90 && locationLat<=90
     && Number.isFinite(locationLon) && locationLon>=-180 && locationLon<=180;
   const distanceKm=originCoords && hasLocation
     ? haversineKm(
@@ -103,8 +109,13 @@ export function normalizePriceObservation(item,originCoords=null) {
     productName:item.product_name || item?.product?.product_name || "",
     price:Number(item.price),
     currency:item.currency || "EUR",
-    isDiscounted:Boolean(item.price_is_discounted),
-    priceWithoutDiscount:Number.isFinite(Number(item.price_without_discount)) ? Number(item.price_without_discount) : null,
+    isDiscounted:item.price_is_discounted===true || item.price_is_discounted===1,
+    priceWithoutDiscount:item.price_without_discount!==null
+      && item.price_without_discount!==undefined
+      && item.price_without_discount!==""
+      && Number.isFinite(Number(item.price_without_discount))
+      && Number(item.price_without_discount)>0
+      ? Number(item.price_without_discount) : null,
     discountType:item.discount_type || null,
     date:item.date || item.updated || item.created || null,
     retailerText,
