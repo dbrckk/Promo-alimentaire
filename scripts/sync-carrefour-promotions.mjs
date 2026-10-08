@@ -1,5 +1,6 @@
 import { readFile,writeFile } from "node:fs/promises";
 import { verifyCarrefourPromotionPage } from "../src/adapters/carrefour-promotions.js";
+import {writeSourceSyncStatus} from "./source-sync-status.mjs";
 
 const SNAPSHOT_URL=new URL("../data/import/carrefour-promotions-auto.json",import.meta.url);
 const write=process.argv.includes("--write");
@@ -69,6 +70,18 @@ if(write && changed>0){
   await writeFile(SNAPSHOT_URL,JSON.stringify(next,null,2)+"\n","utf8");
   console.log("[carrefour] snapshot rafraîchi.");
 }
+await writeSourceSyncStatus("carrefour",{
+  status:confirmed===offers.length?"updated":confirmed===0?"unavailable":"partial",
+  reason:confirmed===offers.length
+    ? "Toutes les pages ont conservé leurs preuves EAN et tarifaires."
+    : confirmed===0
+      ? unavailable===offers.length
+        ? "Aucune page Carrefour accessible, dernière vérification impossible."
+        : "Aucune promotion complète confirmée par la source publique."
+      : "Seulement "+confirmed+"/"+offers.length+" promotions ont été reconfirmées.",
+  extractedCount:confirmed,
+  previousSnapshotCount:offers.length
+},{write});
 
 function addDays(iso,days){
   const date=new Date(iso+"T12:00:00Z");
