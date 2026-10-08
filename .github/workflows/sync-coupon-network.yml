@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "23 5 * * 1,4"
   workflow_dispatch:
+  push:
+    paths:
+      - "scripts/sync-coupon-network.mjs"
+      - "src/adapters/coupon-network.js"
+      - "tests/coupon-network.test.js"
+      - ".github/workflows/sync-coupon-network.yml"
 
 permissions:
   contents: write
