@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { filterActiveOffers, isOfferActive, normalizeImportedOffer, validateImportBatch } from "../src/ingestion.js";
+import { filterActiveOffers, isOfferActive, normalizeImportedOffer, trustedImportedGiftCard, validateImportBatch } from "../src/ingestion.js";
 
 const valid={
   providerId:"provider",
@@ -240,7 +240,7 @@ test("un produit importé sans EAN prouvé ne peut pas se déclarer cumulable au
   assert.equal(exact.ok,true);
   assert.equal(exact.value.autoStack,true);
   const card=normalizeImportedOffer({...base,scope:"panier"});
-  assert.equal(card.value.autoStack,true);
+  assert.equal(card.value.autoStack,false);
 });
 
 
@@ -253,4 +253,49 @@ test("filterActiveOffers retire une offre dès sa revue dépassée sans recharge
   ];
   const result=filterActiveOffers(input,new Date("2026-10-08T12:00:00"));
   assert.deepEqual(result.map((offer)=>offer.id),["live","permanent"]);
+});
+
+
+test("seule une carte cadeau traçable et récente peut être automatiquement appliquée",()=>{
+  const raw={
+    providerId:"widilo",
+    externalId:"carrefour-current",
+    title:"Carte cadeau Carrefour 4%",
+    stores:["carrefour"],
+    channels:["store"],
+    scope:"panier",
+    savingPercent:4,
+    sourceUrl:"https://www.widilo.fr/bon-d-achat/carrefour",
+    verifiedAt:"2026-10-07",
+    reviewAfter:"2026-10-14",
+    mechanism:"gift_card",
+    stackGroup:"payment-discount",
+    autoStack:true
+  };
+  const valid=normalizeImportedOffer(raw);
+  assert.equal(valid.ok,true);
+  assert.equal(valid.value.autoStack,true);
+
+  const suspicious=[
+    {...raw,sourceUrl:"https://widilo.fr.evil.example/offre"},
+    {...raw,savingPercent:44},
+    {...raw,reviewAfter:"2026-11-28"},
+    {...raw,mechanism:"affiliate_cashback"},
+    {...raw,channels:["online"]},
+    {...raw,stackGroup:"other-group"},
+    {...raw,providerId:"fake-provider"}
+  ];
+  for(const candidate of suspicious){
+    const result=normalizeImportedOffer(candidate);
+    assert.equal(result.ok,true);
+    assert.equal(result.value.autoStack,false);
+  }
+});
+
+test("les cadeaux de sources non approuvées restent des candidats",()=>{
+  assert.equal(trustedImportedGiftCard({
+    value:{providerId:"unverified",scope:"panier",mechanism:"gift_card",stackGroup:"payment-discount"},
+    stores:["carrefour"],sourceUrl:"https://example.com",
+    verifiedAt:"2026-10-07",reviewAfter:"2026-10-14",savingPercent:5
+  }),false);
 });
