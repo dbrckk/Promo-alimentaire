@@ -7,7 +7,7 @@ const directory=new URL("../data/import/",import.meta.url);
 let files=[];
 try{
   files=(await readdir(directory))
-    .filter((name)=>name.endsWith(".json") && !["index.json","source-sync-status.json"].includes(name))
+    .filter((name)=>name.endsWith(".json") && name!=="index.json" && !/^source-sync-(?:status|carrefour|leclerc)\.json$/.test(name))
     .sort();
 }catch(error){
   if(error.code!=="ENOENT") throw error;
@@ -57,8 +57,13 @@ for(const file of files){
 }
 
 // Sync diagnostics are metadata, not a batch of product offers.
+for(const sourceFile of [
+  "source-sync-status.json",
+  "source-sync-carrefour.json",
+  "source-sync-leclerc.json"
+]){
 try{
-  const status=JSON.parse(await readFile(new URL("source-sync-status.json",directory),"utf8"));
+  const status=JSON.parse(await readFile(new URL(sourceFile,directory),"utf8"));
   if(!status || typeof status!=="object" || Array.isArray(status)
     || !status.sources || typeof status.sources!=="object" || Array.isArray(status.sources)){
     throw new Error("le champ sources doit être un objet");
@@ -72,10 +77,11 @@ try{
       throw new Error("statut de synchronisation invalide : "+provider);
     }
   }
-  console.log("[sync-health] "+Object.keys(status.sources).length+" statut(s) source valide(s)");
+  console.log("[sync-health] "+sourceFile+": "+Object.keys(status.sources).length+" statut(s) valide(s)");
 }catch(error){
   failed=true;
-  console.error("[sync-health] Métadonnées invalides : "+error.message);
+  console.error("[sync-health] "+sourceFile+": métadonnées invalides : "+error.message);
+}
 }
 
 console.log(`[import] ${files.length} fichier(s), ${total} offre(s) examinées`);
