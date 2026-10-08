@@ -10,6 +10,7 @@ const SOURCE_URLS=[
 ];
 const OUTPUT_URL=new URL("../data/import/coupon-network-auto.json",import.meta.url);
 const MANIFEST_URL=new URL("../data/import/index.json",import.meta.url);
+const STATUS_URL=new URL("../data/import/source-sync-status.json",import.meta.url);
 const write=process.argv.includes("--write");
 const minOffers=Math.max(10,Number(process.env.MIN_COUPON_NETWORK_OFFERS) || 20);
 const strictSource=process.argv.includes("--strict-source");
@@ -18,7 +19,22 @@ const previous=JSON.parse(await readFile(OUTPUT_URL,"utf8"));
 if(!Array.isArray(previous)) throw new Error("Snapshot Coupon Network précédent invalide.");
 const previousCount=previous.length;
 
+async function recordSyncStatus(status,reason,count){
+  if(!write) return;
+  const state=JSON.parse(await readFile(STATUS_URL,"utf8"));
+  if(!state.sources || typeof state.sources!=="object") state.sources={};
+  state.sources["coupon-network"]={
+    status,
+    checkedAt:new Date().toISOString(),
+    reason:String(reason||"").slice(0,220),
+    extractedCount:count,
+    previousSnapshotCount:previousCount
+  };
+  await writeFile(STATUS_URL,JSON.stringify(state,null,2)+"\n","utf8");
+}
+
 async function sourceUnavailable(reason){
+  await recordSyncStatus("unavailable",reason,0);
   const message="Aucune revalidation : "+reason+
     ". Snapshot précédent conservé sans modifier verifiedAt/reviewAfter ("+
     previousCount+" offres antérieures). L'application les masquera après leur date limite.";
@@ -128,6 +144,7 @@ if(write){
   ];
   await writeFile(MANIFEST_URL,JSON.stringify(manifest,null,2)+"\n","utf8");
   console.log("[coupon-network] snapshot et manifeste mis à jour.");
+  await recordSyncStatus("updated","Données publiques extraites et validées",offers.length);
   if(process.env.GITHUB_STEP_SUMMARY){
     await appendFile(process.env.GITHUB_STEP_SUMMARY,
       "\n### Coupon Network : actualisation validée\n"+
