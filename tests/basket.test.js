@@ -682,3 +682,31 @@ test("une ODR différée est soustraite du coût économique sans diminuer le pr
   assert.equal(scenario.finalCost,7);
   assert.equal(scenario.savingsBreakdown.refundGuaranteed,3);
 });
+
+test("un prix promo annule l'ODR Coupon Network potentielle sur le même produit",()=>{
+  const p={code:"3017624010701",name:"Produit",brands:"Test"};
+  const cn={
+    id:"coupon-network-test",providerId:"coupon-network",
+    provider:"Coupon Network",scope:"produit",stores:["carrefour"],
+    eans:[p.code],savingAmount:2,mechanism:"manufacturer_refund",
+    autoStack:false
+  };
+  const config={
+    store:"carrefour",offers:[cn],now:new Date("2026-10-08T12:00:00Z")
+  };
+  const discounted=evaluateBasketStore([{product:p,quantity:1}],{
+    ...config,priceByCode:{[p.code]:[{
+      price:7,date:"2026-10-07",
+      isDiscounted:true,priceWithoutDiscount:10
+    }]}
+  });
+  assert.equal(discounted.potentialProductSaving,0);
+  assert.equal(discounted.conservativePotentialExtraSaving,0);
+  assert.equal(discounted.lines[0].incompatibleCouponCount,1);
+  assert.equal(discounted.lines[0].matches.length,0);
+  const regular=evaluateBasketStore([{product:p,quantity:1}],{
+    ...config,priceByCode:{[p.code]:[{price:10,date:"2026-10-07"}]}
+  });
+  assert.equal(regular.potentialProductSaving,2);
+  assert.equal(regular.lines[0].incompatibleCouponCount,0);
+});
