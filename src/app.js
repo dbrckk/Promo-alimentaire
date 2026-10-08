@@ -1204,7 +1204,7 @@ function renderComparisonHistory(){
   const trend=historyTrend(state.comparisonHistory);
   const trendHtml=trend
     ? `<div class="history-trend ${trend.direction==="down"?"good":trend.direction==="up"?"bad":""}">${trend.direction==="down"?"Baisse":trend.direction==="up"?"Hausse":"Stable"} de ${money.format(Math.abs(trend.delta))} par rapport à la comparaison valide précédente.</div>`
-    : '<div class="history-trend">Pas encore assez de comparaisons valides pour calculer une tendance.</div>';
+    : '<div class="history-trend">Tendance indisponible : compare le même panier, dans le même magasin physique et le même rayon de proximité. Les anciens historiques sans preuve de magasin ne sont pas comparés.</div>';
 
   els.comparisonHistory.innerHTML=`
     <div class="product-offers-head">
