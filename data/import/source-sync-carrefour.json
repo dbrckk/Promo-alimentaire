@@ -1,3 +1,11 @@
 {
-  "sources": {}
+  "sources": {
+    "carrefour": {
+      "status": "unavailable",
+      "checkedAt": "2026-10-08T14:08:55.786Z",
+      "reason": "Aucune page Carrefour accessible, dernière vérification impossible.",
+      "extractedCount": 0,
+      "previousSnapshotCount": 11
+    }
+  }
 }
