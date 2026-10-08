@@ -70,3 +70,47 @@ test("normalizePageText nettoie les balises",()=>{
     "PROMO : 30%"
   );
 });
+
+
+test("refuse un domaine tiers qui contient l'EAN",()=>{
+  const html='<h1>Fusilli Panzani 500g</h1><p>1,11 € au lieu de 1,59 € PROMO : 30%</p>';
+  const result=verifyCarrefourPromotionPage(html,offer,{
+    sourceUrl:"https://carrefour.fr.evil.example/p/pates-fusilli-panzani-3038359913242"
+  });
+  assert.equal(result.ok,false);
+  assert.ok(result.reasons.includes("EAN absent de l'URL produit Carrefour"));
+});
+
+test("refuse un EAN placé uniquement dans un paramètre URL",()=>{
+  const html='<h1>Fusilli Panzani 500g</h1><p>1,11 € au lieu de 1,59 € PROMO : 30%</p>';
+  const result=verifyCarrefourPromotionPage(html,offer,{
+    sourceUrl:"https://www.carrefour.fr/p/autre-produit?ref=3038359913242"
+  });
+  assert.equal(result.ok,false);
+});
+
+test("refuse les deux prix présents dans deux promotions différentes",()=>{
+  const html='<h1>Fusilli Panzani 500g</h1>'+
+    '<p>Prix 1,11 € — offre séparée</p>'+
+    '<p>2,11 € au lieu de 1,59 € — PROMO : 30%</p>';
+  const result=verifyCarrefourPromotionPage(html,offer);
+  assert.equal(result.ok,false);
+  assert.ok(result.reasons.includes("prix normal/promo non liés"));
+});
+
+test("refuse un taux situé sur un autre article loin de la paire de prix",()=>{
+  const html='<h1>Fusilli Panzani 500g</h1><p>1,11 € au lieu de 1,59 €</p>'+
+    '<p>'+('Description générale. '.repeat(70))+'</p>'+
+    '<div>PROMO : 30%</div>';
+  const result=verifyCarrefourPromotionPage(html,offer);
+  assert.equal(result.ok,false);
+  assert.ok(result.reasons.includes("taux promo non lié à la paire de prix"));
+});
+
+test("refuse une réduction mathématiquement incohérente",()=>{
+  const fake={...offer,savingPercent:50};
+  const html='<h1>Fusilli Panzani 500g</h1><p>1,11 € au lieu de 1,59 € PROMO : 50%</p>';
+  const result=verifyCarrefourPromotionPage(html,fake);
+  assert.equal(result.ok,false);
+  assert.ok(result.reasons.includes("taux incohérent avec les prix"));
+});
