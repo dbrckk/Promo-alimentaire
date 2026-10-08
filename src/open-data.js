@@ -115,6 +115,8 @@ export async function fetchPricesByBarcode(value,{
         ? "id:"+String(observation.id)
         : JSON.stringify([
             observation.productCode,observation.locationId,
+            observation.storeName,observation.postcode,observation.city,
+            observation.locationLat,observation.locationLon,
             observation.date,observation.price,observation.pricePer
           ]);
       if(seen.has(key)) continue;
