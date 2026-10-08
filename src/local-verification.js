@@ -65,8 +65,11 @@ export function isStoreConfirmationActive(confirmation,offer,{
 export function applyLocalStoreConfirmations(offers,confirmations,{
   store,
   locationKey,
+  channel="store",
   now=new Date()
 }={}){
+  // A physical shelf/check-out check cannot validate a Drive or delivery order.
+  if(channel!=="store") return offers || [];
   const byKey=new Map(
     (confirmations || []).map((entry)=>[entry.key || confirmationKey(entry),entry])
   );
