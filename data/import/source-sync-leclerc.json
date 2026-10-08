@@ -1,3 +1,11 @@
 {
-  "sources": {}
+  "sources": {
+    "leclerc": {
+      "status": "unavailable",
+      "checkedAt": "2026-10-08T14:08:55.519Z",
+      "reason": "Aucune promotion complète reconfirmée dans le catalogue public.",
+      "extractedCount": 0,
+      "previousSnapshotCount": 5
+    }
+  }
 }
