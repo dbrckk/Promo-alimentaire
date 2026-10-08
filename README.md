@@ -48,7 +48,7 @@ Fonctionnalités actuelles :
 ## Services de découverte vérifiés (8 octobre 2026)
 
 L'onglet **Sources** intègre des pistes indépendantes des prix du panier :
-- **Produits gratuits / aide alimentaire** : MonAvisLeRendGratuit (hypermarchés Carrefour), Geev, HopHopFood, TRND, Home Tester Club. Disponibilité, sélection et conditions propres à chaque organisme.
+- **Produits gratuits / aide alimentaire** : MonAvisLeRendGratuit (hypermarchés Carrefour), Geev, HopHopFood, TRND, Home Tester Club et Linkee pour les étudiants avec justificatif. Soliguide référence aussi les distributions, épiceries sociales et autres solutions d'aide alimentaire. Disponibilité, sélection et conditions propres à chaque organisme.
 - **Autres enseignes alimentaires** : Lidl Plus, Carte U, Auchan Waaoh!, e-coupons Intermarché et les épiceries NOUS anti-gaspi. Leurs remises ne sont pas utilisées comme des remises Carrefour ou E.Leclerc.
 - **Restauration** : TheFork affiche des promotions pouvant aller jusqu'à -50 % dans certains restaurants et créneaux, sous conditions de réservation.
 - **Autres domaines** : Veepee et Showroomprivé mettent en avant des ventes allant jusqu'à -70 %. Le filtre « Autres domaines : 50 % ou plus possibles » affiche ces **services à explorer**, et **non des articles individuellement confirmés** à -50 %.
