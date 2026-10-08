@@ -177,3 +177,22 @@ test("une recherche paginée non exhaustive est signalée comme telle",async()=>
   assert.equal(result.candidates.length,1);
   assert.equal(result.hasMoreResults,true);
 });
+
+test("deux formats UPC/EAN d'un même produit OFF ne créent pas une fausse ambiguïté",()=>{
+  const selection=selectUniqueEanCandidate(offer,[
+    {code:"036000291452",product_name:"Espresso Concentrate",brands:"Nescafé"},
+    {code:"0036000291452",product_name:"Espresso Concentrate",brands:"Nescafé"},
+    {code:"4006381333931",product_name:"Autre produit",brands:"Autre"}
+  ]);
+  assert.equal(selection.status,"unique");
+  assert.equal(selection.ranked.length,1);
+  assert.equal(selection.candidate.code,"036000291452");
+});
+
+test("deux GTIN distincts restent ambigus même si le nom est identique",()=>{
+  const selection=selectUniqueEanCandidate(offer,[
+    {code:"036000291452",product_name:"Espresso Concentrate",brands:"Nescafé"},
+    {code:"4006381333931",product_name:"Espresso Concentrate",brands:"Nescafé"}
+  ]);
+  assert.equal(selection.status,"ambiguous");
+});
