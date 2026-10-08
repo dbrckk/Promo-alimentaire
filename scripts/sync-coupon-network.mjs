@@ -33,8 +33,8 @@ async function recordSyncStatus(status,reason,count){
   await writeFile(STATUS_URL,JSON.stringify(state,null,2)+"\n","utf8");
 }
 
-async function sourceUnavailable(reason){
-  await recordSyncStatus("unavailable",reason,0);
+async function sourceUnavailable(reason,extractedCount=0){
+  await recordSyncStatus("unavailable",reason,extractedCount);
   const message="Aucune revalidation : "+reason+
     ". Snapshot précédent conservé sans modifier verifiedAt/reviewAfter ("+
     previousCount+" offres antérieures). L'application les masquera après leur date limite.";
@@ -113,9 +113,18 @@ const assessment=assessCouponNetworkSnapshot(offers,{
   previousCount,minimum:minOffers
 });
 if(!assessment.publish){
+  const labels={
+    "too-few-offers":"Extraction publique insuffisante",
+    "suspiciously-large-drop":"Baisse brutale suspecte du nombre d'offres",
+    "duplicate-or-missing-ids":"Identifiants de promotions non fiables",
+    "unexpected-automatic-eligibility":"Économies automatiques non prouvées",
+    "invalid-result":"Réponse du fournisseur invalide"
+  };
   await sourceUnavailable(
-    assessment.reason+" ("+assessment.count+"/"+minOffers+" minimum, "+
-    previousCount+" auparavant)"
+    (labels[assessment.reason] || "Snapshot public non publiable")+
+      " ("+assessment.count+" détectées, minimum "+minOffers+
+      ", "+previousCount+" dans le précédent catalogue)",
+    assessment.count
   );
   process.exit();
 }
