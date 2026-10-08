@@ -146,3 +146,34 @@ test("fetchOpenFoodFactsCandidates respecte Retry-After",async()=>{
   });
   assert.deepEqual(waits,[2000]);
 });
+
+test("une marque absente ne satisfait jamais une marque obligatoire",()=>{
+  const scored=scoreOpenFoodFactsCandidate(offer,{
+    code:"3017624010701",product_name:"Espresso Concentrate",
+    brands:""
+  });
+  assert.equal(scored.accepted,false);
+  assert.ok(scored.reasons.includes("brand-mismatch"));
+});
+
+test("une marque partielle n'est pas confondue avec une vraie marque",()=>{
+  const scored=scoreOpenFoodFactsCandidate(offer,{
+    code:"3017624010701",product_name:"Espresso Concentrate",
+    brands:"Nesc"
+  });
+  assert.equal(scored.accepted,false);
+});
+
+test("une recherche paginée non exhaustive est signalée comme telle",async()=>{
+  const result=await fetchOpenFoodFactsCandidates(offer,{
+    pageSize:1,
+    fetchImpl:async()=>({
+      ok:true,
+      json:async()=>({count:15,products:[{
+        code:"3017624010701",product_name:"Espresso Concentrate",brands:"Nescafé"
+      }]})
+    })
+  });
+  assert.equal(result.candidates.length,1);
+  assert.equal(result.hasMoreResults,true);
+});
