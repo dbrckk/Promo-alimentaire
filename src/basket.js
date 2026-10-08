@@ -29,7 +29,7 @@ export function evaluateBasketStore(items,{
   const resolvedOffers=applyLocalStoreConfirmations(
     resolveOffersForLoyalty(offers,loyaltyProfile),
     storeConfirmations,
-    {store,locationKey:storeVerificationKey,now}
+    {store,locationKey:storeVerificationKey,channel:channel || "store",now}
   );
   const lines=(items || []).map((item)=>{
     const quantity=normalizeQuantity(item.quantity);
