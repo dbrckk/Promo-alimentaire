@@ -279,3 +279,34 @@ function extractDetailDescription(html){
   const lines=htmlToTextLines(html);
   return lines.find((line)=>/^sur l['’]achat\b/i.test(line)) || null;
 }
+
+/**
+ * Gate new public snapshots against complete/partial source failures.
+ * A temporary outage must never replace a verified snapshot with 0 offers
+ * or silently delete most previous offers.
+ */
+export function assessCouponNetworkSnapshot(offers,{
+  previousCount=0,
+  minimum=20,
+  maximumDropFraction=0.55
+}={}){
+  if(!Array.isArray(offers)) return {publish:false,reason:"invalid-result",count:0};
+  const count=offers.length;
+  if(count<minimum) return {publish:false,reason:"too-few-offers",count};
+  const ids=offers.map((offer)=>String(offer?.externalId || "").trim());
+  if(ids.some((id)=>!id) || new Set(ids).size!==ids.length){
+    return {publish:false,reason:"duplicate-or-missing-ids",count};
+  }
+  if(offers.some((offer)=>
+    offer?.autoStack===true || (Array.isArray(offer?.eans) && offer.eans.length>0)
+  )){
+    return {publish:false,reason:"unexpected-automatic-eligibility",count};
+  }
+  if(previousCount>=minimum){
+    const fraction=(previousCount-count)/previousCount;
+    if(fraction>maximumDropFraction){
+      return {publish:false,reason:"suspiciously-large-drop",count};
+    }
+  }
+  return {publish:true,reason:"validated-count",count};
+}
