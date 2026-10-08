@@ -196,3 +196,14 @@ Les alertes de baisse comparent uniquement deux observations à des **dates diff
 - Sur la fiche produit, le lien de preuve EAN et le lien de l'offre sont distincts : une référence exacte ne garantit pas à elle seule l'application de la promotion.
 
 Ces vérifications sont **conservatrices** et ne remplacent pas la vérification des conditions, du stock, du point de vente et du ticket final.
+
+
+### Contrat de qualité PWA Android
+
+`npm run verify` contrôle aussi que :
+
+- les identifiants HTML utilisés par l'application existent et ne sont pas dupliqués ;
+- toutes les dépendances JavaScript transitives de `src/app.js` sont disponibles ;
+- ces modules figurent dans le cache du service worker pour le fonctionnement hors ligne.
+
+Les scénarios de panier signalent désormais les **vérifications les plus rentables** par gain additionnel potentiel, sans additionner les offres incertaines ni les présenter comme garanties.
