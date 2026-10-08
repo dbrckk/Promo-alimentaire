@@ -45,6 +45,31 @@ Ces règles servent à **faire remonter l'offre pour vérification**. Elles ne r
 6. Une estimation basée sur une correspondance textuelle est toujours affichée comme **potentielle**.
 7. Les EAN ajoutés au registre doivent provenir d'une source vérifiable (conditions officielles, flux partenaire ou donnée source explicite).
 
+## Identité GS1 et preuve du distributeur
+
+Pour éviter de manquer une vraie correspondance, les GTIN valides sont comparés
+avec une clé canonique sur **14 chiffres** (zéros initiaux uniquement). Par
+exemple, `036000291452` (UPC-A), `0036000291452` (EAN-13) et
+`00036000291452` (GTIN-14) désignent la même identité GS1. Les codes
+originaux sont conservés pour l'affichage et les URL. Une somme de contrôle
+erronée ne peut jamais donner une correspondance exacte.
+
+Le chargement des imports supprime les doublons de ces représentations sans
+fusionner deux références distinctes. La recherche Open Food Facts déduplique
+également ces identités avant d'évaluer l'ambiguïté.
+
+**Carrefour / E.Leclerc** : une référence exacte importée doit être liée à une
+fiche produit officielle HTTPS (`carrefour.fr/p/…-GTIN` ou
+`e.leclerc/fp/…-GTIN`), dont le code est identique au GTIN déclaré. Un
+lien vers une catégorie, le catalogue général ou un autre article ne suffit
+pas. Cette vérification valide la provenance de l'identité produit, **pas la
+validité de la remise** : dates, magasin, canal, carte fidélité et conditions
+de cumul restent à contrôler. Un seul lien produit ne prouve pas plusieurs
+références distinctes.
+
+Les promotions portant sur une gamme non exhaustive restent candidates et ne
+sont jamais étendues à d'autres GTIN par simple similarité de texte.
+
 ## Étape d'ingestion cible
 
 Un connecteur futur doit produire une structure de ce type :
