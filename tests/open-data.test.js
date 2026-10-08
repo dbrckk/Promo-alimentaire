@@ -203,3 +203,18 @@ test("une fiche d'enseigne ambiguë n'est pas comptée deux fois",()=>{
   assert.equal(isUnambiguousRetailer("E.Leclerc · Carrefour","leclerc"),false);
   assert.equal(isUnambiguousRetailer("E.Leclerc","leclerc"),true);
 });
+
+
+test("le prix barré supérieur au prix payé signale une promotion malgré un indicateur manquant",()=>{
+  const observation=normalizePriceObservation({
+    id:9,product_code:"3017624010701",price:7,
+    price_without_discount:10,price_is_discounted:false,
+    date:"2026-10-07",location:{osm_brand:"Carrefour"}
+  });
+  assert.equal(observation.isDiscounted,true);
+  assert.equal(observation.priceWithoutDiscount,10);
+  const plain=normalizePriceObservation({
+    id:10,price:7,price_without_discount:7
+  });
+  assert.equal(plain.isDiscounted,false);
+});
