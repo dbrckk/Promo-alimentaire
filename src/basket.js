@@ -8,6 +8,7 @@ import {
   resolveOffersForLoyalty
 } from "./loyalty.js";
 import { applyLocalStoreConfirmations } from "./local-verification.js";
+import { assessRetailerPromoPrice } from "./promo-price-check.js";
 
 export function normalizeQuantity(value) {
   const quantity=Math.trunc(Number(value));
@@ -67,8 +68,16 @@ export function evaluateBasketStore(items,{
     // Open Prices records can already contain the retailer's discounted checkout price.
     // Never subtract the same retailer promo again from an already discounted observation.
     const alreadyRetailDiscounted=best.isDiscounted===true;
+    const retailerPriceConflicts=matches
+      .filter(({offer})=>offer.mechanism==="retailer_promo")
+      .map(({offer})=>assessRetailerPromoPrice(best,offer))
+      .filter((check)=>!check.eligible);
+    const retailerPromoPriceConflict=retailerPriceConflicts.some((check)=>
+      check.reason==="source-promo-may-already-be-included"
+      || check.reason==="observed-price-not-source-regular"
+    );
     const eligibleMatches=matches.filter(({offer})=>
-      !alreadyRetailDiscounted || offer.mechanism!=="retailer_promo"
+      assessRetailerPromoPrice(best,offer).eligible
     );
     const guaranteedProductOffers=eligibleMatches
       .filter(({match,offer})=>match.exact && offer.autoStack===true)
@@ -139,6 +148,7 @@ export function evaluateBasketStore(items,{
       deferredRefund,
       immediateSaving,
       alreadyRetailDiscounted,
+      retailerPromoPriceConflict,
       appliedOffers:lineOptimization.selected,
       finalCost:lineOptimization.finalCost,
       guaranteedSaving:lineOptimization.totalSaving,
