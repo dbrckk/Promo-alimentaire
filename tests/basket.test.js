@@ -765,5 +765,5 @@ test("un prix manuel donne un sous-total mais ne garantit aucun cumul produit/pa
   assert.equal(scenario.checkoutCost,10);
   assert.equal(scenario.lines[0].manualPrice,true);
   assert.equal(scenario.lines[0].bestProductCandidate.offer.id,"odr");
-  assert.ok(scenario.potentialBasketSaving>0);
+  assert.ok(scenario.savingsBreakdown.basketPotential>0);
 });
