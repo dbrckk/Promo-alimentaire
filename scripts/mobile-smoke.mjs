@@ -77,6 +77,14 @@ try{
   assert.match(await page.locator("#providers").innerText(),/MonAvisLeRendGratuit/);
   assert.match(await page.locator("#providers").innerText(),/HopHopFood/);
   assert.doesNotMatch(await page.locator("#providers").innerText(),/Showroomprivé/);
+  await page.locator("#sourceScope").selectOption("free-food");
+  assert.match(await page.locator("#providers").innerText(),/Sampleo/);
+  assert.match(await page.locator("#providers").innerText(),/The Insiders/);
+  assert.doesNotMatch(await page.locator("#providers").innerText(),/Quoty/);
+  await page.locator("#sourceScope").selectOption("food-odr");
+  assert.match(await page.locator("#providers").innerText(),/Quoty/);
+  assert.match(await page.locator("#providers").innerText(),/Activité récente non confirmée/);
+  assert.doesNotMatch(await page.locator("#providers").innerText(),/Sampleo/);
   await page.locator("#sourceScope").selectOption("other-50");
   assert.match(await page.locator("#providers").innerText(),/Veepee/);
   assert.match(await page.locator("#providers").innerText(),/Showroomprivé/);
@@ -86,6 +94,7 @@ try{
   await page.locator("#sourceSearch").fill("");
   await page.locator("#sourceScope").selectOption("food");
   await assertNoHorizontalOverflow(page,"annuaire de sources");
+  await page.screenshot({path:OUT+"/06-sources-alimentaires.png",fullPage:true});
   await page.locator('[data-tab="offers"]').click();
 
   await page.locator("#channel").selectOption("drive");
