@@ -7,19 +7,25 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
     throw new Error(`Manifest d'offres indisponible (${manifestResponse.status}).`);
   }
   const manifest=await manifestResponse.json();
-  const statusUrl=new URL("../data/import/source-sync-status.json",import.meta.url);
-  let syncSources={};
-  try{
-    const statusResponse=await fetchImpl(statusUrl,{headers:{Accept:"application/json"}});
-    if(statusResponse.ok){
-      const statusData=await statusResponse.json();
-      if(statusData?.sources && typeof statusData.sources==="object"
-        && !Array.isArray(statusData.sources)){
-        syncSources=statusData.sources;
+  const syncSources={};
+  // Load shared legacy status first, then provider files. The latter win
+  // when both contain the same supplier, avoiding concurrent Git writes.
+  for(const file of [
+    "source-sync-status.json",
+    "source-sync-carrefour.json",
+    "source-sync-leclerc.json"
+  ]){
+    try{
+      const url=new URL("../data/import/"+file,import.meta.url);
+      const response=await fetchImpl(url,{headers:{Accept:"application/json"}});
+      if(!response.ok) continue;
+      const data=await response.json();
+      if(data?.sources && typeof data.sources==="object" && !Array.isArray(data.sources)){
+        Object.assign(syncSources,data.sources);
       }
+    }catch{
+      // Diagnostics are optional; never make offer validity depend on them.
     }
-  }catch{
-    // Sync diagnostics are optional and never change offer validity.
   }
   const files=Array.isArray(manifest?.files) ? manifest.files : [];
   const imported=[];
