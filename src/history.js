@@ -10,12 +10,22 @@ export function createHistoryEntry({
 }={}) {
   const best=[...scenarios]
     .filter((scenario)=>scenario?.isComplete && scenario?.locationReliable && scenario?.priceChannelReliable!==false)
+    .filter((scenario)=>scenarioLocationIdentity(scenario)!==null)
     .sort((a,b)=>a.finalCost-b.finalCost)[0] || null;
+  const basketSignature=basketContentSignature(shoppingList);
+  const contextKey=historyContextKey({
+    basketSignature,channel,nearbyEnabled,radiusKm,
+    bestStore:best?.store || null,
+    bestLocationKey:best ? scenarioLocationIdentity(best) : null
+  });
 
   return {
-    id:historyId(createdAt,shoppingList,channel),
+    id:historyId(createdAt,shoppingList,channel,contextKey),
     createdAt:new Date(createdAt).toISOString(),
     channel,
+    basketSignature,
+    contextKey,
+    bestLocationKey:best ? scenarioLocationIdentity(best) : null,
     nearbyEnabled:Boolean(nearbyEnabled),
     radiusKm:nearbyEnabled ? Number(radiusKm)||null : null,
     itemCount:shoppingList.reduce((sum,item)=>sum+(Number(item.quantity)||1),0),
@@ -38,15 +48,28 @@ export function addHistoryEntry(history,entry,{limit=DEFAULT_LIMIT}={}) {
 }
 
 export function historyTrend(history) {
-  const values=(history || []).filter((entry)=>Number.isFinite(entry.bestFinalCost));
+  // Only compare the same basket, purchase channel, radius and physical store.
+  // Legacy entries without a context key cannot establish a reliable trend.
+  const values=(history || [])
+    .filter((entry)=>Number.isFinite(entry?.bestFinalCost))
+    .filter((entry)=>entry?.nearbyEnabled===true && entry?.channel==="store")
+    .filter((entry)=>Boolean(entry?.basketSignature && entry?.contextKey && entry?.bestLocationKey))
+    .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
   if(values.length<2) return null;
   const latest=values[0];
-  const previous=values[1];
+  const previous=values.find((entry)=>
+    entry.id!==latest.id
+    && entry.contextKey===latest.contextKey
+    && new Date(entry.createdAt)<new Date(latest.createdAt)
+  );
+  if(!previous) return null;
   const delta=round(latest.bestFinalCost-previous.bestFinalCost);
   return {
     latest:latest.bestFinalCost,
     previous:previous.bestFinalCost,
     delta,
+    store:latest.bestStore,
+    locationKey:latest.bestLocationKey,
     direction:delta<0 ? "down" : delta>0 ? "up" : "flat"
   };
 }
@@ -70,13 +93,46 @@ function compactScenario(scenario){
   };
 }
 
-function historyId(date,shoppingList,channel="store"){
+export function basketContentSignature(shoppingList=[]){
+  const quantities=new Map();
+  for(const item of shoppingList || []){
+    const code=String(item?.product?.code || "").trim();
+    const quantity=Math.trunc(Number(item?.quantity));
+    if(!code || !Number.isFinite(quantity) || quantity<1) return null;
+    quantities.set(code,(quantities.get(code) || 0)+quantity);
+  }
+  if(!quantities.size) return null;
+  return [...quantities].sort(([a],[b])=>a.localeCompare(b))
+    .map(([code,quantity])=>code+"x"+quantity).join("|");
+}
+
+function scenarioLocationIdentity(scenario){
+  const id=scenario?.location?.id;
+  if(id!==null && id!==undefined && String(id).trim()){
+    return "id:"+String(id).trim();
+  }
+  const name=String(scenario?.location?.name || "").trim().toLocaleLowerCase("fr");
+  const postcode=String(scenario?.location?.postcode || "").trim();
+  if(!name || !/^\\d{5}$/.test(postcode)) return null;
+  return "named:"+name+"|"+postcode;
+}
+
+function historyContextKey({basketSignature,channel,nearbyEnabled,radiusKm,bestStore,bestLocationKey}){
+  if(!basketSignature || !nearbyEnabled || channel!=="store" || !bestStore || !bestLocationKey){
+    return null;
+  }
+  const radius=Number(radiusKm);
+  if(!Number.isFinite(radius) || radius<=0) return null;
+  return JSON.stringify([basketSignature,channel,radius,bestStore,bestLocationKey]);
+}
+
+function historyId(date,shoppingList,channel="store",contextKey=null){
   const codes=(shoppingList || [])
     .map((item)=>`${item.product?.code || "?"}x${Number(item.quantity)||1}`)
     .sort()
     .join("|");
   const minute=new Date(date).toISOString().slice(0,16);
-  return `${minute}:${channel}:${codes}`;
+  return `${minute}:${channel}:${codes}:${contextKey || "no-context"}`;
 }
 
 function round(value){
