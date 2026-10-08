@@ -1,3 +1,5 @@
+import { selectBestRecentPrice } from "./open-data.js";
+
 export function priceLocationKey(observation){
   if(!observation) return null;
   if(observation.locationId !== null && observation.locationId !== undefined && String(observation.locationId).trim()){
@@ -6,6 +8,10 @@ export function priceLocationKey(observation){
   const name=String(observation.storeName || "").trim().toLocaleLowerCase("fr");
   const postcode=String(observation.postcode || "").trim();
   if(!name || /non précisé|unknown|inconnu/.test(name) || !/^\d{5}$/.test(postcode)) return null;
+  // A chain name plus postcode can still represent several physical shops.
+  if(/^(carrefour|carrefour market|carrefour city|carrefour contact|e\.?\s*leclerc|leclerc)$/.test(name)){
+    return null;
+  }
   return "named:"+name+"|"+postcode;
 }
 
@@ -51,6 +57,29 @@ export function addPriceObservation(history,{
   }).slice(0,500);
 }
 
+// Preserve an observation for each independently identifiable physical shop.
+// A single cheapest/latest observation for the entire chain would hide a real
+// drop at a different location and prevent useful local alerts.
+export function addStorePriceObservations(history,{
+  product,store,observations=[],recordedAt=new Date()
+}={}, {maxStores=12,limitPerProduct=30}={}){
+  const groups=new Map();
+  for(const observation of observations || []){
+    const key=priceLocationKey(observation);
+    if(!key) continue;
+    if(!groups.has(key)) groups.set(key,[]);
+    groups.get(key).push(observation);
+  }
+  const selected=[...groups.entries()]
+    .map(([key,items])=>({key,observation:selectBestRecentPrice(items,120,recordedAt)}))
+    .filter((item)=>Boolean(item.observation))
+    .sort((a,b)=>new Date(b.observation.date)-new Date(a.observation.date))
+    .slice(0,Math.min(30,Math.max(1,Math.trunc(maxStores)||12)));
+  return selected.reduce((acc,item)=>addPriceObservation(acc,{
+    product,store,observation:item.observation,recordedAt
+  },{limitPerProduct}),history || []);
+}
+
 function observationDate(item){
   const time=new Date(item?.date).getTime();
   return Number.isFinite(time) ? time : -Infinity;
@@ -74,13 +103,21 @@ export function productPriceTrend(history,{code,store,locationId=null,locationKe
   const sameLocation=values.filter((item)=>item.locationKey===key);
   if(sameLocation.length<2) return null;
 
-  const latest=sameLocation[0];
-  // Never compare two price records from the same observation day.
-  const latestDay=new Date(latest.date).toISOString().slice(0,10);
-  const previous=sameLocation.find((item)=>
+  // Use the highest observed amount within each calendar day when sources
+  // disagree. This avoids falsely reporting a price drop from one cheap
+  // promotional receipt despite a higher same-day checkout price.
+  const latestDay=new Date(sameLocation[0].date).toISOString().slice(0,10);
+  const latest=[...sameLocation]
+    .filter((item)=>new Date(item.date).toISOString().slice(0,10)===latestDay)
+    .sort((a,b)=>b.price-a.price)[0];
+  const previousCandidates=sameLocation.filter((item)=>
     new Date(item.date).toISOString().slice(0,10)<latestDay
   );
-  if(!previous) return null;
+  if(!previousCandidates.length) return null;
+  const previousDay=new Date(previousCandidates[0].date).toISOString().slice(0,10);
+  const previous=[...previousCandidates]
+    .filter((item)=>new Date(item.date).toISOString().slice(0,10)===previousDay)
+    .sort((a,b)=>b.price-a.price)[0];
 
   const delta=round(latest.price-previous.price);
   const percent=previous.price>0
