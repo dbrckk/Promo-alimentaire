@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   addPriceObservation,
+  addStorePriceObservations,
   detectPriceDrops,
   productHistory,
   productPriceTrend
@@ -113,4 +114,48 @@ test("un magasin nommé avec son code postal peut être comparé",()=>{
     });
   }
   assert.equal(detectPriceDrops(history,{thresholdPercent:15}).length,1);
+});
+
+
+test("chaque magasin alimente son propre historique, pas seulement le prix le plus attractif de l'enseigne",()=>{
+  let history=[];
+  const date1=new Date("2026-10-02T12:00:00Z");
+  const date2=new Date("2026-10-08T12:00:00Z");
+  history=addStorePriceObservations(history,{product,store:"carrefour",recordedAt:date1,observations:[
+    {locationId:11,storeName:"Carrefour A",price:10,date:"2026-10-01"},
+    {locationId:22,storeName:"Carrefour B",price:8,date:"2026-10-01"}
+  ]});
+  history=addStorePriceObservations(history,{product,store:"carrefour",recordedAt:date2,observations:[
+    {locationId:11,storeName:"Carrefour A",price:8,date:"2026-10-07"},
+    {locationId:22,storeName:"Carrefour B",price:8,date:"2026-10-07"}
+  ]});
+  assert.equal(history.length,4);
+  const alerts=detectPriceDrops(history,{thresholdPercent:15});
+  assert.equal(alerts.length,1);
+  assert.equal(alerts[0].storeName,"Carrefour A");
+  assert.equal(alerts[0].locationKey,"id:11");
+  assert.equal(alerts[0].dropPercent,20);
+});
+
+test("plusieurs prix le même jour n'entraînent pas une fausse baisse",()=>{
+  let history=[];
+  history=addPriceObservation(history,{product,store:"leclerc",
+    observation:{locationId:5,price:10,date:"2026-10-01"},
+    recordedAt:new Date("2026-10-02T12:00:00Z")});
+  for(const price of [8,12]){
+    history=addPriceObservation(history,{product,store:"leclerc",
+      observation:{locationId:5,price,date:"2026-10-07"},
+      recordedAt:new Date("2026-10-08T12:00:00Z")});
+  }
+  const trend=productPriceTrend(history,{code:"123",store:"leclerc",locationId:5});
+  assert.equal(trend.latest.price,12);
+  assert.equal(trend.direction,"up");
+  assert.equal(detectPriceDrops(history).length,0);
+});
+
+test("un nom générique de chaîne avec code postal ne prouve pas l'identité du magasin",()=>{
+  const generic=addStorePriceObservations([],{product,store:"carrefour",observations:[
+    {price:2,date:"2026-10-07",storeName:"Carrefour",postcode:"71100"}
+  ],recordedAt:new Date("2026-10-08T12:00:00Z")});
+  assert.equal(generic.length,0);
 });
