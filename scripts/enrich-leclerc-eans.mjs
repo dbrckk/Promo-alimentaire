@@ -10,7 +10,7 @@ const offers=JSON.parse(await readFile(SNAPSHOT_URL,"utf8"));
 if(!Array.isArray(offers)) throw new Error("Snapshot E.Leclerc invalide.");
 
 let searched=0;
-let enriched=0;
+let suggested=0;
 let ambiguous=0;
 let none=0;
 const next=[];
@@ -37,7 +37,7 @@ for(const offer of offers){
   searched+=1;
 
   try{
-    const {terms,candidates}=await fetchOpenFoodFactsCandidates(offer,{
+    const {terms,candidates,hasMoreResults}=await fetchOpenFoodFactsCandidates(offer,{
       pageSize:20,
       maxRetries:2,
       retryBaseMs:10000
@@ -47,11 +47,11 @@ for(const offer of offers){
       minMargin:12
     });
 
-    if(resolution.status!=="unique"){
-      if(resolution.status==="ambiguous") ambiguous+=1;
+    if(resolution.status!=="unique" || hasMoreResults){
+      if(resolution.status==="ambiguous" || hasMoreResults) ambiguous+=1;
       else none+=1;
       console.log(
-        "[ean] "+resolution.status+" · "+offer.title+
+        "[ean] "+(hasMoreResults?"incomplete-search":resolution.status)+" · "+offer.title+
         " · recherche="+terms+
         " · candidats="+resolution.ranked.length
       );
@@ -60,28 +60,31 @@ for(const offer of offers){
     }
 
     const product=resolution.candidate;
-    enriched+=1;
+    // OFF can suggest a product GTIN, but is not proof that E.Leclerc's
+    // promotion covers that particular variant. Keep this as a suggestion.
+    const suggestion={
+      code:product.code,
+      source:"Open Food Facts",
+      sourceUrl:"https://world.openfoodfacts.org/product/"+product.code,
+      identifiedAt:new Date().toISOString().slice(0,10),
+      score:resolution.score,
+      margin:resolution.margin,
+      productName:product.product_name || "",
+      brands:product.brands || "",
+      quantity:product.quantity || "",
+      requiresMerchantConfirmation:true
+    };
+    if(offer.eanSuggestion?.code===suggestion.code){
+      next.push(offer);
+      continue;
+    }
+    suggested+=1;
     console.log(
-      "[ean] unique · "+offer.title+
+      "[ean] suggestion non vérifiée · "+offer.title+
       " · "+product.code+
-      " · "+product.brands+" · "+product.product_name+
-      " · score="+resolution.score+
-      " · marge="+resolution.margin
+      " · score="+resolution.score
     );
-    next.push({
-      ...offer,
-      eans:[product.code],
-      eanEvidenceUrl:"https://world.openfoodfacts.org/product/"+product.code,
-      eanResolution:{
-        source:"Open Food Facts",
-        resolvedAt:new Date().toISOString().slice(0,10),
-        score:resolution.score,
-        margin:resolution.margin,
-        productName:product.product_name || "",
-        brands:product.brands || "",
-        quantity:product.quantity || ""
-      }
-    });
+    next.push({...offer,eanSuggestion:suggestion});
   }catch(error){
     console.warn("[ean] erreur · "+offer.title+" · "+error.message);
     next.push(offer);
@@ -90,14 +93,14 @@ for(const offer of offers){
 
 console.log(
   "[ean] recherches="+searched+
-  " · enrichies="+enriched+
+  " · suggestions="+suggested+
   " · ambiguës="+ambiguous+
   " · sans résultat="+none
 );
 
-if(write && enriched>0){
+if(write && suggested>0){
   await writeFile(SNAPSHOT_URL,JSON.stringify(next,null,2)+"\n","utf8");
-  console.log("[ean] snapshot enrichi.");
+  console.log("[ean] suggestions EAN enregistrées (non garanties).");
 }
 
 function sleep(ms){
