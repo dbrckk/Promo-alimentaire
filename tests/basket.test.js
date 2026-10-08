@@ -581,3 +581,28 @@ test("le gain prudent est la différence entre ODR candidate et avantage garanti
   assert.equal(s.potentialAdditionalProductSaving,3);
   assert.equal(s.conservativeBestCaseCost,5);
 });
+
+
+test("une confirmation magasin d'une promo mixte ne réduit pas les prix Drive",()=>{
+  const product={code:"3017624010701",name:"Produit",brands:"Marque",categories:[]};
+  const promo={
+    id:"leclerc-promo-mixte",scope:"produit",stores:["leclerc"],
+    channels:["store","drive"],eans:[product.code],savingPercent:40,
+    autoStack:false,requiresStoreVerification:true,stackGroup:"local-promo"
+  };
+  const confirmation=createStoreConfirmation(promo,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T12:00:00Z")
+  });
+  const input={
+    store:"leclerc",storeVerificationKey:"id:42",
+    storeConfirmations:[confirmation],
+    priceByCode:{[product.code]:[{price:10,date:"2026-10-07",locationId:42}]},
+    offers:[promo],now:new Date("2026-10-08T10:00:00Z")
+  };
+  const inStore=evaluateBasketStore([{product,quantity:1}],{...input,channel:"store"});
+  const drive=evaluateBasketStore([{product,quantity:1}],{...input,channel:"drive"});
+  assert.equal(inStore.finalCost,6);
+  assert.equal(drive.finalCost,10);
+  assert.equal(drive.lines[0].bestProductCandidate.offer.storeVerified,undefined);
+});
