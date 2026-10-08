@@ -71,3 +71,27 @@ test("la liste est bornée sans additionner des offres potentiellement incompati
   assert.equal(queue.totalCount,10);
   assert.equal(queue.topSingleAdditionalSaving,10);
 });
+
+
+test("une offre déjà appliquée ne masque pas une autre offre à vérifier",()=>{
+  const applied={id:"applied",scope:"produit",eans:["3017624010701"],autoStack:true};
+  const pending={id:"pending",scope:"produit",eans:["3017624010701"],autoStack:false};
+  const line=pendingLine("3017624010701","Produit",applied,5,2,true);
+  line.appliedOffers=[applied];
+  line.savingCandidates=[
+    {offer:applied,saving:5,match:{exact:true}},
+    {offer:pending,saving:4,match:{exact:true}}
+  ];
+  const queue=buildVerificationQueue({store:"carrefour",lines:[line]});
+  assert.equal(queue.items.length,1);
+  assert.equal(queue.items[0].offerId,"pending");
+  assert.equal(queue.items[0].additionalSaving,2);
+});
+
+test("aucune vérification n'est demandée si toutes les offres sont déjà appliquées",()=>{
+  const applied={id:"applied",scope:"produit",eans:["3017624010701"]};
+  const line=pendingLine("3017624010701","Produit",applied,5,1,true);
+  line.appliedOffers=[applied];
+  line.savingCandidates=[{offer:applied,saving:5,match:{exact:true}}];
+  assert.equal(buildVerificationQueue({store:"carrefour",lines:[line]}).totalCount,0);
+});
