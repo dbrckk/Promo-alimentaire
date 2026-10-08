@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - "scripts/sync-carrefour-promotions.mjs"
+      - "scripts/source-sync-status.mjs"
       - "src/adapters/carrefour-promotions.js"
       - "data/import/carrefour-promotions-auto.json"
       - ".github/workflows/sync-carrefour-promotions.yml"
@@ -33,14 +34,14 @@ jobs:
       - name: Commit refreshed verification window
         shell: bash
         run: |
-          if git diff --quiet -- data/import/carrefour-promotions-auto.json; then
+          if git diff --quiet -- data/import/carrefour-promotions-auto.json data/import/source-sync-status.json; then
             echo "No confirmed Carrefour promotion change to commit."
             exit 0
           fi
           git config user.name "promo-alimentaire-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/import/carrefour-promotions-auto.json
-          git commit -m "data: reverify Carrefour exact promotions"
+          git add data/import/carrefour-promotions-auto.json data/import/source-sync-status.json
+          git commit -m "data: record Carrefour public promotion verification"
           for attempt in 1 2 3; do
             git fetch origin main
             if git rebase origin/main; then
