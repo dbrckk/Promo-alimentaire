@@ -46,3 +46,22 @@ function positiveCents(value){
   if(!Number.isFinite(number) || number<=0) return null;
   return Math.round(number*100);
 }
+
+/**
+ * Coupon Network states that in-store discounts on the same product
+ * are not combinable with its refund; loyalty-card credit is excluded
+ * from this restriction. A source price can be discounted even if its
+ * upstream Boolean indicator is missing.
+ */
+export function assessCouponNetworkCompatibility(observation,offer){
+  if(offer?.providerId!=="coupon-network"){
+    return {eligible:true,reason:null};
+  }
+  const displayed=positiveCents(observation?.price);
+  const original=positiveCents(observation?.priceWithoutDiscount);
+  if(observation?.isDiscounted===true
+    || (displayed!==null && original!==null && displayed<original)){
+    return {eligible:false,reason:"coupon-network-no-stack-with-store-discount"};
+  }
+  return {eligible:true,reason:null};
+}
