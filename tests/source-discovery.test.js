@@ -17,7 +17,7 @@ test("l'annuaire alimentaire inclut dons, essais gratuits et enseignes tierces",
   const sources=filterDiscoveryProviders(providers,{scope:"food"});
   const ids=sources.map((s)=>s.id);
   for(const id of ["carrefour-testeurs","geev","hophopfood","lidl-plus","carte-u",
-    "auchan-waaoh","intermarche-app","nous-antigaspi","trnd","home-tester-club","thefork"]){
+    "auchan-waaoh","intermarche-app","nous-antigaspi","trnd","home-tester-club","thefork","soliguide","linkee-etudiants"]){
     assert.ok(ids.includes(id),id);
   }
   assert.equal(ids.includes("veepee"),false);
