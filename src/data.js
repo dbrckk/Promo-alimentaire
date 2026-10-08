@@ -112,7 +112,7 @@ export const providers = [
     id:"carrefour-testeurs",name:"MonAvisLeRendGratuit",kinds:["tests gratuits","produits alimentaires"],priority:"essentiel",
     stores:["carrefour"],segment:"food",potentialFree:true,
     targetLabel:"Hypermarchés Carrefour participants",
-    url:"https://communaute-testerdesproduits.carrefour.fr/demenagement",
+    url:"https://communaute.carrefour.fr/",
     verificationUrl:"https://www.carrefour.fr/faq?question=qu-est-ce-que-monavislerendgratuit-83044",
     discoveryVerifiedAt:"2026-10-08",
     note:"Produits gratuits contre avis via la Communauté Carrefour. Réservé aux hypermarchés participants, sélection, crédits et conditions du programme."
@@ -173,6 +173,29 @@ export const providers = [
     note:"Épiceries de produits sauvés et marque NOUS à prix réduit. Une économie doit être comparée produit par produit, sans taux uniforme."
   },
   {
+    id:"quoty",name:"Quoty",kinds:["ODR","cashback ticket","courses"],priority:"complément",
+    stores:["carrefour","leclerc"],segment:"food",discoveryStatus:"unconfirmed",
+    targetLabel:"Enseignes éligibles selon les conditions de chaque ODR",
+    url:"https://quoty.fr/offres-promo",
+    verificationUrl:"https://quoty.fr/offres-promo",
+    note:"Le site Quoty décrit des remboursements contre preuve d'achat, mais ses pages publiques retrouvées datent principalement de 2025 : activité et offres en 2026 non reconfirmées. Ne rien acheter sur la base de ce seul catalogue."
+  },
+  {
+    id:"sampleo",name:"Sampleo",kinds:["tests gratuits","produits alimentaires","candidature"],priority:"fort",
+    stores:[],segment:"food",potentialFree:true,targetLabel:"Campagnes en France, inscription et sélection",
+    url:"https://sampleo.com/fr/",verificationUrl:"https://sampleo.com/fr/",
+    discoveryVerifiedAt:"2026-10-09",
+    note:"Candidatures pour recevoir des produits gratuits et partager un avis. Campagnes pouvant porter sur l'alimentaire ; aucune réception garantie."
+  },
+  {
+    id:"the-insiders",name:"The Insiders",kinds:["tests gratuits","échantillons","candidature"],priority:"fort",
+    stores:[],segment:"food",potentialFree:true,targetLabel:"Campagnes françaises ouvertes aux profils éligibles",
+    url:"https://www.theinsidersnet.com/fr-fr",
+    verificationUrl:"https://www.theinsidersnet.com/fr-fr",
+    discoveryVerifiedAt:"2026-10-09",
+    note:"Campagnes de test avec produits ou échantillons parfois offerts. Certaines opérations demandent un achat ou une participation financière : vérifier avant de candidater."
+  },
+  {
     id:"trnd",name:"TRND",kinds:["tests gratuits","candidature"],priority:"fort",
     stores:[],segment:"food",potentialFree:true,targetLabel:"Campagnes France, sélection requise",
     url:"https://www.trnd.com/fr/projets",
@@ -192,7 +215,7 @@ export const providers = [
     id:"thefork",name:"TheFork",kinds:["restaurant","réservation remisée"],priority:"fort",
     stores:[],segment:"food",advertisedMaxPercent:50,targetLabel:"Restaurants partenaires",
     url:"https://www.thefork.fr/",
-    verificationUrl:"https://www.thefork.fr/restaurant/la-taverne-de-l-olympia-r28184?=24751-923",
+    verificationUrl:"https://www.thefork.fr/",
     discoveryVerifiedAt:"2026-10-08",
     note:"Certaines réservations affichent jusqu'à -50 % sur les éléments éligibles de la carte. Vérifier créneau, exclusions, menus et boissons."
   },
