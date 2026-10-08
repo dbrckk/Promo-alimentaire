@@ -197,6 +197,20 @@ export const providers = [
     note:"Certaines réservations affichent jusqu'à -50 % sur les éléments éligibles de la carte. Vérifier créneau, exclusions, menus et boissons."
   },
   {
+    id:"soliguide",name:"Soliguide",kinds:["aide alimentaire","annuaire solidaire"],priority:"essentiel",
+    stores:[],segment:"food",targetLabel:"Services sociaux et associations selon la commune",
+    url:"https://soliguide.fr/",verificationUrl:"https://soliguide.fr/",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Recherche de distributions de repas, paniers, épiceries sociales, bons alimentaires et frigos solidaires. Gratuité et conditions propres à chaque structure."
+  },
+  {
+    id:"linkee-etudiants",name:"Linkee (étudiants)",kinds:["colis alimentaires","dons"],priority:"fort",
+    stores:[],segment:"food",potentialFree:true,targetLabel:"Étudiants, villes et créneaux disponibles",
+    url:"https://linkee.co/beneficiaires/",verificationUrl:"https://linkee.co/beneficiaires/",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Distributions alimentaires gratuites sur inscription avec justificatif étudiant. Une offre d'aide, pas un cashback ni une promotion en caisse."
+  },
+  {
     id:"veepee",name:"Veepee",kinds:["ventes privées","mode","maison"],priority:"fort",
     stores:[],segment:"other",advertisedMaxPercent:70,targetLabel:"Ventes privées en ligne",
     url:"https://www.veepee.fr/gr/home/default",
