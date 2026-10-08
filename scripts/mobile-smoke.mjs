@@ -140,10 +140,7 @@ try{
   await page.locator("#manualPriceDate").fill(localDate);
   await page.locator("#manualPriceSubmit").click();
   // Wait for the actual save result instead of brittle wording in a distant card.
-  await page.waitForFunction(()=>
-    Boolean(document.querySelector("#manualPriceStatus")?.textContent?.trim()),
-    {timeout:8000}
-  );
+  await page.locator("#manualPriceStatus").filter({hasText:/\S/}).waitFor({timeout:8000});
   const manualSaveStatus=await page.locator("#manualPriceStatus").innerText();
   assert.match(manualSaveStatus,/Prix personnel enregistré/,"Enregistrement relevé : "+manualSaveStatus);
   assert.match(await page.locator("#manualPriceEntries").innerText(),/2,69/);
