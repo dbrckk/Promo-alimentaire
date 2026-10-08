@@ -1001,6 +1001,10 @@ function addCurrentProduct(){
   if(existing){
     existing.quantity=normalizeQuantity(existing.quantity+1);
   }else{
+    if(state.shoppingList.length>=30){
+      setProductStatus("La liste est limitée à 30 produits distincts. Retire un produit avant d'en ajouter.",true);
+      return;
+    }
     state.shoppingList.push({
       product:{
         code:state.product.code,
