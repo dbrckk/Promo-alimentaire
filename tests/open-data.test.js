@@ -257,3 +257,29 @@ test("le prix ancien reste utilisable comme indicatif en absence d'un relevé r�
   ],120,now);
   assert.equal(current.price,4.5);
 });
+
+test("la géolocalisation absente est rejetée avant l'appel réseau",async()=>{
+  let called=false;
+  for(const coords of [
+    {latitude:null,longitude:null},
+    {latitude:"",longitude:""},
+    {latitude:45.4,longitude:null},
+    {lat:undefined,lon:4.3}
+  ]){
+    await assert.rejects(
+      fetchPricesByBarcode("3017624010701",{
+        store:"carrefour",coords,
+        fetchImpl:async()=>{called=true;throw Error("network called");}
+      }),
+      /Coordonnées géographiques invalides/
+    );
+  }
+  assert.equal(called,false);
+});
+
+test("haversine ne convertit pas des coordonnées manquantes en zéro",()=>{
+  assert.equal(haversineKm(null,4,45,4),null);
+  assert.equal(haversineKm(45,undefined,45,4),null);
+  assert.equal(haversineKm(91,4,45,4),null);
+  assert.equal(haversineKm(45,4,45,4),0);
+});
