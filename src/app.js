@@ -130,6 +130,7 @@ const state = {
   shoppingList:loadShoppingList(),
   manualPrices:loadStoredManualPrices(),
   basketPriceData:{carrefour:{},leclerc:{}},
+  basketPriceCoverageIncomplete:false,
   comparisonHistory:loadComparisonHistory(),
   productPriceHistory:loadProductPriceHistory(),
   dropThreshold:Number(localStorage.getItem("promo-drop-threshold") || 10),
@@ -192,6 +193,7 @@ els.refreshList.addEventListener("click",refreshShoppingList);
 els.clearList.addEventListener("click",()=>{
   state.shoppingList=[];
   state.basketPriceData={carrefour:{},leclerc:{}};
+  state.basketPriceCoverageIncomplete=false;
   saveShoppingList();
   renderShoppingList();
   setListStatus("Liste vidée.");
@@ -437,7 +439,7 @@ async function lookupBarcode(rawValue){
 
   if(pricesResult.status==="fulfilled"){
     state.priceObservations=pricesResult.value.observations;
-    renderPrices(state.priceObservations,pricesResult.value.sourceUrl);
+    renderPrices(state.priceObservations,pricesResult.value.sourceUrl,pricesResult.value);
     if(state.product){
       recordProductObservation(state.product,state.store,state.priceObservations);
       renderProductOffers(state.product,state.priceObservations);
@@ -461,7 +463,7 @@ async function refreshPrices(code){
     const result=await fetchPricesByBarcode(code,priceQueryOptions());
     if(token!==state.lookupToken) return;
     state.priceObservations=result.observations;
-    renderPrices(state.priceObservations,result.sourceUrl);
+    renderPrices(state.priceObservations,result.sourceUrl,result);
     if(state.product){
       recordProductObservation(state.product,state.store,state.priceObservations);
       renderProductOffers(state.product,state.priceObservations);
@@ -651,13 +653,19 @@ async function toggleNearbyPrices(){
   });
 }
 
-function renderPrices(observations,sourceUrl){
+function renderPrices(observations,sourceUrl,metadata={}){
+  const fetchedPages=Math.max(1,Number(metadata.pagesFetched)||1);
+  const coverageNote=metadata.partial
+    ? '<div class="panel price-source">Recherche partielle : une page Open Prices supplémentaire est indisponible. Les prix affichés sont indicatifs et peuvent ne pas couvrir tous les magasins.</div>'
+    : fetchedPages>1
+      ? `<div class="panel price-source">${fetchedPages} pages Open Prices consultées pour rechercher davantage de relevés.</div>`
+      : "";
   if(!observations.length){
     els.priceResults.innerHTML=`
       <div class="panel price-source">
         Aucun prix Open Prices trouvé pour ce code-barres chez ${storeLabel(state.store)}${state.nearbyEnabled?` dans un rayon de ${state.radiusKm} km`:""}.
         Cela ne signifie pas que le produit n'y est pas vendu : la base est communautaire et encore incomplète.
-      </div>`;
+      </div>${coverageNote}`;
     return;
   }
   const best=selectBestRecentPrice(observations);
@@ -686,6 +694,7 @@ function renderPrices(observations,sourceUrl){
   }).join("");
   els.priceResults.innerHTML=`
     ${bestSummary}
+    ${coverageNote}
     ${cards}
     <div class="panel price-source">
       ${observations.length} observation(s) ${storeLabel(state.store)} trouvée(s)${state.nearbyEnabled?` dans un rayon de ${state.radiusKm} km`:""}. Source : Open Prices / Open Food Facts.
@@ -985,6 +994,7 @@ async function refreshShoppingList(){
   els.refreshList.disabled=true;
   const next={carrefour:{},leclerc:{}};
   let failures=0;
+  let partialRequests=0;
 
   try{
     for(let index=0;index<state.shoppingList.length;index+=1){
@@ -996,23 +1006,26 @@ async function refreshShoppingList(){
       ]);
       if(carrefour.status==="fulfilled"){
         next.carrefour[item.product.code]=carrefour.value.observations;
+        if(carrefour.value.partial) partialRequests+=1;
         recordProductObservation(item.product,"carrefour",carrefour.value.observations);
       }else { next.carrefour[item.product.code]=[]; failures+=1; }
       if(leclerc.status==="fulfilled"){
         next.leclerc[item.product.code]=leclerc.value.observations;
+        if(leclerc.value.partial) partialRequests+=1;
         recordProductObservation(item.product,"leclerc",leclerc.value.observations);
       }else { next.leclerc[item.product.code]=[]; failures+=1; }
     }
     state.basketPriceData=next;
+    state.basketPriceCoverageIncomplete=partialRequests>0;
     const scenarios=evaluateCurrentBasketScenarios();
     recordComparisonHistory(scenarios);
     renderShoppingList();
     const locality=state.nearbyEnabled ? ` dans un rayon de ${state.radiusKm} km` : " sans filtre géographique";
     setListStatus(
-      failures
-        ? `Actualisation terminée avec ${failures} requête(s) indisponible(s)${locality}.`
+      failures || partialRequests
+        ? `Actualisation indicative : ${failures} requête(s) indisponible(s), ${partialRequests} recherche(s) paginée(s) partielles${locality}.`
         : `Prix actualisés pour Carrefour et E.Leclerc${locality}.`,
-      failures>0
+      failures>0 || partialRequests>0
     );
   }finally{
     state.basketRefreshing=false;
@@ -1031,6 +1044,7 @@ function basketQueryOptions(store){
 
 function markBasketPricesStale(){
   state.basketPriceData={carrefour:{},leclerc:{}};
+  state.basketPriceCoverageIncomplete=false;
   renderShoppingList();
 }
 
@@ -1081,7 +1095,7 @@ function evaluateCurrentBasketScenarios(){
     }
     const enrichedScenario={
       ...scenario,
-      priceChannelReliable:state.channel==="store" && scenario.manualPriceCount===0
+      priceChannelReliable:state.channel==="store" && !state.basketPriceCoverageIncomplete && scenario.manualPriceCount===0
     };
     return {
       ...enrichedScenario,
@@ -1366,6 +1380,8 @@ function renderBasketComparison(scenarios){
   let recommendation="";
   if(state.channel!=="store"){
     recommendation='<div class="basket-recommendation"><strong>Prix indicatifs seulement.</strong> Open Prices contient des observations de magasins physiques ; en mode Drive ou En ligne, ces prix ne permettent pas de déclarer une enseigne gagnante. Les offres du canal sélectionné restent filtrées correctement.</div>';
+  }else if(state.basketPriceCoverageIncomplete){
+    recommendation='<div class="basket-recommendation"><strong>Recherche Open Prices incomplète.</strong> Une page supplémentaire n’a pas pu être récupérée ; les résultats restent indicatifs et aucun magasin gagnant n’est annoncé.</div>';
   }else if(!state.nearbyEnabled){
     recommendation='<div class="basket-recommendation"><strong>Comparaison locale non activée.</strong> Active « Autour de moi » puis actualise pour comparer des magasins dans le même secteur.</div>';
   }else if(!allComplete){
@@ -1569,7 +1585,9 @@ function renderBasketScenario(scenario){
         <div class="${coverageClass} source">${scenario.pricedCount}/${scenario.distinctCount} références avec prix récent</div>
         <div class="badges">
           ${locationWarning}
-          ${scenario.priceChannelReliable===false?'<span class="badge warn">prix magasin indicatif pour ce canal</span>':""}
+          ${scenario.priceChannelReliable===false
+            ? `<span class="badge warn">${state.channel==="store"?"recherche de prix partielle":"prix magasin indicatif pour ce canal"}</span>`
+            : ""}
         </div>
       </div>
       <div class="confidence-box">
