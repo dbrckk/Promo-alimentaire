@@ -738,3 +738,32 @@ test("une promotion immédiate reste candidate si le prix normal observé a plus
   assert.equal(recent.guaranteedSaving,0.48);
   assert.equal(recent.lines[0].retailerPromoAgeWarning,false);
 });
+
+
+test("un prix manuel donne un sous-total mais ne garantit aucun cumul produit/paiement",()=>{
+  const p={code:"3017624010701",name:"Produit",brands:"Marque",categories:[]};
+  const exact={
+    id:"odr",scope:"produit",stores:["carrefour"],eans:[p.code],
+    savingPercent:20,autoStack:true,stackGroup:"manufacturer"
+  };
+  const gift={
+    id:"gift",scope:"panier",stores:["carrefour"],channels:["store"],
+    savingPercent:4,autoStack:true,mechanism:"gift_card",stackGroup:"payment"
+  };
+  const scenario=evaluateBasketStore([{product:p,quantity:2}],{
+    store:"carrefour",channel:"store",
+    priceByCode:{[p.code]:[{
+      price:5,date:"2026-10-08",source:"manual",manual:true,
+      storeName:"Carrefour Chalon",postcode:"71100"
+    }]},
+    offers:[exact,gift],now:new Date("2026-10-08T18:00:00Z")
+  });
+  assert.equal(scenario.manualPriceCount,1);
+  assert.equal(scenario.observedSubtotal,10);
+  assert.equal(scenario.guaranteedSaving,0);
+  assert.equal(scenario.finalCost,10);
+  assert.equal(scenario.checkoutCost,10);
+  assert.equal(scenario.lines[0].manualPrice,true);
+  assert.equal(scenario.lines[0].bestProductCandidate.offer.id,"odr");
+  assert.ok(scenario.potentialBasketSaving>0);
+});
