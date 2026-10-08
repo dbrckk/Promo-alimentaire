@@ -633,3 +633,32 @@ test("la promo catalogue n'est pas soustraite deux fois si Open Prices montre so
   assert.equal(normal.guaranteedSaving,0.48);
   assert.equal(normal.finalCost,1.11);
 });
+
+
+test("une géolocalisation absente ne crée pas un magasin fantôme",()=>{
+  assert.equal(observationLocationKey({
+    storeName:"Carrefour",locationLat:null,locationLon:null
+  }),null);
+  assert.equal(observationLocationKey({
+    storeName:"Carrefour",locationLat:45.3,locationLon:null
+  }),null);
+  assert.equal(observationLocationKey({
+    storeName:"Carrefour City Lyon",postcode:"69003"
+  }),"text:carrefour city lyon|69003");
+});
+
+test("deux observations avec uniquement le nom de chaîne ne forment pas un faux panier complet",()=>{
+  const items=[
+    {product:{code:"A",name:"A"},quantity:1},
+    {product:{code:"B",name:"B"},quantity:1}
+  ];
+  const scenarios=evaluateBasketLocations(items,{
+    store:"carrefour",
+    priceByCode:{
+      A:[{price:2,date:"2026-10-07",storeName:"Carrefour",locationLat:null,locationLon:null}],
+      B:[{price:3,date:"2026-10-07",storeName:"Carrefour",locationLat:null,locationLon:null}]
+    },
+    now:new Date("2026-10-08T12:00:00Z")
+  });
+  assert.equal(scenarios.length,0);
+});
