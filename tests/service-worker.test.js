@@ -21,3 +21,9 @@ test("une nouvelle version PWA peut prendre le contrôle des clients",()=>{
   assert.match(source,/self\.skipWaiting\(\)/);
   assert.match(source,/self\.clients\.claim\(\)/);
 });
+
+
+test("le service worker laisse passer les API externes directement au navigateur",()=>{
+  assert.match(source,/if\(url\.origin!==self\.location\.origin\) return;/);
+  assert.doesNotMatch(source,/event\.respondWith\(fetch\(event\.request\)\)/);
+});
