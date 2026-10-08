@@ -24,6 +24,7 @@ import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js"
 import { buildSavingsActionPlan } from "./action-plan.js";
 import { buildVerificationQueue } from "./verification-queue.js";
 import { evaluateShoppingBudget, parseShoppingBudget } from "./budget.js";
+import { MAX_BACKUP_BYTES, serializeShoppingList, parseShoppingListBackup } from "./shopping-list-transfer.js";
 import { summarizeBasketStrategies } from "./strategy.js";
 import {
   buildProductLoyaltyOffers,
@@ -94,6 +95,9 @@ const els = {
   listNearbyButton:document.querySelector("#listNearbyButton"),
   listRadiusSelect:document.querySelector("#listRadiusSelect"),
   clearList:document.querySelector("#clearList"),
+  exportList:document.querySelector("#exportList"),
+  importList:document.querySelector("#importList"),
+  importListFile:document.querySelector("#importListFile"),
   clearHistory:document.querySelector("#clearHistory"),
   dropThreshold:document.querySelector("#dropThreshold"),
   listStatus:document.querySelector("#listStatus"),
@@ -195,6 +199,15 @@ els.scanButton.addEventListener("click",startScanner);
 els.nearbyButton.addEventListener("click",toggleNearbyPrices);
 els.listNearbyButton.addEventListener("click",toggleNearbyPrices);
 els.refreshList.addEventListener("click",refreshShoppingList);
+els.exportList.addEventListener("click",downloadShoppingListBackup);
+els.importList.addEventListener("click",()=>{
+  if(state.basketRefreshing){
+    setListStatus("Attends la fin de l'actualisation des prix avant de restaurer.",true);
+    return;
+  }
+  els.importListFile.click();
+});
+els.importListFile.addEventListener("change",restoreShoppingListBackup);
 els.shoppingBudget.addEventListener("input",()=>{
   const input=els.shoppingBudget.value.trim();
   state.shoppingBudget=parseShoppingBudget(input);
@@ -888,6 +901,74 @@ function handleManualPriceEntryAction(event){
     renderShoppingList();
   }catch(error){
     els.manualPriceStatus.textContent=error.message || "Suppression impossible.";
+  }
+}
+
+function downloadShoppingListBackup(){
+  try{
+    const data=serializeShoppingList(state.shoppingList,state.shoppingBudget);
+    const blob=new Blob([data],{type:"application/json;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const anchor=document.createElement("a");
+    const today=new Date(Date.now()-new Date().getTimezoneOffset()*60000)
+      .toISOString().slice(0,10);
+    anchor.href=url;
+    anchor.download="promo-alimentaire-liste-"+today+".json";
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(()=>URL.revokeObjectURL(url),5000);
+    setListStatus("Sauvegarde créée : "+state.shoppingList.length+" produit(s), avec le budget. Aucun prix ou emplacement exporté.");
+  }catch(error){
+    setListStatus("Sauvegarde impossible : "+(error.message || "erreur inconnue"),true);
+  }
+}
+
+async function restoreShoppingListBackup(){
+  const file=els.importListFile.files?.[0];
+  els.importListFile.value="";
+  if(!file) return;
+  if(file.size>MAX_BACKUP_BYTES){
+    setListStatus("Fichier trop volumineux : maximum 100 Ko.",true);
+    return;
+  }
+  try{
+    const {items,budget}=parseShoppingListBackup(await file.text());
+    if(state.basketRefreshing){
+      setListStatus("Attends la fin de l'actualisation avant de restaurer.",true);
+      return;
+    }
+    if(!window.confirm("Remplacer la liste actuelle et son budget par "+items.length+" produit(s) de la sauvegarde ?")){
+      setListStatus("Restauration annulée.");
+      return;
+    }
+    const previousList=localStorage.getItem("promo-shopping-list-v1");
+    const previousBudget=localStorage.getItem("promo-shopping-budget-v1");
+    try{
+      localStorage.setItem("promo-shopping-list-v1",JSON.stringify(items));
+      if(budget===null){
+        localStorage.removeItem("promo-shopping-budget-v1");
+      }else{
+        localStorage.setItem("promo-shopping-budget-v1",String(budget));
+      }
+    }catch{
+      try{
+        if(previousList===null) localStorage.removeItem("promo-shopping-list-v1");
+        else localStorage.setItem("promo-shopping-list-v1",previousList);
+        if(previousBudget===null) localStorage.removeItem("promo-shopping-budget-v1");
+        else localStorage.setItem("promo-shopping-budget-v1",previousBudget);
+      }catch{}
+      throw new Error("Impossible d'enregistrer la sauvegarde sur cet appareil.");
+    }
+    state.shoppingList=items;
+    state.shoppingBudget=budget;
+    els.shoppingBudget.value=budget===null?"":budget.toFixed(2).replace(".",",");
+    state.basketPriceData={carrefour:{},leclerc:{}};
+    state.basketPriceCoverageIncomplete=false;
+    renderShoppingList();
+    setListStatus("Liste restaurée : "+items.length+" produit(s). Actualise les prix pour recalculer le panier.");
+  }catch(error){
+    setListStatus("Restauration impossible : "+(error.message || "fichier invalide"),true);
   }
 }
 
