@@ -211,3 +211,24 @@ test("l'absence de fichier diagnostic ne bloque pas les imports",async()=>{
   assert.equal(result.offers.length,1);
   assert.equal(result.sourceStats[0].syncState,undefined);
 });
+
+
+test("un contrôle partiel d'une enseigne garde les offres mais affiche une alerte",async()=>{
+  const fetchImpl=async(url)=>{
+    const text=String(url);
+    if(text.endsWith("/index.json"))return {ok:true,json:async()=>manifest};
+    if(text.endsWith("/source-sync-status.json"))return {ok:true,json:async()=>({
+      sources:{shopmium:{
+        status:"partial",checkedAt:"2026-10-08T12:00:00Z",
+        reason:"2/5 offres seulement"
+      }}
+    })};
+    return {ok:true,json:async()=>payload};
+  };
+  const result=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-08T14:00:00Z")
+  });
+  assert.equal(result.sourceStats[0].status,"sync-warning");
+  assert.equal(result.sourceStats[0].syncState.status,"partial");
+  assert.equal(result.offers.length,1);
+});
