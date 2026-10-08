@@ -299,3 +299,6 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 @media(max-width:470px){.verification-item{grid-template-columns:1fr}.verification-value{text-align:left}}
 
 .source-health-card .sync-warning{margin:6px 0 0;padding:8px 9px;border-radius:9px;background:#fff5dc;border:1px solid #ecd5a2;color:#715200;font-size:.68rem;line-height:1.45}
+
+.price-age-note{font-size:.67rem;color:var(--muted);margin:4px 0 5px;line-height:1.45}
+.price-age-note.outdated{color:#8a6500;font-weight:650}
