@@ -211,3 +211,24 @@ Le dernier synchroniseur a reçu **0 offre exploitable** : le site public prése
 Conditions officielles : <https://www.couponnetwork.fr/contact-us> et <https://www.couponnetwork.fr/conditions-generales-utilisation>.
 
 Les offres dont la source publique n'est pas vérifiable restent des opportunités à contrôler dans le service d'origine ; la date du manifeste global ne constitue pas une nouvelle preuve individuelle.
+
+
+## Santé des synchronisations publiques (8 octobre 2026)
+
+Une exécution GitHub Actions réussie **ne garantit pas** que les pages marchandes aient confirmé les promotions.
+
+L'application distingue désormais trois informations indépendantes :
+
+1. **Validité d'une offre** : `verifiedAt`, `reviewAfter`, `expiresAt`, EAN et magasin. Une vérification échouée ne prolonge jamais ces dates.
+2. **Exécution technique** : statut du workflow Github Actions, tests unitaires et validation du snapshot.
+3. **Dernière tentative de synchronisation** : nombre de promotions effectivement reconfirmées, dernière tentative et motif d'indisponibilité.
+
+Les diagnostics sont stockés séparément pour éviter les conflits entre actions concurrentes :
+
+- `data/import/source-sync-status.json` : Coupon Network.
+- `data/import/source-sync-carrefour.json` : Carrefour.
+- `data/import/source-sync-leclerc.json` : E.Leclerc.
+
+Les fichiers de diagnostic ne sont jamais traités comme des lots d'offres. L'interface affiche « Source non actualisée » lorsque l'extraction a échoué ou reste partielle, mais ne gonfle ni le nombre d'offres garanties ni les échéances de révision.
+
+La CI mobile vérifie que les avertissements disponibles dans les fichiers apparaissent dans l'interface et que l'application reste utilisable hors ligne.
