@@ -207,3 +207,27 @@ Ces vérifications sont **conservatrices** et ne remplacent pas la vérification
 - ces modules figurent dans le cache du service worker pour le fonctionnement hors ligne.
 
 Les scénarios de panier signalent désormais les **vérifications les plus rentables** par gain additionnel potentiel, sans additionner les offres incertaines ni les présenter comme garanties.
+
+
+### Cohérence historique, localisation et cache Android
+
+Les comparaisons de coût ne produisent une tendance que pour un **panier identique** (mêmes codes produits et quantités), le **même magasin physique**, le **même canal** et le **même rayon de proximité**. Un changement de panier, de magasin ou de zone ne sera plus présenté comme une hausse ou une baisse de prix. Les anciennes entrées sans identité de comparaison fiable ne créent pas de tendance.
+
+Pour les prix Open Prices :
+
+- les coordonnées absentes restent absentes : elles ne sont jamais converties en point fictif `(0, 0)` ;
+- les données sont contrôlées côté client (EAN du produit, devise EUR, prix strictement positif et enseigne non ambiguë) ;
+- en mode « Autour de moi », les observations sans géolocalisation valide ou hors rayon sont exclues même si l'API les a renvoyées ;
+- un simple nom d'enseigne ne suffit pas à agréger des références dans un panier attribué à un magasin précis ;
+- un prix inférieur à un prix normal/barré fourni par la source est identifié comme déjà remisé, même si le drapeau de promotion manque.
+
+Le panier distingue maintenant **montant estimé payé en caisse**, **cagnotte fidélité**, **remboursements différés** et **coût économique après avantages**. Les remboursements différés ne réduisent pas artificiellement le besoin de trésorerie en caisse.
+
+Le service worker de la PWA :
+
+- met à jour les clients lorsqu'une nouvelle version vérifiée est disponible ;
+- ne remplace pas le cache fonctionnel par une réponse HTTP en erreur ;
+- conserve hors ligne les modules validés ;
+- ne supprime que les anciens caches propres à `promo-alimentaire-`, sans toucher aux caches d'autres applications partageant le même domaine.
+
+Toutes ces règles disposent de tests exécutés dans `npm run verify`.
