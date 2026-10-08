@@ -29,9 +29,10 @@ export function scoreOpenFoodFactsCandidate(offer,candidate){
   const required=(rules.all || []).map(normalizeText).filter(Boolean);
   const optional=(rules.any || []).map(normalizeText).filter(Boolean);
 
-  const brandMatched=!brands.length || brands.some((brand)=>
-    candidateBrand.includes(brand) || brand.includes(candidateBrand)
-  );
+  // An empty brand field must never satisfy the advertised brand.
+  const brandMatched=!brands.length || (Boolean(candidateBrand) && brands.some((brand)=>
+    candidateBrand===brand || contains(candidateBrand,brand)
+  ));
   const requiredMatched=required.every((term)=>contains(haystack,term));
   const optionalMatches=optional.filter((term)=>contains(haystack,term));
 
@@ -167,7 +168,12 @@ export async function fetchOpenFoodFactsCandidates(offer,{
     await sleepImpl(waitMs);
   }
   const payload=await response.json();
-  const candidates=(payload?.products || []).map((product)=>({
+  const products=Array.isArray(payload?.products) ? payload.products : [];
+  const reportedTotal=Number(payload?.count);
+  const hasMoreResults=(Number.isFinite(reportedTotal) && reportedTotal>products.length)
+    || (products.length>=Math.min(Math.max(Number(pageSize)||20,1),20)
+      && !Number.isFinite(reportedTotal));
+  const candidates=products.map((product)=>({
     code:String(product.code || ""),
     product_name:product.product_name || "",
     generic_name:product.generic_name || "",
@@ -176,7 +182,7 @@ export async function fetchOpenFoodFactsCandidates(offer,{
     countries_tags:product.countries_tags || [],
     stores_tags:product.stores_tags || []
   }));
-  return {terms,candidates,sourceUrl};
+  return {terms,candidates,sourceUrl,hasMoreResults};
 }
 
 function contains(haystack,term){
