@@ -68,3 +68,10 @@ test("fusionner des observations conserve les prix Open Prices existants",()=>{
   assert.equal(merged[input.code][1].manual,true);
   assert.equal(data[input.code].length,1);
 });
+
+test("demain est rejeté même quand il est à moins de 24 heures",()=>{
+  const tomorrow={...input,date:"2026-10-09"};
+  assert.throws(()=>normalizeManualPrice(tomorrow,{
+    now:new Date("2026-10-08T23:00:00Z")
+  }),/future/);
+});
