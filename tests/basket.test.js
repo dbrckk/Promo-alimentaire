@@ -249,12 +249,12 @@ test("une ligne expose sa meilleure ODR candidate avec niveau de correspondance"
 
 test("Club Carrefour applique 10% sur un produit Carrefour Bio",()=>{
   const bio={
-    code:"77777777",name:"Pâtes bio",brands:"Carrefour Bio",categories:[]
+    code:"77777775",name:"Pâtes bio",brands:"Carrefour Bio",categories:[]
   };
   const scenario=evaluateBasketStore([{product:bio,quantity:1}],{
     store:"carrefour",
     loyaltyProfile:{carrefour:"club",leclerc:"unknown"},
-    priceByCode:{"77777777":[{price:10,date:"2026-10-01"}]},
+    priceByCode:{"77777775":[{price:10,date:"2026-10-01"}]},
     offers:[],
     now:new Date("2026-10-07T12:00:00Z")
   });
@@ -265,12 +265,12 @@ test("Club Carrefour applique 10% sur un produit Carrefour Bio",()=>{
 
 test("Carte PASS applique 15% au lieu de 10%",()=>{
   const bio={
-    code:"88888888",name:"Riz bio",brands:"Carrefour Bio",categories:[]
+    code:"88888880",name:"Riz bio",brands:"Carrefour Bio",categories:[]
   };
   const scenario=evaluateBasketStore([{product:bio,quantity:1}],{
     store:"carrefour",
     loyaltyProfile:{carrefour:"pass"},
-    priceByCode:{"88888888":[{price:20,date:"2026-10-01"}]},
+    priceByCode:{"88888880":[{price:20,date:"2026-10-01"}]},
     offers:[],
     now:new Date("2026-10-07T12:00:00Z")
   });
@@ -280,12 +280,12 @@ test("Carte PASS applique 15% au lieu de 10%",()=>{
 
 test("profil Carrefour inconnu laisse l'avantage seulement potentiel",()=>{
   const bio={
-    code:"99999999",name:"Produit bio",brands:"Carrefour Bio",categories:[]
+    code:"99999995",name:"Produit bio",brands:"Carrefour Bio",categories:[]
   };
   const scenario=evaluateBasketStore([{product:bio,quantity:1}],{
     store:"carrefour",
     loyaltyProfile:{carrefour:"unknown"},
-    priceByCode:{"99999999":[{price:10,date:"2026-10-01"}]},
+    priceByCode:{"99999995":[{price:10,date:"2026-10-01"}]},
     offers:[],
     now:new Date("2026-10-07T12:00:00Z")
   });
@@ -322,12 +322,12 @@ test("Ticket E.Leclerc exige la carte si l'offre le demande",()=>{
 
 test("PASS sépare prix caisse et cagnotte fidélité",()=>{
   const bio={
-    code:"10101010",name:"Produit Bio",brands:"Carrefour Bio",categories:[]
+    code:"10101018",name:"Produit Bio",brands:"Carrefour Bio",categories:[]
   };
   const scenario=evaluateBasketStore([{product:bio,quantity:1}],{
     store:"carrefour",
     loyaltyProfile:{carrefour:"pass"},
-    priceByCode:{"10101010":[{price:20,date:"2026-10-01"}]},
+    priceByCode:{"10101018":[{price:20,date:"2026-10-01"}]},
     offers:[],
     now:new Date("2026-10-07T12:00:00Z")
   });
