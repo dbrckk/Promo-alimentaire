@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {makeSourceSyncStatus,writeSourceSyncStatus} from "../scripts/source-sync-status.mjs";
+import {
+  makeSourceSyncStatus,writeSourceSyncStatus,sourceSyncStatusFile
+} from "../scripts/source-sync-status.mjs";
 
 test("une source 0/11 doit signaler l'indisponibilité sans prolongation",()=>{
   const status=makeSourceSyncStatus({
@@ -37,4 +39,13 @@ test("le mode lecture n'écrit jamais dans le dépôt",async()=>{
     status:"unavailable",extractedCount:0,previousSnapshotCount:11
   },{write:false});
   assert.equal(status.status,"unavailable");
+});
+
+
+test("chaque synchroniseur écrit un fichier différent, sans conflit Git",()=>{
+  const a=sourceSyncStatusFile("carrefour").pathname;
+  const b=sourceSyncStatusFile("leclerc").pathname;
+  assert.ok(a.endsWith("/source-sync-carrefour.json"));
+  assert.ok(b.endsWith("/source-sync-leclerc.json"));
+  assert.notEqual(a,b);
 });
