@@ -283,3 +283,102 @@ test("haversine ne convertit pas des coordonnées manquantes en zéro",()=>{
   assert.equal(haversineKm(91,4,45,4),null);
   assert.equal(haversineKm(45,4,45,4),0);
 });
+
+
+test("Open Prices recherche une deuxième page lorsque les références locales manquent",async()=>{
+  const code="3017624010701";
+  const pages=[];
+  const source=(id,price,per="UNIT")=>({
+    id,product_code:code,price,currency:"EUR",
+    price_per:per,date:"2026-10-07",location:{
+      osm_brand:"Carrefour",osm_lat:45.44,osm_lon:4.39
+    }
+  });
+  const result=await fetchPricesByBarcode(code,{
+    store:"carrefour",size:2,maxPages:3,minimumMatches:3,
+    coords:{latitude:45.44,longitude:4.39},
+    fetchImpl:async(url)=>{
+      const u=new URL(url);
+      const page=Number(u.searchParams.get("page")||1);
+      pages.push(page);
+      return {ok:true,json:async()=>({
+        pages:3,total:6,
+        items:page===1
+          ? [source(1,2),source(2,4,"KILOGRAM")]
+          : page===2
+            ? [source(3,3),source(4,2.5)]
+            : [source(5,7)]
+      })};
+    }
+  });
+  assert.deepEqual(pages,[1,2]);
+  assert.equal(result.pagesFetched,2);
+  assert.equal(result.partial,false);
+  assert.deepEqual(result.observations.map((item)=>item.id),[1,3,4]);
+  assert.equal(result.observations.every((item)=>item.pricePer==="UNIT"),true);
+});
+
+test("le moteur refuse le prix au kilogramme pour un produit vendu à la pièce",async()=>{
+  const code="3017624010701";
+  const result=await fetchPricesByBarcode(code,{
+    store:"carrefour",maxPages:1,
+    fetchImpl:async()=>({ok:true,json:async()=>({
+      items:[{id:1,product_code:code,currency:"EUR",price:4,price_per:"KILOGRAM",
+        date:"2026-10-07",location:{osm_brand:"Carrefour"}}]
+    })})
+  });
+  assert.equal(result.observations.length,0);
+});
+
+test("une erreur de la page suivante ne perd pas les prix de la première",async()=>{
+  const code="3017624010701";
+  const urls=[];
+  const result=await fetchPricesByBarcode(code,{
+    store:"carrefour",size:1,maxPages:3,
+    fetchImpl:async(url)=>{
+      urls.push(String(url));
+      if(urls.length===2) return {ok:false,status:503};
+      return {ok:true,json:async()=>({
+        pages:4,total:4,
+        items:[{id:1,product_code:code,price:2,currency:"EUR",
+          date:"2026-10-07",location:{osm_brand:"Carrefour"}}]
+      })};
+    }
+  });
+  assert.equal(urls.length,2);
+  assert.equal(new URL(urls[1]).searchParams.get("page"),"2");
+  assert.equal(result.partial,true);
+  assert.equal(result.pagesFetched,1);
+  assert.deepEqual(result.observations.map((item)=>item.id),[1]);
+});
+
+test("Open Prices déduplique les relevés répétés entre pages",async()=>{
+  const code="3017624010701";
+  const source={id:101,product_code:code,price:2,currency:"EUR",
+    date:"2026-10-07",location:{osm_brand:"Carrefour"}};
+  let calls=0;
+  const result=await fetchPricesByBarcode(code,{
+    store:"carrefour",size:1,maxPages:2,minimumMatches:3,
+    fetchImpl:async()=>{calls+=1;return {ok:true,json:async()=>({
+      pages:2,total:2,items:[source]
+    })};}
+  });
+  assert.equal(calls,2);
+  assert.equal(result.observations.length,1);
+});
+
+test("la recherche paginée reste plafonnée à trois appels",async()=>{
+  const code="3017624010701";
+  let calls=0;
+  const result=await fetchPricesByBarcode(code,{
+    store:"leclerc",size:1,maxPages:999,
+    fetchImpl:async()=>{calls+=1;return {
+      ok:true,json:async()=>({pages:999,total:999,items:[{
+        id:calls,product_code:code,price:1,currency:"EUR",
+        date:"2026-10-07",location:{osm_brand:"Carrefour"}
+      }]})
+    };}
+  });
+  assert.equal(calls,3);
+  assert.equal(result.pagesFetched,3);
+});
