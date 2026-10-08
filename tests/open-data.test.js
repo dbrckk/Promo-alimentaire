@@ -109,15 +109,15 @@ test("normalizePriceObservation calcule la distance si la position est fournie",
 });
 
 
-test("selectBestRecentPrice choisit le prix récent le plus bas",()=>{
+test("selectBestRecentPrice utilise le prix le plus récent, même s'il a augmenté",()=>{
   const now=new Date("2026-10-07T12:00:00Z");
   const best=selectBestRecentPrice([
     {price:3.2,date:"2026-10-05",storeName:"A"},
     {price:2.9,date:"2026-10-01",storeName:"B"},
     {price:1.5,date:"2025-01-01",storeName:"Ancien"}
   ],120,now);
-  assert.equal(best.storeName,"B");
-  assert.equal(best.price,2.9);
+  assert.equal(best.storeName,"A");
+  assert.equal(best.price,3.2);
 });
 
 
@@ -217,4 +217,43 @@ test("le prix barré supérieur au prix payé signale une promotion malgré un i
     id:10,price:7,price_without_discount:7
   });
   assert.equal(plain.isDiscounted,false);
+});
+
+
+test("une ancienne promotion ne remplace pas un relevé normal récent du même magasin",()=>{
+  const now=new Date("2026-10-08T12:00:00Z");
+  const current=selectBestRecentPrice([
+    {id:1,price:1.11,date:"2026-10-01",isDiscounted:true,locationId:42},
+    {id:2,price:1.59,date:"2026-10-07",isDiscounted:false,locationId:42}
+  ],120,now);
+  assert.equal(current.price,1.59);
+  assert.equal(current.isDiscounted,false);
+});
+
+test("à la même date, des relevés contradictoires utilisent le prix le plus prudent",()=>{
+  const now=new Date("2026-10-08T12:00:00Z");
+  const current=selectBestRecentPrice([
+    {price:2.3,date:"2026-10-07"},
+    {price:3.1,date:"2026-10-07",proofType:"RECEIPT"},
+    {price:1,date:"2026-10-07"}
+  ],120,now);
+  assert.equal(current.price,3.1);
+});
+
+test("un prix récent sans preuve n'écarte pas un autre prix du même jour mieux étayé",()=>{
+  const now=new Date("2026-10-08T12:00:00Z");
+  const current=selectBestRecentPrice([
+    {id:"b",price:3.1,date:"2026-10-07",proofType:"RECEIPT"},
+    {id:"a",price:3.1,date:"2026-10-07",proofType:null}
+  ],120,now);
+  assert.equal(current.proofType,"RECEIPT");
+});
+
+test("le prix ancien reste utilisable comme indicatif en absence d'un relevé récent",()=>{
+  const now=new Date("2026-10-08T12:00:00Z");
+  const current=selectBestRecentPrice([
+    {price:4.5,date:"2026-07-20"},
+    {price:3.5,date:"2026-06-10"}
+  ],120,now);
+  assert.equal(current.price,4.5);
 });
