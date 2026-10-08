@@ -1,5 +1,5 @@
 const CACHE_PREFIX="promo-alimentaire-";
-const CACHE=CACHE_PREFIX+"v22";
+const CACHE=CACHE_PREFIX+"v23";
 const STATIC_ASSETS=[
   "./","./index.html","./styles.css","./src/app.js","./src/data.js","./src/domain.js",
   "./src/open-data.js","./src/promo-price-check.js","./src/stacking.js","./src/matching.js","./src/retailer-promo.js","./src/bundle.js","./src/basket.js",
