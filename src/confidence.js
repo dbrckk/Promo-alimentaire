@@ -23,7 +23,10 @@ export function scoreBasketConfidence(scenario,{now=new Date()}={}) {
   );
   const locationScore=locationReliable ? 15 : scenario.location ? 6 : 0;
 
-  const proofValues=pricedLines.map((line)=>line.bestPrice?.proofType ? 1 : 0);
+  const proofValues=pricedLines.map((line)=>
+    line.bestPrice?.proofType && line.bestPrice.source!=="manual" && !line.bestPrice.manual
+      ? 1 : 0
+  );
   const proofRatio=proofValues.length
     ? proofValues.reduce((sum,value)=>sum+value,0)/proofValues.length
     : 0;
@@ -32,7 +35,8 @@ export function scoreBasketConfidence(scenario,{now=new Date()}={}) {
   const rawScore=Math.min(100,Math.max(
     0,coverageScore+freshnessScore+locationScore+proofScore
   ));
-  const priceChannelReliable=scenario.priceChannelReliable!==false;
+  const priceChannelReliable=scenario.priceChannelReliable!==false
+    && !pricedLines.some((line)=>line.bestPrice.source==="manual" || line.bestPrice.manual);
   const score=Math.round(priceChannelReliable ? rawScore : rawScore*0.65);
 
   return {
