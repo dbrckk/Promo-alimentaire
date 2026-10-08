@@ -139,7 +139,13 @@ try{
   });
   await page.locator("#manualPriceDate").fill(localDate);
   await page.locator("#manualPriceSubmit").click();
-  await page.getByText("Relevé personnel non vérifié").first().waitFor({timeout:8000});
+  // Wait for the actual save result instead of brittle wording in a distant card.
+  await page.waitForFunction(()=>
+    Boolean(document.querySelector("#manualPriceStatus")?.textContent?.trim()),
+    {timeout:8000}
+  );
+  const manualSaveStatus=await page.locator("#manualPriceStatus").innerText();
+  assert.match(manualSaveStatus,/Prix personnel enregistré/,"Enregistrement relevé : "+manualSaveStatus);
   assert.match(await page.locator("#manualPriceEntries").innerText(),/2,69/);
   assert.match(await page.locator("#basketComparison").innerText(),/Budget indicatif/);
   await assertNoHorizontalOverflow(page,"relevé manuel");
