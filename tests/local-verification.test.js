@@ -172,3 +172,25 @@ test("une confirmation expire aussi au prochain contrôle de source",()=>{
     now:new Date("2026-10-09T00:00:00Z")
   }),false);
 });
+
+
+test("la confirmation en magasin n'est pas transférable au Drive ou à la livraison",()=>{
+  const mixed={...offer,channels:["store","drive","online"]};
+  const c=createStoreConfirmation(mixed,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T10:00:00Z")
+  });
+  for(const channel of ["drive","online"]){
+    const [result]=applyLocalStoreConfirmations([mixed],[c],{
+      store:"leclerc",locationKey:"id:42",channel,
+      now:new Date("2026-10-08T10:00:00Z")
+    });
+    assert.equal(result.autoStack,false);
+    assert.equal(result.storeVerified,undefined);
+  }
+  const [inStore]=applyLocalStoreConfirmations([mixed],[c],{
+    store:"leclerc",locationKey:"id:42",channel:"store",
+    now:new Date("2026-10-08T10:00:00Z")
+  });
+  assert.equal(inStore.storeVerified,true);
+});
