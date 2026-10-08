@@ -232,3 +232,17 @@ Les diagnostics sont stockés séparément pour éviter les conflits entre actio
 Les fichiers de diagnostic ne sont jamais traités comme des lots d'offres. L'interface affiche « Source non actualisée » lorsque l'extraction a échoué ou reste partielle, mais ne gonfle ni le nombre d'offres garanties ni les échéances de révision.
 
 La CI mobile vérifie que les avertissements disponibles dans les fichiers apparaissent dans l'interface et que l'application reste utilisable hors ligne.
+
+
+## Couverture paginée Open Prices et unités de prix
+
+L'API publique Open Prices (<https://openfoodfacts.github.io/documentation/docs/Open-prices/prices/prices_list/>) fournit des résultats paginés et indique le mode de facturation dans `price_per`.
+
+- L'application consulte la première page et peut rechercher **jusqu'à deux pages par défaut**, sans aller au-delà de **trois pages** même si le serveur annonce beaucoup de résultats. Elle s'arrête dès qu'un nombre suffisant de relevés éligibles est obtenu.
+- Une observation est conservée uniquement si elle correspond au **code-barres demandé**, à l'enseigne sélectionnée, à la monnaie EUR et à un montant strictement positif. La recherche locale filtre également par coordonnées réelles et rayon.
+- Les relevés `price_per=KILOGRAM` ne deviennent **jamais un prix à l'unité** dans le panier. Il faut une conversion explicite fondée sur le poids réel avant d'autoriser ce type de calcul.
+- Si une page supplémentaire échoue, l'application **conserve** les relevés exploitables de la première page, mais signale une **couverture partielle**. Une telle recherche ne permet pas de désigner un gagnant garanti sur le panier.
+- Les enregistrements répétés sont dédupliqués par l'identifiant de relevé (ou par un identifiant composite lorsque le serveur n'en renvoie pas).
+- Les frais de déplacement, de livraison et les stocks ne sont pas inclus dans un prix observé communautaire.
+
+Une source de promotion contenant des codes EAN explicites s'applique **uniquement à ces références** : une correspondance marque/nom sur un autre code ne peut plus réintroduire l'offre en tant que suggestion potentielle. Les remises génériques sans EAN prouvé restent accessibles comme pistes heuristiques à vérifier.
