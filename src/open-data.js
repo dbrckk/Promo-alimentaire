@@ -37,14 +37,20 @@ export async function fetchProductByBarcode(value, fetchImpl=fetch) {
   };
 }
 
-export async function fetchPricesByBarcode(value,{store,size=100,coords=null,radiusKm=25,fetchImpl=fetch}={}) {
+export async function fetchPricesByBarcode(value,{
+  store,size=100,coords=null,radiusKm=25,fetchImpl=fetch,
+  maxPages=2,minimumMatches=4
+}={}) {
   const code=normalizeBarcode(value);
+  const pageSize=Math.min(Math.max(Math.trunc(Number(size)||100),1),100);
+  const pageLimit=Math.min(Math.max(Math.trunc(Number(maxPages)||2),1),3);
+  const minMatches=Math.min(Math.max(Math.trunc(Number(minimumMatches)||4),1),20);
   const params=new URLSearchParams({
     product_code:code,
     currency:"EUR",
     type:"PRODUCT",
     order_by:"-date",
-    size:String(Math.min(Math.max(Number(size)||100,1),100))
+    size:String(pageSize)
   });
   let requestedRadius=null;
   if(coords){
@@ -64,28 +70,81 @@ export async function fetchPricesByBarcode(value,{store,size=100,coords=null,rad
     params.set("lon",String(lon));
     params.set("radius_km",String(radius));
   }
+
   const url=`${OPEN_PRICES_API}?${params}`;
-  const response=await fetchImpl(url,{headers:{Accept:"application/json"}});
-  if(!response.ok) throw new Error(`Open Prices indisponible (${response.status}).`);
-  const payload=await response.json();
-  const observations=(Array.isArray(payload?.items) ? payload.items : [])
-    .map((item)=>normalizePriceObservation(item,coords))
-    .filter((item)=>String(item.productCode)===code)
-    .filter((item)=>item.currency==="EUR")
-    .filter((item)=>Number.isFinite(item.price) && item.price>0)
-    .filter((item)=>isUnambiguousRetailer(item.retailerText,store))
-    // Do not trust a server-side radius filter without local coordinates.
-    .filter((item)=>requestedRadius===null
-      || (Number.isFinite(item.distanceKm) && item.distanceKm<=requestedRadius+0.1))
-    .sort((a,b)=>{
-      if(coords){
-        const da=Number.isFinite(a.distanceKm) ? a.distanceKm : Infinity;
-        const db=Number.isFinite(b.distanceKm) ? b.distanceKm : Infinity;
-        if(da!==db) return da-db;
+  const all=[];
+  const seen=new Set();
+  let pagesFetched=0;
+  let total=null;
+  let partial=false;
+
+  for(let page=1;page<=pageLimit;page++){
+    // Page 1 omits the page query for backwards compatibility with callers.
+    const pageParams=new URLSearchParams(params);
+    if(page>1) pageParams.set("page",String(page));
+    const pageUrl=`${OPEN_PRICES_API}?${pageParams}`;
+    let payload;
+    try{
+      const response=await fetchImpl(pageUrl,{headers:{Accept:"application/json"}});
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      payload=await response.json();
+      if(!payload || !Array.isArray(payload.items)){
+        throw new Error("Réponse Open Prices invalide");
       }
-      return new Date(b.date)-new Date(a.date);
-    });
-  return {observations,total:payload?.total ?? observations.length,sourceUrl:url};
+    }catch(error){
+      if(page===1) throw new Error(`Open Prices indisponible (${error.message}).`);
+      partial=true;
+      break;
+    }
+
+    pagesFetched+=1;
+    if(Number.isInteger(payload.total) && payload.total>=0) total=payload.total;
+    const items=payload.items;
+    for(const source of items){
+      const observation=normalizePriceObservation(source,coords);
+      if(String(observation.productCode)!==code) continue;
+      if(observation.currency!=="EUR") continue;
+      if(observation.pricePer!=="UNIT") continue;
+      if(!Number.isFinite(observation.price) || observation.price<=0) continue;
+      if(!isUnambiguousRetailer(observation.retailerText,store)) continue;
+      // Server-side radius filtering alone is not sufficient evidence.
+      if(requestedRadius!==null &&
+        (!Number.isFinite(observation.distanceKm)
+          || observation.distanceKm>requestedRadius+0.1)) continue;
+      const key=observation.id!==null && observation.id!==undefined
+        ? "id:"+String(observation.id)
+        : JSON.stringify([
+            observation.productCode,observation.locationId,
+            observation.date,observation.price,observation.pricePer
+          ]);
+      if(seen.has(key)) continue;
+      seen.add(key);
+      all.push(observation);
+    }
+
+    if(page>=pageLimit || all.length>=minMatches || items.length===0) break;
+    const declaredPages=Number(payload.pages);
+    const hasMore=Number.isInteger(declaredPages) && declaredPages>=1
+      ? page<declaredPages
+      : total!==null && page*pageSize<total;
+    if(!hasMore) break;
+    // An incomplete page without explicit pages metadata is not a
+    // trustworthy indication that the next page exists.
+    if(!Number.isInteger(declaredPages) && items.length<pageSize) break;
+  }
+
+  const observations=all.sort((a,b)=>{
+    if(coords){
+      const da=Number.isFinite(a.distanceKm) ? a.distanceKm : Infinity;
+      const db=Number.isFinite(b.distanceKm) ? b.distanceKm : Infinity;
+      if(da!==db) return da-db;
+    }
+    return new Date(b.date)-new Date(a.date);
+  });
+  return {
+    observations,total:total ?? observations.length,sourceUrl:url,
+    pagesFetched,partial
+  };
 }
 
 export function isUnambiguousRetailer(retailerText,store){
@@ -128,6 +187,7 @@ export function normalizePriceObservation(item,originCoords=null) {
     productCode:item.product_code || item?.product?.code || "",
     productName:item.product_name || item?.product?.product_name || "",
     price:Number(item.price),
+    pricePer:String(item.price_per || "UNIT").toUpperCase(),
     currency:item.currency || "EUR",
     isDiscounted:item.price_is_discounted===true
       || item.price_is_discounted===1
