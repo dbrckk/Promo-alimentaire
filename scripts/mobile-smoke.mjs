@@ -169,6 +169,22 @@ try{
   await page.reload({waitUntil:"domcontentloaded",timeout:25000});
   await page.locator("#stats .stat").first().waitFor({timeout:12000});
   assert.match(await page.locator("h1").innerText(),/Promo Alimentaire/);
+  // Verify shared GS1 identity and official evidence modules remain usable offline.
+  const eanOffline=await page.evaluate(async()=>{
+    const {matchOfferToProduct}=await import("./src/matching.js");
+    const {validateRetailerGtinEvidence}=await import("./src/retailer-ean-evidence.js");
+    const offer={scope:"produit",eans:["0036000291452"]};
+    return {
+      same:matchOfferToProduct({code:"036000291452"},offer).exact,
+      other:matchOfferToProduct({code:"4006381333931"},offer).exact,
+      proof:validateRetailerGtinEvidence({
+        providerId:"carrefour",
+        eans:["0036000291452"],
+        eanEvidenceUrl:"https://www.carrefour.fr/p/produit-036000291452"
+      }).ok
+    };
+  });
+  assert.deepEqual(eanOffline,{same:true,other:false,proof:true});
   await page.locator('[data-tab="list"]').click();
   assert.equal(await page.locator("#shoppingBudget").inputValue(),"6,00");
   await assertNoHorizontalOverflow(page,"mode hors ligne");

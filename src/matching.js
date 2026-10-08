@@ -2,6 +2,7 @@ import {
   estimateRetailerPromoSaving,
   minimumQuantityForRetailerPromo
 } from "./retailer-promo.js";
+import {canonicalGtin} from "./gtin.js";
 
 export function normalizeText(value) {
   return String(value ?? "")
@@ -15,9 +16,10 @@ export function normalizeText(value) {
 
 export function matchOfferToProduct(product,offer) {
   if(offer.scope!=="produit") return noMatch("not-product-scope");
-  const code=String(product?.code ?? "").replace(/\D/g,"");
-  const exactCodes=(offer.eans || []).map((value)=>String(value).replace(/\D/g,""));
-  if(code && exactCodes.includes(code)) {
+  const code=canonicalGtin(product?.code);
+  const rawCodes=Array.isArray(offer.eans) ? offer.eans : [];
+  const exactCodes=new Set(rawCodes.map(canonicalGtin).filter(Boolean));
+  if(code && exactCodes.has(code)) {
     return {
       matched:true,
       exact:true,
@@ -28,7 +30,7 @@ export function matchOfferToProduct(product,offer) {
   }
   // A promotion backed by explicit GTINs targets those references only.
   // Broad brand keywords must never resurrect a different scanned SKU.
-  if(code && exactCodes.some(Boolean)){
+  if(rawCodes.length){
     return noMatch("ean-not-in-offer");
   }
 

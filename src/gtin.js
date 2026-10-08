@@ -28,3 +28,19 @@ export function assertValidGtin(value) {
   if(!isValidGtin(gtin)) throw new Error(`Checksum GTIN invalide : ${gtin}`);
   return gtin;
 }
+
+/**
+ * Normalize a checksum-valid GTIN to its GS1 14-digit comparison key.
+ * Leading zeroes encode the same product identifier across UPC-A, EAN-13
+ * and GTIN-14 representations; they do not create a new eligible SKU.
+ * The original barcode must be retained for URLs and display.
+ */
+export function canonicalGtin(value) {
+  if(!isValidGtin(value)) return null;
+  return normalizeGtin(value).padStart(14,"0");
+}
+
+export function sameGtin(a,b) {
+  const left=canonicalGtin(a);
+  return left!==null && left===canonicalGtin(b);
+}

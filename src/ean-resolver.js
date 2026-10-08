@@ -1,4 +1,4 @@
-import { isValidGtin } from "./gtin.js";
+import { isValidGtin,canonicalGtin } from "./gtin.js";
 import { normalizeText } from "./matching.js";
 
 export function buildOpenFoodFactsSearchTerms(offer){
@@ -81,11 +81,19 @@ export function selectUniqueEanCandidate(offer,candidates,{
   minScore=80,
   minMargin=12
 }={}){
-  const evaluated=(candidates || [])
-    .map((candidate)=>({
-      candidate,
-      evaluation:scoreOpenFoodFactsCandidate(offer,candidate)
-    }))
+  // OFF may return the same product as UPC-A, EAN-13 and GTIN-14.
+  // Count canonical GTIN identities, not duplicate representations.
+  const byGtin=new Map();
+  for(const candidate of candidates || []){
+    const key=canonicalGtin(candidate?.code);
+    if(!key) continue;
+    const entry={candidate,evaluation:scoreOpenFoodFactsCandidate(offer,candidate)};
+    const previous=byGtin.get(key);
+    if(!previous || entry.evaluation.score>previous.evaluation.score){
+      byGtin.set(key,entry);
+    }
+  }
+  const evaluated=[...byGtin.values()]
     .sort((a,b)=>b.evaluation.score-a.evaluation.score);
   const ranked=evaluated
     .filter((entry)=>entry.evaluation.accepted && entry.evaluation.score>=minScore);

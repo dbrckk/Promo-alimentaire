@@ -87,7 +87,7 @@ test("loadImportedOffers expose la qualité de preuve produit du snapshot",async
       providerId:"leclerc",externalId:"exact",title:"Exact",
       stores:["leclerc"],savingPercent:20,verifiedAt:"2026-10-07",
       expiresAt:"2026-10-31",sourceUrl:"https://example.com/exact",
-      eans:["4006381333931"],eanEvidenceUrl:"https://example.com/ean",
+      eans:["4006381333931"],eanEvidenceUrl:"https://www.e.leclerc/fp/produit-4006381333931",
       requiresStoreVerification:true
     },
     {
@@ -151,7 +151,7 @@ test("les statistiques EAN ne comptent plus les promotions expirées",async()=>{
       stores:["leclerc"],savingPercent:20,
       verifiedAt:"2026-09-01",expiresAt:"2026-09-15",
       sourceUrl:"https://example.com/old",
-      eans:["4006381333931"],eanEvidenceUrl:"https://example.com/ean",
+      eans:["4006381333931"],eanEvidenceUrl:"https://www.e.leclerc/fp/produit-4006381333931",
       requiresStoreVerification:true
     },
     {
