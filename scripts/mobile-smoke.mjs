@@ -85,10 +85,16 @@ try{
   await page.locator('[data-tab="list"]').click();
   assert.match(await page.locator("#shoppingListItems").innerText(),/Pâte à tartiner témoin/);
   assert.match(await page.locator("#listCount").textContent(),/1/);
+  await page.locator("#shoppingBudget").fill("3,00");
+  assert.match(await page.locator("#budgetSummary").innerText(),/Prix indisponibles/);
   await page.locator("#refreshList").click();
   await page.locator("#refreshList").waitFor({state:"visible"});
   await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,{timeout:15000});
   assert.match(await page.locator("#basketComparison").innerText(),/Relevé du/i);
+  assert.match(await page.locator("#budgetSummary").innerText(),/Plafond dépassé sur les données disponibles/);
+  assert.match(await page.locator("#budgetSummary").innerText(),/3,49/);
+  await page.locator("#shoppingBudget").fill("6,00");
+  assert.match(await page.locator("#budgetSummary").innerText(),/Sous le plafond sur les données disponibles/);
   await assertNoHorizontalOverflow(page,"liste de courses");
   await page.screenshot({path:OUT+"/02-panier.png",fullPage:true});
 
@@ -123,6 +129,8 @@ try{
   assert.equal(await page.locator("#channel").inputValue(),"drive");
   assert.equal(await page.locator("#carrefourLoyalty").inputValue(),"club");
   await page.locator('[data-tab="list"]').click();
+  assert.equal(await page.locator("#shoppingBudget").inputValue(),"6,00");
+  assert.match(await page.locator("#budgetSummary").innerText(),/6,00/);
   assert.match(await page.locator("#shoppingListItems").innerText(),/Pâte à tartiner témoin/);
   await page.locator("#manualPricePanel").evaluate((element)=>{element.open=true;});
   assert.match(await page.locator("#manualPriceEntries").innerText(),/Carrefour Centre Lyon/);
@@ -135,6 +143,8 @@ try{
   await page.reload({waitUntil:"domcontentloaded",timeout:25000});
   await page.locator("#stats .stat").first().waitFor({timeout:12000});
   assert.match(await page.locator("h1").innerText(),/Promo Alimentaire/);
+  await page.locator('[data-tab="list"]').click();
+  assert.equal(await page.locator("#shoppingBudget").inputValue(),"6,00");
   await assertNoHorizontalOverflow(page,"mode hors ligne");
   await page.screenshot({path:OUT+"/04-hors-ligne.png",fullPage:true});
   await context.setOffline(false);
