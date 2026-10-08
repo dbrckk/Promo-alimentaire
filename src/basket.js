@@ -307,20 +307,24 @@ export function compareBasketStores(scenarios) {
 
 export function observationLocationKey(observation) {
   if(!observation) return null;
-  if(observation.locationId!==null && observation.locationId!==undefined) {
-    return `id:${observation.locationId}`;
+  if(observation.locationId!==null && observation.locationId!==undefined
+    && String(observation.locationId).trim()) {
+    return `id:${String(observation.locationId).trim()}`;
   }
-  const lat=Number(observation.locationLat);
-  const lon=Number(observation.locationLon);
-  if(Number.isFinite(lat) && Number.isFinite(lon)) {
-    return `geo:${lat.toFixed(5)},${lon.toFixed(5)}`;
+  const validCoordinate=(value,min,max)=>
+    value!==null && value!==undefined && value!==""
+    && Number.isFinite(Number(value))
+    && Number(value)>=min && Number(value)<=max;
+  if(validCoordinate(observation.locationLat,-90,90)
+    && validCoordinate(observation.locationLon,-180,180)){
+    return `geo:${Number(observation.locationLat).toFixed(5)},${Number(observation.locationLon).toFixed(5)}`;
   }
-  const fallback=[
-    observation.storeName,
-    observation.postcode,
-    observation.city
-  ].map((value)=>String(value ?? "").trim().toLocaleLowerCase("fr")).filter(Boolean).join("|");
-  return fallback ? `text:${fallback}` : null;
+  // Only form an indicative text key when both the store name and postcode
+  // are present. A generic chain name alone is not a physical store identity.
+  const name=String(observation.storeName || "").trim().toLocaleLowerCase("fr");
+  const postcode=String(observation.postcode || "").trim();
+  if(!name || !/^\\d{5}$/.test(postcode)) return null;
+  return `text:${name}|${postcode}`;
 }
 
 export function evaluateBasketLocations(items,{
