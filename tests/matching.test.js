@@ -42,11 +42,11 @@ test("une mauvaise marque est rejetée",()=>{
 });
 
 test("findProductOffers respecte l'enseigne et trie l'exact avant l'heuristique",()=>{
-  const product={code:"12345678",name:"Mir liquide",brands:"Mir",categories:[]};
+  const product={code:"4006381333931",name:"Mir liquide",brands:"Mir",categories:[]};
   const offers=[
     {id:"probable",scope:"produit",stores:["carrefour"],productMatch:{brands:["Mir"]}},
-    {id:"exact",scope:"produit",stores:["carrefour"],eans:["12345678"]},
-    {id:"wrong-store",scope:"produit",stores:["leclerc"],eans:["12345678"]}
+    {id:"exact",scope:"produit",stores:["carrefour"],eans:["4006381333931"]},
+    {id:"wrong-store",scope:"produit",stores:["leclerc"],eans:["4006381333931"]}
   ];
   const result=findProductOffers(product,offers,{store:"carrefour"});
   assert.deepEqual(result.map((entry)=>entry.offer.id),["exact","probable"]);
@@ -169,4 +169,35 @@ test("une offre de gamme sans EAN conserve les suggestions heuristiques",()=>{
   const offer={scope:"produit",productMatch:{brands:["Marque"]}};
   assert.equal(matchOfferToProduct(product,offer).matched,true);
   assert.equal(matchOfferToProduct(product,offer).exact,false);
+});
+
+test("un même produit UPC-A / EAN-13 / GTIN-14 correspond exactement",()=>{
+  const product={code:"036000291452",name:"Produit"},
+    offer={scope:"produit",eans:["0036000291452"]};
+  const result=matchOfferToProduct(product,offer);
+  assert.equal(result.exact,true);
+  assert.equal(result.score,100);
+  assert.equal(matchOfferToProduct({code:"00036000291452"},offer).exact,true);
+});
+
+test("aucune remontée exacte pour un code différent ou malformé",()=>{
+  const offer={
+    scope:"produit",eans:["0036000291452"],
+    productMatch:{brands:["Marque"]}
+  };
+  for(const code of ["4006381333931","036000291453"]){
+    const result=matchOfferToProduct({code,name:"Marque",brands:"Marque"},offer);
+    assert.equal(result.exact,false);
+    assert.equal(result.matched,false);
+    assert.equal(result.reason,"ean-not-in-offer");
+  }
+});
+
+test("un GTIN invalide enregistré ne peut pas devenir une correspondance exacte",()=>{
+  const result=matchOfferToProduct(
+    {code:"12345678",name:"Marque",brands:"Marque"},
+    {scope:"produit",eans:["12345678"],productMatch:{brands:["Marque"]}}
+  );
+  assert.equal(result.matched,false);
+  assert.equal(result.exact,false);
 });
