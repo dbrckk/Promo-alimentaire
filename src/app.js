@@ -1371,6 +1371,7 @@ function renderBasketScenario(scenario){
       <div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>
       ${line.alreadyRetailDiscounted?'<div class="source">Prix observé déjà remisé en magasin : promotion enseigne non déduite une seconde fois.</div>':""}
       ${line.retailerPromoPriceConflict?'<div class="source">Prix observé différent du tarif normal annoncé : promotion catalogue non redéduite sans nouvelle vérification.</div>':""}
+      ${line.incompatibleCouponCount?'<div class="source">Coupon Network : remboursement non cumulable avec une remise magasin déjà incluse dans ce prix. Vérifier les conditions sur le site officiel.</div>':""}
       ${candidateHtml}
       ${maxCandidateDiff?`<div class="line-offer potential-max">
         <span class="badge warn">Gain max à vérifier</span>
