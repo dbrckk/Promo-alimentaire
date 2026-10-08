@@ -46,6 +46,7 @@ export async function fetchPricesByBarcode(value,{store,size=100,coords=null,rad
     order_by:"-date",
     size:String(Math.min(Math.max(Number(size)||100,1),100))
   });
+  let requestedRadius=null;
   if(coords){
     const lat=Number(coords.latitude ?? coords.lat);
     const lon=Number(coords.longitude ?? coords.lon);
@@ -53,6 +54,7 @@ export async function fetchPricesByBarcode(value,{store,size=100,coords=null,rad
       throw new Error("Coordonnées géographiques invalides.");
     }
     const radius=Math.min(Math.max(Number(radiusKm)||25,1),100);
+    requestedRadius=radius;
     params.set("lat",String(lat));
     params.set("lon",String(lon));
     params.set("radius_km",String(radius));
@@ -61,13 +63,15 @@ export async function fetchPricesByBarcode(value,{store,size=100,coords=null,rad
   const response=await fetchImpl(url,{headers:{Accept:"application/json"}});
   if(!response.ok) throw new Error(`Open Prices indisponible (${response.status}).`);
   const payload=await response.json();
-  const matcher=STORE_MATCHERS[store] || /.*/;
   const observations=(Array.isArray(payload?.items) ? payload.items : [])
     .map((item)=>normalizePriceObservation(item,coords))
     .filter((item)=>String(item.productCode)===code)
     .filter((item)=>item.currency==="EUR")
     .filter((item)=>Number.isFinite(item.price) && item.price>0)
-    .filter((item)=>matcher.test(item.retailerText))
+    .filter((item)=>isUnambiguousRetailer(item.retailerText,store))
+    // Do not trust a server-side radius filter without local coordinates.
+    .filter((item)=>requestedRadius===null
+      || (Number.isFinite(item.distanceKm) && item.distanceKm<=requestedRadius+0.1))
     .sort((a,b)=>{
       if(coords){
         const da=Number.isFinite(a.distanceKm) ? a.distanceKm : Infinity;
@@ -77,6 +81,17 @@ export async function fetchPricesByBarcode(value,{store,size=100,coords=null,rad
       return new Date(b.date)-new Date(a.date);
     });
   return {observations,total:payload?.total ?? observations.length,sourceUrl:url};
+}
+
+export function isUnambiguousRetailer(retailerText,store){
+  const label=String(retailerText || "");
+  const wanted=STORE_MATCHERS[store];
+  if(!wanted) return Boolean(label.trim());
+  if(!wanted.test(label)) return false;
+  for(const [otherStore,pattern] of Object.entries(STORE_MATCHERS)){
+    if(otherStore!==store && pattern.test(label)) return false;
+  }
+  return true;
 }
 
 export function normalizePriceObservation(item,originCoords=null) {
