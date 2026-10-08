@@ -297,3 +297,5 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .verification-value strong{color:#966000;font-size:.8rem}
 .verification-value small{color:var(--muted);font-size:.62rem}
 @media(max-width:470px){.verification-item{grid-template-columns:1fr}.verification-value{text-align:left}}
+
+.source-health-card .sync-warning{margin:6px 0 0;padding:8px 9px;border-radius:9px;background:#fff5dc;border:1px solid #ecd5a2;color:#715200;font-size:.68rem;line-height:1.45}
