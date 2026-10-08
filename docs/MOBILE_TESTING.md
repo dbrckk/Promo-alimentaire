@@ -61,3 +61,16 @@ Pour relancer uniquement l'émulation : GitHub → **Actions → Android viewpor
 Le parcours Android vérifie également que le panneau « État des données importées » signale une dernière tentative de synchronisation indisponible lorsque `data/import/source-sync-status.json` contient ce statut pour Coupon Network. Les dates de validité des offres restent indépendantes de cette alerte.
 
 Le test couvre cette situation **conditionnellement**, afin de continuer à fonctionner lorsque la source redevient accessible et que le statut devient `updated`.
+
+
+## Scénario : budget de courses (Android)
+
+1. Ouvrir **Liste**, ajouter un produit puis saisir `3,00` dans **Mon budget (€)**.
+2. Avant l'actualisation des prix, vérifier qu'un prix manquant ne donne pas un faux statut « budget respecté ».
+3. Actualiser les observations ; si le montant en caisse dépasse 3 €, vérifier l'alerte de dépassement.
+4. Saisir `6,00` et vérifier que le statut devient indicatif lorsque le canal est Drive ou lorsque le magasin n'est pas suffisamment vérifié.
+5. Recharger l'application, puis repasser en mode hors ligne : le budget enregistré doit rester `6,00` et ne doit pas dépendre d'un accès serveur.
+6. Ajouter un relevé de prix manuel et confirmer que le montant reste **indicatif**.
+7. Vérifier les largeurs 320, 360 et 393 px : aucune barre de défilement horizontale ne doit apparaître.
+
+Ce scénario est également couvert dans le workflow GitHub Actions **Android viewport smoke test**. Les économies fidélité créditées plus tard et les ODR ne sont jamais retirées du plafond de caisse.
