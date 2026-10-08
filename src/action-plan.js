@@ -83,6 +83,18 @@ export function buildSavingsActionPlan({
     );
   }
 
+  const couponNetworkCandidates=(productCandidates || [])
+    .filter((entry)=>entry?.offer?.providerId==="coupon-network");
+  if(couponNetworkCandidates.length){
+    push(
+      "avant",
+      "Activer les offres Coupon Network",
+      "Sélectionne les offres dans Coupon Network AVANT l’achat, vérifie le code-barres et les quantités. Leur remboursement n’est normalement pas cumulable avec une remise magasin sur le même produit (avantage carte fidélité excepté). Pour le Drive ou la livraison, conserve la facture et non le simple bon de commande.",
+      "check",
+      "https://www.couponnetwork.fr/"
+    );
+  }
+
   if(selectedPayment){
     push(
       "paiement",
