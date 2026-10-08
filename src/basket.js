@@ -174,6 +174,7 @@ export function evaluateBasketStore(items,{
       potentialAdditionalProductSaving,
       bestProductCandidate,
       bestSavingCandidate,
+      savingCandidates:potentialCandidates,
       matches:eligibleMatches,
       missingPrice:false
     };
