@@ -21,8 +21,12 @@ export function normalizeManualPrice(input,{now=new Date()}={}){
   }
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("Date du relevé invalide.");
   const at=new Date(date+"T12:00:00.000Z");
+  const localToday=Number.isNaN(current.getTime())
+    ? null
+    : new Date(current.getTime()-current.getTimezoneOffset()*60000)
+      .toISOString().slice(0,10);
   if(Number.isNaN(at.getTime()) || at.toISOString().slice(0,10)!==date
-    || Number.isNaN(current.getTime()) || at.getTime()>current.getTime()+DAY_MS){
+    || !localToday || date>localToday){
     throw new Error("Date du relevé invalide ou future.");
   }
   if(current.getTime()-at.getTime()>MAX_AGE_DAYS*DAY_MS){
