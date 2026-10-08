@@ -1,0 +1,58 @@
+name: Android viewport smoke test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "index.html"
+      - "styles.css"
+      - "src/**"
+      - "sw.js"
+      - "manifest.webmanifest"
+      - "scripts/mobile-smoke.mjs"
+      - ".github/workflows/mobile-smoke.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-viewport-smoke
+  cancel-in-progress: true
+
+jobs:
+  mobile-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify baseline
+        run: npm run verify
+      - name: Install headless Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Start static site
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/promo-alimentaire-server.log 2>&1 &
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/promo-alimentaire-server.log
+          exit 1
+      - name: Run Android-sized browser journey
+        run: node scripts/mobile-smoke.mjs
+      - name: Upload viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-mobile-smoke
+          path: artifacts/mobile/
+          if-no-files-found: ignore
+      - name: Show local server errors
+        if: failure()
+        run: tail -100 /tmp/promo-alimentaire-server.log || true
