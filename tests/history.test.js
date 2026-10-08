@@ -102,3 +102,36 @@ test("des entrées de panier sans numéro de magasin ou code postal ne font pas 
   assert.equal(entry.bestStore,null);
   assert.equal(entry.contextKey,null);
 });
+
+
+test("les relevés d'un même jour ne simulent pas une baisse de panier",()=>{
+  const make=(date,price)=>createHistoryEntry({
+    channel:"store",nearbyEnabled:true,radiusKm:10,
+    createdAt:new Date(date),
+    shoppingList:[{product:{code:"123"},quantity:1}],
+    scenarios:[{store:"carrefour",isComplete:true,locationReliable:true,
+      location:{id:42},finalCost:price}]
+  });
+  const morning=make("2026-10-08T09:00:00Z",20);
+  const evening=make("2026-10-08T18:00:00Z",15);
+  assert.notEqual(morning.id,evening.id);
+  assert.equal(addHistoryEntry([morning],evening).length,2);
+  assert.equal(historyTrend([evening,morning]),null);
+  const yesterday=make("2026-10-07T10:00:00Z",22);
+  assert.equal(historyTrend([evening,morning,yesterday]).delta,-7);
+});
+
+test("un scénario au coût manquant ou invalide ne devient pas le meilleur prix",()=>{
+  const scenarios=[
+    {store:"carrefour",isComplete:true,locationReliable:true,location:{id:1},finalCost:null},
+    {store:"leclerc",isComplete:true,locationReliable:true,location:{id:2},finalCost:NaN},
+    {store:"carrefour",isComplete:true,locationReliable:true,location:{id:3},finalCost:-1},
+    {store:"leclerc",isComplete:true,locationReliable:true,location:{id:4},finalCost:7}
+  ];
+  const entry=createHistoryEntry({
+    scenarios,shoppingList:[{product:{code:"123"},quantity:1}],
+    nearbyEnabled:true,radiusKm:10,createdAt:new Date("2026-10-08T12:00:00Z")
+  });
+  assert.equal(entry.bestFinalCost,7);
+  assert.equal(entry.bestLocationKey,"id:4");
+});
