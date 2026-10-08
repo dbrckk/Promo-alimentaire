@@ -309,9 +309,15 @@ function render(){
   els.providers.innerHTML=activeProviders.length
     ? activeProviders.map(renderProvider).join("")
     : '<div class="panel price-source">Aucun service ne correspond à la recherche.</div>';
+  const scopeLabels={
+    food:"toutes les économies alimentaires",
+    "free-food":"dons, tests gratuits et aide alimentaire",
+    "food-odr":"ODR, remboursements, cashback et coupons",
+    "other-50":"autres domaines, réduction maximale annoncée d’au moins 50 %",
+    all:"toutes catégories"
+  };
   els.sourceDiscoverySummary.textContent=activeProviders.length+" service(s) référencé(s) · "+
-    (state.sourceScope==="food"?"priorité aux économies alimentaires":
-      state.sourceScope==="other-50"?"autres domaines, réduction maximale annoncée d’au moins 50 %":"toutes catégories")+
+    scopeLabels[state.sourceScope]+
     ". Disponibilité et économies exactes à vérifier auprès de chaque source.";
 
   const numericPercents=ranked.map(effectivePercent).filter(Number.isFinite);
@@ -449,6 +455,7 @@ function renderSourceHealth(){
 function renderProvider(provider){
   const priority=provider.priority==="essentiel"?"Essentiel":provider.priority==="fort"?"Très utile":"Complément";
   const tags=[
+    ...(provider.discoveryStatus==="unconfirmed" ? ['Activité récente non confirmée'] : []),
     ...(provider.potentialFree ? ['Gratuit selon éligibilité'] : []),
     ...(Number.isFinite(provider.advertisedMaxPercent)
       ? ['Jusqu’à '+provider.advertisedMaxPercent+' % annoncés, non garantis'] : []),
@@ -464,9 +471,11 @@ function renderProvider(provider){
       <div class="badges">${tags.map((kind)=>`<span class="badge">${escapeHtml(kind)}</span>`).join("")}</div>
       <p>${escapeHtml(provider.note)}</p>
       <div class="actions">
-        <span class="source">${provider.discoveryVerifiedAt
-          ? "Service vérifié le "+escapeHtml(formatDate(provider.discoveryVerifiedAt))
-          : "Conditions à confirmer chez le fournisseur"}</span>
+        <span class="source">${provider.discoveryStatus==="unconfirmed"
+          ? "Service identifié, offres actuelles non vérifiées"
+          : provider.discoveryVerifiedAt
+            ? "Page du service consultée le "+escapeHtml(formatDate(provider.discoveryVerifiedAt))
+            : "Conditions à confirmer chez le fournisseur"}</span>
         <a class="open" href="${escapeHtml(provider.url)}" target="_blank" rel="noopener noreferrer">Ouvrir</a>
         ${provider.verificationUrl && provider.verificationUrl!==provider.url
           ? `<a class="open" href="${escapeHtml(provider.verificationUrl)}" target="_blank" rel="noopener noreferrer">Justificatif</a>`
