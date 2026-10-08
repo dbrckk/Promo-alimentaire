@@ -124,7 +124,14 @@ export function normalizePriceObservation(item,originCoords=null) {
     productName:item.product_name || item?.product?.product_name || "",
     price:Number(item.price),
     currency:item.currency || "EUR",
-    isDiscounted:item.price_is_discounted===true || item.price_is_discounted===1,
+    isDiscounted:item.price_is_discounted===true
+      || item.price_is_discounted===1
+      || (item.price_without_discount!==null
+        && item.price_without_discount!==undefined
+        && item.price_without_discount!==""
+        && Number.isFinite(Number(item.price))
+        && Number.isFinite(Number(item.price_without_discount))
+        && Number(item.price_without_discount)>Number(item.price)),
     priceWithoutDiscount:item.price_without_discount!==null
       && item.price_without_discount!==undefined
       && item.price_without_discount!==""
