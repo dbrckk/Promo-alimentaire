@@ -232,3 +232,33 @@ test("un contrôle partiel d'une enseigne garde les offres mais affiche une aler
   assert.equal(result.sourceStats[0].syncState.status,"partial");
   assert.equal(result.offers.length,1);
 });
+
+
+test("les diagnostics par enseigne priment sur le fichier historique partagé",async()=>{
+  const fetchImpl=async(url)=>{
+    const text=String(url);
+    if(text.endsWith("/index.json"))return {ok:true,json:async()=>manifest};
+    if(text.endsWith("/source-sync-status.json"))return {ok:true,json:async()=>({
+      sources:{shopmium:{
+        status:"unavailable",checkedAt:"2026-10-07T12:00:00Z",
+        reason:"Ancien avertissement"
+      }}
+    })};
+    if(text.endsWith("/source-sync-carrefour.json"))return {ok:true,json:async()=>({
+      sources:{shopmium:{
+        status:"partial",checkedAt:"2026-10-08T13:00:00Z",
+        reason:"Nouvel état vérifié"
+      }}
+    })};
+    if(text.endsWith("/source-sync-leclerc.json"))return {ok:true,json:async()=>({
+      sources:{}
+    })};
+    return {ok:true,json:async()=>payload};
+  };
+  const result=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-08T14:00:00Z")
+  });
+  assert.equal(result.offers.length,1);
+  assert.equal(result.sourceStats[0].syncState.status,"partial");
+  assert.equal(result.sourceStats[0].syncState.reason,"Nouvel état vérifié");
+});
