@@ -31,6 +31,7 @@ import {
 } from "./local-verification.js";
 import {
   addPriceObservation,
+  addStorePriceObservations,
   detectPriceDrops,
   productHistory,
   productPriceTrend
@@ -1100,10 +1101,9 @@ function saveProductPriceHistory(){
 }
 
 function recordProductObservation(product,store,observations){
-  const best=selectBestRecentPrice(observations);
-  if(!best || !product?.code) return;
-  state.productPriceHistory=addPriceObservation(state.productPriceHistory,{
-    product,store,observation:best
+  if(!product?.code) return;
+  state.productPriceHistory=addStorePriceObservations(state.productPriceHistory,{
+    product,store,observations,recordedAt:new Date()
   });
   saveProductPriceHistory();
 }
