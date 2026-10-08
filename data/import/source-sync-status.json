@@ -1,3 +1,11 @@
 {
-  "sources": {}
+  "sources": {
+    "coupon-network": {
+      "status": "unavailable",
+      "checkedAt": "2026-10-08T14:00:28.737Z",
+      "reason": "Extraction publique insuffisante (0 détectées, minimum 20, 118 dans le précédent catalogue)",
+      "extractedCount": 0,
+      "previousSnapshotCount": 118
+    }
+  }
 }
