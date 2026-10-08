@@ -14,6 +14,12 @@ import {
   selectBestLocationScenario
 } from "./basket.js";
 import { scoreBasketConfidence } from "./confidence.js";
+import {
+  loadManualPrices as validateManualPrices,
+  saveManualPrice,
+  removeManualPrice,
+  mergeManualPriceObservations
+} from "./manual-prices.js";
 import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js";
 import { buildSavingsActionPlan } from "./action-plan.js";
 import { buildVerificationQueue } from "./verification-queue.js";
@@ -71,6 +77,16 @@ const els = {
   priceResults:document.querySelector("#priceResults"),
   productPriceHistory:document.querySelector("#productPriceHistory"),
   listCount:document.querySelector("#listCount"),
+  manualPriceForm:document.querySelector("#manualPriceForm"),
+  manualPriceProduct:document.querySelector("#manualPriceProduct"),
+  manualPriceStore:document.querySelector("#manualPriceStore"),
+  manualPriceAmount:document.querySelector("#manualPriceAmount"),
+  manualPriceStoreName:document.querySelector("#manualPriceStoreName"),
+  manualPricePostcode:document.querySelector("#manualPricePostcode"),
+  manualPriceDate:document.querySelector("#manualPriceDate"),
+  manualPriceSubmit:document.querySelector("#manualPriceSubmit"),
+  manualPriceStatus:document.querySelector("#manualPriceStatus"),
+  manualPriceEntries:document.querySelector("#manualPriceEntries"),
   refreshList:document.querySelector("#refreshList"),
   listNearbyButton:document.querySelector("#listNearbyButton"),
   listRadiusSelect:document.querySelector("#listRadiusSelect"),
@@ -112,6 +128,7 @@ const state = {
   coords:null,
   radiusKm:25,
   shoppingList:loadShoppingList(),
+  manualPrices:loadStoredManualPrices(),
   basketPriceData:{carrefour:{},leclerc:{}},
   comparisonHistory:loadComparisonHistory(),
   productPriceHistory:loadProductPriceHistory(),
@@ -129,11 +146,16 @@ els.sort.value=state.sort;
 els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
 els.dropThreshold.value=String(state.dropThreshold);
+els.manualPriceStore.value=state.store;
+els.manualPriceDate.value=new Date(Date.now()-new Date().getTimezoneOffset()*60000)
+  .toISOString().slice(0,10);
+els.manualPriceDate.max=els.manualPriceDate.value;
 els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")}`;
 
 els.store.addEventListener("change",async()=>{
   state.store=els.store.value;
   localStorage.setItem("promo-store",state.store);
+  els.manualPriceStore.value=state.store;
   render();
   renderOptimizer();
   if(state.product) renderProductOffers(state.product,state.priceObservations);
@@ -188,6 +210,8 @@ els.productResult.addEventListener("click",(event)=>{
   if(event.target.closest('[data-action="add-current-product"]')) addCurrentProduct();
 });
 els.shoppingListItems.addEventListener("click",handleShoppingListAction);
+els.manualPriceForm.addEventListener("submit",handleManualPriceSubmit);
+els.manualPriceEntries.addEventListener("click",handleManualPriceEntryAction);
 els.basketComparison.addEventListener("click",handleBasketComparisonAction);
 els.dropThreshold.addEventListener("change",()=>{
   state.dropThreshold=Number(els.dropThreshold.value)||10;
@@ -764,6 +788,85 @@ function renderOptimizer(){
 }
 
 
+
+function loadStoredManualPrices(){
+  try{
+    return validateManualPrices(
+      JSON.parse(localStorage.getItem("promo-manual-prices-v1") || "[]")
+    );
+  }catch{
+    return [];
+  }
+}
+
+function renderManualPriceControls(){
+  const previous=els.manualPriceProduct.value;
+  const options=state.shoppingList.map((item)=>
+    '<option value="'+escapeHtml(String(item.product.code))+'">'
+    +escapeHtml(item.product.name || "Produit")+" · "
+    +escapeHtml(String(item.product.code))+"</option>"
+  );
+  els.manualPriceProduct.innerHTML=options.join("");
+  if(state.shoppingList.some((item)=>String(item.product.code)===previous)){
+    els.manualPriceProduct.value=previous;
+  }
+  els.manualPriceSubmit.disabled=state.shoppingList.length===0;
+
+  els.manualPriceEntries.innerHTML=state.manualPrices.length
+    ? state.manualPrices.slice().reverse().map((entry)=>{
+      const label=entry.store==="carrefour"?"Carrefour":"E.Leclerc";
+      return '<article class="manual-price-entry">'
+        +'<div class="manual-price-entry-main"><strong>'
+        +escapeHtml(label+" · "+entry.storeName)
+        +'</strong><span>'
+        +escapeHtml(entry.code+" · "+entry.postcode+" · "+entry.date)
+        +" · "+money.format(entry.price)+" / unité"
+        +'</span><span>Relevé personnel · non vérifié · 30 jours maximum</span></div>'
+        +'<button class="secondary danger-action" type="button" data-remove-manual-price="'
+        +escapeHtml(entry.id)+'" aria-label="Supprimer ce relevé">Supprimer</button></article>';
+    }).join("")
+    : '<p class="help">Aucun relevé manuel enregistré sur cet appareil.</p>';
+}
+
+function handleManualPriceSubmit(event){
+  event.preventDefault();
+  try{
+    const code=els.manualPriceProduct.value;
+    if(!state.shoppingList.some((item)=>String(item.product.code)===code)){
+      throw new Error("Ajoute d’abord le produit à la liste.");
+    }
+    const next=saveManualPrice(state.manualPrices,{
+      code,
+      store:els.manualPriceStore.value,
+      price:els.manualPriceAmount.value,
+      storeName:els.manualPriceStoreName.value,
+      postcode:els.manualPricePostcode.value,
+      date:els.manualPriceDate.value
+    });
+    localStorage.setItem("promo-manual-prices-v1",JSON.stringify(next));
+    state.manualPrices=next;
+    els.manualPriceStatus.textContent="Prix personnel enregistré. Il reste indicatif et n'active aucun cumul automatique.";
+    els.manualPriceAmount.value="";
+    renderShoppingList();
+  }catch(error){
+    els.manualPriceStatus.textContent=error.message || "Enregistrement impossible.";
+  }
+}
+
+function handleManualPriceEntryAction(event){
+  const button=event.target.closest("[data-remove-manual-price]");
+  if(!button) return;
+  try{
+    const next=removeManualPrice(state.manualPrices,button.dataset.removeManualPrice);
+    localStorage.setItem("promo-manual-prices-v1",JSON.stringify(next));
+    state.manualPrices=next;
+    els.manualPriceStatus.textContent="Relevé manuel supprimé.";
+    renderShoppingList();
+  }catch(error){
+    els.manualPriceStatus.textContent=error.message || "Suppression impossible.";
+  }
+}
+
 function loadShoppingList(){
   try{
     const parsed=JSON.parse(localStorage.getItem("promo-shopping-list-v1") || "[]");
@@ -842,6 +945,7 @@ function handleShoppingListAction(event){
 
 function renderShoppingList(){
   renderListCount();
+  renderManualPriceControls();
   if(!state.shoppingList.length){
     els.shoppingListItems.innerHTML='<div class="panel price-source">Ta liste est vide. Scanne ou recherche un produit puis appuie sur « Ajouter à la liste ».</div>';
     els.basketComparison.innerHTML="";
@@ -942,10 +1046,13 @@ function syncNearbyControls(){
 
 function evaluateCurrentBasketScenarios(){
   return ["carrefour","leclerc"].map((store)=>{
+    const priceByCode=state.channel==="store"
+      ? mergeManualPriceObservations(state.basketPriceData[store],state.manualPrices,{store})
+      : state.basketPriceData[store];
     const locationScenarios=evaluateBasketLocations(state.shoppingList,{
       store,
       channel:state.channel,
-      priceByCode:state.basketPriceData[store],
+      priceByCode,
       offers:activeOffers(),
       loyaltyProfile:state.loyaltyProfile,
       storeConfirmations:state.storeConfirmations
@@ -962,7 +1069,7 @@ function evaluateCurrentBasketScenarios(){
         ...evaluateBasketStore(state.shoppingList,{
           store,
           channel:state.channel,
-          priceByCode:state.basketPriceData[store],
+          priceByCode,
           offers:activeOffers(),
           loyaltyProfile:state.loyaltyProfile,
           storeConfirmations:state.storeConfirmations
@@ -974,7 +1081,7 @@ function evaluateCurrentBasketScenarios(){
     }
     const enrichedScenario={
       ...scenario,
-      priceChannelReliable:state.channel==="store"
+      priceChannelReliable:state.channel==="store" && scenario.manualPriceCount===0
     };
     return {
       ...enrichedScenario,
