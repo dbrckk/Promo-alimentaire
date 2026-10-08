@@ -382,3 +382,19 @@ test("la recherche paginée reste plafonnée à trois appels",async()=>{
   assert.equal(calls,3);
   assert.equal(result.pagesFetched,3);
 });
+
+
+test("des magasins distincts sans identifiant serveur restent deux relevés",async()=>{
+  const code="3017624010701";
+  const result=await fetchPricesByBarcode(code,{
+    store:"carrefour",size:2,maxPages:1,
+    fetchImpl:async()=>({ok:true,json:async()=>({items:[
+      {product_code:code,price:2,currency:"EUR",date:"2026-10-07",
+        location:{osm_brand:"Carrefour",osm_name:"Carrefour A",osm_address_postcode:"69003"}},
+      {product_code:code,price:2,currency:"EUR",date:"2026-10-07",
+        location:{osm_brand:"Carrefour",osm_name:"Carrefour B",osm_address_postcode:"69005"}}
+    ]})})
+  });
+  assert.equal(result.observations.length,2);
+  assert.deepEqual(result.observations.map(x=>x.storeName).sort(),["Carrefour A","Carrefour B"]);
+});
