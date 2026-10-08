@@ -75,10 +75,14 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
         .sort((a,b)=>a-b);
       const nextDeadline=deadlines[0] || null;
       const daysUntil=nextDeadline ? Math.ceil((nextDeadline-now)/(24*60*60*1000)) : null;
+      const validityStatus=activeOffers.length===0
+        ? "stale" : daysUntil!==null && daysUntil<=3 ? "review-soon" : "ok";
       sourceStats.push({
         file,
         mode:/auto\.json$/i.test(file) ? "automatic" : "manual",
-        status:activeOffers.length===0 ? "stale" : daysUntil!==null && daysUntil<=3 ? "review-soon" : "ok",
+        status:validityStatus,
+        validityStatus,
+        daysUntil,
         activeCount:activeOffers.length,
         totalCount:result.normalized.length,
         providerIds,
@@ -118,7 +122,11 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
     stat.syncState={
       status:sync.status,
       checkedAt:sync.checkedAt,
-      reason:String(sync.reason || "Actualisation publique indisponible").slice(0,220)
+      reason:String(sync.reason || "Actualisation publique indisponible").slice(0,220),
+      confirmedCount:Number.isInteger(sync.extractedCount) && sync.extractedCount>=0
+        ? sync.extractedCount : null,
+      previousSnapshotCount:Number.isInteger(sync.previousSnapshotCount) && sync.previousSnapshotCount>=0
+        ? sync.previousSnapshotCount : null
     };
     // Do not change dates/active offer counts; show a distinct warning.
     if(stat.status==="ok" || stat.status==="review-soon"){
