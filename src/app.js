@@ -543,6 +543,9 @@ function renderProductOffers(product,observations=[]){
           ${offerDeadline(offer)?`<span class="badge ${offerDeadline(offer).urgent?"warn":""}">${escapeHtml(offerDeadline(offer).label)}</span>`:""}
         </div>
         <p class="match-note">${escapeHtml(safetyNote)}</p>
+        ${!match.exact && offer.eanSuggestion?.code===product.code
+          ? `<p class="match-note">Ce GTIN apparaît comme candidat dans Open Food Facts, mais E.Leclerc n'a pas confirmé son éligibilité à cette promotion. <a href="${escapeHtml(offer.eanSuggestion.sourceUrl)}" target="_blank" rel="noopener noreferrer">Examiner la fiche candidate</a>.</p>`
+          : ""}
         ${evidenceHtml}
         <div class="actions">
           <span class="verified">${escapeHtml(match.reason)}</span>
