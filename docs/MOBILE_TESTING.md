@@ -53,3 +53,10 @@ Le dépôt comporte `.github/workflows/pages.yml`, mais **une CI réussie ne pro
 - Le test Chromium ne couvre pas encore les caractéristiques et autorisations d'un modèle Android physique particulier.
 
 Pour relancer uniquement l'émulation : GitHub → **Actions → Android viewport smoke test → Run workflow**.
+
+
+### Avertissement de synchronisation inaccessible
+
+Le parcours Android vérifie également que le panneau « État des données importées » signale une dernière tentative de synchronisation indisponible lorsque `data/import/source-sync-status.json` contient ce statut pour Coupon Network. Les dates de validité des offres restent indépendantes de cette alerte.
+
+Le test couvre cette situation **conditionnellement**, afin de continuer à fonctionner lorsque la source redevient accessible et que le statut devient `updated`.
