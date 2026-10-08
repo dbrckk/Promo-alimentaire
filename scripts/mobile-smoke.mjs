@@ -157,6 +157,8 @@ try{
   await page.locator("#importListFile").setInputFiles({
     name:"invalid.json",mimeType:"application/json",buffer:Buffer.from("{broken")
   });
+  // File.text() resolves asynchronously; never inspect an old success status.
+  await page.locator("#listStatus").filter({hasText:/Restauration impossible/}).waitFor({timeout:8000});
   assert.match(await page.locator("#listStatus").innerText(),/Restauration impossible/);
   assert.equal(await page.locator("#listCount").textContent(),"1");
   await assertNoHorizontalOverflow(page,"sauvegarde et restauration");
