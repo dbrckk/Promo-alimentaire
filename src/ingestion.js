@@ -1,4 +1,5 @@
-import { assertValidGtin } from "./gtin.js";
+import { assertValidGtin, canonicalGtin } from "./gtin.js";
+import {validateRetailerGtinEvidence} from "./retailer-ean-evidence.js";
 
 const STORES=new Set(["carrefour","leclerc","all"]);
 const SCOPES=new Set(["produit","panier","bundle"]);
@@ -23,14 +24,25 @@ export function normalizeImportedOffer(raw) {
   }
 
   const eans=[];
+  const knownGtinKeys=new Set();
   for(const candidate of Array.isArray(value.eans) ? value.eans : []){
-    try{ eans.push(assertValidGtin(candidate)); }
-    catch(error){ errors.push(error.message); }
+    try{
+      const verified=assertValidGtin(candidate);
+      const key=canonicalGtin(verified);
+      if(!knownGtinKeys.has(key)){
+        eans.push(verified);
+        knownGtinKeys.add(key);
+      }
+    }catch(error){ errors.push(error.message); }
   }
 
   let eanEvidenceUrl=null;
   if(eans.length){
     eanEvidenceUrl=httpsUrl(value.eanEvidenceUrl,"eanEvidenceUrl",errors);
+    if(eanEvidenceUrl){
+      const proof=validateRetailerGtinEvidence({providerId,eans,eanEvidenceUrl});
+      if(!proof.ok) errors.push("eanEvidenceUrl : "+proof.reason);
+    }
   }
 
   const savingPercent=nullableNumber(value.savingPercent);
