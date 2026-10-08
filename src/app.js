@@ -1366,6 +1366,7 @@ function renderBasketScenario(scenario){
     return `<div class="scenario-line-wrap">
       <div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>
       ${line.alreadyRetailDiscounted?'<div class="source">Prix observé déjà remisé en magasin : promotion enseigne non déduite une seconde fois.</div>':""}
+      ${line.retailerPromoPriceConflict?'<div class="source">Prix observé différent du tarif normal annoncé : promotion catalogue non redéduite sans nouvelle vérification.</div>':""}
       ${candidateHtml}
       ${maxCandidateDiff?`<div class="line-offer potential-max">
         <span class="badge warn">Gain max à vérifier</span>
