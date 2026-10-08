@@ -8,7 +8,8 @@ import {
   htmlToTextLines,
   parseCouponNetworkDetailHtml,
   parseCouponNetworkHtml,
-  parseRefundAmount
+  parseRefundAmount,
+  assessCouponNetworkSnapshot
 } from "../src/adapters/coupon-network.js";
 
 const fixture=`
@@ -137,4 +138,35 @@ test("deriveProductMatch ignore les quantités numériques seules",()=>{
     "Sur l'achat de 2 boîtes de sardines Les Dieux au choix dans la gamme."
   );
   assert.deepEqual(match.all,["sardines"]);
+});
+
+test("une source à zéro offre n'efface jamais l'ancien snapshot",()=>{
+  assert.deepEqual(assessCouponNetworkSnapshot([],{
+    previousCount:118,minimum:20
+  }),{publish:false,reason:"too-few-offers",count:0});
+});
+
+test("une chute brutale du catalogue est bloquée même au-dessus du minimum",()=>{
+  const candidates=Array.from({length:25},(_,i)=>({
+    externalId:"offer-"+i,autoStack:false,eans:[]
+  }));
+  assert.equal(assessCouponNetworkSnapshot(candidates,{
+    previousCount:118,minimum:20
+  }).reason,"suspiciously-large-drop");
+  assert.equal(assessCouponNetworkSnapshot(candidates,{
+    previousCount:30,minimum:20
+  }).publish,true);
+});
+
+test("le remplacement refuse les doublons et économies non vérifiées",()=>{
+  const offers=Array.from({length:20},(_,i)=>({externalId:"offer-"+i}));
+  assert.equal(assessCouponNetworkSnapshot(offers,{
+    previousCount:20
+  }).publish,true);
+  assert.equal(assessCouponNetworkSnapshot(
+    [...offers.slice(0,-1),offers[0]],{previousCount:20}
+  ).reason,"duplicate-or-missing-ids");
+  assert.equal(assessCouponNetworkSnapshot(
+    [...offers.slice(0,-1),{...offers[19],autoStack:true}],{previousCount:20}
+  ).reason,"unexpected-automatic-eligibility");
 });
