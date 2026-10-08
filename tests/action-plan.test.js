@@ -129,3 +129,31 @@ test("la carte fidélité doit être présentée en caisse avant le ticket et le
   const phases=plan.steps.map((step)=>["avant","paiement","achat","après"].indexOf(step.phase));
   assert.deepEqual(phases,[...phases].sort((a,b)=>a-b));
 });
+
+
+test("Coupon Network demande activation avant achat et facture pour le Drive",()=>{
+  const plan=buildSavingsActionPlan({
+    store:"carrefour",channel:"drive",providers:[],
+    productCandidates:[
+      {offer:{id:"a",providerId:"coupon-network",mechanism:"manufacturer_refund",type:"ODR"}},
+      {offer:{id:"b",providerId:"coupon-network",mechanism:"manufacturer_refund",type:"ODR"}}
+    ]
+  });
+  const steps=plan.steps.filter((step)=>/Activer les offres Coupon Network/.test(step.title));
+  assert.equal(steps.length,1);
+  assert.equal(steps[0].phase,"avant");
+  assert.match(steps[0].detail,/AVANT l’achat/);
+  assert.match(steps[0].detail,/facture/);
+  assert.match(steps[0].detail,/pas cumulable/);
+  const lastBefore=plan.steps.findIndex((step)=>step.title===steps[0].title);
+  const payment=plan.steps.findIndex((step)=>step.phase==="paiement");
+  assert.ok(lastBefore<payment);
+});
+
+test("une ODR autre que Coupon Network ne déclenche aucune activation Coupon Network",()=>{
+  const plan=buildSavingsActionPlan({
+    store:"carrefour",providers:[],
+    productCandidates:[{offer:{providerId:"shopmium",mechanism:"odr",type:"ODR"}}]
+  });
+  assert.equal(plan.steps.some((step)=>/Activer les offres Coupon Network/.test(step.title)),false);
+});
