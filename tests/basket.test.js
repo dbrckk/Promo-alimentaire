@@ -662,3 +662,23 @@ test("deux observations avec uniquement le nom de chaîne ne forment pas un faux
   });
   assert.equal(scenarios.length,0);
 });
+
+
+test("une ODR différée est soustraite du coût économique sans diminuer le prix caisse",()=>{
+  const p={code:"3017624010701",name:"Produit",brands:"Marque",categories:[]};
+  const refund={
+    id:"odr",scope:"produit",stores:["carrefour"],
+    eans:[p.code],savingAmount:3,savingAmountMode:"per-offer",
+    mechanism:"odr",benefitTiming:"refund",
+    autoStack:true,stackGroup:"odr",stackOrder:50
+  };
+  const scenario=evaluateBasketStore([{product:p,quantity:1}],{
+    store:"carrefour",
+    priceByCode:{[p.code]:[{price:10,date:"2026-10-07"}]},
+    offers:[refund],now:new Date("2026-10-08T12:00:00Z")
+  });
+  assert.equal(scenario.checkoutCost,10);
+  assert.equal(scenario.deferredRefund,3);
+  assert.equal(scenario.finalCost,7);
+  assert.equal(scenario.savingsBreakdown.refundGuaranteed,3);
+});
