@@ -1,5 +1,6 @@
 import { readFile,writeFile } from "node:fs/promises";
 import { verifyLeclercCatalogOffer } from "../src/adapters/leclerc-catalog.js";
+import {writeSourceSyncStatus} from "./source-sync-status.mjs";
 
 const SNAPSHOT_URL=new URL("../data/import/leclerc-catalog-2026-10-07.json",import.meta.url);
 const write=process.argv.includes("--write");
@@ -64,3 +65,13 @@ if(write && changed>0){
   await writeFile(SNAPSHOT_URL,JSON.stringify(next,null,2)+"\n","utf8");
   console.log("[leclerc] snapshot mis à jour.");
 }
+await writeSourceSyncStatus("leclerc",{
+  status:verified===offers.length?"updated":verified===0?"unavailable":"partial",
+  reason:verified===offers.length
+    ? "Toutes les promotions ont été reconfirmées dans les pages publiques."
+    : verified===0
+      ? "Aucune promotion complète reconfirmée dans le catalogue public."
+      : "Seulement "+verified+"/"+offers.length+" promotions ont été reconfirmées.",
+  extractedCount:verified,
+  previousSnapshotCount:offers.length
+},{write});
