@@ -334,6 +334,8 @@ function renderSourceHealth(){
             </div>
             <div class="badges">
               <span class="badge ${badgeClass}">${stateLabel}</span>
+              ${item.validityStatus==="review-soon" && item.status==="sync-warning"
+                ? '<span class="badge warn">Révision imminente</span>' : ""}
               <span class="badge">${item.mode==="automatic"?"Synchronisation auto":"Snapshot manuel"}</span>
             </div>
             <div class="source-health-metrics">
@@ -349,7 +351,16 @@ function renderSourceHealth(){
               <span>vérifié ${item.latestVerifiedAt?formatDate(item.latestVerifiedAt):"—"}</span>
               <span>révision ${item.nextDeadline?formatDate(item.nextDeadline):"—"}</span>
             </div>
-            ${["unavailable","partial"].includes(item.syncState?.status)?`<p class="sync-warning">Dernière tentative : ${escapeHtml(formatDateTime(item.syncState.checkedAt))} · Échec de mise à jour publique. Les anciennes offres restent candidates uniquement jusqu’à leur échéance. ${escapeHtml(item.syncState.reason)}</p>`:""}
+            ${["unavailable","partial"].includes(item.syncState?.status)?`<p class="sync-warning">
+              Dernière tentative : ${escapeHtml(formatDateTime(item.syncState.checkedAt))}.
+              ${Number.isInteger(item.syncState.confirmedCount) && Number.isInteger(item.syncState.previousSnapshotCount)
+                ? `Offres reconfirmées : <strong>${item.syncState.confirmedCount}/${item.syncState.previousSnapshotCount}</strong>.` : ""}
+              La source n'a pas actualisé toutes ses offres.
+              ${item.validityStatus==="review-soon" && item.nextDeadline
+                ? `Révision exigée au plus tard le <strong>${formatDate(item.nextDeadline)}</strong>.` : ""}
+              Les anciennes offres expirent normalement et ne sont pas garanties.
+              ${escapeHtml(item.syncState.reason)}
+            </p>`:""}
           </article>`;
       }).join("")}
     </div>`;
