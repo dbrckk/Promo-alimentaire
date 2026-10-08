@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {mkdir} from "node:fs/promises";
+import {mkdir,readFile} from "node:fs/promises";
 import {chromium,devices} from "playwright";
 
 const BASE=process.env.SMOKE_URL || "http://127.0.0.1:4173/";
@@ -55,6 +55,17 @@ try{
   assert.equal(response.status(),200);
   await page.locator("#stats .stat").first().waitFor({timeout:10000});
   assert.match(await page.title(),/Promo Alimentaire/);
+  const statusFixture=JSON.parse(await readFile(
+    new URL("../data/import/source-sync-status.json",import.meta.url),"utf8"
+  ));
+  if(statusFixture.sources?.["coupon-network"]?.status==="unavailable"){
+    await page.waitForFunction(()=>
+      document.querySelector("#sourceHealth")?.textContent?.includes("Source non actualisée"),
+      {timeout:12000}
+    );
+    assert.match(await page.locator("#sourceHealth").textContent(),/Coupon Network/i);
+    assert.match(await page.locator("#sourceHealth").textContent(),/échéance/);
+  }
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.screenshot({path:OUT+"/01-offres.png",fullPage:true});
 
