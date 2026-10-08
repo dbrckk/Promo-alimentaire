@@ -135,3 +135,46 @@ test("priceFreshness expose un âge et un niveau",()=>{
   assert.equal(priceFreshness({date:"2026-10-05"},now).level,"very-recent");
   assert.equal(priceFreshness({date:"2026-08-01"},now).level,"old");
 });
+
+
+test("une géolocalisation absente ne devient jamais un faux magasin à (0,0)",()=>{
+  for(const location of [
+    {osm_brand:"Carrefour"},
+    {osm_brand:"Carrefour",osm_lat:null,osm_lon:null},
+    {osm_brand:"Carrefour",osm_lat:"",osm_lon:""},
+    {osm_brand:"Carrefour",osm_lat:45.44,osm_lon:null}
+  ]){
+    const value=normalizePriceObservation({
+      id:21,product_code:"3017624010701",price:2,date:"2026-10-07",location
+    },{latitude:46,longitude:4});
+    assert.equal(value.locationLat,null);
+    assert.equal(value.locationLon,null);
+    assert.equal(value.distanceKm,null);
+  }
+});
+
+test("un prix normal absent ne devient pas un prix barré à zéro",()=>{
+  for(const value of [null,undefined,""]){
+    const result=normalizePriceObservation({
+      id:21,price:3,date:"2026-10-07",price_without_discount:value
+    });
+    assert.equal(result.priceWithoutDiscount,null);
+  }
+});
+
+test("une réponse Open Prices corrompue ne mélange pas produits, monnaies ou prix",async()=>{
+  const code="3017624010701";
+  const result=await fetchPricesByBarcode(code,{
+    store:"carrefour",
+    fetchImpl:async()=>({
+      ok:true,json:async()=>({total:5,items:[
+        {id:1,product_code:code,price:2,date:"2026-10-07",currency:"EUR",location:{osm_brand:"Carrefour"}},
+        {id:2,product_code:"4006381333931",price:1,date:"2026-10-07",currency:"EUR",location:{osm_brand:"Carrefour"}},
+        {id:3,product_code:code,price:1,date:"2026-10-07",currency:"USD",location:{osm_brand:"Carrefour"}},
+        {id:4,product_code:code,price:-1,date:"2026-10-07",currency:"EUR",location:{osm_brand:"Carrefour"}},
+        {id:5,product_code:code,price:1,date:"2026-10-07",currency:"EUR",location:{osm_brand:"E.Leclerc"}}
+      ]})
+    })
+  });
+  assert.deepEqual(result.observations.map((observation)=>observation.id),[1]);
+});
