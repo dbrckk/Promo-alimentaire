@@ -1,5 +1,5 @@
 import { findProductOffers, estimateOfferSaving } from "./matching.js";
-import { selectBestRecentPrice } from "./open-data.js";
+import { observationAgeDays, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { roundMoney } from "./domain.js";
 import { findBundleCandidates } from "./bundle.js";
@@ -86,8 +86,15 @@ export function evaluateBasketStore(items,{
       assessRetailerPromoPrice(best,offer).eligible
       && assessCouponNetworkCompatibility(best,offer).eligible
     );
+    const priceAgeDays=observationAgeDays(best,now);
+    const retailerPriceRecent=priceAgeDays!==null && priceAgeDays<=7;
+    const retailerPromoAgeWarning=!retailerPriceRecent
+      && eligibleMatches.some(({offer})=>offer.mechanism==="retailer_promo");
     const guaranteedProductOffers=eligibleMatches
-      .filter(({match,offer})=>match.exact && offer.autoStack===true)
+      .filter(({match,offer})=>
+        match.exact && offer.autoStack===true
+        && (offer.mechanism!=="retailer_promo" || retailerPriceRecent)
+      )
       .map(({offer})=>{
         if(!offer.promoFormula) return offer;
         const exactSaving=estimateOfferSaving(best.price,offer,quantity);
@@ -156,6 +163,7 @@ export function evaluateBasketStore(items,{
       immediateSaving,
       alreadyRetailDiscounted,
       retailerPromoPriceConflict,
+      retailerPromoAgeWarning,
       incompatibleCouponCount,
       appliedOffers:lineOptimization.selected,
       finalCost:lineOptimization.finalCost,
