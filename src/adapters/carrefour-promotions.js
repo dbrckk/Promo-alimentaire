@@ -54,7 +54,7 @@ export function verifyCarrefourPromotionPage(html,offer,{
   if(Number.isFinite(regularPrice) && !pricePresent(text,regularPrice)){
     reasons.push("prix barré absent");
   }
-  if(Number.isFinite(regularPrice) && !/au\\s+lieu\\s+de/i.test(text)){
+  if(Number.isFinite(regularPrice) && !/au\s+lieu\s+de/i.test(text)){
     reasons.push("mention prix barré absente");
   }
   // Price, crossed-out price and advertised percentage must belong to the same
