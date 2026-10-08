@@ -1,5 +1,7 @@
-import { readFile, writeFile } from "node:fs/promises";
-import { parseCouponNetworkHtml } from "../src/adapters/coupon-network.js";
+import { readFile, writeFile, appendFile } from "node:fs/promises";
+import {
+  parseCouponNetworkHtml, assessCouponNetworkSnapshot
+} from "../src/adapters/coupon-network.js";
 import { validateImportBatch } from "../src/ingestion.js";
 
 const SOURCE_URLS=[
@@ -9,8 +11,31 @@ const SOURCE_URLS=[
 const OUTPUT_URL=new URL("../data/import/coupon-network-auto.json",import.meta.url);
 const MANIFEST_URL=new URL("../data/import/index.json",import.meta.url);
 const write=process.argv.includes("--write");
-const minOffers=Math.max(10,Number(process.env.MIN_COUPON_NETWORK_OFFERS || 20));
+const minOffers=Math.max(10,Number(process.env.MIN_COUPON_NETWORK_OFFERS) || 20);
+const strictSource=process.argv.includes("--strict-source");
 const verifiedAt=new Date().toISOString().slice(0,10);
+const previous=JSON.parse(await readFile(OUTPUT_URL,"utf8"));
+if(!Array.isArray(previous)) throw new Error("Snapshot Coupon Network précédent invalide.");
+const previousCount=previous.length;
+
+async function sourceUnavailable(reason){
+  const message="Aucune revalidation : "+reason+
+    ". Snapshot précédent conservé sans modifier verifiedAt/reviewAfter ("+
+    previousCount+" offres antérieures). L'application les masquera après leur date limite.";
+  console.warn("[coupon-network] "+message);
+  console.log("::warning title=Coupon Network non réactualisé::"+message);
+  if(process.env.GITHUB_STEP_SUMMARY){
+    await appendFile(
+      process.env.GITHUB_STEP_SUMMARY,
+      "\n### Coupon Network : source non réactualisée\n"+
+      "- **Résultat :** "+String(reason).replace(/[|\r\n]/g," ")+"\n"+
+      "- **Offres précédentes :** "+previousCount+" (dates inchangées)\n"+
+      "- **Aucune offre publiée ou prolongée.** Les offres expirées sont exclues automatiquement.\n",
+      "utf8"
+    );
+  }
+  if(strictSource) process.exitCode=1;
+}
 
 const pages=[];
 for(const sourceUrl of SOURCE_URLS){
@@ -33,7 +58,10 @@ for(const sourceUrl of SOURCE_URLS){
     console.warn("[coupon-network] "+sourceUrl+" indisponible: "+error.message);
   }
 }
-if(!pages.length) throw new Error("Aucune page publique Coupon Network exploitable.");
+if(!pages.length){
+  await sourceUnavailable("Aucune page publique exploitable");
+  process.exit();
+}
 
 pages.sort((a,b)=>b.parsed.length-a.parsed.length);
 let offers=pages[0].parsed;
@@ -65,14 +93,25 @@ if(offers.length<minOffers){
   const unique=new Map(details.map((offer)=>[offer.externalId,offer]));
   offers=[...unique.values()];
 }
-if(offers.length<minOffers){
-  throw new Error("Extraction Coupon Network insuffisante : "+offers.length+" offre(s), minimum "+minOffers+". Ancien snapshot conservé.");
+const assessment=assessCouponNetworkSnapshot(offers,{
+  previousCount,minimum:minOffers
+});
+if(!assessment.publish){
+  await sourceUnavailable(
+    assessment.reason+" ("+assessment.count+"/"+minOffers+" minimum, "+
+    previousCount+" auparavant)"
+  );
+  process.exit();
 }
 
 const validation=validateImportBatch(offers);
 if(!validation.ok){
-  const sample=validation.errors.slice(0,5).map((item)=>"index "+item.index+": "+item.errors.join(" | ")).join("\n");
-  throw new Error("Snapshot généré invalide : "+validation.errors.length+" erreur(s).\n"+sample);
+  const sample=validation.errors.slice(0,5).map((item)=>
+    "index "+item.index+": "+item.errors.join(" | ")
+  ).join(" / ");
+  await sourceUnavailable("Nouveau snapshot invalide ("+
+    validation.errors.length+" erreurs) : "+sample);
+  process.exit();
 }
 
 console.log("[coupon-network] "+validation.normalized.length+" offres candidates extraites et validées.");
@@ -89,6 +128,14 @@ if(write){
   ];
   await writeFile(MANIFEST_URL,JSON.stringify(manifest,null,2)+"\n","utf8");
   console.log("[coupon-network] snapshot et manifeste mis à jour.");
+  if(process.env.GITHUB_STEP_SUMMARY){
+    await appendFile(process.env.GITHUB_STEP_SUMMARY,
+      "\n### Coupon Network : actualisation validée\n"+
+      "- **"+offers.length+" offres** vérifiées par extraction publique.\n"+
+      "- Aucun EAN ni cumul n'est garanti sans preuve supplémentaire.\n",
+      "utf8"
+    );
+  }
 }else{
   console.log("[coupon-network] dry-run : aucun fichier modifié.");
 }
