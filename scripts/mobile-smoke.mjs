@@ -84,7 +84,6 @@ try{
   await page.locator('[data-action="add-current-product"]').click();
   await page.locator('[data-tab="list"]').click();
   assert.match(await page.locator("#shoppingListItems").innerText(),/Pâte à tartiner témoin/);
-  assert.match(await page.locator("#manualPriceEntries").innerText(),/Carrefour Centre Lyon/);
   assert.match(await page.locator("#listCount").innerText(),/1/);
   await page.locator("#refreshList").click();
   await page.locator("#refreshList").waitFor({state:"visible"});
@@ -125,6 +124,8 @@ try{
   assert.equal(await page.locator("#carrefourLoyalty").inputValue(),"club");
   await page.locator('[data-tab="list"]').click();
   assert.match(await page.locator("#shoppingListItems").innerText(),/Pâte à tartiner témoin/);
+  await page.locator("#manualPricePanel").evaluate((element)=>{element.open=true;});
+  assert.match(await page.locator("#manualPriceEntries").innerText(),/Carrefour Centre Lyon/);
 
   const swSupported=await page.evaluate(()=>"serviceWorker" in navigator);
   assert.equal(swSupported,true,"Service worker unavailable in browser context");
