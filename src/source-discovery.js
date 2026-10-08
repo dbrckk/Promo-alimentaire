@@ -2,7 +2,7 @@
  * Source discovery only. None of these entries is an active, priced offer.
  * "advertisedMaxPercent" is a possible marketing ceiling, NEVER a confirmed saving.
  */
-export const SOURCE_SCOPES=new Set(["food","other-50","all"]);
+export const SOURCE_SCOPES=new Set(["food","free-food","food-odr","other-50","all"]);
 
 function norm(value){
   return String(value ?? "")
@@ -19,6 +19,12 @@ export function filterDiscoveryProviders(providers,{scope="food",search=""}={}){
     .filter((source)=>{
       const segment=source.segment==="other"?"other":"food";
       if(selection==="food" && segment!=="food") return false;
+      if(selection==="free-food"
+        && !(segment==="food" && (source.potentialFree===true
+          || (source.kinds || []).includes("aide alimentaire")))) return false;
+      if(selection==="food-odr"
+        && !(segment==="food" && (source.kinds || []).some((kind)=>
+          /(?:ODR|cashback|remboursement|coupon|bons de réduction)/i.test(kind)))) return false;
       if(selection==="other-50"
         && !(segment==="other"
           && Number.isFinite(source.advertisedMaxPercent)
@@ -59,6 +65,12 @@ export function validateDiscoveryProviders(providers){
         && source.advertisedMaxPercent>=50 && source.advertisedMaxPercent<=100
         && source.verificationUrl)){
       errors.push(id+": une source hors alimentaire exige un plafond annoncé de 50 % ou plus avec preuve.");
+    }
+    if(source.discoveryStatus!==undefined && !["unconfirmed"].includes(source.discoveryStatus)){
+      errors.push(id+": statut de découverte inconnu.");
+    }
+    if(source.discoveryStatus==="unconfirmed" && source.discoveryVerifiedAt){
+      errors.push(id+": source non confirmée ne doit pas afficher une vérification récente.");
     }
     if(source.segment && !["food","other"].includes(source.segment)){
       errors.push(id+": segment inconnu.");
