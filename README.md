@@ -28,6 +28,7 @@ Fonctionnalités actuelles :
 - recommandation explicite du meilleur moyen de paiement remisé, avec alternatives et économie estimée ;
 - plan d’action ordonné avant / paiement / en caisse / après achat pour ne pas rater une activation ou une ODR ;
 - liste de courses persistante sur l'appareil avec quantités ;
+- sauvegarde/restauration locale en JSON de la liste et du plafond de courses, sans compte, avec contrôle GTIN et confirmation avant remplacement ;
 - actualisation des mêmes références chez Carrefour et E.Leclerc ;
 - comparaison des deux paniers avec refus de déclarer un gagnant si la couverture prix est incomplète ;
 - ventilation des économies par levier : produit exact, paiement remisé, autres garanties, ODR candidates et bundles ;
@@ -72,6 +73,7 @@ Shopmium, Coupon Network, Fidme Courses, FidMarques, Joko, eBuyClub, Poulpeo, Wi
 - `src/history.js` : snapshots locaux et tendances de comparaison.
 - `src/product-history.js` : historique par produit, tendances et détection de baisse.
 - `src/gtin.js` : normalisation et checksum GTIN/EAN.
+- `src/shopping-list-transfer.js` : transfert de liste, validation stricte et réduction des métadonnées importées.
 - `src/ingestion.js` : validation des lots d'offres traçables.
 - `src/import-loader.js` : chargement des snapshots actifs et rejet des lots invalides.
 - `src/adapters/coupon-network.js` : extraction prudente des remboursements publics Coupon Network.
@@ -90,6 +92,16 @@ python3 -m http.server 4173
 Puis ouvrir `http://localhost:4173`.
 
 > Le scanner caméra nécessite un contexte sécurisé (HTTPS) hors localhost. Un hébergement GitHub Pages/Vercel/Cloudflare Pages conviendra.
+
+## Sauvegarder et restaurer sa liste sur Android
+
+Dans **Liste**, utiliser **Sauvegarder la liste** pour télécharger un fichier `.json` sur l'appareil. Pour le transférer vers un autre appareil, envoyer le fichier par le moyen de son choix, puis ouvrir l'application sur l'autre appareil, appuyer sur **Restaurer la liste**, sélectionner le fichier et confirmer.
+
+- Les quantités, les codes-barres, les libellés produits et le budget facultatif sont inclus.
+- La position, les prix relevés, les historiques et les réglages ne sont pas exportés.
+- La restauration **remplace** la liste et le budget existants ; les prix doivent être actualisés après.
+- Le contrôle refuse les codes GTIN incohérents, les doublons, les quantités hors limites, les sauvegardes inconnues et les fichiers de plus de 100 Ko.
+- Un maximum de 30 produits distincts est autorisé. La sauvegarde et la restauration fonctionnent sans réseau une fois la PWA mise en cache.
 
 ## Vérifier
 

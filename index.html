@@ -140,6 +140,9 @@
             <option value="25" selected>25 km</option>
             <option value="50">50 km</option>
           </select>
+          <button id="exportList" class="secondary" type="button">Sauvegarder la liste</button>
+          <button id="importList" class="secondary" type="button">Restaurer la liste</button>
+          <input id="importListFile" class="sr-only" type="file" accept=".json,application/json" aria-label="Fichier de sauvegarde de la liste" />
           <button id="clearList" class="secondary danger-action" type="button">Vider</button>
           <select id="dropThreshold" aria-label="Seuil d'alerte de baisse">
             <option value="5">Alerte -5 %</option>
@@ -149,7 +152,7 @@
           </select>
           <button id="clearHistory" class="secondary danger-action" type="button">Effacer l'historique</button>
         </div>
-        <p class="help">La liste de produits et les quantités sont enregistrées sur cet appareil. La position, elle, n'est jamais persistée.</p>
+        <p class="help">La liste de produits et les quantités sont enregistrées sur cet appareil. Sauvegarde et restauration fonctionnent hors ligne, sans compte ni serveur. Restaurer remplace la liste et le budget, mais pas les historiques, les prix ou les réglages. La position n'est jamais persistée.</p>
         <div id="listStatus" class="status" aria-live="polite"></div>
       </div>
       <section class="panel shopping-budget-panel" aria-label="Budget courses">

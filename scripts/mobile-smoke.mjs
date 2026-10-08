@@ -11,6 +11,7 @@ const context=await browser.newContext({
   locale:"fr-FR",
   timezoneId:"Europe/Paris",
   serviceWorkers:"allow",
+  acceptDownloads:true,
   permissions:[]
 });
 const page=await context.newPage();
@@ -134,6 +135,31 @@ try{
   assert.match(await page.locator("#shoppingListItems").innerText(),/Pâte à tartiner témoin/);
   await page.locator("#manualPricePanel").evaluate((element)=>{element.open=true;});
   assert.match(await page.locator("#manualPriceEntries").innerText(),/Carrefour Centre Lyon/);
+
+  // Real Android browser flow: JSON download, destructive restore prompt, persistence.
+  const [download]=await Promise.all([
+    page.waitForEvent("download"),
+    page.locator("#exportList").click()
+  ]);
+  assert.match(download.suggestedFilename(),/promo-alimentaire-liste-.*\.json/);
+  const exported=await readFile(await download.path(),"utf8");
+  assert.equal(JSON.parse(exported).budget,6);
+  assert.equal(JSON.parse(exported).items.length,1);
+  await page.locator("#clearList").click();
+  assert.equal(await page.locator("#listCount").textContent(),"0");
+  page.once("dialog",(dialog)=>dialog.accept());
+  await page.locator("#importListFile").setInputFiles({
+    name:"liste.json",mimeType:"application/json",buffer:Buffer.from(exported)
+  });
+  await page.getByText("Liste restaurée : 1 produit(s).",{exact:false}).waitFor();
+  assert.equal(await page.locator("#shoppingBudget").inputValue(),"6,00");
+  assert.match(await page.locator("#shoppingListItems").innerText(),/Pâte à tartiner témoin/);
+  await page.locator("#importListFile").setInputFiles({
+    name:"invalid.json",mimeType:"application/json",buffer:Buffer.from("{broken")
+  });
+  assert.match(await page.locator("#listStatus").innerText(),/Restauration impossible/);
+  assert.equal(await page.locator("#listCount").textContent(),"1");
+  await assertNoHorizontalOverflow(page,"sauvegarde et restauration");
 
   const swSupported=await page.evaluate(()=>"serviceWorker" in navigator);
   assert.equal(swSupported,true,"Service worker unavailable in browser context");
