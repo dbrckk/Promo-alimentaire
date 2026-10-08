@@ -193,14 +193,20 @@ export function selectBestRecentPrice(observations,maxAgeDays=120,now=new Date()
     .filter((item)=>Number.isFinite(Number(item.price)) && Number(item.price)>0)
     .filter((item)=>isFreshObservation(item,maxAgeDays,now));
   if(!candidates.length) return null;
-  const preferred=candidates.filter((item)=>{
-    const age=observationAgeDays(item,now);
-    return age!==null && age<=preferredAgeDays;
-  });
-  const pool=preferred.length ? preferred : candidates;
-  return [...pool].sort((a,b)=>{
-    const priceDiff=Number(a.price)-Number(b.price);
+
+  // A low price observed weeks ago is NOT today's price. Always choose the
+  // latest observation day first, even if the newer price is higher.
+  // If reports conflict on the same date, use the higher observed price:
+  // an advertised discount must not depend on the most optimistic receipt.
+  const ordered=[...candidates].sort((a,b)=>{
+    const dayA=new Date(a.date).toISOString().slice(0,10);
+    const dayB=new Date(b.date).toISOString().slice(0,10);
+    if(dayA!==dayB) return dayA<dayB ? 1 : -1;
+    const priceDiff=Number(b.price)-Number(a.price);
     if(priceDiff!==0) return priceDiff;
-    return new Date(b.date)-new Date(a.date);
-  })[0];
+    // Prefer a receipt with a declared proof if prices and dates agree.
+    if(Boolean(a.proofType)!==Boolean(b.proofType)) return a.proofType ? -1 : 1;
+    return String(a.id || "").localeCompare(String(b.id || ""));
+  });
+  return ordered[0];
 }
