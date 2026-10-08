@@ -288,5 +288,233 @@
       ],
       "minScore": 70
     }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-source-3038359913273",
+    "provider": "Carrefour",
+    "title": "−30% · Pâtes Penne Rigate Panzani 500 g",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 1.59,
+    "sourceRegularPrice": 1.59,
+    "sourcePromoPrice": 1.11,
+    "verifiedAt": "2026-10-08",
+    "reviewAfter": "2026-10-10",
+    "sourceUrl": "https://www.carrefour.fr/p/pates-penne-rigate-fermes-et-genereuses-panzani-3038359913273",
+    "scope": "produit",
+    "eans": [
+      "3038359913273"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/pates-penne-rigate-fermes-et-genereuses-panzani-3038359913273",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Le prix Drive/livraison et la disponibilité dépendent du magasin choisi.",
+    "conditions": "Fiche Carrefour : 1,11 € au lieu de 1,59 €, PROMO 30 %. Confirmer le prix réellement facturé par le Drive/la livraison sélectionné.",
+    "productMatch": {
+      "brands": [
+        "Panzani"
+      ],
+      "all": [
+        "penne",
+        "rigate"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-source-3038359913297",
+    "provider": "Carrefour",
+    "title": "−30% · Pâtes Spaghetti Panzani 500 g",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 1.59,
+    "sourceRegularPrice": 1.59,
+    "sourcePromoPrice": 1.11,
+    "verifiedAt": "2026-10-08",
+    "reviewAfter": "2026-10-10",
+    "sourceUrl": "https://www.carrefour.fr/p/pates-spaghetti-fermes-et-genereuses-panzani-3038359913297",
+    "scope": "produit",
+    "eans": [
+      "3038359913297"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/pates-spaghetti-fermes-et-genereuses-panzani-3038359913297",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Le prix Drive/livraison et la disponibilité dépendent du magasin choisi.",
+    "conditions": "Fiche Carrefour : 1,11 € au lieu de 1,59 €, PROMO 30 %. Confirmer le prix réellement facturé par le Drive/la livraison sélectionné.",
+    "productMatch": {
+      "brands": [
+        "Panzani"
+      ],
+      "all": [
+        "spaghetti"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-source-3041090767845",
+    "provider": "Carrefour",
+    "title": "−30% · Plat bébé Pâtes Tomates Jambon Blédina 2×200 g",
+    "type": "promotion enseigne",
+    "category": "bébé",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 2.59,
+    "sourceRegularPrice": 2.59,
+    "sourcePromoPrice": 1.81,
+    "verifiedAt": "2026-10-08",
+    "reviewAfter": "2026-10-10",
+    "sourceUrl": "https://www.carrefour.fr/p/plat-bebe-des-12-mois-tomates-mijotees-pates-coquilles-jambon-les-idees-de-maman-bledina-3041090767845",
+    "scope": "produit",
+    "eans": [
+      "3041090767845"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/plat-bebe-des-12-mois-tomates-mijotees-pates-coquilles-jambon-les-idees-de-maman-bledina-3041090767845",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Le prix Drive/livraison et la disponibilité dépendent du magasin choisi.",
+    "conditions": "Fiche Carrefour : 1,81 € au lieu de 2,59 €, PROMO 30 %. Confirmer le prix réellement facturé par le Drive/la livraison sélectionné.",
+    "productMatch": {
+      "brands": [
+        "Blédina"
+      ],
+      "all": [
+        "tomates",
+        "jambon"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-source-3041091647399",
+    "provider": "Carrefour",
+    "title": "−30% · Plat bébé Pâtes Épinards Crème Blédina 2×200 g",
+    "type": "promotion enseigne",
+    "category": "bébé",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 2.69,
+    "sourceRegularPrice": 2.69,
+    "sourcePromoPrice": 1.88,
+    "verifiedAt": "2026-10-08",
+    "reviewAfter": "2026-10-10",
+    "sourceUrl": "https://www.carrefour.fr/p/plat-bebe-du-soir-des-8-mois-petites-pates-epinards-creme-blediner-bledina-3041091647399",
+    "scope": "produit",
+    "eans": [
+      "3041091647399"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/plat-bebe-du-soir-des-8-mois-petites-pates-epinards-creme-blediner-bledina-3041091647399",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Le prix Drive/livraison et la disponibilité dépendent du magasin choisi.",
+    "conditions": "Fiche Carrefour : 1,88 € au lieu de 2,69 €, PROMO 30 %. Confirmer le prix réellement facturé par le Drive/la livraison sélectionné.",
+    "productMatch": {
+      "brands": [
+        "Blédina"
+      ],
+      "all": [
+        "epinards",
+        "creme"
+      ],
+      "minScore": 70
+    }
+  },
+  {
+    "providerId": "carrefour",
+    "externalId": "promo-source-3123930715008",
+    "provider": "Carrefour",
+    "title": "−30% · Emmental râpé Entremont 500 g",
+    "type": "promotion enseigne",
+    "category": "crèmerie",
+    "stores": [
+      "carrefour"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "basePrice": 5.59,
+    "sourceRegularPrice": 5.59,
+    "sourcePromoPrice": 3.91,
+    "verifiedAt": "2026-10-08",
+    "reviewAfter": "2026-10-10",
+    "sourceUrl": "https://www.carrefour.fr/p/fromage-rape-emmental-entremont-3123930715008",
+    "scope": "produit",
+    "eans": [
+      "3123930715008"
+    ],
+    "eanEvidenceUrl": "https://www.carrefour.fr/p/fromage-rape-emmental-entremont-3123930715008",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "requiresChannelPriceVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "medium",
+    "stacking": "Le prix Drive/livraison et la disponibilité dépendent du magasin choisi.",
+    "conditions": "Fiche Carrefour : 3,91 € au lieu de 5,59 €, PROMO 30 %. Confirmer le prix réellement facturé par le Drive/la livraison sélectionné.",
+    "productMatch": {
+      "brands": [
+        "Entremont"
+      ],
+      "all": [
+        "emmental"
+      ],
+      "minScore": 70
+    }
   }
 ]
