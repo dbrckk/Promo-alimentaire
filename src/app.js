@@ -348,7 +348,7 @@ function renderSourceHealth(){
               <span>vérifié ${item.latestVerifiedAt?formatDate(item.latestVerifiedAt):"—"}</span>
               <span>révision ${item.nextDeadline?formatDate(item.nextDeadline):"—"}</span>
             </div>
-            ${item.syncState?.status==="unavailable"?`<p class="sync-warning">Dernière tentative : ${escapeHtml(formatDateTime(item.syncState.checkedAt))} · Échec de mise à jour publique. Les anciennes offres restent candidates uniquement jusqu’à leur échéance. ${escapeHtml(item.syncState.reason)}</p>`:""}
+            ${["unavailable","partial"].includes(item.syncState?.status)?`<p class="sync-warning">Dernière tentative : ${escapeHtml(formatDateTime(item.syncState.checkedAt))} · Échec de mise à jour publique. Les anciennes offres restent candidates uniquement jusqu’à leur échéance. ${escapeHtml(item.syncState.reason)}</p>`:""}
           </article>`;
       }).join("")}
     </div>`;
