@@ -26,6 +26,11 @@ export function matchOfferToProduct(product,offer) {
       reason:"EAN/GTIN explicitement référencé par l’offre"
     };
   }
+  // A promotion backed by explicit GTINs targets those references only.
+  // Broad brand keywords must never resurrect a different scanned SKU.
+  if(code && exactCodes.some(Boolean)){
+    return noMatch("ean-not-in-offer");
+  }
 
   const rules=offer.productMatch;
   if(!rules) return noMatch("no-product-rules");
