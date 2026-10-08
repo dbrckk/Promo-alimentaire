@@ -261,3 +261,17 @@ La santé des sources montre séparément :
 - la prochaine date de révision, qui reste visible en cas d'échec de synchronisation.
 
 Le test Chromium avec émulation Android vérifie aussi les dates des prix, les états des sources, la navigation, le panier et la consultation hors ligne.
+
+
+### Relevé personnel de prix en magasin
+
+Lorsque la couverture Open Prices est insuffisante, l'onglet **Liste** propose un formulaire repliable **« Ajouter un prix relevé en magasin »**. Il enregistre, uniquement dans le `localStorage` du navigateur, le code-barres du produit déjà dans la liste, l'enseigne, le nom et le code postal du magasin, la date et le prix unitaire.
+
+- Les relevés sont validés (prix positif, code-barres, magasin, code postal, date) et restent exploitables **30 jours maximum**.
+- Ils ne sont pas envoyés à Open Prices ni à un serveur. Il est possible de les supprimer depuis le même panneau.
+- Ils sont visibles avec la mention **« Relevé personnel non vérifié »**. Un relevé personnel ne devient pas une preuve commerciale et **ne déclenche pas automatiquement** les ODR, les remises catalogue, les cartes cadeaux ni les bénéfices fidélité.
+- Les magasins identifiés par un simple nom et code postal restent **indicatifs** : ces prix ne peuvent pas à eux seuls désigner une enseigne gagnante.
+- L'historique de baisses vérifiables reste fondé sur les observations communautaires, séparément des relevés personnels.
+- La fonctionnalité reste disponible dans la PWA Android hors ligne après le premier chargement.
+
+Pour vérifier ce parcours automatiquement, consulter le workflow **Android viewport smoke test**, qui produit également une capture `05-releve-manuel.png`.
