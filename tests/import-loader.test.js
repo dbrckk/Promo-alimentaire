@@ -174,3 +174,40 @@ test("les statistiques EAN ne comptent plus les promotions expirées",async()=>{
   assert.equal(s.heuristicCount,1);
   assert.equal(s.storeVerificationCount,0);
 });
+
+
+test("un échec public est visible sans rafraîchir les offres ni les dates",async()=>{
+  const fetchImpl=async(url)=>{
+    const text=String(url);
+    if(text.endsWith("/index.json"))return {ok:true,json:async()=>manifest};
+    if(text.endsWith("/source-sync-status.json"))return {ok:true,json:async()=>({
+      sources:{shopmium:{
+        status:"unavailable",checkedAt:"2026-10-08T12:00:00Z",
+        reason:"Aucune offre publique récupérée"
+      }}
+    })};
+    return {ok:true,json:async()=>payload};
+  };
+  const result=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-08T14:00:00Z")
+  });
+  assert.equal(result.offers.length,1);
+  assert.equal(result.offers[0].verifiedAt,"2026-10-07");
+  assert.equal(result.sourceStats[0].status,"sync-warning");
+  assert.equal(result.sourceStats[0].syncState.status,"unavailable");
+  assert.equal(result.sourceStats[0].syncState.reason,"Aucune offre publique récupérée");
+});
+
+test("l'absence de fichier diagnostic ne bloque pas les imports",async()=>{
+  const fetchImpl=async(url)=>{
+    const text=String(url);
+    if(text.endsWith("/index.json"))return {ok:true,json:async()=>manifest};
+    if(text.endsWith("/source-sync-status.json"))return {ok:false,status:404};
+    return {ok:true,json:async()=>payload};
+  };
+  const result=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-08T12:00:00Z")
+  });
+  assert.equal(result.offers.length,1);
+  assert.equal(result.sourceStats[0].syncState,undefined);
+});
