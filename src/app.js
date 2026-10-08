@@ -16,6 +16,7 @@ import {
 import { scoreBasketConfidence } from "./confidence.js";
 import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js";
 import { buildSavingsActionPlan } from "./action-plan.js";
+import { buildVerificationQueue } from "./verification-queue.js";
 import { summarizeBasketStrategies } from "./strategy.js";
 import {
   buildProductLoyaltyOffers,
@@ -1416,6 +1417,11 @@ function renderBasketScenario(scenario){
     providers
   });
   const actionPlanHtml=renderSavingsActionPlan(actionPlan);
+  const verificationQueue=buildVerificationQueue(scenario,{
+    loyaltyProfile:state.loyaltyProfile,
+    limit:4
+  });
+  const verificationHtml=renderBasketVerificationQueue(verificationQueue);
   const prudentBestCase=scenario.conservativePotentialExtraSaving>0
     ? `<div class="best-case-box">
          <span>Meilleur cas prudent</span>
@@ -1460,8 +1466,39 @@ function renderBasketScenario(scenario){
       ${bundlePotential}
       ${basketPotential}
       ${prudentBestCase}
+      ${verificationHtml}
       ${actionPlanHtml}
     </article>`;
+}
+
+function renderBasketVerificationQueue(queue){
+  if(!queue?.items?.length) return "";
+  return `
+    <section class="verification-queue">
+      <div class="product-offers-head">
+        <h3>Vérifications prioritaires</h3>
+        <p>${queue.totalCount} offre(s) candidates à examiner, classées par gain additionnel potentiel. Les gains ne sont pas additionnés au panier garanti.</p>
+      </div>
+      <ol class="verification-items">
+        ${queue.items.map((task)=>`
+          <li class="verification-item">
+            <div>
+              <strong>${escapeHtml(task.name)}</strong>
+              <span>${escapeHtml(task.provider)} · ${escapeHtml(task.title)}</span>
+              <div class="verification-blockers">
+                ${task.blockers.length
+                  ? task.blockers.map((blocker)=>`<span>${escapeHtml(blocker)}</span>`).join("")
+                  : '<span>Vérifier les conditions de cumul avant achat</span>'}
+              </div>
+              ${task.sourceUrl?`<a href="${escapeHtml(task.sourceUrl)}" target="_blank" rel="noopener noreferrer">Vérifier l’offre à la source</a>`:""}
+            </div>
+            <div class="verification-value">
+              <strong>+${money.format(task.additionalSaving)}</strong>
+              <small>potentiel, non garanti</small>
+            </div>
+          </li>`).join("")}
+      </ol>
+    </section>`;
 }
 
 function renderSavingsActionPlan(plan){
