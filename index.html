@@ -228,6 +228,28 @@
     </section>
 
     <section id="providersView" class="hidden">
+      <div class="panel source-discovery-controls">
+        <div>
+          <p class="eyebrow dark">Annuaire d'économies</p>
+          <h2>Comparer les services utiles</h2>
+          <p class="help">Les liens d'annuaire ne sont pas des offres en temps réel. Un don, un test gratuit, une cagnotte et une réduction immédiate ont des conditions différentes. Aucun taux de cette section n'est ajouté automatiquement au panier.</p>
+        </div>
+        <div class="source-discovery-fields">
+          <div class="field">
+            <label for="sourceScope">Type de services</label>
+            <select id="sourceScope">
+              <option value="food">Alimentaire et produits gratuits</option>
+              <option value="other-50">Autres domaines : 50 % ou plus possibles</option>
+              <option value="all">Tous les services</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sourceSearch">Rechercher un service</label>
+            <input id="sourceSearch" type="search" autocomplete="off" placeholder="Don, test, Lidl, cashback…" />
+          </div>
+        </div>
+        <p id="sourceDiscoverySummary" class="help" aria-live="polite"></p>
+      </div>
       <div id="sourceHealth" class="source-health"></div>
       <div id="providers" class="grid providers"></div>
     </section>
