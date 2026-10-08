@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - "scripts/sync-leclerc-catalog.mjs"
+      - "scripts/source-sync-status.mjs"
       - "src/adapters/leclerc-catalog.js"
       - "data/import/leclerc-catalog-2026-10-07.json"
       - ".github/workflows/sync-leclerc-catalog.yml"
@@ -33,14 +34,14 @@ jobs:
       - name: Commit refreshed verification dates
         shell: bash
         run: |
-          if git diff --quiet -- data/import/leclerc-catalog-2026-10-07.json; then
+          if git diff --quiet -- data/import/leclerc-catalog-2026-10-07.json data/import/source-sync-status.json; then
             echo "No verified catalogue change to commit."
             exit 0
           fi
           git config user.name "promo-alimentaire-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/import/leclerc-catalog-2026-10-07.json
-          git commit -m "data: reverify E.Leclerc catalogue offers"
+          git add data/import/leclerc-catalog-2026-10-07.json data/import/source-sync-status.json
+          git commit -m "data: record E.Leclerc public catalogue verification"
           for attempt in 1 2 3; do
             git fetch origin main
             if git rebase origin/main; then
