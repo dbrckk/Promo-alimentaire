@@ -8,7 +8,10 @@ import {
   resolveOffersForLoyalty
 } from "./loyalty.js";
 import { applyLocalStoreConfirmations } from "./local-verification.js";
-import { assessRetailerPromoPrice } from "./promo-price-check.js";
+import {
+  assessRetailerPromoPrice,
+  assessCouponNetworkCompatibility
+} from "./promo-price-check.js";
 
 export function normalizeQuantity(value) {
   const quantity=Math.trunc(Number(value));
@@ -76,8 +79,12 @@ export function evaluateBasketStore(items,{
       check.reason==="source-promo-may-already-be-included"
       || check.reason==="observed-price-not-source-regular"
     );
+    const incompatibleCouponCount=matches.filter(({offer})=>
+      !assessCouponNetworkCompatibility(best,offer).eligible
+    ).length;
     const eligibleMatches=matches.filter(({offer})=>
       assessRetailerPromoPrice(best,offer).eligible
+      && assessCouponNetworkCompatibility(best,offer).eligible
     );
     const guaranteedProductOffers=eligibleMatches
       .filter(({match,offer})=>match.exact && offer.autoStack===true)
@@ -149,6 +156,7 @@ export function evaluateBasketStore(items,{
       immediateSaving,
       alreadyRetailDiscounted,
       retailerPromoPriceConflict,
+      incompatibleCouponCount,
       appliedOffers:lineOptimization.selected,
       finalCost:lineOptimization.finalCost,
       guaranteedSaving:lineOptimization.totalSaving,
@@ -156,7 +164,7 @@ export function evaluateBasketStore(items,{
       potentialAdditionalProductSaving,
       bestProductCandidate,
       bestSavingCandidate,
-      matches,
+      matches:eligibleMatches,
       missingPrice:false
     };
   });
