@@ -320,3 +320,28 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .manual-price-entry button{padding:6px 9px;border-radius:8px}
 @media(max-width:760px){.manual-price-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.manual-price-form{grid-template-columns:1fr}.manual-price-entry{align-items:flex-start}}
+
+/* Budget personnel : lecture rapide et accessible sur smartphone. */
+.shopping-budget-panel{display:grid;gap:12px;margin-top:10px}
+.shopping-budget-heading{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(170px,.65fr);gap:14px;align-items:end}
+.shopping-budget-heading h3{margin:3px 0 5px;font-size:1rem}
+.shopping-budget-heading .help{margin:0}
+.shopping-budget-heading .field input{width:100%;min-height:44px}
+.budget-summary{display:grid;gap:10px}
+.budget-context{font-size:.75rem;margin:0;color:var(--muted)}
+.budget-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.budget-card{padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:#f8faf9;display:grid;gap:8px;min-width:0}
+.budget-card.within{border-color:#b9daca;background:#f1faf5}
+.budget-card.over{border-color:#eec2b7;background:#fff4f0}
+.budget-card.partial{background:#fff9eb;border-color:#ead9aa}
+.budget-card-header{display:flex;justify-content:space-between;gap:7px;align-items:flex-start;flex-wrap:wrap}
+.budget-card-header strong{font-size:.85rem}
+.budget-state{font-size:.67rem;font-weight:700;color:var(--muted)}
+.budget-card.over .budget-state{color:#a13e27}
+.budget-card-values{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.budget-card-values>span{font-size:1rem;font-weight:750;font-variant-numeric:tabular-nums}
+.budget-card-values>span small{display:block;font-size:.64rem;font-weight:400;color:var(--muted)}
+.budget-card-values strong{font-size:.78rem}
+.budget-warnings{margin:0;font-size:.67rem;color:var(--muted);line-height:1.5}
+.budget-alert{margin:0;color:var(--danger);font-size:.76rem;font-weight:650}
+@media(max-width:720px){.shopping-budget-heading{grid-template-columns:1fr}.budget-cards{grid-template-columns:1fr}}
