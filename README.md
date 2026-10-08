@@ -15,6 +15,8 @@ Fonctionnalités actuelles :
 - sync La Belle Adresse planifié deux fois par semaine, avec revalidation forcée à 7 jours lorsqu'aucune date de fin publique n'est fournie ;
 - synchronisation Coupon Network deux fois par semaine depuis la page publique, avec seuil minimal d'extraction et validation complète avant remplacement du snapshot ;
 - annuaire de sources complémentaires ;
+- annuaire filtrable des services alimentaires, dons et tests gratuits, avec onglet séparé pour les ventes non alimentaires annonçant potentiellement au moins -50 % ;
+- liste explicite des enseignes concernées, URLs de référence et avertissement sur les remises non garanties ;
 - recherche produit par EAN/UPC ;
 - scanner code-barres natif sur les navigateurs compatibles Android ;
 - fiche produit via Open Food Facts ;
@@ -42,6 +44,18 @@ Fonctionnalités actuelles :
 - alertes locales de baisse de prix avec seuil configurable 5/10/15/20 %, évaluées lors des actualisations ;
 - PWA installable et fonctionnement hors ligne pour l'interface ;
 - tests métier sans dépendance externe.
+
+## Services de découverte vérifiés (8 octobre 2026)
+
+L'onglet **Sources** intègre des pistes indépendantes des prix du panier :
+- **Produits gratuits / aide alimentaire** : MonAvisLeRendGratuit (hypermarchés Carrefour), Geev, HopHopFood, TRND, Home Tester Club. Disponibilité, sélection et conditions propres à chaque organisme.
+- **Autres enseignes alimentaires** : Lidl Plus, Carte U, Auchan Waaoh!, e-coupons Intermarché et les épiceries NOUS anti-gaspi. Leurs remises ne sont pas utilisées comme des remises Carrefour ou E.Leclerc.
+- **Restauration** : TheFork affiche des promotions pouvant aller jusqu'à -50 % dans certains restaurants et créneaux, sous conditions de réservation.
+- **Autres domaines** : Veepee et Showroomprivé mettent en avant des ventes allant jusqu'à -70 %. Le filtre « Autres domaines : 50 % ou plus possibles » affiche ces **services à explorer**, et **non des articles individuellement confirmés** à -50 %.
+
+Chaque fiche renvoie vers le service et, lorsqu'elle est distincte, la page source décrivant son mécanisme. Le tarif exact, la disponibilité géographique, le prix de référence et les éventuels quotas doivent être recontrôlés juste avant l'achat. Les pourcentages annoncés « jusqu'à » ne sont pas des promotions systématiquement disponibles. Les dons et essais gratuits ne sont jamais ajoutés au calcul d'économies du panier, et les cartes fidélité ne sont pas assimilées à des remises immédiates.
+
+Les services dont le modèle n'a pas de page publique officielle récente ou dont l'activité est incertaine ne sont pas ajoutés automatiquement.
 
 ## Principe de fiabilité
 
