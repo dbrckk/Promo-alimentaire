@@ -1,6 +1,12 @@
 import {readFile,writeFile,appendFile} from "node:fs/promises";
 
-const STATUS_FILE=new URL("../data/import/source-sync-status.json",import.meta.url);
+// Per-provider state files prevent rebase conflicts between concurrent workflows.
+export function sourceSyncStatusFile(source){
+  if(!["carrefour","leclerc"].includes(source)){
+    throw new Error("Source non prise en charge.");
+  }
+  return new URL("../data/import/source-sync-"+source+".json",import.meta.url);
+}
 
 export function makeSourceSyncStatus({
   status,reason="",extractedCount=0,previousSnapshotCount=0,
@@ -27,12 +33,13 @@ export async function writeSourceSyncStatus(source,args,{write=false}={}){
   if(!["carrefour","leclerc"].includes(source)){
     throw new Error("Source non prise en charge.");
   }
-  const payload=JSON.parse(await readFile(STATUS_FILE,"utf8"));
+  const file=sourceSyncStatusFile(source);
+  const payload=JSON.parse(await readFile(file,"utf8"));
   if(!payload?.sources || typeof payload.sources!=="object" || Array.isArray(payload.sources)){
     throw new Error("Métadonnées de synchronisation invalides.");
   }
   payload.sources[source]=status;
-  await writeFile(STATUS_FILE,JSON.stringify(payload,null,2)+"\n","utf8");
+  await writeFile(file,JSON.stringify(payload,null,2)+"\n","utf8");
 
   if(status.status!=="updated"){
     console.log("::warning title="+source+" non réactualisé complètement::"+
