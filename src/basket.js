@@ -67,6 +67,7 @@ export function evaluateBasketStore(items,{
       };
     }
 
+    const manualPrice=best.source==="manual" || best.manual===true;
     const baseCost=roundMoney(best.price*quantity);
     // Open Prices records can already contain the retailer's discounted checkout price.
     // Never subtract the same retailer promo again from an already discounted observation.
@@ -90,7 +91,7 @@ export function evaluateBasketStore(items,{
     const retailerPriceRecent=priceAgeDays!==null && priceAgeDays<=7;
     const retailerPromoAgeWarning=!retailerPriceRecent
       && eligibleMatches.some(({offer})=>offer.mechanism==="retailer_promo");
-    const guaranteedProductOffers=eligibleMatches
+    const guaranteedProductOffers=(manualPrice ? [] : eligibleMatches)
       .filter(({match,offer})=>
         match.exact && offer.autoStack===true
         && (offer.mechanism!=="retailer_promo" || retailerPriceRecent)
@@ -156,6 +157,7 @@ export function evaluateBasketStore(items,{
       product:item.product,
       quantity,
       bestPrice:best,
+      manualPrice,
       baseCost,
       checkoutCost,
       loyaltyCredit,
@@ -181,7 +183,10 @@ export function evaluateBasketStore(items,{
   const missingLines=lines.filter((line)=>line.missingPrice);
   const observedSubtotal=roundMoney(pricedLines.reduce((sum,line)=>sum+line.baseCost,0));
   const productAdjustedSubtotal=roundMoney(pricedLines.reduce((sum,line)=>sum+line.finalCost,0));
-  const basketOffers=resolvedOffers.filter((offer)=>offer.scope==="panier");
+  const manualPriceCount=pricedLines.filter((line)=>line.manualPrice).length;
+  const basketOffers=resolvedOffers
+    .filter((offer)=>offer.scope==="panier")
+    .map((offer)=>manualPriceCount>0 ? {...offer,autoStack:false} : offer);
   const basketOptimization=productAdjustedSubtotal>0
     ? optimizeStack(productAdjustedSubtotal,basketOffers,{store,channel})
     : {finalCost:0,totalSaving:0,selected:[],considered:[],savingPercent:0};
@@ -270,6 +275,7 @@ export function evaluateBasketStore(items,{
     distinctCount:lines.length,
     pricedCount:pricedLines.length,
     missingCount:missingLines.length,
+    manualPriceCount,
     isComplete:lines.length>0 && missingLines.length===0,
     observedSubtotal,
     productAdjustedSubtotal,
