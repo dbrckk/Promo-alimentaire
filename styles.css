@@ -345,3 +345,13 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .budget-warnings{margin:0;font-size:.67rem;color:var(--muted);line-height:1.5}
 .budget-alert{margin:0;color:var(--danger);font-size:.76rem;font-weight:650}
 @media(max-width:720px){.shopping-budget-heading{grid-template-columns:1fr}.budget-cards{grid-template-columns:1fr}}
+
+/* Service discovery filters: mobile-first and keyboard accessible */
+.source-discovery-controls{display:grid;gap:12px}
+.source-discovery-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.source-discovery-fields .field,.source-discovery-fields select,.source-discovery-fields input{min-width:0;width:100%}
+.source-discovery-fields select,.source-discovery-fields input{min-height:44px}
+.provider-card .actions{flex-wrap:wrap;gap:10px;align-items:center}
+.provider-card .actions .source{flex:1 1 100%;overflow-wrap:anywhere}
+.provider-card .badges{flex-wrap:wrap}
+@media(max-width:720px){.source-discovery-fields{grid-template-columns:minmax(0,1fr)}}
