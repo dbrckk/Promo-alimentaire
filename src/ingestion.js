@@ -104,6 +104,7 @@ export function normalizeImportedOffer(raw) {
       scope,
       eans:[...new Set(eans)],
       eanEvidenceUrl,
+      eanSuggestion:normalizeEanSuggestion(value.eanSuggestion,providerId,eans),
       productMatch:normalizeProductMatch(value.productMatch),
       referenceNames:Array.isArray(value.referenceNames) ? value.referenceNames.map((x)=>String(x).trim()).filter(Boolean) : [],
       quantityTiers,
@@ -278,6 +279,29 @@ function nullableNumber(value){
   return Number.isFinite(number) ? number : null;
 }
 
+
+function normalizeEanSuggestion(value,providerId,eans){
+  // Open Food Facts suggests a product identity, not retailer promotion eligibility.
+  if(providerId!=="leclerc" || (eans || []).length || !value || typeof value!=="object"){
+    return null;
+  }
+  try{
+    const code=assertValidGtin(value.code);
+    const url=new URL(String(value.sourceUrl || ""));
+    if(url.protocol!=="https:" || url.hostname!=="world.openfoodfacts.org"
+      || url.pathname!=="/product/"+code || value.requiresMerchantConfirmation!==true){
+      return null;
+    }
+    return {
+      code,sourceUrl:url.toString(),
+      productName:String(value.productName || "").slice(0,160),
+      brands:String(value.brands || "").slice(0,100),
+      requiresMerchantConfirmation:true
+    };
+  }catch{
+    return null;
+  }
+}
 
 function normalizeProductMatch(value){
   if(!value || typeof value!=="object") return null;
