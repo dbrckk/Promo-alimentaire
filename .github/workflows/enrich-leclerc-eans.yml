@@ -1,4 +1,4 @@
-name: Enrich E.Leclerc EANs
+name: Suggest E.Leclerc GTIN candidates
 
 on:
   workflow_dispatch:
@@ -26,21 +26,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Resolve exact GTINs conservatively
+      - name: Suggest GTINs from Open Food Facts (not retailer proof)
         run: npm run enrich:leclerc-eans -- --write
       - name: Validate repository
         run: npm run verify
-      - name: Commit only uniquely resolved GTINs
+      - name: Commit only non-guaranteed GTIN suggestions
         shell: bash
         run: |
           if git diff --quiet -- data/import/leclerc-catalog-2026-10-07.json; then
-            echo "No unambiguous GTIN found."
+            echo "No new GTIN suggestions."
             exit 0
           fi
           git config user.name "promo-alimentaire-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/import/leclerc-catalog-2026-10-07.json
-          git commit -m "data: enrich E.Leclerc offers with exact GTIN evidence"
+          git commit -m "data: suggest E.Leclerc GTINs for retailer confirmation"
           for attempt in 1 2 3; do
             git fetch origin main
             if git rebase origin/main; then
