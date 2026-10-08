@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {assessRetailerPromoPrice} from "../src/promo-price-check.js";
+import {
+  assessRetailerPromoPrice,
+  assessCouponNetworkCompatibility
+} from "../src/promo-price-check.js";
 
 const offer={
   mechanism:"retailer_promo",
@@ -46,5 +49,24 @@ test("les remises fidélité ne sont pas filtrées comme promotions immédiates"
 test("les champs absents ne sont pas confondus avec un prix zéro",()=>{
   assert.equal(assessRetailerPromoPrice({price:5},{
     mechanism:"retailer_promo",sourcePromoPrice:null,sourceRegularPrice:null
+  }).eligible,true);
+});
+
+test("Coupon Network n'est pas additionné à un prix déjà remisé",()=>{
+  const cn={providerId:"coupon-network",mechanism:"manufacturer_refund"};
+  const discounted={price:7,isDiscounted:true,priceWithoutDiscount:10};
+  assert.equal(assessCouponNetworkCompatibility(discounted,cn).eligible,false);
+  assert.equal(assessCouponNetworkCompatibility({
+    price:7,isDiscounted:false,priceWithoutDiscount:10
+  },cn).eligible,false);
+  assert.equal(assessCouponNetworkCompatibility({
+    price:10,isDiscounted:false,priceWithoutDiscount:null
+  },cn).eligible,true);
+});
+
+test("la règle Coupon Network ne bloque pas les crédits fidélité",()=>{
+  const discounted={price:7,isDiscounted:true,priceWithoutDiscount:10};
+  assert.equal(assessCouponNetworkCompatibility(discounted,{
+    providerId:"carrefour",mechanism:"retailer_loyalty"
   }).eligible,true);
 });
