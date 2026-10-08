@@ -1,5 +1,5 @@
 const CACHE_PREFIX="promo-alimentaire-";
-const CACHE=CACHE_PREFIX+"v19";
+const CACHE=CACHE_PREFIX+"v20";
 const STATIC_ASSETS=[
   "./","./index.html","./styles.css","./src/app.js","./src/data.js","./src/domain.js",
   "./src/open-data.js","./src/promo-price-check.js","./src/stacking.js","./src/matching.js","./src/retailer-promo.js","./src/bundle.js","./src/basket.js",
@@ -40,10 +40,9 @@ self.addEventListener("activate",(event)=>{
 self.addEventListener("fetch",(event)=>{
   if(event.request.method!=="GET") return;
   const url=new URL(event.request.url);
-  if(url.origin!==self.location.origin){
-    event.respondWith(fetch(event.request));
-    return;
-  }
+  // External APIs are not PWA assets. Let the browser manage their requests
+  // so CORS, interception and online/offline errors behave normally.
+  if(url.origin!==self.location.origin) return;
 
   event.respondWith((async()=>{
     try{
