@@ -34,13 +34,13 @@ jobs:
       - name: Commit refreshed verification window
         shell: bash
         run: |
-          if git diff --quiet -- data/import/carrefour-promotions-auto.json data/import/source-sync-status.json; then
+          if git diff --quiet -- data/import/carrefour-promotions-auto.json data/import/source-sync-carrefour.json; then
             echo "No confirmed Carrefour promotion change to commit."
             exit 0
           fi
           git config user.name "promo-alimentaire-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/import/carrefour-promotions-auto.json data/import/source-sync-status.json
+          git add data/import/carrefour-promotions-auto.json data/import/source-sync-carrefour.json
           git commit -m "data: record Carrefour public promotion verification"
           for attempt in 1 2 3; do
             git fetch origin main
