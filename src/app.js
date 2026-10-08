@@ -302,7 +302,7 @@ function renderSourceHealth(){
     els.sourceHealth.innerHTML='<div class="panel price-source">État des snapshots indisponible.</div>';
     return;
   }
-  const order={error:0,stale:1,"review-soon":2,ok:3};
+  const order={error:0,stale:1,"sync-warning":2,"review-soon":3,ok:4};
   const rows=[...state.sourceHealth].sort((a,b)=>(order[a.status]??9)-(order[b.status]??9));
   els.sourceHealth.innerHTML=`
     <div class="product-offers-head">
@@ -320,6 +320,7 @@ function renderSourceHealth(){
         const stateLabel={
           ok:"À jour",
           "review-soon":"À revoir bientôt",
+          "sync-warning":"Source non actualisée",
           stale:"Obsolète",
           error:"Erreur"
         }[item.status] || item.status;
@@ -347,6 +348,7 @@ function renderSourceHealth(){
               <span>vérifié ${item.latestVerifiedAt?formatDate(item.latestVerifiedAt):"—"}</span>
               <span>révision ${item.nextDeadline?formatDate(item.nextDeadline):"—"}</span>
             </div>
+            ${item.syncState?.status==="unavailable"?`<p class="sync-warning">Dernière tentative : ${escapeHtml(formatDateTime(item.syncState.checkedAt))} · Échec de mise à jour publique. Les anciennes offres restent candidates uniquement jusqu’à leur échéance. ${escapeHtml(item.syncState.reason)}</p>`:""}
           </article>`;
       }).join("")}
     </div>`;
