@@ -141,3 +141,32 @@ test("estimateOfferSaving respecte 2+1 offert",()=>{
   assert.equal(requiredQuantity(offer),3);
   assert.equal(estimateOfferSaving(1.67,offer,3),1.67);
 });
+
+
+test("un EAN explicitement absent de la liste ne peut pas correspondre heuristiquement",()=>{
+  const item={code:"4006381333931",name:"Biscottes Marque",brands:"Marque",categories:[]};
+  const offer={
+    scope:"produit",
+    eans:["3017624010701"],
+    productMatch:{brands:["Marque"],any:["Biscottes"]}
+  };
+  const result=matchOfferToProduct(item,offer);
+  assert.equal(result.matched,false);
+  assert.equal(result.reason,"ean-not-in-offer");
+});
+
+test("un même catalogue peut continuer à reconnaître ses EAN réellement listés",()=>{
+  const product={code:"3017624010701",name:"Biscottes Marque",brands:"Marque"};
+  const offer={
+    scope:"produit",eans:["3017624010701","4006381333931"],
+    productMatch:{brands:["Marque"]}
+  };
+  assert.equal(matchOfferToProduct(product,offer).exact,true);
+});
+
+test("une offre de gamme sans EAN conserve les suggestions heuristiques",()=>{
+  const product={code:"4006381333931",name:"Biscottes Marque",brands:"Marque"};
+  const offer={scope:"produit",productMatch:{brands:["Marque"]}};
+  assert.equal(matchOfferToProduct(product,offer).matched,true);
+  assert.equal(matchOfferToProduct(product,offer).exact,false);
+});
