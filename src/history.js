@@ -113,7 +113,7 @@ function scenarioLocationIdentity(scenario){
   }
   const name=String(scenario?.location?.name || "").trim().toLocaleLowerCase("fr");
   const postcode=String(scenario?.location?.postcode || "").trim();
-  if(!name || !/^\\d{5}$/.test(postcode)) return null;
+  if(!name || !/^\d{5}$/.test(postcode)) return null;
   return "named:"+name+"|"+postcode;
 }
 
