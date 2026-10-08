@@ -496,7 +496,7 @@ function renderProductOffers(product,observations=[]){
       ? (action.quantitySatisfied
           ? "Montant potentiel indisponible sans prix récent"
           : `Acheter au moins ${action.minQty} article(s) pour activer cette offre`)
-      : `Potentiel ≈ ${money.format(potential)} sur le meilleur prix récent`;
+      : `Potentiel ≈ ${money.format(potential)} sur le dernier prix observé`;
     const quantityLine=action.quantitySatisfied
       ? (action.minQty>1 ? `Quantité minimale atteinte : ${action.minQty}` : "Valable dès 1 article")
       : `Il manque ${action.missingQty} article(s) pour atteindre le minimum`;
@@ -626,8 +626,8 @@ function renderPrices(observations,sourceUrl){
   }
   const best=selectBestRecentPrice(observations);
   const bestSummary=best
-    ? `<div class="panel price-source"><strong>Meilleur prix récent : ${money.format(best.price)}</strong> · ${escapeHtml(best.storeName)}${best.city?` · ${escapeHtml(best.city)}`:""}${Number.isFinite(best.distanceKm)?` · ${best.distanceKm.toLocaleString("fr-FR")} km`:""}</div>`
-    : '<div class="panel price-source">Aucune observation assez récente pour établir un meilleur prix.</div>';
+    ? `<div class="panel price-source"><strong>Dernier prix observé : ${money.format(best.price)}</strong> · ${escapeHtml(best.storeName)}${best.city?` · ${escapeHtml(best.city)}`:""}${Number.isFinite(best.distanceKm)?` · ${best.distanceKm.toLocaleString("fr-FR")} km`:""}<div class="price-age-note">Observation du ${formatDate(best.date)} ; prix indicatif, à vérifier avant achat.</div></div>`
+    : '<div class="panel price-source">Aucune observation datée utilisable pour estimer ce prix.</div>';
 
   const cards=observations.slice(0,12).map((item)=>{
     const freshness=priceFreshness(item);
@@ -1326,6 +1326,11 @@ function renderBasketScenario(scenario){
       return `<div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}</span><strong class="missing">prix manquant</strong></div>`;
     }
     const place=line.bestPrice?.storeName ? ` · ${escapeHtml(line.bestPrice.storeName)}` : "";
+    const priceAge=priceFreshness(line.bestPrice);
+    const priceObservationNote=`<div class="price-age-note ${priceAge.ageDays!==null && priceAge.ageDays>30?"outdated":""}">
+      Relevé du ${formatDate(line.bestPrice?.date)} · ${priceAge.ageDays===null?"âge inconnu":priceAge.ageDays+" jour(s)"}
+      ${priceAge.ageDays!==null && priceAge.ageDays>30?" · Ancien prix : reconfirmer avant achat":""}
+    </div>`;
     const candidate=line.bestProductCandidate;
     const maxCandidate=line.bestSavingCandidate;
     const maxCandidateDiff=maxCandidate && candidate
@@ -1371,6 +1376,7 @@ function renderBasketScenario(scenario){
       : "";
     return `<div class="scenario-line-wrap">
       <div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>
+      ${priceObservationNote}
       ${line.alreadyRetailDiscounted?'<div class="source">Prix observé déjà remisé en magasin : promotion enseigne non déduite une seconde fois.</div>':""}
       ${line.retailerPromoPriceConflict?'<div class="source">Prix observé différent du tarif normal annoncé : promotion catalogue non redéduite sans nouvelle vérification.</div>':""}
       ${line.incompatibleCouponCount?'<div class="source">Coupon Network : remboursement non cumulable avec une remise magasin déjà incluse dans ce prix. Vérifier les conditions sur le site officiel.</div>':""}
