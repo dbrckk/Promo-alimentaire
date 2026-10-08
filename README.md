@@ -245,3 +245,19 @@ Le registre Carrefour intègre 11 références avec GTIN lié à une fiche produ
 Les fournisseurs qui bloquent leurs pages publiques ou renvoient des catalogues incomplets apparaissent maintenant dans le panneau de santé des données avec **la date de la dernière tentative** et **le nombre de promotions confirmées**. Une tâche automatisée verte signifie que les contrôles et le traitement ont réussi, **pas** que toutes les remises ont été revalidées. Les dates des offres restent inchangées tant qu'une preuve fournisseur est absente.
 
 Les états Carrefour, E.Leclerc et Coupon Network sont stockés indépendamment afin d'éviter les conflits de synchronisation entre GitHub Actions.
+
+
+### Prix observés récents et fiabilité des sources (8 octobre 2026)
+
+Le panier privilégie le **relevé le plus récent**, même si un ancien prix promotionnel était inférieur. En cas de relevés contradictoires le même jour, le montant le plus élevé évite une estimation excessivement optimiste. Chaque ligne indique la date de la source ; les prix de plus de 30 jours sont signalés.
+
+L'historique conserve les relevés pour plusieurs magasins physiques identifiables, au lieu de retenir un seul prix pour toute l'enseigne. Les baisses ne sont jamais détectées à partir de magasins distincts ou de prix contradictoires d'un même jour. Les observations dont le magasin n'est pas identifiable ne déclenchent pas d'alerte.
+
+Une promotion immédiate ne devient pas automatiquement une économie acquise lorsque le dernier prix normal observé date de **plus de sept jours** ; elle reste candidate, à vérifier.
+
+La santé des sources montre séparément :
+- le nombre de promotions actives du dernier snapshot ;
+- le nombre de promotions réellement reconfirmées lors de la dernière tentative de synchronisation ;
+- la prochaine date de révision, qui reste visible en cas d'échec de synchronisation.
+
+Le test Chromium avec émulation Android vérifie aussi les dates des prix, les états des sources, la navigation, le panier et la consultation hors ligne.
