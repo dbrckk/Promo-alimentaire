@@ -1,10 +1,10 @@
 const CACHE_PREFIX="promo-alimentaire-";
-const CACHE=CACHE_PREFIX+"v21";
+const CACHE=CACHE_PREFIX+"v22";
 const STATIC_ASSETS=[
   "./","./index.html","./styles.css","./src/app.js","./src/data.js","./src/domain.js",
   "./src/open-data.js","./src/promo-price-check.js","./src/stacking.js","./src/matching.js","./src/retailer-promo.js","./src/bundle.js","./src/basket.js",
   "./src/confidence.js","./src/history.js","./src/action-plan.js","./src/verification-queue.js","./src/strategy.js","./src/loyalty.js","./src/evidence.js","./src/local-verification.js","./src/product-history.js","./src/gtin.js",
-  "./src/ingestion.js","./src/import-loader.js","./data/import/index.json","./data/import/source-sync-status.json",
+  "./src/ingestion.js","./src/import-loader.js","./data/import/index.json","./data/import/source-sync-status.json","./data/import/source-sync-carrefour.json","./data/import/source-sync-leclerc.json",
   "./data/import/payment-discounts-auto.json","./manifest.webmanifest","./icon.svg"
 ];
 
