@@ -49,7 +49,8 @@ Fonctionnalités actuelles :
 
 L'onglet **Sources** intègre des pistes indépendantes des prix du panier :
 - **Produits gratuits / aide alimentaire** : MonAvisLeRendGratuit (hypermarchés Carrefour), Geev, HopHopFood, TRND, Sampleo, The Insiders, Home Tester Club et Linkee pour les étudiants avec justificatif. Soliguide référence aussi les distributions, épiceries sociales et autres solutions d'aide alimentaire. Disponibilité, sélection et conditions propres à chaque organisme.
-- **ODR / cashback sur ticket** : Quoty décrit des remboursements après preuve d'achat, mais les pages publiques accessibles retrouvées datent majoritairement de 2025. Il reste **non confirmé pour les offres en cours** : ne pas utiliser les montants affichés comme des promotions actives.\n- **Autres enseignes alimentaires** : Lidl Plus, Carte U, Auchan Waaoh!, e-coupons Intermarché et les épiceries NOUS anti-gaspi. Leurs remises ne sont pas utilisées comme des remises Carrefour ou E.Leclerc.
+- **ODR / cashback sur ticket** : Quoty décrit des remboursements après preuve d'achat, mais les pages publiques accessibles retrouvées datent majoritairement de 2025. Il reste **non confirmé pour les offres en cours** : ne pas utiliser les montants affichés comme des promotions actives.
+- **Autres enseignes alimentaires** : Lidl Plus, Carte U, Auchan Waaoh!, e-coupons Intermarché et les épiceries NOUS anti-gaspi. Leurs remises ne sont pas utilisées comme des remises Carrefour ou E.Leclerc.
 - **Restauration** : TheFork affiche des promotions pouvant aller jusqu'à -50 % dans certains restaurants et créneaux, sous conditions de réservation.
 - **Autres domaines** : Veepee et Showroomprivé mettent en avant des ventes allant jusqu'à -70 %. Le filtre « Autres domaines : 50 % ou plus possibles » affiche ces **services à explorer**, et **non des articles individuellement confirmés** à -50 %.
 
