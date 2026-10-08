@@ -1,4 +1,5 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
+import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import { computeSaving, effectivePercent, filterOffers, offerDeadline, rankOffers } from "./domain.js";
 import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
@@ -62,6 +63,9 @@ const els = {
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
   providers:document.querySelector("#providers"),
+  sourceScope:document.querySelector("#sourceScope"),
+  sourceSearch:document.querySelector("#sourceSearch"),
+  sourceDiscoverySummary:document.querySelector("#sourceDiscoverySummary"),
   sourceHealth:document.querySelector("#sourceHealth"),
   empty:document.querySelector("#empty"),
   stats:document.querySelector("#stats"),
@@ -127,6 +131,9 @@ const state = {
   storeConfirmations:loadStoreConfirmations(),
   sort:localStorage.getItem("promo-sort") || "percent",
   search:"",
+  sourceScope:SOURCE_SCOPES.has(localStorage.getItem("promo-source-scope"))
+    ? localStorage.getItem("promo-source-scope") : "food",
+  sourceSearch:"",
   tab:"offers",
   productCode:null,
   product:null,
@@ -152,6 +159,7 @@ els.channel.value=state.channel;
 els.carrefourLoyalty.value=state.loyaltyProfile.carrefour;
 els.leclercLoyalty.value=state.loyaltyProfile.leclerc;
 els.sort.value=state.sort;
+els.sourceScope.value=state.sourceScope;
 els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
 els.dropThreshold.value=String(state.dropThreshold);
@@ -188,6 +196,16 @@ els.sort.addEventListener("change",()=>{
 });
 els.search.addEventListener("input",()=>{
   state.search=els.search.value;
+  render();
+});
+els.sourceScope.addEventListener("change",()=>{
+  state.sourceScope=SOURCE_SCOPES.has(els.sourceScope.value)
+    ? els.sourceScope.value : "food";
+  localStorage.setItem("promo-source-scope",state.sourceScope);
+  render();
+});
+els.sourceSearch.addEventListener("input",()=>{
+  state.sourceSearch=els.sourceSearch.value;
   render();
 });
 els.basketAmount.addEventListener("input",renderOptimizer);
@@ -285,8 +303,16 @@ function render(){
   els.offers.innerHTML=ranked.map(renderOffer).join("");
   els.empty.classList.toggle("hidden",ranked.length>0);
 
-  const activeProviders=providers.filter((provider)=>provider.stores.includes(state.store) || provider.stores.includes("all"));
-  els.providers.innerHTML=activeProviders.map(renderProvider).join("");
+  const activeProviders=filterDiscoveryProviders(providers,{
+    scope:state.sourceScope,search:state.sourceSearch
+  });
+  els.providers.innerHTML=activeProviders.length
+    ? activeProviders.map(renderProvider).join("")
+    : '<div class="panel price-source">Aucun service ne correspond à la recherche.</div>';
+  els.sourceDiscoverySummary.textContent=activeProviders.length+" service(s) référencé(s) · "+
+    (state.sourceScope==="food"?"priorité aux économies alimentaires":
+      state.sourceScope==="other-50"?"autres domaines, réduction maximale annoncée d’au moins 50 %":"toutes catégories")+
+    ". Disponibilité et économies exactes à vérifier auprès de chaque source.";
 
   const numericPercents=ranked.map(effectivePercent).filter(Number.isFinite);
   const maxPercent=numericPercents.length?Math.max(...numericPercents):null;
@@ -422,12 +448,30 @@ function renderSourceHealth(){
 
 function renderProvider(provider){
   const priority=provider.priority==="essentiel"?"Essentiel":provider.priority==="fort"?"Très utile":"Complément";
+  const tags=[
+    ...(provider.potentialFree ? ['Gratuit selon éligibilité'] : []),
+    ...(Number.isFinite(provider.advertisedMaxPercent)
+      ? ['Jusqu’à '+provider.advertisedMaxPercent+' % annoncés, non garantis'] : []),
+    ...provider.kinds
+  ];
+  const target=provider.targetLabel || (provider.stores?.includes("all")
+    ? "Plusieurs enseignes (conditions à vérifier)"
+    : (provider.stores || []).map((store)=>store==="leclerc"?"E.Leclerc":"Carrefour").join(" / "));
   return `
     <article class="card provider-card">
       <div class="card-head"><div><h3>${escapeHtml(provider.name)}</h3><div class="source">${priority}</div></div></div>
-      <div class="badges">${provider.kinds.map((kind)=>`<span class="badge">${escapeHtml(kind)}</span>`).join("")}</div>
+      <div class="source">Où : ${escapeHtml(target || "Service indépendant")}</div>
+      <div class="badges">${tags.map((kind)=>`<span class="badge">${escapeHtml(kind)}</span>`).join("")}</div>
       <p>${escapeHtml(provider.note)}</p>
-      <div class="actions"><span></span><a class="open" href="${escapeHtml(provider.url)}" target="_blank" rel="noreferrer">Ouvrir</a></div>
+      <div class="actions">
+        <span class="source">${provider.discoveryVerifiedAt
+          ? "Service vérifié le "+escapeHtml(formatDate(provider.discoveryVerifiedAt))
+          : "Conditions à confirmer chez le fournisseur"}</span>
+        <a class="open" href="${escapeHtml(provider.url)}" target="_blank" rel="noopener noreferrer">Ouvrir</a>
+        ${provider.verificationUrl && provider.verificationUrl!==provider.url
+          ? `<a class="open" href="${escapeHtml(provider.verificationUrl)}" target="_blank" rel="noopener noreferrer">Justificatif</a>`
+          : ""}
+      </div>
     </article>`;
 }
 

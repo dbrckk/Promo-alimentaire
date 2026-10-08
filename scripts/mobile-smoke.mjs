@@ -71,6 +71,23 @@ try{
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.screenshot({path:OUT+"/01-offres.png",fullPage:true});
 
+  // Discovery: independent food/free services and 50%+ non-food sources are separated.
+  await page.locator('[data-tab="providers"]').click();
+  await page.locator("#sourceScope").selectOption("food");
+  assert.match(await page.locator("#providers").innerText(),/MonAvisLeRendGratuit/);
+  assert.match(await page.locator("#providers").innerText(),/HopHopFood/);
+  assert.doesNotMatch(await page.locator("#providers").innerText(),/Showroomprivé/);
+  await page.locator("#sourceScope").selectOption("other-50");
+  assert.match(await page.locator("#providers").innerText(),/Veepee/);
+  assert.match(await page.locator("#providers").innerText(),/Showroomprivé/);
+  assert.doesNotMatch(await page.locator("#providers").innerText(),/Geev/);
+  await page.locator("#sourceSearch").fill("veepee");
+  assert.equal(await page.locator("#providers .provider-card").count(),1);
+  await page.locator("#sourceSearch").fill("");
+  await page.locator("#sourceScope").selectOption("food");
+  await assertNoHorizontalOverflow(page,"annuaire de sources");
+  await page.locator('[data-tab="offers"]').click();
+
   await page.locator("#channel").selectOption("drive");
   await page.locator("#sort").selectOption("deadline");
   await page.locator("#carrefourLoyalty").selectOption("club");

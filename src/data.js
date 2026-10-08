@@ -105,7 +105,128 @@ export const providers = [
     id:"phenix", name:"Phenix", kinds:["anti-gaspi","paniers"], priority:"complément",
     stores:["carrefour","leclerc"], url:"https://www.wearephenix.com/application-anti-gaspi/",
     note:"Paniers d'invendus à prix réduit proposés par supermarchés et commerces partenaires."
+  },
+  // Additional sources verified against their own public pages on 2026-10-08.
+  // These are DISCOVERY links, not live offers or stackable basket discounts.
+  {
+    id:"carrefour-testeurs",name:"MonAvisLeRendGratuit",kinds:["tests gratuits","produits alimentaires"],priority:"essentiel",
+    stores:["carrefour"],segment:"food",potentialFree:true,
+    targetLabel:"Hypermarchés Carrefour participants",
+    url:"https://communaute-testerdesproduits.carrefour.fr/demenagement",
+    verificationUrl:"https://www.carrefour.fr/faq?question=qu-est-ce-que-monavislerendgratuit-83044",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Produits gratuits contre avis via la Communauté Carrefour. Réservé aux hypermarchés participants, sélection, crédits et conditions du programme."
+  },
+  {
+    id:"geev",name:"Geev",kinds:["dons alimentaires","gratuit"],priority:"essentiel",
+    stores:[],segment:"food",potentialFree:true,targetLabel:"Dons entre particuliers, selon la ville",
+    url:"https://www.geev.com/fr/annonces-gratuites/nourriture",
+    verificationUrl:"https://www.geev.com/fr/annonces-gratuites/nourriture",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Récupération gratuite de nourriture proche de chez soi ; annonces et disponibilité variables. Ne pas confondre don et remboursement."
+  },
+  {
+    id:"hophopfood",name:"HopHopFood",kinds:["dons alimentaires","solidarité"],priority:"essentiel",
+    stores:[],segment:"food",potentialFree:true,targetLabel:"Dons de proximité, accès et critères à vérifier",
+    url:"https://www.hophopfood.org/",verificationUrl:"https://www.hophopfood.org/",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Dons alimentaires de particuliers et de professionnels et garde-mangers solidaires. Les modalités et les zones couvertes sont à vérifier."
+  },
+  {
+    id:"lidl-plus",name:"Lidl Plus",kinds:["coupons","fidélité"],priority:"fort",
+    stores:[],segment:"food",targetLabel:"Lidl uniquement",
+    url:"https://www.lidl.fr/c/lidl-plus/s10017570",
+    verificationUrl:"https://www.lidl.fr/c/lidl-plus/s10017570",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Application gratuite : coupons à activer, points fidélité, offres et tickets numériques. Dépend du magasin et du compte."
+  },
+  {
+    id:"carte-u",name:"Carte U / Mon Magasin U",kinds:["fidélité","coupons","cagnotte"],priority:"fort",
+    stores:[],segment:"food",targetLabel:"Super U / Hyper U / U Express participants",
+    url:"https://www.magasins-u.com/carte-u",
+    verificationUrl:"https://www.magasins-u.com/carte-u",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Bons plans et euros Carte U, parfois offres bonifiées ; activation et magasins participants à vérifier. Crédit fidélité ≠ baisse immédiate en caisse."
+  },
+  {
+    id:"auchan-waaoh",name:"Auchan Waaoh!",kinds:["fidélité","cagnotte","défis"],priority:"fort",
+    stores:[],segment:"food",targetLabel:"Auchan / Auchan Drive",
+    url:"https://www.auchan.fr/programme-fidelite/ep-programme-fidelite",
+    verificationUrl:"https://www.auchan.fr/programme-fidelite/ep-programme-fidelite",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Euros cagnottés, offres personnalisées et défis. Conditions de cumul et sélection de produits à vérifier ; non assimilés à un remboursement bancaire."
+  },
+  {
+    id:"intermarche-app",name:"Intermarché : e-coupons",kinds:["e-coupons","fidélité"],priority:"fort",
+    stores:[],segment:"food",targetLabel:"Intermarché participants",
+    url:"https://www.intermarche.com/aide-et-contact/jeux-et-operations-commerciales",
+    verificationUrl:"https://www.intermarche.com/aide-et-contact/jeux-et-operations-commerciales",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"E-coupons dans l'application pour détenteurs de la carte de fidélité. Nécessite activation et vérification des conditions."
+  },
+  {
+    id:"nous-antigaspi",name:"NOUS anti-gaspi",kinds:["épicerie anti-gaspi","prix réduits"],priority:"fort",
+    stores:[],segment:"food",targetLabel:"Épiceries NOUS selon implantation",
+    url:"https://www.nousantigaspi.com/",
+    verificationUrl:"https://www.nousantigaspi.com/les-produits-a-marque-nous/",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Épiceries de produits sauvés et marque NOUS à prix réduit. Une économie doit être comparée produit par produit, sans taux uniforme."
+  },
+  {
+    id:"trnd",name:"TRND",kinds:["tests gratuits","candidature"],priority:"fort",
+    stores:[],segment:"food",potentialFree:true,targetLabel:"Campagnes France, sélection requise",
+    url:"https://www.trnd.com/fr/projets",
+    verificationUrl:"https://www.trnd.com/fr/info/a-propos/faq",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Tests gratuits possibles de produits alimentaires et du quotidien. Candidature, sélection et éventuelles obligations de retour d'avis."
+  },
+  {
+    id:"home-tester-club",name:"Home Tester Club",kinds:["tests gratuits","candidature"],priority:"fort",
+    stores:[],segment:"food",potentialFree:true,targetLabel:"Campagnes nationales, sélection requise",
+    url:"https://www.hometesterclub.com/fr/fr/",
+    verificationUrl:"https://www.hometesterclub.com/fr/fr/",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Campagnes de produits gratuits à tester, parfois alimentaires. Inscription et sélection, sans certitude de recevoir un produit."
+  },
+  {
+    id:"thefork",name:"TheFork",kinds:["restaurant","réservation remisée"],priority:"fort",
+    stores:[],segment:"food",advertisedMaxPercent:50,targetLabel:"Restaurants partenaires",
+    url:"https://www.thefork.fr/",
+    verificationUrl:"https://www.thefork.fr/restaurant/la-taverne-de-l-olympia-r28184?=24751-923",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Certaines réservations affichent jusqu'à -50 % sur les éléments éligibles de la carte. Vérifier créneau, exclusions, menus et boissons."
+  },
+  {
+    id:"soliguide",name:"Soliguide",kinds:["aide alimentaire","annuaire solidaire"],priority:"essentiel",
+    stores:[],segment:"food",targetLabel:"Services sociaux et associations selon la commune",
+    url:"https://soliguide.fr/",verificationUrl:"https://soliguide.fr/",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Recherche de distributions de repas, paniers, épiceries sociales, bons alimentaires et frigos solidaires. Gratuité et conditions propres à chaque structure."
+  },
+  {
+    id:"linkee-etudiants",name:"Linkee (étudiants)",kinds:["colis alimentaires","dons"],priority:"fort",
+    stores:[],segment:"food",potentialFree:true,targetLabel:"Étudiants, villes et créneaux disponibles",
+    url:"https://linkee.co/beneficiaires/",verificationUrl:"https://linkee.co/beneficiaires/",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Distributions alimentaires gratuites sur inscription avec justificatif étudiant. Une offre d'aide, pas un cashback ni une promotion en caisse."
+  },
+  {
+    id:"veepee",name:"Veepee",kinds:["ventes privées","mode","maison"],priority:"fort",
+    stores:[],segment:"other",advertisedMaxPercent:70,targetLabel:"Ventes privées en ligne",
+    url:"https://www.veepee.fr/gr/home/default",
+    verificationUrl:"https://www.veepee.fr/gr/home/default",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Jusqu'à -70 % selon les ventes et références. Seules les offres individuelles vérifiées à -50 % ou plus répondent au filtre hors alimentaire."
+  },
+  {
+    id:"showroomprive",name:"Showroomprivé",kinds:["ventes privées","mode","maison"],priority:"fort",
+    stores:[],segment:"other",advertisedMaxPercent:70,targetLabel:"Ventes privées en ligne",
+    url:"https://www.showroomprive.com/Ventes-privees/default.aspx",
+    verificationUrl:"https://www.showroomprive.com/Ventes-privees/default.aspx",
+    discoveryVerifiedAt:"2026-10-08",
+    note:"Ventes privées annoncées jusqu'à -70 %. Prix de référence, frais et taux de chaque article à contrôler avant achat."
   }
+
 ];
 
 export const offers = [
