@@ -606,3 +606,30 @@ test("une confirmation magasin d'une promo mixte ne réduit pas les prix Drive",
   assert.equal(drive.finalCost,10);
   assert.equal(drive.lines[0].bestProductCandidate.offer.storeVerified,undefined);
 });
+
+
+test("la promo catalogue n'est pas soustraite deux fois si Open Prices montre son prix promo",()=>{
+  const p={code:"3038359913242",name:"Fusilli",brands:"Panzani",categories:[]};
+  const promo={
+    id:"carrefour-source-promo",scope:"produit",stores:["carrefour"],
+    eans:[p.code],savingPercent:30,autoStack:true,
+    mechanism:"retailer_promo",savingBasis:"base",stackGroup:"retailer-promo",
+    sourceRegularPrice:1.59,sourcePromoPrice:1.11
+  };
+  const input={
+    store:"carrefour",offers:[promo],
+    now:new Date("2026-10-08T12:00:00Z")
+  };
+  const current=evaluateBasketStore([{product:p,quantity:1}],{
+    ...input,priceByCode:{[p.code]:[{price:1.11,date:"2026-10-07",isDiscounted:false}]}
+  });
+  assert.equal(current.finalCost,1.11);
+  assert.equal(current.guaranteedSaving,0);
+  assert.equal(current.conservativePotentialExtraSaving,0);
+  assert.equal(current.lines[0].retailerPromoPriceConflict,true);
+  const normal=evaluateBasketStore([{product:p,quantity:1}],{
+    ...input,priceByCode:{[p.code]:[{price:1.59,date:"2026-10-07",isDiscounted:false}]}
+  });
+  assert.equal(normal.guaranteedSaving,0.48);
+  assert.equal(normal.finalCost,1.11);
+});
