@@ -23,6 +23,7 @@ import {
 import { addHistoryEntry, createHistoryEntry, historyTrend } from "./history.js";
 import { buildSavingsActionPlan } from "./action-plan.js";
 import { buildVerificationQueue } from "./verification-queue.js";
+import { evaluateShoppingBudget, parseShoppingBudget } from "./budget.js";
 import { summarizeBasketStrategies } from "./strategy.js";
 import {
   buildProductLoyaltyOffers,
@@ -77,6 +78,8 @@ const els = {
   priceResults:document.querySelector("#priceResults"),
   productPriceHistory:document.querySelector("#productPriceHistory"),
   listCount:document.querySelector("#listCount"),
+  shoppingBudget:document.querySelector("#shoppingBudget"),
+  budgetSummary:document.querySelector("#budgetSummary"),
   manualPriceForm:document.querySelector("#manualPriceForm"),
   manualPriceProduct:document.querySelector("#manualPriceProduct"),
   manualPriceStore:document.querySelector("#manualPriceStore"),
@@ -128,6 +131,7 @@ const state = {
   coords:null,
   radiusKm:25,
   shoppingList:loadShoppingList(),
+  shoppingBudget:loadShoppingBudget(),
   manualPrices:loadStoredManualPrices(),
   basketPriceData:{carrefour:{},leclerc:{}},
   basketPriceCoverageIncomplete:false,
@@ -148,6 +152,7 @@ els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
 els.dropThreshold.value=String(state.dropThreshold);
 els.manualPriceStore.value=state.store;
+els.shoppingBudget.value=state.shoppingBudget===null?"":String(state.shoppingBudget).replace(".",",");
 els.manualPriceDate.value=new Date(Date.now()-new Date().getTimezoneOffset()*60000)
   .toISOString().slice(0,10);
 els.manualPriceDate.max=els.manualPriceDate.value;
@@ -190,6 +195,16 @@ els.scanButton.addEventListener("click",startScanner);
 els.nearbyButton.addEventListener("click",toggleNearbyPrices);
 els.listNearbyButton.addEventListener("click",toggleNearbyPrices);
 els.refreshList.addEventListener("click",refreshShoppingList);
+els.shoppingBudget.addEventListener("input",()=>{
+  const input=els.shoppingBudget.value.trim();
+  state.shoppingBudget=parseShoppingBudget(input);
+  if(state.shoppingBudget===null){
+    localStorage.removeItem("promo-shopping-budget-v1");
+  }else{
+    localStorage.setItem("promo-shopping-budget-v1",String(state.shoppingBudget));
+  }
+  renderBudgetSummary(evaluateCurrentBasketScenarios());
+});
 els.clearList.addEventListener("click",()=>{
   state.shoppingList=[];
   state.basketPriceData={carrefour:{},leclerc:{}};
@@ -952,10 +967,83 @@ function handleShoppingListAction(event){
   renderShoppingList();
 }
 
+function loadShoppingBudget(){
+  try{
+    return parseShoppingBudget(localStorage.getItem("promo-shopping-budget-v1"));
+  }catch{
+    return null;
+  }
+}
+
+function renderBudgetSummary(scenarios=[]){
+  if(!els.budgetSummary) return;
+  const raw=els.shoppingBudget.value.trim();
+  if(!raw){
+    els.budgetSummary.innerHTML='<p class="help">Aucun budget défini : indique un plafond pour voir les dépenses estimées par enseigne.</p>';
+    return;
+  }
+  if(state.shoppingBudget===null){
+    els.budgetSummary.innerHTML='<p class="budget-alert">Entre un montant valide compris entre 0,01 € et 10 000 € (deux décimales maximum).</p>';
+    return;
+  }
+  if(!state.shoppingList.length){
+    els.budgetSummary.innerHTML='<p class="help">Budget enregistré sur cet appareil. Ajoute au moins un produit à ta liste pour voir une estimation.</p>';
+    return;
+  }
+
+  const evaluation=evaluateShoppingBudget(scenarios,{
+    budget:state.shoppingBudget,
+    channel:state.channel,
+    nearbyEnabled:state.nearbyEnabled,
+    coverageIncomplete:state.basketPriceCoverageIncomplete
+  });
+  const labels={
+    within:"Sous ton plafond estimé",
+    over:"Plafond estimé dépassé",
+    "partial-over":"Déjà au-dessus du plafond",
+    "partial-unknown":"Montant partiel : résultat inconnu",
+    "indicative-within":"Sous le plafond sur les données disponibles",
+    "indicative-over":"Plafond dépassé sur les données disponibles",
+    unavailable:"Prix indisponibles"
+  };
+  const items=evaluation.results.map((result)=>{
+    const danger=["over","partial-over","indicative-over"].includes(result.status);
+    const incomplete=["partial-over","partial-unknown","unavailable"].includes(result.status);
+    const complete=result.checkoutCost!==null;
+    const difference=result.difference;
+    const gap=complete
+      ? difference<0
+        ? `Dépassement : ${money.format(Math.abs(difference))}`
+        : incomplete
+          ? `Marge provisoire : ${money.format(difference)}`
+          : `Reste estimé : ${money.format(difference)}`
+      : "Aucun montant estimable";
+    const warnings=result.reasons?.length
+      ? `<p class="budget-warnings">${result.reasons.map(escapeHtml).join(" · ")}</p>`
+      : '<p class="budget-warnings">Prix observés : le ticket final reste prioritaire.</p>';
+    return `<div class="budget-card ${danger?"over":incomplete?"partial":"within"}">
+      <div class="budget-card-header">
+        <strong>${storeLabel(result.store)}</strong>
+        <span class="budget-state">${escapeHtml(labels[result.status] || result.status)}</span>
+      </div>
+      <div class="budget-card-values">
+        <span>${complete?money.format(result.checkoutCost):"—"} <small>caisse estimée</small></span>
+        <strong>${escapeHtml(gap)}</strong>
+      </div>
+      ${warnings}
+    </div>`;
+  }).join("");
+  els.budgetSummary.innerHTML=`
+    <p class="budget-context">Plafond personnel : <strong>${money.format(evaluation.budget)}</strong>. Les valeurs restent des estimations : la disponibilité et les prix peuvent changer.</p>
+    <div class="budget-cards">${items}</div>
+  `;
+}
+
 function renderShoppingList(){
   renderListCount();
   renderManualPriceControls();
   if(!state.shoppingList.length){
+    renderBudgetSummary([]);
     els.shoppingListItems.innerHTML='<div class="panel price-source">Ta liste est vide. Scanne ou recherche un produit puis appuie sur « Ajouter à la liste ».</div>';
     els.basketComparison.innerHTML="";
     return;
@@ -983,6 +1071,7 @@ function renderShoppingList(){
   }).join("");
 
   const scenarios=evaluateCurrentBasketScenarios();
+  renderBudgetSummary(scenarios);
   renderBasketComparison(scenarios);
   renderComparisonHistory();
   renderPriceAlerts();
