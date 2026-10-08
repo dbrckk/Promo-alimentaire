@@ -1,4 +1,5 @@
-const CACHE="promo-alimentaire-v18";
+const CACHE_PREFIX="promo-alimentaire-";
+const CACHE=CACHE_PREFIX+"v19";
 const STATIC_ASSETS=[
   "./","./index.html","./styles.css","./src/app.js","./src/data.js","./src/domain.js",
   "./src/open-data.js","./src/promo-price-check.js","./src/stacking.js","./src/matching.js","./src/retailer-promo.js","./src/bundle.js","./src/basket.js",
@@ -22,13 +23,18 @@ self.addEventListener("install",(event)=>{
     }catch{
       // L'application reste installable même si une source distante est temporairement indisponible.
     }
+    await self.skipWaiting();
   })());
 });
 
 self.addEventListener("activate",(event)=>{
-  event.waitUntil(caches.keys().then((keys)=>
-    Promise.all(keys.filter((key)=>key!==CACHE).map((key)=>caches.delete(key)))
-  ));
+  event.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys
+      .filter((key)=>key.startsWith(CACHE_PREFIX) && key!==CACHE)
+      .map((key)=>caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener("fetch",(event)=>{
@@ -39,9 +45,21 @@ self.addEventListener("fetch",(event)=>{
     return;
   }
 
-  event.respondWith(fetch(event.request).then((response)=>{
-    const copy=response.clone();
-    caches.open(CACHE).then((cache)=>cache.put(event.request,copy));
-    return response;
-  }).catch(()=>caches.match(event.request)));
+  event.respondWith((async()=>{
+    try{
+      const response=await fetch(event.request);
+      // Do not overwrite a valid offline asset with HTTP 404/500.
+      if(response.ok){
+        const copy=response.clone();
+        event.waitUntil(
+          caches.open(CACHE)
+            .then((cache)=>cache.put(event.request,copy))
+            .catch(()=>{})
+        );
+      }
+      return response;
+    }catch{
+      return (await caches.match(event.request)) || Response.error();
+    }
+  })());
 });
