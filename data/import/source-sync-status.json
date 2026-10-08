@@ -6,13 +6,6 @@
       "reason": "Extraction publique insuffisante (0 détectées, minimum 20, 118 dans le précédent catalogue)",
       "extractedCount": 0,
       "previousSnapshotCount": 118
-    },
-    "leclerc": {
-      "status": "unavailable",
-      "checkedAt": "2026-10-08T14:04:41.347Z",
-      "reason": "Aucune promotion complète reconfirmée dans le catalogue public.",
-      "extractedCount": 0,
-      "previousSnapshotCount": 5
     }
   }
 }
