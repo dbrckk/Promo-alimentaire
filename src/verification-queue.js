@@ -4,16 +4,25 @@ export function buildVerificationQueue(scenario,{loyaltyProfile={},limit=5}={}){
   const tasks=[];
   for(const line of scenario?.lines || []){
     if(line?.missingPrice) continue;
-    const candidate=line.bestSavingCandidate;
-    if(!candidate?.offer || !Number.isFinite(candidate.saving)) continue;
-
-    // A candidate replaces an already counted benefit. Never advertise
-    // the entire discount again as an additional saving.
-    const additional=Math.round(
-      Math.max(0,candidate.saving-(line.guaranteedSaving || 0))*100
-    )/100;
-    if(additional<0.01) continue;
-
+    // Prefer an unclaimed opportunity rather than displaying a discount
+    // already applied automatically. A line can have multiple candidates.
+    const appliedIds=new Set((line.appliedOffers || []).map((offer)=>offer.id));
+    const candidates=Array.isArray(line.savingCandidates)
+      ? line.savingCandidates
+      : [line.bestSavingCandidate];
+    const pending=candidates
+      .filter((candidate)=>candidate?.offer && Number.isFinite(candidate.saving))
+      .filter((candidate)=>!appliedIds.has(candidate.offer.id))
+      .map((candidate)=>({
+        candidate,
+        additional:Math.round(Math.max(
+          0,candidate.saving-(line.guaranteedSaving || 0)
+        )*100)/100
+      }))
+      .filter(({additional})=>additional>=0.01)
+      .sort((a,b)=>b.additional-a.additional)[0];
+    if(!pending) continue;
+    const {candidate,additional}=pending;
     const offer=candidate.offer;
     const evidence=offerEvidenceStatus(offer,{
       match:candidate.match,
