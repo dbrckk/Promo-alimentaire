@@ -152,7 +152,7 @@ els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
 els.dropThreshold.value=String(state.dropThreshold);
 els.manualPriceStore.value=state.store;
-els.shoppingBudget.value=state.shoppingBudget===null?"":String(state.shoppingBudget).replace(".",",");
+els.shoppingBudget.value=state.shoppingBudget===null?"":state.shoppingBudget.toFixed(2).replace(".",",");
 els.manualPriceDate.value=new Date(Date.now()-new Date().getTimezoneOffset()*60000)
   .toISOString().slice(0,10);
 els.manualPriceDate.max=els.manualPriceDate.value;
