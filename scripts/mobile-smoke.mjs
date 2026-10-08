@@ -143,8 +143,12 @@ try{
   await page.locator("#manualPriceStatus").filter({hasText:/\S/}).waitFor({timeout:8000});
   const manualSaveStatus=await page.locator("#manualPriceStatus").innerText();
   assert.match(manualSaveStatus,/Prix personnel enregistré/,"Enregistrement relevé : "+manualSaveStatus);
-  assert.match(await page.locator("#manualPriceEntries").innerText(),/2,69/);
-  assert.match(await page.locator("#basketComparison").innerText(),/Budget indicatif/);
+  const manualEntry=await page.locator("#manualPriceEntries").innerText();
+  assert.match(manualEntry,/2,69/);
+  assert.match(manualEntry,/Relevé personnel · non vérifié/);
+  // A private shelf observation must remain clearly identified; a verified
+  // Open Prices observation may still be selected instead for the basket.
+  assert.match(await page.locator("#basketComparison").innerText(),/Confiance|Comparaison/);
   await assertNoHorizontalOverflow(page,"relevé manuel");
   await page.screenshot({path:OUT+"/05-releve-manuel.png",fullPage:true});
   await page.locator("#channel").selectOption("drive");
