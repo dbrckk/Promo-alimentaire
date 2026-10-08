@@ -7,6 +7,20 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
     throw new Error(`Manifest d'offres indisponible (${manifestResponse.status}).`);
   }
   const manifest=await manifestResponse.json();
+  const statusUrl=new URL("../data/import/source-sync-status.json",import.meta.url);
+  let syncSources={};
+  try{
+    const statusResponse=await fetchImpl(statusUrl,{headers:{Accept:"application/json"}});
+    if(statusResponse.ok){
+      const statusData=await statusResponse.json();
+      if(statusData?.sources && typeof statusData.sources==="object"
+        && !Array.isArray(statusData.sources)){
+        syncSources=statusData.sources;
+      }
+    }
+  }catch{
+    // Sync diagnostics are optional and never change offer validity.
+  }
   const files=Array.isArray(manifest?.files) ? manifest.files : [];
   const imported=[];
   const errors=[];
@@ -85,6 +99,24 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
         exactEanCount:0,heuristicCount:0,resolutionBlockedCount:0,
         storeVerificationCount:0,latestVerifiedAt:null,nextDeadline:null
       });
+    }
+  }
+
+  for(const stat of sourceStats){
+    const sync=(stat.providerIds || [])
+      .map((providerId)=>syncSources[providerId])
+      .find((entry)=>entry?.status==="unavailable"
+        && typeof entry.checkedAt==="string"
+        && Number.isFinite(new Date(entry.checkedAt).getTime()));
+    if(!sync) continue;
+    stat.syncState={
+      status:"unavailable",
+      checkedAt:sync.checkedAt,
+      reason:String(sync.reason || "Actualisation publique indisponible").slice(0,220)
+    };
+    // Do not change dates/active offer counts; show a distinct warning.
+    if(stat.status==="ok" || stat.status==="review-soon"){
+      stat.status="sync-warning";
     }
   }
 
