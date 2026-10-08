@@ -152,6 +152,21 @@
         <p class="help">La liste de produits et les quantités sont enregistrées sur cet appareil. La position, elle, n'est jamais persistée.</p>
         <div id="listStatus" class="status" aria-live="polite"></div>
       </div>
+      <section class="panel shopping-budget-panel" aria-label="Budget courses">
+        <div class="shopping-budget-heading">
+          <div>
+            <p class="eyebrow dark">Budget personnel</p>
+            <h3>Combien veux-tu dépenser en caisse ?</h3>
+            <p class="help">Fixe un plafond facultatif en euros. Les remboursements ultérieurs et la cagnotte fidélité ne diminuent pas le montant à payer maintenant.</p>
+          </div>
+          <div class="field">
+            <label for="shoppingBudget">Mon budget (€)</label>
+            <input id="shoppingBudget" type="text" inputmode="decimal" autocomplete="off"
+              placeholder="Ex. 50,00" aria-controls="budgetSummary" maxlength="10" />
+          </div>
+        </div>
+        <div id="budgetSummary" class="budget-summary" aria-live="polite"></div>
+      </section>
       <details id="manualPricePanel" class="panel manual-price-panel">
         <summary>Ajouter un prix relevé en magasin (sans données Open Prices)</summary>
         <p class="help">Note le tarif affiché ou payé dans un magasin précis. Le relevé reste sur ce téléphone et expire après 30 jours. Ce n'est ni une preuve officielle ni une promotion garantie ; aucun cumul n'est automatiquement déduit de ce prix.</p>
