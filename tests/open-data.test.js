@@ -4,6 +4,7 @@ import {
   fetchPricesByBarcode,
   fetchProductByBarcode,
   isFreshObservation,
+  isUnambiguousRetailer,
   normalizeBarcode,
   normalizePriceObservation,
   haversineKm,
@@ -177,4 +178,28 @@ test("une réponse Open Prices corrompue ne mélange pas produits, monnaies ou p
     })
   });
   assert.deepEqual(result.observations.map((observation)=>observation.id),[1]);
+});
+
+
+test("la recherche autour de moi exclut les observations sans position ou trop éloignées",async()=>{
+  const code="3017624010701";
+  const observations=[
+    {id:1,product_code:code,price:2,date:"2026-10-07",location:{osm_brand:"Carrefour",osm_lat:45.440,osm_lon:4.390}},
+    {id:2,product_code:code,price:1,date:"2026-10-07",location:{osm_brand:"Carrefour",osm_lat:48.857,osm_lon:2.352}},
+    {id:3,product_code:code,price:0.5,date:"2026-10-07",location:{osm_brand:"Carrefour"}}
+  ];
+  const result=await fetchPricesByBarcode(code,{
+    store:"carrefour",
+    coords:{latitude:45.44,longitude:4.39},
+    radiusKm:25,
+    fetchImpl:async()=>({ok:true,json:async()=>({items:observations,total:3})})
+  });
+  assert.deepEqual(result.observations.map((x)=>x.id),[1]);
+});
+
+test("une fiche d'enseigne ambiguë n'est pas comptée deux fois",()=>{
+  assert.equal(isUnambiguousRetailer("Carrefour Market · Carrefour","carrefour"),true);
+  assert.equal(isUnambiguousRetailer("E.Leclerc · Carrefour","carrefour"),false);
+  assert.equal(isUnambiguousRetailer("E.Leclerc · Carrefour","leclerc"),false);
+  assert.equal(isUnambiguousRetailer("E.Leclerc","leclerc"),true);
 });
