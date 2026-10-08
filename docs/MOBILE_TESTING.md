@@ -17,7 +17,7 @@ Le workflow `.github/workflows/mobile-smoke.yml` lance un serveur statique local
 7. prise de contrôle par le service worker, puis rechargement entièrement hors ligne ;
 8. absence d'erreurs JavaScript non gérées et d'erreurs HTTP sur les ressources de l'application.
 
-Le workflow archive `01-offres.png`, `02-panier.png`, `03-optimiseur.png` et `04-hors-ligne.png`.
+Le workflow archive `01-offres.png`, `02-panier.png`, `03-optimiseur.png`, `04-hors-ligne.png` et `05-releve-manuel.png` (prix personnel non vérifié).
 
 Les données de produit et de prix utilisées dans ce test sont **simulées**. Elles ne constituent pas une validation des promotions commerciales.
 
@@ -41,7 +41,8 @@ Le dépôt comporte `.github/workflows/pages.yml`, mais **une CI réussie ne pro
 - **Caméra** : appuyer sur **Scanner** ; autoriser la caméra. Le scanner peut rester indisponible selon le navigateur : l'entrée manuelle doit toujours fonctionner.
 - **Liste** : ajouter un produit, modifier la quantité, rafraîchir, puis fermer/réouvrir l'application. La liste doit rester enregistrée localement.
 - **Autour de moi** : accorder la position ; inspecter le rayon et les noms de magasins. Refuser la permission : l'app doit continuer sans comparaison géolocalisée.
-- **Prix** : distinguer prix observé (qui peut dater), remise immédiate, cagnotte et remboursement différé. Une promotion non confirmée ne doit pas réduire le coût annoncé comme certain.
+- **Prix** : distinguer prix observé (qui peut dater), remise immédiate, cagnotte et remboursement différé.
+- **Relevé manuel** : dans l'onglet Liste, ouvrir le panneau de prix personnel, saisir un produit, un magasin physique, son code postal et un prix. Vérifier le badge non vérifié, l'absence de promotion automatique, la persistance et la suppression. Une promotion non confirmée ne doit pas réduire le coût annoncé comme certain.
 - **Hors ligne** : charger une fois l'application en ligne, activer le mode avion, la fermer puis la rouvrir. Les écrans et la liste doivent rester disponibles, tandis que les actualisations réseau indiquent leur indisponibilité.
 - **Vérification locale** : une confirmation faite dans un magasin ne doit pas rendre le même avantage garanti dans un autre magasin ou sur le Drive.
 
