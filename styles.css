@@ -357,3 +357,30 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .provider-card .actions .source{flex:1 1 100%;overflow-wrap:anywhere}
 .provider-card .badges{flex-wrap:wrap}
 @media(max-width:720px){.source-discovery-fields{grid-template-columns:minmax(0,1fr)}}
+
+/* Explicit, non-guaranteed saving scenarios for a user-entered unit price. */
+.offer-simulator-panel{margin:12px 0;padding:14px;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1.25fr);gap:10px 16px;align-items:end}
+.offer-simulator-copy{min-width:0}
+.offer-simulator-copy>strong{font-size:.9rem}
+.offer-simulator-copy>p:last-child{margin:5px 0 0;font-size:.74rem;line-height:1.55;color:var(--muted)}
+.offer-simulator-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,.7fr);gap:10px;min-width:0}
+.offer-simulator-fields>.field{min-width:0}
+.offer-simulator-fields input{min-height:44px;max-width:100%;width:100%}
+.simulator-summary{margin:0;grid-column:1/-1;font-size:.73rem;color:var(--muted);line-height:1.55}
+.simulated-offer{background:#f4f9f6;border:1px solid #cde4d4;border-radius:12px;padding:11px;margin:10px 0;display:grid;gap:8px}
+.simulated-offer>strong{font-size:.8rem}
+.simulated-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.simulated-facts>div{min-width:0}
+.simulated-facts span{display:block;color:var(--muted);font-size:.67rem;line-height:1.4}
+.simulated-facts b{display:block;font-size:.94rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.simulated-offer p{margin:0;font-size:.69rem;line-height:1.5;color:var(--muted)}
+.simulated-offer.not-eligible{background:#fff9eb;border-color:#ead9aa}
+@media(max-width:760px){
+  .offer-simulator-panel{grid-template-columns:minmax(0,1fr)}
+  .offer-simulator-fields{grid-template-columns:minmax(0,1fr) minmax(96px,.65fr)}
+  .simulated-facts{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:390px){
+  .simulated-facts{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .simulated-facts>div:last-child{grid-column:1/-1}
+}
