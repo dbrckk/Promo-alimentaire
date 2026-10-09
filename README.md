@@ -107,7 +107,7 @@ Depuis l’onglet **Produit**, scanner/rechercher un code-barres valide puis sé
 - Les derniers prix communautaires datés de moins de **30 jours** sont affichés avec leur enseigne et magasin. Si un magasin manque de relevés, aucun prix n'est imaginé et aucun « gagnant » n'est désigné.
 - Les observations d'achats physiques ne sont pas converties en prix Drive/livraison, puisque les prix et promos peuvent différer.
 - Une remise n'est **jamais additionnée** à une autre : seule la meilleure économie indépendante est affichée comme scénario conditionnel. Les prix déjà signalés comme remisés ne sont jamais soustraits une seconde fois.
-- Quand un canal ou un prix enseigne nécessite une vérification supplémentaire, le comparateur **s'abstient de chiffrer** le remboursement.
+- Les remises propres au distributeur (promotion enseigne, Ticket fidélité) et les canaux ou prix qui nécessitent une vérification supplémentaire ne sont **jamais soustraits** d'un relevé communautaire : le prix observé peut déjà intégrer la promotion.
 - Un **GTIN en URL de fiche distributeur** atteste de l'identité de référence, pas de la disponibilité de l'offre, du stock ou du prix actuel.
 - Le comparateur fonctionne sur demande (deux appels publics Open Prices) et n'enregistre pas de localisation, ni de prix non confirmés. Il annule l'affichage si le produit ou le canal change pendant la recherche.
 
