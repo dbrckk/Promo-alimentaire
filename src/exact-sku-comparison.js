@@ -50,7 +50,8 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
         // A discounted observation could already include a retailer promo;
         // subtracting it again would systematically overstate savings.
         const alreadyDiscounted=observed?.isDiscounted===true;
-        const needsCurrentRetailerPrice=offer.requiresChannelPriceVerification===true
+        const needsCurrentRetailerPrice=["retailer_promo","retailer_loyalty"].includes(offer.mechanism)
+          || offer.requiresChannelPriceVerification===true
           || offer.requiresStoreVerification===true;
         const canSimulate=price!==null && !alreadyDiscounted
           && qty>=minQuantity && !needsCurrentRetailerPrice;
