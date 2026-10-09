@@ -25,7 +25,36 @@ export function extractShopmiumOfferUrls(html){
   return [...urls];
 }
 
+export function isOfficialShopmiumOfferUrl(value){
+  try{
+    const url=new URL(String(value));
+    return url.protocol==="https:" && url.hostname==="offers.shopmium.com"
+      && /^\/fr\/n\/[a-z0-9-]+\/?$/i.test(url.pathname)
+      && !url.search && !url.hash && !url.username && !url.password;
+  }catch{return false;}
+}
+
+export function mergeShopmiumOfferUrls(indexUrls=[],watchlistUrls=[],{maximum=30}={}){
+  const urls=new Set();
+  for(const candidate of Array.isArray(indexUrls)?indexUrls:[]){
+    if(!isOfficialShopmiumOfferUrl(candidate)) continue;
+    urls.add(new URL(candidate).toString());
+  }
+  const extra=Array.isArray(watchlistUrls)?watchlistUrls:[];
+  if(extra.length>Math.max(1,Math.min(30,Number(maximum)||30))){
+    throw new Error("Liste de surveillance Shopmium trop longue.");
+  }
+  for(const candidate of extra){
+    if(!isOfficialShopmiumOfferUrl(candidate)){
+      throw new Error("URL surveillée Shopmium non officielle.");
+    }
+    urls.add(new URL(candidate).toString());
+  }
+  return [...urls];
+}
+
 export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={}){
+  if(!isOfficialShopmiumOfferUrl(sourceUrl)) return null;
   const raw=String(html??"");
   const text=decodeHtml(raw.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ").replace(/<[^>]+>/g," "));
   const title=extractTitle(raw);
