@@ -7,6 +7,7 @@ import {
   parseReferenceNames,
   parseShopmiumDetailHtml,
   parseFlatPercent,
+  parseShopmiumFixedRefund,
   parseShopmiumSavingCap,
   parseShopmiumUnlockRequirement,
   parseStores,
@@ -164,4 +165,43 @@ test("l'import Shopmium bloque une offre de deux enseignes exclues",()=>{
     <p>Conditions de l'offre</p><p>30% remboursés</p>
     <p>Valable entre le 01/10/2026 et le 31/10/2026 dans toute enseigne vendante sauf Carrefour et Leclerc, dans la limite des remboursements disponibles.</p>`;
   assert.equal(parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/offre-limitee",{verifiedAt:"2026-10-09"}),null);
+});
+
+test("remboursement fixe 1,50 € sur le miel : pas de faux pourcentage",()=>{
+  const html=`
+    <title>Shopmium | Miel l'Apiculteur® - Format 500g</title>
+    <p>1,50€ remboursé sur 1 article</p>
+    <p>Conditions de l'offre</p>
+    <p>Offre “1,50€ remboursé sur 1 article” : remboursement fixe de 1,50€ pour toute demande de remboursement.</p>
+    <p>Valable entre le 29/07/2026 à partir de 08:00 et le 04/11/2026 jusqu'à 23:59 dans toute enseigne vendante (Drive inclus), dans la limite des remboursements disponibles.</p>
+    <p>Référence(s) éligible(s) et prix généralement constaté(s)</p>
+    <p>- Miel de Fleurs Liquide Pot verre 500G (7,29€)</p>
+    <p>Remboursement maximum calculé par article</p>`;
+  const offer=parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/miel-l-apiculteur-format-500g",{verifiedAt:"2026-10-09"});
+  assert.equal(offer.savingPercent,undefined);
+  assert.equal(offer.savingAmount,1.5);
+  assert.equal(offer.savingAmountMode,"per-offer");
+  assert.equal(offer.expiresAt,"2026-11-04");
+  assert.deepEqual(offer.stores,["all"]);
+  assert.equal(parseShopmiumFixedRefund("Un pot vaut 1,50€ seulement"),null);
+  assert.equal(parseShopmiumFixedRefund("Conditions de l'offre : remboursement de 100% dans la limite de 1,00€"),null);
+});
+
+test("une offre fixe réservée à Carrefour n'est pas montrée chez Leclerc",()=>{
+  const html=`
+    <title>Shopmium | Coloration Barbe et Moustache Just For Men</title>
+    <p>Conditions de l'offre</p>
+    <p>Remboursement fixe de 2,00€ pour toute demande de remboursement.</p>
+    <p>Valable entre le 02/06/2026 à partir de 08:00 et le 22/11/2026 jusqu'à 23:59 chez Carrefour (Drive inclus), dans la limite des remboursements disponibles.</p>`;
+  const offer=parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/coloration-barbe-et-moustache-just-for-men",{verifiedAt:"2026-10-09"});
+  assert.equal(offer.savingAmount,2);
+  assert.deepEqual(offer.stores,["carrefour"]);
+});
+
+test("montant fixe en pharmacie uniquement : aucun magasin alimentaire éligible",()=>{
+  const html=`
+    <title>Shopmium | Sommeil</title>
+    <p>Conditions de l'offre</p><p>Remboursement fixe de 4,00€ pour toute demande de remboursement.</p>
+    <p>Valable entre le 01/10/2026 et le 31/10/2026 en pharmacie UNIQUEMENT, dans la limite des remboursements disponibles.</p>`;
+  assert.equal(parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/sommeil",{verifiedAt:"2026-10-09"}),null);
 });
