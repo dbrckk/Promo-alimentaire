@@ -208,6 +208,34 @@ try{
   await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
   await assertNoHorizontalOverflow(page,"comparaison EAN exact, deux enseignes");
   await page.screenshot({path:OUT+"/08-comparaison-ean-exact.png",fullPage:true});
+  // Emulate a paginated source where only the first pages were consulted;
+  // the UI must not present this as a complete store inventory search.
+  const partialSearchRoute=async(route)=>{
+    const code=new URL(route.request().url()).searchParams.get("product_code");
+    await route.fulfill({
+      status:200,contentType:"application/json",
+      body:JSON.stringify({total:250,pages:3,items:[
+        {id:1,product_code:code,price:3.49,currency:"EUR",date:"2026-10-07",
+          location:{osm_brand:"Carrefour",osm_name:"Carrefour Lyon",
+            osm_lat:45.760,osm_lon:4.84,osm_address_postcode:"69002",
+            osm_address_city:"Lyon"}},
+        {id:2,product_code:code,price:3.59,currency:"EUR",date:"2026-10-07",
+          location:{osm_brand:"E.Leclerc",osm_name:"E.Leclerc Lyon",
+            osm_lat:45.761,osm_lon:4.85,osm_address_postcode:"69003",
+            osm_address_city:"Lyon"}}
+      ]})
+    });
+  };
+  await page.route("https://prices.openfoodfacts.org/**",partialSearchRoute);
+  await page.locator("#compareExactSku").click();
+  await page.waitForFunction(()=>
+    (document.querySelector("#exactSkuComparison")?.textContent||"")
+      .includes("Recherche limitée aux premières pages"),
+    {timeout:15000}
+  );
+  assert.equal(await page.locator("#exactSkuComparison .exact-sku-store").count(),2);
+  assert.match(await page.locator("#exactSkuComparison").innerText(),/dans les pages consultées/);
+  await page.unroute("https://prices.openfoodfacts.org/**",partialSearchRoute);
   await page.locator("#channel").selectOption("drive");
   assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
   await page.locator("#compareExactSku").click();

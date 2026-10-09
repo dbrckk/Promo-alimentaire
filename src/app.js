@@ -674,11 +674,18 @@ async function compareCurrentExactSku(){
     || code!==state.productCode || channel!==state.channel) return;
   els.compareExactSku.disabled=false;
   const observations={};
+  const coverageByStore={};
   const errors=new Set();
   for(let i=0;i<stores.length;i++){
     const entry=fetched[i];
-    if(entry.status==="fulfilled") observations[stores[i]]=entry.value.observations;
-    else{
+    if(entry.status==="fulfilled"){
+      observations[stores[i]]=entry.value.observations;
+      coverageByStore[stores[i]]={
+        partial:entry.value.partial,
+        moreAvailable:entry.value.moreAvailable,
+        pagesFetched:entry.value.pagesFetched
+      };
+    }else{
       observations[stores[i]]=[];
       errors.add(stores[i]);
     }
@@ -691,7 +698,7 @@ async function compareCurrentExactSku(){
   const normalizedProduct={...(state.product||{}),code};
   const candidates=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
   const comparison=compareExactSku(normalizedProduct,candidates,observations,{
-    channel,quantity:1,now:new Date()
+    channel,quantity:1,now:new Date(),coverageByStore
   });
   els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors);
 }
@@ -712,20 +719,27 @@ function renderExactSkuComparison(result,errors=new Set()){
     const coverageLabel=unresolved
       ? "Couverture inconnue : service de prix indisponible"
       : coverage.status==="no-observation"
-        ? "Aucun relevé connu pour cet EAN dans cette enseigne"
+        ? "Aucun relevé trouvé pour cet EAN dans les pages consultées"
         : coverage.status==="invalid-observations"
-          ? "Relevés présents mais non exploitables"
+          ? "Relevés consultés mais non exploitables"
           : coverage.status==="stale-observations"
-            ? "Seulement des relevés anciens (plus de 30 jours)"
+            ? "Relevés consultés uniquement anciens (plus de 30 jours)"
             : coverage.status==="recent-but-not-comparable"
               ? "Relevés des 30 derniers jours, aucun des 7 derniers jours"
               : "Au moins un relevé des 7 derniers jours";
+    const limitedCoverage=unresolved ? ""
+      : coverage.lookupInterrupted
+        ? " · Recherche partiellement interrompue : d'autres relevés peuvent manquer"
+        : coverage.moreAvailable
+          ? " · Recherche limitée aux premières pages : d'autres relevés peuvent exister"
+          : "";
     const coverageMarkup=`<p class="help exact-sku-coverage">
       <strong>Couverture des données :</strong> ${escapeHtml(coverageLabel)}
-      ${!unresolved && coverage.valid ? ` · ${coverage.valid} relevé(s) exploitable(s)` : ""}
+      ${!unresolved && coverage.valid ? ` · ${coverage.valid} relevé(s) exploitable(s) dans les pages consultées` : ""}
       ${!unresolved && coverage.latestDate
-        ? ` · Dernier relevé : ${escapeHtml(formatDate(coverage.latestDate))}` : ""}
-      <span>Une absence de relevé ne signifie pas que le produit est absent du magasin.</span>
+        ? ` · Dernier relevé consulté : ${escapeHtml(formatDate(coverage.latestDate))}` : ""}
+      ${escapeHtml(limitedCoverage)}
+      <span>Ces données sont limitées à la recherche effectuée. Une absence de relevé ne signifie pas que le produit est absent du magasin.</span>
     </p>`;
     const offers=row.exactOffers.slice(0,6).map((offer)=>{
       const amount=offer.saving!==null

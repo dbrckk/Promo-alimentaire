@@ -326,3 +326,34 @@ test("la couverture par enseigne reste séparée et ne déclare pas de stock",()
   assert.equal(res.stores[1].price,null);
   assert.equal(res.lowerObservedStore,null);
 });
+
+test("la couverture conserve les réserves d'une recherche paginée par enseigne",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",3.2,CODE,{date:"2026-10-08"})],
+    leclerc:[]
+  },{
+    now,
+    coverageByStore:{
+      carrefour:{partial:false,moreAvailable:true,pagesFetched:2},
+      leclerc:{partial:true,moreAvailable:true,pagesFetched:1}
+    }
+  });
+  assert.equal(result.stores[0].coverage.status,"recent");
+  assert.equal(result.stores[0].coverage.searchIncomplete,true);
+  assert.equal(result.stores[0].coverage.moreAvailable,true);
+  assert.equal(result.stores[0].coverage.pagesFetched,2);
+  assert.equal(result.stores[1].coverage.status,"no-observation");
+  assert.equal(result.stores[1].coverage.lookupInterrupted,true);
+  assert.equal(result.stores[1].coverage.searchIncomplete,true);
+  assert.equal(result.stores[1].coverage.pagesFetched,1);
+  assert.equal(result.lowerObservedStore,null);
+});
+
+test("une recherche sans page restante n'est pas marquée incomplète",()=>{
+  const complete=priceCoverageSummary([],now,{
+    partial:false,moreAvailable:false,pagesFetched:1
+  });
+  assert.equal(complete.status,"no-observation");
+  assert.equal(complete.searchIncomplete,false);
+  assert.equal(complete.pagesFetched,1);
+});

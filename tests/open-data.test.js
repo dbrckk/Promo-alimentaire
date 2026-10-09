@@ -314,6 +314,8 @@ test("Open Prices recherche une deuxième page lorsque les références locales 
   assert.deepEqual(pages,[1,2]);
   assert.equal(result.pagesFetched,2);
   assert.equal(result.partial,false);
+  assert.equal(result.moreAvailable,true);
+  assert.equal(result.searchIncomplete,true);
   assert.deepEqual(result.observations.map((item)=>item.id),[1,3,4]);
   assert.equal(result.observations.every((item)=>item.pricePer==="UNIT"),true);
 });
@@ -348,6 +350,7 @@ test("une erreur de la page suivante ne perd pas les prix de la première",async
   assert.equal(urls.length,2);
   assert.equal(new URL(urls[1]).searchParams.get("page"),"2");
   assert.equal(result.partial,true);
+  assert.equal(result.searchIncomplete,true);
   assert.equal(result.pagesFetched,1);
   assert.deepEqual(result.observations.map((item)=>item.id),[1]);
 });
@@ -381,6 +384,8 @@ test("la recherche paginée reste plafonnée à trois appels",async()=>{
   });
   assert.equal(calls,3);
   assert.equal(result.pagesFetched,3);
+  assert.equal(result.moreAvailable,true);
+  assert.equal(result.searchIncomplete,true);
 });
 
 
@@ -435,4 +440,34 @@ test("Open Prices reconnaît le même GTIN sous forme UPC-A, EAN-13 ou GTIN-14",
   });
   assert.equal(result.observations.length,2);
   assert.deepEqual(result.observations.map(x=>x.price).sort(),[1.5,1.6]);
+});
+
+test("recherche Open Prices complète : aucune pagination restante annoncée",async()=>{
+  const code="3017624010701";
+  const response=await fetchPricesByBarcode(code,{
+    store:"carrefour",
+    fetchImpl:async()=>({ok:true,json:async()=>({
+      total:1,pages:1,items:[{
+        id:42,product_code:code,price:2.9,currency:"EUR",
+        date:"2026-10-08",location:{osm_brand:"Carrefour"}
+      }]
+    })})
+  });
+  assert.equal(response.moreAvailable,false);
+  assert.equal(response.partial,false);
+  assert.equal(response.searchIncomplete,false);
+  assert.equal(response.pagesFetched,1);
+});
+
+test("une page pleine sans métadonnées de pagination ne prouve pas l'exhaustivité",async()=>{
+  const code="3017624010701";
+  const result=await fetchPricesByBarcode(code,{
+    store:"carrefour",size:1,maxPages:1,
+    fetchImpl:async()=>({ok:true,json:async()=>({items:[{
+      id:42,product_code:code,price:2.9,currency:"EUR",
+      date:"2026-10-08",location:{osm_brand:"Carrefour"}
+    }]})})
+  });
+  assert.equal(result.moreAvailable,true);
+  assert.equal(result.searchIncomplete,true);
 });

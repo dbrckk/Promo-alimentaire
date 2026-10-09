@@ -87,6 +87,7 @@ export async function fetchPricesByBarcode(value,{
   let pagesFetched=0;
   let total=null;
   let partial=false;
+  let moreAvailable=false;
 
   for(let page=1;page<=pageLimit;page++){
     // Page 1 omits the page query for backwards compatibility with callers.
@@ -135,15 +136,24 @@ export async function fetchPricesByBarcode(value,{
       all.push(observation);
     }
 
-    if(page>=pageLimit || all.length>=minMatches || items.length===0) break;
     const declaredPages=Number(payload.pages);
     const hasMore=Number.isInteger(declaredPages) && declaredPages>=1
       ? page<declaredPages
-      : total!==null && page*pageSize<total;
-    if(!hasMore) break;
-    // An incomplete page without explicit pages metadata is not a
-    // trustworthy indication that the next page exists.
-    if(!Number.isInteger(declaredPages) && items.length<pageSize) break;
+      : total!==null
+        ? page*pageSize<total
+        : items.length>=pageSize;
+    // Even a successful response is NOT an exhaustive search if we stopped
+    // at the request limit or after finding enough matches. This distinction
+    // is crucial when saying that no EAN price was found for an enseigne.
+    moreAvailable=hasMore && items.length>0;
+    if(page>=pageLimit || all.length>=minMatches || items.length===0) break;
+    if(!moreAvailable) break;
+    // Short pages without explicit page count cannot safely imply that
+    // another page exists, even if the reported total is inconsistent.
+    if(!Number.isInteger(declaredPages) && items.length<pageSize) {
+      moreAvailable=false;
+      break;
+    }
   }
 
   const observations=all.sort((a,b)=>{
@@ -156,7 +166,8 @@ export async function fetchPricesByBarcode(value,{
   });
   return {
     observations,total:total ?? observations.length,sourceUrl:url,
-    pagesFetched,partial
+    pagesFetched,partial,moreAvailable,
+    searchIncomplete:partial || moreAvailable
   };
 }
 
