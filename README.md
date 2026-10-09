@@ -99,6 +99,18 @@ Une offre qui concerne 3 articles et promet jusqu'à 30 % **ne récupère pas au
 
 **Limites :** le même prix indicatif est appliqué à toutes les fiches visibles uniquement pour comparer leurs mécanismes. Cela ne vérifie ni la disponibilité, ni le bon EAN, ni l'éligibilité du magasin, ni le remboursement final, ni la possibilité de cumuler les offres. Il faut toujours consulter la source officielle avant tout achat.
 
+## Comparer un même EAN chez Carrefour et E.Leclerc
+
+Depuis l’onglet **Produit**, scanner/rechercher un code-barres valide puis sélectionner **Comparer cet EAN dans les deux enseignes**. Une nouvelle recherche Open Prices est déclenchée **séparément** pour Carrefour et E.Leclerc, sans mélanger leurs relevés.
+
+- Seuls les produits portant **exactement le même GTIN valide** (y compris les représentations UPC-A/EAN-13/GTIN-14 équivalentes) sont comparés ; les correspondances par marque/nom restent de simples pistes et **n'alimentent jamais le tableau des promotions exactes**.
+- Les derniers prix communautaires datés de moins de **30 jours** sont affichés avec leur enseigne et magasin. Si un magasin manque de relevés, aucun prix n'est imaginé et aucun « gagnant » n'est désigné.
+- Les observations d'achats physiques ne sont pas converties en prix Drive/livraison, puisque les prix et promos peuvent différer.
+- Une remise n'est **jamais additionnée** à une autre : seule la meilleure économie indépendante est affichée comme scénario conditionnel. Les prix déjà signalés comme remisés ne sont jamais soustraits une seconde fois.
+- Les remises propres au distributeur (promotion enseigne, Ticket fidélité) et les canaux ou prix qui nécessitent une vérification supplémentaire ne sont **jamais soustraits** d'un relevé communautaire : le prix observé peut déjà intégrer la promotion.
+- Un **GTIN en URL de fiche distributeur** atteste de l'identité de référence, pas de la disponibilité de l'offre, du stock ou du prix actuel.
+- Le comparateur fonctionne sur demande (deux appels publics Open Prices) et n'enregistre pas de localisation, ni de prix non confirmés. Il annule l'affichage si le produit ou le canal change pendant la recherche.
+
 ## Principe de fiabilité
 
 Une remise n'est ajoutée au total automatique que si le modèle de cumul est suffisamment connu. Une offre au cumul incertain reste visible mais n'augmente pas artificiellement l'économie annoncée.

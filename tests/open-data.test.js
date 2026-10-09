@@ -398,3 +398,41 @@ test("des magasins distincts sans identifiant serveur restent deux relevés",asy
   assert.equal(result.observations.length,2);
   assert.deepEqual(result.observations.map(x=>x.storeName).sort(),["Carrefour A","Carrefour B"]);
 });
+
+test("Open Food Facts refuse une fiche répondant pour un autre GTIN",async()=>{
+  const wrong=async()=>({
+    ok:true,json:async()=>({product:{code:"4006381333931",product_name:"Autre produit"}})
+  });
+  await assert.rejects(
+    ()=>fetchProductByBarcode("3017624010701",wrong),
+    /autre code-barres/
+  );
+});
+
+test("Open Food Facts accepte UPC-A et EAN-13 équivalents",async()=>{
+  const alias=async()=>({
+    ok:true,json:async()=>({product:{
+      code:"0036000291452",product_name:"Même produit",brands:"Marque"
+    }})
+  });
+  const item=await fetchProductByBarcode("036000291452",alias);
+  assert.equal(item.code,"0036000291452");
+});
+
+test("Open Prices reconnaît le même GTIN sous forme UPC-A, EAN-13 ou GTIN-14",async()=>{
+  const fetchImpl=async()=>({
+    ok:true,json:async()=>({total:3,items:[
+      {id:1,product_code:"036000291452",price:1.5,currency:"EUR",date:"2026-10-08",
+        location:{osm_brand:"Carrefour"}},
+      {id:2,product_code:"00036000291452",price:1.6,currency:"EUR",date:"2026-10-08",
+        location:{osm_brand:"Carrefour"}},
+      {id:3,product_code:"4006381333931",price:0.1,currency:"EUR",date:"2026-10-08",
+        location:{osm_brand:"Carrefour"}}
+    ]})
+  });
+  const result=await fetchPricesByBarcode("0036000291452",{
+    store:"carrefour",fetchImpl
+  });
+  assert.equal(result.observations.length,2);
+  assert.deepEqual(result.observations.map(x=>x.price).sort(),[1.5,1.6]);
+});
