@@ -94,6 +94,8 @@ La comparaison montre le prix de chaque enseigne même si les observations ne so
 - une **proximité justifiée** par des coordonnées à **15 km maximum**, ou, sans coordonnées, par une même commune **et** un même code postal à cinq chiffres ;
 - une même référence GTIN valide et un canal d'achat compatible. Les relevés de magasins physiques ne sont pas traités comme des devis Drive/livraison.
 
+Pour éviter de manquer une vraie comparaison locale, le moteur peut sélectionner **une paire de relevés comparables légèrement antérieurs**, même si le tout dernier relevé Carrefour ou E.Leclerc provient d'une autre ville. Le choix repose sur la date, puis la proximité géographique, **jamais sur le prix le plus bas**. Le détail des deux relevés retenus (prix, date et magasin) est affiché séparément des derniers prix individuels des enseignes. Aucune baisse ou économie n'est garantie par les observations communautaires.
+
 Si une condition manque, le moteur affiche une explication contextualisée sans désigner de magasin gagnant. Les remboursements restent hypothétiques et **plusieurs remises ne sont jamais additionnées arbitrairement**. Cela ne remplace pas la vérification des stocks, des prix en magasin et des conditions d'offre.
 
 ## Simulation du coût net avec mon prix
