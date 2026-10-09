@@ -19,7 +19,7 @@ h2{margin:0;font-size:1.2rem}
 .subtitle{max-width:680px;margin:12px 0 0;opacity:.88}
 main{width:min(1100px,100%);margin:auto;padding:18px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-.controls{padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr 1.5fr;gap:12px}
+.controls{padding:14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.15fr) minmax(0,1.3fr) minmax(0,1.5fr);gap:12px}
 .field{display:grid;gap:6px}
 label{font-size:.78rem;font-weight:700;color:var(--muted)}
 select,input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);outline:none}
@@ -347,6 +347,8 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 @media(max-width:720px){.shopping-budget-heading{grid-template-columns:1fr}.budget-cards{grid-template-columns:1fr}}
 
 /* Service discovery filters: mobile-first and keyboard accessible */
+.controls .field{min-width:0}
+.controls .field select,.controls .field input{width:100%;min-width:0}
 .source-discovery-controls{display:grid;gap:12px}
 .source-discovery-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .source-discovery-fields .field,.source-discovery-fields select,.source-discovery-fields input{min-width:0;width:100%}
