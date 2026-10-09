@@ -135,6 +135,7 @@
           <input id="barcode" inputmode="numeric" pattern="[0-9 ]*" placeholder="Ex. 3017624010701" autocomplete="off" />
           <button class="primary" type="submit">Rechercher</button>
           <button id="scanButton" class="secondary" type="button">Scanner</button>
+          <button id="compareExactSku" class="secondary" type="button" disabled>Comparer cet EAN dans les deux enseignes</button>
           <button id="nearbyButton" class="secondary" type="button">Autour de moi</button>
           <select id="radiusSelect" aria-label="Rayon de recherche">
             <option value="5">5 km</option>
@@ -148,6 +149,7 @@
       </div>
       <div id="productResult" class="product-result hidden"></div>
       <div id="productOffers" class="product-offers"></div>
+      <section id="exactSkuComparison" class="exact-sku-comparison" aria-live="polite" aria-label="Comparaison par EAN exact Carrefour et E.Leclerc"></section>
       <div id="priceResults" class="price-results"></div>
       <section id="productPriceHistory" class="product-price-history"></section>
     </section>
