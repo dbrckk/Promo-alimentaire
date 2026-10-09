@@ -83,6 +83,20 @@ Le filtre « 100 % remboursé sur un produit » **exclut les bundles et cagnotte
 
 Cette stratégie sacrifie temporairement la visibilité d'offres non revalidées plutôt que d'inciter à acheter un produit sur la foi d'un remboursement révoqué.
 
+## Simulation du coût net avec mon prix
+
+L'onglet **Offres** accepte un **prix unitaire saisi manuellement** et une **quantité prévue** (1 à 100). Un mode de tri **Gain simulé (€) selon mon prix** utilise exclusivement ces valeurs pour les offres ciblant un produit, sans inventer de prix magasin ni confondre plusieurs références.
+
+La simulation distingue :
+
+- **Débours initial** : prix unitaire × quantité ; une ODR fabricant peut nécessiter le paiement complet avant remboursement.
+- **Économie potentielle** : en respectant la quantité minimale, les paliers de quantité, les plafonds en euros et le mode de remboursement par offre ou par unité.
+- **Coût après remboursement éventuel** : débours initial diminué de cette économie, calculé à titre indicatif. L'écart en pourcentage est basé sur le coût total réellement simulé, pas le pourcentage publicitaire maximal.
+
+Une offre qui concerne 3 articles et promet jusqu'à 30 % **ne récupère pas automatiquement ces 30 % à une autre quantité**. Une fois la dernière tranche dépassée, la simulation reste non applicable plutôt que d'inventer une réduction. Les offres panier sont exclues de la simulation par prix unitaire.
+
+**Limites :** le même prix indicatif est appliqué à toutes les fiches visibles uniquement pour comparer leurs mécanismes. Cela ne vérifie ni la disponibilité, ni le bon EAN, ni l'éligibilité du magasin, ni le remboursement final, ni la possibilité de cumuler les offres. Il faut toujours consulter la source officielle avant tout achat.
+
 ## Principe de fiabilité
 
 Une remise n'est ajoutée au total automatique que si le modèle de cumul est suffisamment connu. Une offre au cumul incertain reste visible mais n'augmente pas artificiellement l'économie annoncée.
