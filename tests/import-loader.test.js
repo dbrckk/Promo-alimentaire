@@ -305,3 +305,29 @@ test("une source indisponible conserve un indicateur indépendant de révision p
   assert.equal(expired.sourceStats[0].status,"stale");
   assert.equal(expired.sourceStats[0].validityStatus,"stale");
 });
+
+test("la fiche Shopmium affiche l'échéance de revue plutôt qu'une fausse fin lointaine",async()=>{
+  const offer={
+    providerId:"shopmium",externalId:"watch",title:"Offre à revalider",
+    stores:["all"],scope:"produit",savingPercent:30,verifiedAt:"2026-10-09",
+    expiresAt:"2026-12-31",sourceUrl:"https://offers.shopmium.com/fr/n/kiri-6"
+  };
+  const fetchImpl=async(url)=>{
+    const target=String(url);
+    if(target.endsWith("/index.json")) return {ok:true,json:async()=>({files:["shopmium-auto.json"]})};
+    if(target.endsWith("/shopmium-auto.json")) return {ok:true,json:async()=>[offer]};
+    return {ok:false,status:404};
+  };
+  const current=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-09T12:00:00Z")
+  });
+  assert.equal(current.offers.length,1);
+  assert.equal(current.sourceStats[0].nextDeadline,"2026-10-14");
+  assert.equal(current.sourceStats[0].status,"ok");
+  const stale=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-15T12:00:00Z")
+  });
+  assert.equal(stale.offers.length,0);
+  assert.equal(stale.sourceStats[0].status,"stale");
+  assert.equal(stale.sourceStats[0].nextDeadline,null);
+});
