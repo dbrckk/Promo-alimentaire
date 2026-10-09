@@ -359,8 +359,8 @@ test("Shopmium non revalidé ne reste pas actif plusieurs semaines malgré une d
     expiresAt:"2026-12-31",stores:["all"],savingPercent:30
   };
   assert.equal(isOfferActive(stale,new Date("2026-10-11T12:00:00Z")),true);
-  assert.equal(isOfferActive(stale,new Date("2026-10-13T12:00:00Z")),true);
-  assert.equal(isOfferActive(stale,new Date("2026-10-14T12:00:00Z")),false);
+  assert.equal(isOfferActive(stale,new Date("2026-10-12T12:00:00Z")),true);
+  assert.equal(isOfferActive(stale,new Date("2026-10-13T12:00:00Z")),false);
   assert.equal(isOfferActive({...stale,reviewAfter:"2026-10-10"},
     new Date("2026-10-11T12:00:00Z")),false);
   // A non-Shopmium supplier retains its own contract.
