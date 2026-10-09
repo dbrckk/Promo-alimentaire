@@ -762,7 +762,7 @@ function renderExactSkuComparison(result,errors=new Set()){
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
     <p>Identité GTIN ${escapeHtml(result.gtin)} · ${escapeHtml(best)}</p>
-    <p>Comparaison des prix uniquement avec des relevés proches (15 km maximum), récents (7 jours maximum) et datés à 3 jours d’écart au plus. Prix Open Prices communautaires : disponibilité, remise et cumul non garantis.</p>
+    <p>Comparaison seulement si les relevés sont récents (7 jours maximum), espacés de 3 jours au plus, et géographiquement proches : coordonnées à 15 km maximum, ou à défaut même commune et même code postal. Prix Open Prices communautaires : disponibilité, remise et cumul non garantis.</p>
   </div>
   <div class="exact-sku-grid">${storeCards}</div>`;
 }
