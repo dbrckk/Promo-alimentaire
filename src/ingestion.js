@@ -243,6 +243,17 @@ export function filterActiveOffers(offers,now=new Date()){
   return (offers || []).filter((offer)=>isOfferActive(offer,now));
 }
 
+export function shopmiumLegacyReviewCutoff(offer){
+  if(offer?.providerId!=="shopmium") return null;
+  const stamp=String(offer.verifiedAt||"");
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(stamp)) return null;
+  const checkedAt=new Date(stamp+"T12:00:00Z");
+  if(Number.isNaN(checkedAt.getTime())) return null;
+  checkedAt.setUTCDate(checkedAt.getUTCDate()+5);
+  checkedAt.setUTCHours(23,59,59,999);
+  return checkedAt;
+}
+
 export function isOfferActive(offer,now=new Date()) {
   const current=new Date(now);
   if(Number.isNaN(current.getTime())) return false;
@@ -255,18 +266,10 @@ export function isOfferActive(offer,now=new Date()) {
     const reviewEnd=new Date(String(offer.reviewAfter).length===10 ? offer.reviewAfter+"T23:59:59" : offer.reviewAfter);
     if(current>reviewEnd) return false;
   }
-  // Some older Shopmium snapshots have no reviewAfter. Their expiry date is
-  // NOT evidence that the merchant hasn't ended the refund prematurely.
-  // Keep at most five calendar days of unsynchronized source confidence.
+  // The campaign end date is not proof that Shopmium has not closed early.
   if(offer.providerId==="shopmium"){
-    const stamp=String(offer.verifiedAt||"");
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(stamp)) return false;
-    const checkedAt=new Date(stamp+"T12:00:00Z");
-    if(Number.isNaN(checkedAt.getTime())) return false;
-    const reviewCutoff=new Date(checkedAt);
-    reviewCutoff.setUTCDate(reviewCutoff.getUTCDate()+5);
-    reviewCutoff.setUTCHours(23,59,59,999);
-    if(current>reviewCutoff) return false;
+    const reviewCutoff=shopmiumLegacyReviewCutoff(offer);
+    if(!reviewCutoff || current>reviewCutoff) return false;
   }
   return true;
 }
