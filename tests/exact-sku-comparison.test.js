@@ -291,3 +291,14 @@ test("aucune paire avec relevé futur, date de plus de 7 jours ou magasin sans g
   const b=[observation("leclerc",4,CODE,{postcode:"",city:""})];
   assert.equal(selectComparablePricePair(a,b,now),null);
 });
+
+test("les quantités de produits doivent être entières, positives et bornées",()=>{
+  for(const quantity of [0,-1,1.25,2.9,101,"",null,"1,5","Infinity"]){
+    assert.equal(compareExactSku({code:CODE},[],{},{
+      now,quantity
+    }).status,"invalid-quantity",String(quantity));
+  }
+  assert.equal(compareExactSku({code:CODE},[],{},{
+    now,quantity:"2"
+  }).quantity,2);
+});
