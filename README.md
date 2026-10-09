@@ -68,6 +68,7 @@ Les offres 100 % sont affichées comme **possibilités conditionnelles**, jamais
 - un plafond monétaire (par exemple « 100 % dans la limite de 1 € ») est conservé, affiché et appliqué à l'estimation en euros, y compris dans les tris ;
 - les défis qui demandent de débloquer l'offre ne sont jamais considérés comme un remboursement accessible sans action préalable ;
 - les dates de fin et de revalidation restent obligatoires ; **aucune offre expirée n'est réactivée** pour remplir le filtre 100 %.
+- les **remboursements fixes en euros** (ex. 1,50 € sur un pot de miel) sont extraits uniquement si le texte officiel indique explicitement « remboursement fixe de X € ». Ils restent des montants après achat et non des pourcentages calculés sans prix de référence.
 
 Le filtre « 100 % remboursé sur un produit » **exclut les bundles et cagnotte fidélité** : ces mécanismes ne garantissent pas le remboursement de la totalité du prix d'un article isolé. Si aucune offre courante ne satisfait le filtre, l'application l'indique explicitement.
 
