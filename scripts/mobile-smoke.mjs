@@ -84,6 +84,24 @@ try{
   assert.equal(await page.locator("#savingsFocus").inputValue(),"at-least-50");
   await page.locator("#savingsFocus").selectOption("all");
   await assertNoHorizontalOverflow(page,"filtres fortes économies");
+  // Scenario simulation uses only the price entered by the shopper.
+  await page.locator("#simulatedPrice").fill("2,50");
+  await page.locator("#simulatedQuantity").fill("3");
+  assert.match(await page.locator("#simulatorSummary").innerText(),/3 article\(s\) à 2,50/);
+  await page.locator("#sort").selectOption("estimated");
+  const simulatedCards=page.locator("#offers .simulated-offer:not(.not-eligible)");
+  await simulatedCards.first().waitFor({timeout:10000});
+  const scenarioCard=await simulatedCards.first().innerText();
+  assert.match(scenarioCard,/Économie potentielle/);
+  assert.match(scenarioCard,/Coût après/);
+  await assertNoHorizontalOverflow(page,"simulation 3 articles");
+  await page.screenshot({path:OUT+"/07-simulation-gains.png",fullPage:true});
+  await page.locator("#simulatedQuantity").fill("101");
+  assert.match(await page.locator("#simulatorSummary").innerText(),/quantité entière entre 1 et 100/);
+  await page.locator("#simulatedQuantity").fill("1");
+  await page.locator("#simulatedPrice").fill("");
+  assert.match(await page.locator("#simulatorSummary").innerText(),/Simulation désactivée/);
+  await page.locator("#sort").selectOption("percent");
   await page.screenshot({path:OUT+"/01-offres.png",fullPage:true});
 
   // Discovery: independent food/free services and 50%+ non-food sources are separated.
