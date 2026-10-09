@@ -92,3 +92,23 @@ test("rankOffers peut trier par échéance la plus proche",()=>{
   ],"deadline",new Date("2026-10-07T12:00:00Z"));
   assert.deepEqual(result.map((x)=>x.id),["soon","later","none"]);
 });
+
+test("focus 50% ne fabrique pas de remise depuis une ODR sans pourcentage",()=>{
+  const list=[
+    {title:"ODR -20 %",provider:"Shopmium",category:"produit",type:"ODR",stores:["carrefour"],savingPercent:20},
+    {title:"ODR -50 %",provider:"Shopmium",category:"produit",type:"ODR",stores:["carrefour"],savingPercent:50},
+    {title:"Montant inconnu",provider:"Shopmium",category:"produit",type:"ODR",stores:["carrefour"],savingAmount:1}
+  ];
+  assert.deepEqual(filterOffers(list,{store:"carrefour",savingsFocus:"at-least-50"}).map(x=>x.title),["ODR -50 %"]);
+});
+
+test("filtre 100% cible seulement le produit remboursé, pas les bundles ou cartes",()=>{
+  const sample=[
+    {id:"product",title:"Défi",stores:["carrefour"],scope:"produit",mechanism:"manufacturer_refund",savingPercent:100,requiresUnlock:true},
+    {id:"bundle",title:"2 achats",stores:["carrefour"],scope:"bundle",mechanism:"manufacturer_refund",savingPercent:100},
+    {id:"loyalty",title:"100% cagnotte",stores:["carrefour"],scope:"produit",mechanism:"retailer_promo",savingPercent:100},
+    {id:"cap",title:"30%",stores:["carrefour"],scope:"produit",mechanism:"manufacturer_refund",savingPercent:30}
+  ];
+  assert.deepEqual(filterOffers(sample,{store:"carrefour",savingsFocus:"full-refund"}).map(x=>x.id),["product"]);
+  assert.deepEqual(filterOffers(sample,{store:"leclerc",savingsFocus:"full-refund"}),[]);
+});
