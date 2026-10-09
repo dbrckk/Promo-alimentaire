@@ -753,15 +753,21 @@ function renderExactSkuComparison(result,errors=new Set()){
   };
   const confidence=result.comparisonEvidence || {};
   const difference=result.observedPriceDifference;
+  const paired=result.comparisonPair;
   const best=confidence.comparable && result.lowerObservedStore
-    ? `Relevé inférieur : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
+    ? `Relevé inférieur sur la paire comparable : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
     : confidence.comparable && difference===0
       ? "Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère."
       : comparabilityReasons[confidence.status]
         || "Aucune comparaison de prix fiable possible avec les relevés disponibles.";
+  const pairedDetails=paired ? `<p>Relevés retenus pour la comparaison locale :
+      Carrefour ${money.format(Number(paired.carrefour.price))} (${escapeHtml(formatDate(paired.carrefour.date))}, ${escapeHtml(paired.carrefour.storeName || "magasin non précisé")})
+      · E.Leclerc ${money.format(Number(paired.leclerc.price))} (${escapeHtml(formatDate(paired.leclerc.date))}, ${escapeHtml(paired.leclerc.storeName || "magasin non précisé")}).
+      Les cartes ci-dessous montrent séparément le dernier prix observé de chaque enseigne : il peut être issu d'un autre magasin.</p>` : "";
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
     <p>Identité GTIN ${escapeHtml(result.gtin)} · ${escapeHtml(best)}</p>
+    ${pairedDetails}
     <p>Comparaison seulement si les relevés sont récents (7 jours maximum), espacés de 3 jours au plus, et géographiquement proches : coordonnées à 15 km maximum, ou à défaut même commune et même code postal. Prix Open Prices communautaires : disponibilité, remise et cumul non garantis.</p>
   </div>
   <div class="exact-sku-grid">${storeCards}</div>`;
