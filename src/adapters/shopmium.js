@@ -118,9 +118,36 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
 
 export function parseValidityDates(text){
   const normalized=clean(text);
-  const match=normalized.match(/Valable entre le\s+(\d{2}\/\d{2}\/\d{4})[\s\S]{0,180}?et le\s+(\d{2}\/\d{2}\/\d{4})/i);
+  const match=normalized.match(/Valable entre le\s+(\d{2}\/\d{2}\/\d{4})([\s\S]{0,180}?)et le\s+(\d{2}\/\d{2}\/\d{4})/i);
   if(!match) return null;
-  return {startsAt:frDateToIso(match[1]),expiresAt:frDateToIso(match[2])};
+  const startDay=frDateToIso(match[1]);
+  const endDay=frDateToIso(match[3]);
+  const startTime=match[2].match(/à\s+partir\s+de\s+(\d{1,2}):(\d{2})/i);
+  const endSuffix=normalized.slice(match.index+match[0].length,match.index+match[0].length+90);
+  const endTime=endSuffix.match(/^\s*jusqu['’]à\s+(\d{1,2}):(\d{2})/i);
+  const start=startTime ? parisTimeIso(startDay,startTime[1],startTime[2]) : startDay;
+  const end=endTime && !(Number(endTime[1])===23 && Number(endTime[2])===59)
+    ? parisTimeIso(endDay,endTime[1],endTime[2]) : endDay;
+  return start && end ? {startsAt:start,expiresAt:end} : null;
+}
+
+// Shopmium's displayed clocks use the French local time zone. Explicit ISO
+// offsets make deadlines stable on Android, Node (UTC), and across DST changes.
+function parisTimeIso(iso,hourText,minuteText){
+  const h=Number(hourText),m=Number(minuteText);
+  if(!Number.isInteger(h) || h<0 || h>23 || !Number.isInteger(m) || m<0 || m>59){
+    return null;
+  }
+  const sample=new Date(iso+"T12:00:00Z");
+  if(Number.isNaN(sample.getTime())) return null;
+  const zone=new Intl.DateTimeFormat("en-US",{
+    timeZone:"Europe/Paris",timeZoneName:"longOffset"
+  }).formatToParts(sample).find((part)=>part.type==="timeZoneName")?.value || "";
+  const offset=zone.match(/^GMT([+-])(\d{1,2}):(\d{2})$/);
+  if(!offset) return null;
+  const formattedOffset=offset[1]+offset[2].padStart(2,"0")+":"+offset[3];
+  return iso+"T"+String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+
+    ":00"+formattedOffset;
 }
 
 export function parsePercentTiers(text){
