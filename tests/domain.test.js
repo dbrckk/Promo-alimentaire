@@ -112,3 +112,8 @@ test("filtre 100% cible seulement le produit remboursé, pas les bundles ou cart
   assert.deepEqual(filterOffers(sample,{store:"carrefour",savingsFocus:"full-refund"}).map(x=>x.id),["product"]);
   assert.deepEqual(filterOffers(sample,{store:"leclerc",savingsFocus:"full-refund"}),[]);
 });
+
+test("le gain absolu d'une offre plafonnée ne dépasse jamais le plafond",()=>{
+  assert.equal(computeSaving({basePrice:4,savingPercent:100,savingCapAmount:1}),1);
+  assert.equal(computeSaving({savingAmount:3,savingCapAmount:1.5}),1.5);
+});
