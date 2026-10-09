@@ -60,6 +60,7 @@ const els = {
   leclercLoyalty:document.querySelector("#leclercLoyalty"),
   loyaltySummary:document.querySelector("#loyaltySummary"),
   sort:document.querySelector("#sort"),
+  savingsFocus:document.querySelector("#savingsFocus"),
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
   providers:document.querySelector("#providers"),
@@ -130,6 +131,8 @@ const state = {
   loyaltyProfile:loadLoyaltyProfile(),
   storeConfirmations:loadStoreConfirmations(),
   sort:localStorage.getItem("promo-sort") || "percent",
+  savingsFocus:["all","at-least-50","full-refund"].includes(localStorage.getItem("promo-savings-focus"))
+    ? localStorage.getItem("promo-savings-focus") : "all",
   search:"",
   sourceScope:SOURCE_SCOPES.has(localStorage.getItem("promo-source-scope"))
     ? localStorage.getItem("promo-source-scope") : "food",
@@ -159,6 +162,7 @@ els.channel.value=state.channel;
 els.carrefourLoyalty.value=state.loyaltyProfile.carrefour;
 els.leclercLoyalty.value=state.loyaltyProfile.leclerc;
 els.sort.value=state.sort;
+els.savingsFocus.value=state.savingsFocus;
 els.sourceScope.value=state.sourceScope;
 els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
@@ -196,6 +200,11 @@ els.sort.addEventListener("change",()=>{
 });
 els.search.addEventListener("input",()=>{
   state.search=els.search.value;
+  render();
+});
+els.savingsFocus.addEventListener("change",()=>{
+  state.savingsFocus=els.savingsFocus.value;
+  localStorage.setItem("promo-savings-focus",state.savingsFocus);
   render();
 });
 els.sourceScope.addEventListener("change",()=>{
@@ -298,10 +307,18 @@ function setTab(tab){
 
 function render(){
   const resolvedOffers=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
-  const filtered=filterOffers(resolvedOffers,{store:state.store,channel:state.channel,search:state.search});
+  const filtered=filterOffers(resolvedOffers,{
+    store:state.store,channel:state.channel,search:state.search,
+    savingsFocus:state.savingsFocus
+  });
   const ranked=rankOffers(filtered,state.sort);
   els.offers.innerHTML=ranked.map(renderOffer).join("");
   els.empty.classList.toggle("hidden",ranked.length>0);
+  els.empty.textContent=state.savingsFocus==="full-refund"
+    ? "Aucun remboursement intégral de produit identifié actuellement pour ce magasin et ce canal. Ne pas acheter en anticipant une offre absente."
+    : state.savingsFocus==="at-least-50"
+      ? "Aucune offre de 50 % ou plus annoncée actuellement selon les données disponibles."
+      : "Aucune offre ne correspond aux filtres.";
 
   const activeProviders=filterDiscoveryProviders(providers,{
     scope:state.sourceScope,search:state.sourceSearch
@@ -347,6 +364,14 @@ function renderOffer(offer){
   const storeCheckBadge=offer.requiresStoreVerification
     ? '<span class="badge warn">Magasin à confirmer</span>'
     : "";
+  const refundConditionsBadge=offer.requiresUnlock
+    ? '<span class="badge warn">Déblocage préalable obligatoire</span>' : "";
+  const capBadge=Number.isFinite(offer.savingCapAmount)
+    ? `<span class="badge warn">Plafond de remboursement : ${money.format(offer.savingCapAmount)}</span>`
+    : "";
+  const fullRefundBadge=offer.scope==="produit"
+    && offer.mechanism==="manufacturer_refund" && pct===100
+    ? '<span class="badge warn">100 % annoncés · éligibilité à vérifier</span>' : "";
   const loyaltyBadge=offer.requiresLoyalty
     ? `<span class="badge ${offer.loyaltyEligibility==="eligible"?"good":"warn"}">${offer.loyaltyEligibility==="eligible"?"Carte confirmée":"Carte à confirmer"}</span>`
     : "";
@@ -368,6 +393,9 @@ function renderOffer(offer){
         <span class="badge">${escapeHtml(offer.category)}</span>
         ${stackBadge}
         ${storeCheckBadge}
+        ${refundConditionsBadge}
+        ${capBadge}
+        ${fullRefundBadge}
         ${loyaltyBadge}
         ${deadlineBadge}
       </div>
