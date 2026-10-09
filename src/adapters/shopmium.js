@@ -35,11 +35,17 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
   if(!dates) return null;
 
   const quantityTiers=parsePercentTiers(text);
-  let savingPercent=quantityTiers.length ? Math.max(...quantityTiers.map((tier)=>tier.savingPercent)) : parseFlatPercent(text);
+  const savingPercent=quantityTiers.length
+    ? Math.max(...quantityTiers.map((tier)=>tier.savingPercent))
+    : parseFlatPercent(text);
   if(!Number.isFinite(savingPercent)) return null;
 
   const referenceNames=parseReferenceNames(raw);
   const stores=parseStores(text);
+  // Never publish an offer whose retail eligibility excludes both monitored stores.
+  if(!stores.length) return null;
+  const savingCapAmount=parseShopmiumSavingCap(text);
+  const unlockRequirement=parseShopmiumUnlockRequirement(text);
   const productMatch=deriveShopmiumProductMatch(title,referenceNames);
 
   return {
@@ -51,6 +57,8 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
     category:"autre",
     stores,
     savingPercent,
+    ...(savingCapAmount!==null?{savingCapAmount}:{}),
+    ...(unlockRequirement?{requiresUnlock:true,unlockConditions:unlockRequirement}:{}),
     verifiedAt,
     startsAt:dates.startsAt,
     expiresAt:dates.expiresAt,
@@ -68,7 +76,7 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
     stacking:/non cumulable avec toute autre promotion/i.test(text)
       ? "non cumulable avec toute autre promotion"
       : "conditions Shopmium à vérifier",
-    conditions:buildConditions({text,referenceNames,quantityTiers})
+    conditions:buildConditions({text,referenceNames,quantityTiers,savingCapAmount,unlockRequirement})
   };
 }
 
@@ -183,28 +191,74 @@ function inferBrandFromReferencePrefix(referenceNames,titleKeys){
   return common.join(" ");
 }
 
-function parseFlatPercent(text){
-  const match=clean(text).match(/(?:jusqu['’]à\s*)?-?\s*(\d+(?:[,.]\d+)?)\s*%\s*rembours/i);
-  if(!match) return null;
-  const value=Number(match[1].replace(",","."));
+export function parseFlatPercent(text){
+  const normalized=clean(text);
+  // Product descriptions often say "100 % bio", "100 % vegan", etc.
+  // A percentage is valid only if the purchase refund itself is described.
+  const purchaseConditions=normalized.split(/Conditions de l'offre/i)[1]
+    ?.split(/En savoir plus|Qu'en disent-ils/i)[0] || normalized;
+  const percent=purchaseConditions.match(/(?:jusqu['’]à\s*)?-?\s*(\d+(?:[,.]\d+)?)\s*%\s*rembours/i)
+    || purchaseConditions.match(/remboursement\s+de\s*(\d+(?:[,.]\d+)?)\s*%\s*du\s+prix\s+d['’]achat/i);
+  if(!percent) return null;
+  const value=Number(percent[1].replace(",","."));
   return Number.isFinite(value)&&value>0&&value<=100 ? value : null;
 }
 
-function parseStores(text){
-  const normalized=normalizeWord(text);
-  if(normalized.includes("toute enseigne vendante")||normalized.includes("toutes enseignes vendantes")) return ["all"];
-  const stores=[];
-  if(/\bcarrefour\b/i.test(text)) stores.push("carrefour");
-  if(/\bleclerc\b|\be\.leclerc\b/i.test(text)) stores.push("leclerc");
-  return stores.length ? [...new Set(stores)] : ["all"];
+export function parseShopmiumSavingCap(text){
+  // This is a *monetary* cap, not the supplier's article-count or quota limit.
+  const match=clean(text).match(/(?:dans\s+la\s+limite\s+de|plafonn(?:é|ée?)\s+à)\s*(\d+(?:[,.]\d{1,2})?)\s*€/i);
+  if(!match) return null;
+  const amount=Number(match[1].replace(",","."));
+  return Number.isFinite(amount)&&amount>0 ? Math.round(amount*100)/100 : null;
 }
 
-function buildConditions({text,referenceNames,quantityTiers}){
+export function parseShopmiumUnlockRequirement(text){
+  const normalized=clean(text);
+  const condition=normalized.match(/(?:pour\s+d[ée]bloquer\s+cette\s+offre|offre\s+à\s+d[ée]bloquer|r[ée]serv[ée]e?\s+aux\s+gagnants\s+du\s+d[ée]fi)/i);
+  if(!condition) return null;
+  // No assumption that the user has completed the challenge.
+  return "Offre à débloquer dans Shopmium : consulter les conditions et vérifier les demandes préalables.";
+}
+
+export function parseStores(text){
+  const normalized=clean(text);
+  const start=normalized.search(/Valable\s+entre\s+le\s+\d{2}\/\d{2}\/\d{4}/i);
+  if(start<0) return [];
+  const validity=normalized.slice(start,start+1200)
+    .split(/Demande de remboursement possible|R[ée]f[ée]rences?\s+éligibles?|Offre non cumulable/i)[0];
+  const storeClause=validity.match(/\bchez\s+(.{1,240}?)\s+UNIQUEMENT\b/i);
+  const allStores=/\b(?:dans\s+toute|toutes?)\s+enseigne\s+vendante/i.test(validity);
+  let supported;
+  if(storeClause){
+    supported=[];
+    if(/\bCarrefour\b/i.test(storeClause[1])) supported.push("carrefour");
+    if(/\b(?:E\.?\s*)?Leclerc\b/i.test(storeClause[1])) supported.push("leclerc");
+  }else if(allStores){
+    supported=["carrefour","leclerc"];
+  }else{
+    // A partial or unknown merchant rule is not enough to claim eligibility.
+    return [];
+  }
+  const excludes=[...validity.matchAll(/\b(?:sauf|hors|à\s+l['’]exception\s+de)\s+(.{1,100}?)(?=,\s+dans\s+la\s+limite|\.|$)/gi)]
+    .map((item)=>item[1]).join(" ");
+  if(/\bCarrefour\b/i.test(excludes)){
+    supported=supported.filter((s)=>s!=="carrefour");
+  }
+  if(/\b(?:E\.?\s*)?Leclerc\b/i.test(excludes)){
+    supported=supported.filter((s)=>s!=="leclerc");
+  }
+  // Retain the existing "all" behavior only when both supported stores are eligible.
+  return supported.length===2 ? ["all"] : supported;
+}
+
+function buildConditions({text,referenceNames,quantityTiers,savingCapAmount=null,unlockRequirement=null}){
   const parts=[];
   if(quantityTiers.length){
     parts.push(quantityTiers.map((tier)=>`${tier.minQty}${tier.maxQty!==tier.minQty?`-${tier.maxQty}`:""} article(s): ${tier.savingPercent}%`).join(" ; "));
   }
   if(referenceNames.length) parts.push(`${referenceNames.length} référence(s) publique(s) détectée(s)`);
+  if(Number.isFinite(savingCapAmount)) parts.push("Remboursement plafonné à "+savingCapAmount.toFixed(2).replace(".",",")+" €.");
+  if(unlockRequirement) parts.push(unlockRequirement);
   if(/non cumulable avec toute autre promotion/i.test(text)) parts.push("Non cumulable avec toute autre promotion.");
   parts.push("Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat.");
   return parts.join(" ");
