@@ -1,11 +1,61 @@
 import {canonicalGtin} from "./gtin.js";
 import {isOfferActive} from "./ingestion.js";
 import {estimateOfferSaving,matchOfferToProduct,requiredQuantity} from "./matching.js";
-import {isUnambiguousRetailer,selectBestRecentPrice} from "./open-data.js";
+import {haversineKm,isUnambiguousRetailer,selectBestRecentPrice} from "./open-data.js";
 import {validateRetailerGtinEvidence} from "./retailer-ean-evidence.js";
 
 const STORES=["carrefour","leclerc"];
 const round=(value)=>Math.round((value+Number.EPSILON)*100)/100;
+
+const DAY_MS=24*60*60*1000;
+const normalizedPlace=(value)=>String(value??"").trim()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .toLocaleLowerCase("fr").replace(/[^a-z0-9]+/g," ").trim();
+
+function geographicEvidence(a,b){
+  const distance=haversineKm(a?.locationLat,a?.locationLon,b?.locationLat,b?.locationLon);
+  if(Number.isFinite(distance)){
+    return distance<=15
+      ? {ok:true,method:"coordinates",distanceKm:Math.round(distance*10)/10}
+      : {ok:false,status:"too-far",distanceKm:Math.round(distance*10)/10};
+  }
+  // Without coordinates, full postcode AND town must match. A shared retailer
+  // label or just the name of a large city is not enough spatial evidence.
+  const zipA=String(a?.postcode??"").trim(),zipB=String(b?.postcode??"").trim();
+  const cityA=normalizedPlace(a?.city),cityB=normalizedPlace(b?.city);
+  if(/^\d{5}$/.test(zipA) && zipA===zipB && cityA && cityA===cityB){
+    return {ok:true,method:"postcode",distanceKm:null};
+  }
+  return {ok:false,status:"location-unverified",distanceKm:null};
+}
+
+/**
+ * A price winner is shown only for comparable nearby stores, recent receipts
+ * and close observations in time. This is NOT a current price guarantee.
+ */
+export function comparePriceObservationEvidence(a,b,now=new Date()){
+  if(!a || !b) return {comparable:false,status:"missing-price",dateGapDays:null,distanceKm:null};
+  const current=new Date(now);
+  const dates=[new Date(a.date),new Date(b.date)];
+  if(Number.isNaN(current.getTime()) || dates.some((date)=>Number.isNaN(date.getTime()))){
+    return {comparable:false,status:"invalid-date",dateGapDays:null,distanceKm:null};
+  }
+  const ages=dates.map((date)=>(current.getTime()-date.getTime())/DAY_MS);
+  if(ages.some((days)=>days<0 || days>7)){
+    return {comparable:false,status:"observations-old",dateGapDays:null,distanceKm:null};
+  }
+  const dateGapDays=Math.round(Math.abs(dates[0]-dates[1])/DAY_MS*10)/10;
+  if(dateGapDays>3){
+    return {comparable:false,status:"dates-too-far",dateGapDays,distanceKm:null};
+  }
+  const location=geographicEvidence(a,b);
+  if(!location.ok){
+    return {comparable:false,status:location.status,dateGapDays,
+      distanceKm:location.distanceKm};
+  }
+  return {comparable:true,status:"comparable",dateGapDays,
+    distanceKm:location.distanceKm,method:location.method};
+}
 
 /**
  * Compare a single validated GTIN across two retailers. No brand-only
@@ -98,12 +148,17 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
           : "Prix communautaire daté, non contractuel ; vérifier le prix du magasin."
     };
   });
-  const comparable=rows.filter((row)=>row.comparisonAvailable);
+  const evidence=comparePriceObservationEvidence(
+    rows[0].observation,rows[1].observation,now
+  );
   let lowerObservedStore=null;
-  if(comparable.length===2){
-    if(comparable[0].price<comparable[1].price) lowerObservedStore=comparable[0].store;
-    if(comparable[1].price<comparable[0].price) lowerObservedStore=comparable[1].store;
+  if(evidence.comparable){
+    if(rows[0].price<rows[1].price) lowerObservedStore=rows[0].store;
+    if(rows[1].price<rows[0].price) lowerObservedStore=rows[1].store;
   }
+  const observedPriceDifference=evidence.comparable
+    ? round(Math.abs(rows[0].price-rows[1].price)) : null;
   return {status:"ok",gtin,quantity:qty,channel,
-    lowerObservedStore,stores:rows};
+    lowerObservedStore,comparisonEvidence:evidence,
+    observedPriceDifference,stores:rows};
 }

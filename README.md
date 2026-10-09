@@ -85,6 +85,17 @@ Le filtre « 100 % remboursé sur un produit » **exclut les bundles et cagnotte
 
 Cette stratégie sacrifie temporairement la visibilité d'offres non revalidées plutôt que d'inciter à acheter un produit sur la foi d'un remboursement révoqué.
 
+## Comparer les prix d'un même GTIN sans fausse précision
+
+L'onglet **Produit** propose une comparaison à la demande de l'**EAN/GTIN exact** entre Carrefour et E.Leclerc. Les promotions de simple marque ou gamme, sans GTIN confirmé, ne deviennent **jamais** des offres exactes. Les prix proviennent d'Open Prices et restent des observations communautaires, pas des prix de caisse garantis.
+
+La comparaison montre le prix de chaque enseigne même si les observations ne sont pas directement comparables. Elle n'annonce un « relevé inférieur » qu'avec :
+- **les deux prix disponibles**, datés chacun de **7 jours au maximum**, et avec un écart entre dates de **3 jours au maximum** ;
+- une **proximité justifiée** par des coordonnées à **15 km maximum**, ou, sans coordonnées, par une même commune **et** un même code postal à cinq chiffres ;
+- une même référence GTIN valide et un canal d'achat compatible. Les relevés de magasins physiques ne sont pas traités comme des devis Drive/livraison.
+
+Si une condition manque, le moteur affiche une explication contextualisée sans désigner de magasin gagnant. Les remboursements restent hypothétiques et **plusieurs remises ne sont jamais additionnées arbitrairement**. Cela ne remplace pas la vérification des stocks, des prix en magasin et des conditions d'offre.
+
 ## Simulation du coût net avec mon prix
 
 L'onglet **Offres** accepte un **prix unitaire saisi manuellement** et une **quantité prévue** (1 à 100). Un mode de tri **Gain simulé (€) selon mon prix** utilise exclusivement ces valeurs pour les offres ciblant un produit, sans inventer de prix magasin ni confondre plusieurs références.

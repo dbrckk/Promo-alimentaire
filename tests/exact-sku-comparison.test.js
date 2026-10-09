@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {compareExactSku} from "../src/exact-sku-comparison.js";
+import {compareExactSku,comparePriceObservationEvidence} from "../src/exact-sku-comparison.js";
 
 const CODE="3017624010701";
 const OTHER="4006381333931";
@@ -17,7 +17,7 @@ const observation=(store,price,code=CODE,extras={})=>({
   productCode:code,price,date:"2026-10-08",
   retailerText:store==="carrefour"?"Carrefour Chalon":"E.Leclerc Chalon",
   storeName:store==="carrefour"?"Carrefour Chalon":"E.Leclerc Chalon",
-  city:"Chalon-sur-Saône",currency:"EUR",pricePer:"UNIT",...extras
+  city:"Chalon-sur-Saône",postcode:"71100",currency:"EUR",pricePer:"UNIT",...extras
 });
 
 test("comparateur sépare précisément prix et offres pour un EAN commun",()=>{
@@ -137,4 +137,86 @@ test("une promo propre au distributeur n'est jamais déduite d'un prix communaut
   assert.equal(row.potentialSaving,null);
   assert.equal(row.possibleNetCost,null);
   assert.equal(row.exactOffers[0].status,"retailer-price-required");
+});
+
+test("deux relevés à Paris et Marseille n'autorisent aucun classement de prix",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",2,CODE,{
+      city:"Paris",postcode:"75011",locationLat:48.85,locationLon:2.36
+    })],
+    leclerc:[observation("leclerc",5,CODE,{
+      city:"Marseille",postcode:"13001",locationLat:43.30,locationLon:5.38
+    })]
+  },{now});
+  assert.equal(result.lowerObservedStore,null);
+  assert.equal(result.comparisonEvidence.comparable,false);
+  assert.equal(result.comparisonEvidence.status,"too-far");
+  assert.equal(result.observedPriceDifference,null);
+  assert.equal(result.stores[0].price,2);
+  assert.equal(result.stores[1].price,5);
+});
+
+test("deux relevés de dates éloignées ne permettent pas de désigner un magasin gagnant",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",2,CODE,{date:"2026-10-02"})],
+    leclerc:[observation("leclerc",3,CODE,{date:"2026-10-09"})]
+  },{now});
+  assert.equal(result.lowerObservedStore,null);
+  assert.equal(result.comparisonEvidence.status,"observations-old");
+  assert.equal(result.stores[0].price,2);
+});
+
+test("deux observations récentes mais décalées de plus de 3 jours restent incomparables",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",3,CODE,{date:"2026-10-04"})],
+    leclerc:[observation("leclerc",5,CODE,{date:"2026-10-08"})]
+  },{now});
+  assert.equal(result.lowerObservedStore,null);
+  assert.equal(result.comparisonEvidence.status,"dates-too-far");
+});
+
+test("même ville sans code postal ni coordonnées : preuves géographiques insuffisantes",()=>{
+  const a=observation("carrefour",3,CODE,{postcode:""});
+  const b=observation("leclerc",4,CODE,{postcode:""});
+  const evidence=comparePriceObservationEvidence(a,b,now);
+  assert.equal(evidence.comparable,false);
+  assert.equal(evidence.status,"location-unverified");
+  assert.equal(comparePriceObservationEvidence(a,null,now).status,"missing-price");
+});
+
+test("deux enseignes proches et même date peuvent être comparées avec coordonnées",()=>{
+  const a=observation("carrefour",3,CODE,{
+    city:"Lyon",postcode:"69002",locationLat:45.760,locationLon:4.84
+  });
+  const b=observation("leclerc",4,CODE,{
+    city:"Villeurbanne",postcode:"69100",locationLat:45.761,locationLon:4.85
+  });
+  const evidence=comparePriceObservationEvidence(a,b,now);
+  assert.equal(evidence.comparable,true);
+  assert.equal(evidence.method,"coordinates");
+  assert.ok(evidence.distanceKm<2);
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[a],leclerc:[b]
+  },{now});
+  assert.equal(result.lowerObservedStore,"carrefour");
+  assert.equal(result.observedPriceDifference,1);
+});
+
+test("même commune et même code postal servent de repli quand la géolocalisation manque",()=>{
+  const a=observation("carrefour",3,CODE,{locationLat:null,locationLon:null});
+  const b=observation("leclerc",4,CODE,{locationLat:null,locationLon:null});
+  const evidence=comparePriceObservationEvidence(a,b,now);
+  assert.equal(evidence.comparable,true);
+  assert.equal(evidence.method,"postcode");
+  assert.equal(evidence.distanceKm,null);
+});
+
+test("égalité des prix : aucun vainqueur artificiel",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",3)],
+    leclerc:[observation("leclerc",3)]
+  },{now});
+  assert.equal(result.comparisonEvidence.comparable,true);
+  assert.equal(result.lowerObservedStore,null);
+  assert.equal(result.observedPriceDifference,0);
 });
