@@ -265,13 +265,22 @@ try{
       id:"kiri",title:"Kiri",provider:"Shopmium",category:"fromage",
       type:"ODR",stores:["all"],channels:["drive","online"],savingPercent:30
     };
+    const timed={
+      providerId:"shopmium",verifiedAt:"2026-10-12",
+      startsAt:"2026-10-09T08:00:00+02:00",
+      expiresAt:"2026-10-12T14:07:00+02:00"
+    };
     return {
       stale:isOfferActive(campaign,new Date("2026-10-14T12:00:00Z")),
       store:filterOffers([kiri],{store:"leclerc",channel:"store"}).length,
-      drive:filterOffers([kiri],{store:"leclerc",channel:"drive"}).length
+      drive:filterOffers([kiri],{store:"leclerc",channel:"drive"}).length,
+      beforeDeadline:isOfferActive(timed,new Date("2026-10-12T12:06:59Z")),
+      afterDeadline:isOfferActive(timed,new Date("2026-10-12T12:07:01Z"))
     };
   });
-  assert.deepEqual(shopmiumOffline,{stale:false,store:0,drive:1});
+  assert.deepEqual(shopmiumOffline,{
+    stale:false,store:0,drive:1,beforeDeadline:true,afterDeadline:false
+  });
   await page.locator('[data-tab="list"]').click();
   assert.equal(await page.locator("#shoppingBudget").inputValue(),"6,00");
   await assertNoHorizontalOverflow(page,"mode hors ligne");
