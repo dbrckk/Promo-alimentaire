@@ -1,4 +1,4 @@
-import { isOfferActive, validateImportBatch } from "./ingestion.js";
+import { isOfferActive, shopmiumLegacyReviewCutoff, validateImportBatch } from "./ingestion.js";
 
 export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
   const manifestUrl=new URL("../data/import/index.json",import.meta.url);
@@ -69,9 +69,17 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       ).length;
       const verifiedDates=result.normalized.map((offer)=>offer.verifiedAt).filter(Boolean).sort();
       const deadlines=result.normalized
-        .flatMap((offer)=>[offer.reviewAfter,offer.expiresAt].filter(Boolean))
-        .map((value)=>new Date(String(value).length===10 ? value+"T23:59:59Z" : value))
-        .filter((date)=>!Number.isNaN(date.getTime()) && date>=now)
+        .map((offer)=>{
+          // A supplier's earliest deadline wins: showing a distant advertised
+          // expiry after a nearer review cut-off falsely implies availability.
+          const candidates=[
+            ...[offer.reviewAfter,offer.expiresAt].filter(Boolean)
+              .map((value)=>new Date(String(value).length===10 ? value+"T23:59:59Z" : value)),
+            shopmiumLegacyReviewCutoff(offer)
+          ].filter((date)=>date && !Number.isNaN(date.getTime()));
+          return candidates.sort((a,b)=>a-b)[0] || null;
+        })
+        .filter((date)=>date && date>=now)
         .sort((a,b)=>a-b);
       const nextDeadline=deadlines[0] || null;
       const daysUntil=nextDeadline ? Math.ceil((nextDeadline-now)/(24*60*60*1000)) : null;
