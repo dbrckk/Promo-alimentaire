@@ -34,6 +34,8 @@ import {
   resolveOffersForLoyalty
 } from "./loyalty.js";
 import { offerEvidenceStatus } from "./evidence.js";
+import {canonicalGtin} from "./gtin.js";
+import {compareExactSku} from "./exact-sku-comparison.js";
 import {
   confirmationKey,
   createStoreConfirmation,
@@ -80,6 +82,8 @@ const els = {
   barcodeForm:document.querySelector("#barcodeForm"),
   barcode:document.querySelector("#barcode"),
   scanButton:document.querySelector("#scanButton"),
+  compareExactSku:document.querySelector("#compareExactSku"),
+  exactSkuComparison:document.querySelector("#exactSkuComparison"),
   nearbyButton:document.querySelector("#nearbyButton"),
   radiusSelect:document.querySelector("#radiusSelect"),
   productStatus:document.querySelector("#productStatus"),
@@ -160,7 +164,8 @@ const state = {
   dropThreshold:Number(localStorage.getItem("promo-drop-threshold") || 10),
   basketRefreshing:false,
   sourceHealth:[],
-  lookupToken:0
+  lookupToken:0,
+  skuCompareToken:0
 };
 
 els.store.value=state.store;
@@ -238,6 +243,7 @@ els.barcodeForm.addEventListener("submit",(event)=>{
   lookupBarcode(els.barcode.value);
 });
 els.scanButton.addEventListener("click",startScanner);
+els.compareExactSku.addEventListener("click",compareCurrentExactSku);
 els.nearbyButton.addEventListener("click",toggleNearbyPrices);
 els.listNearbyButton.addEventListener("click",toggleNearbyPrices);
 els.refreshList.addEventListener("click",refreshShoppingList);
@@ -566,6 +572,9 @@ async function lookupBarcode(rawValue){
   state.productCode=code;
   els.barcode.value=code;
   const token=++state.lookupToken;
+  ++state.skuCompareToken;
+  els.exactSkuComparison.innerHTML="";
+  els.compareExactSku.disabled=true;
   setProductStatus("Recherche du produit et des prix…");
   els.productResult.classList.add("hidden");
   els.productOffers.innerHTML="";
@@ -577,6 +586,7 @@ async function lookupBarcode(rawValue){
     fetchPricesByBarcode(code,priceQueryOptions())
   ]);
   if(token!==state.lookupToken) return;
+  els.compareExactSku.disabled=!canonicalGtin(code);
 
   if(productResult.status==="fulfilled"){
     state.product=productResult.value;
@@ -626,6 +636,112 @@ async function refreshPrices(code){
     if(token!==state.lookupToken) return;
     setProductStatus("Impossible d'actualiser les prix Open Prices.",true);
   }
+}
+
+async function compareCurrentExactSku(){
+  const code=state.productCode;
+  if(!canonicalGtin(code)){
+    els.exactSkuComparison.innerHTML=
+      '<div class="panel price-source">Un code-barres EAN/GTIN valide est requis pour comparer deux enseignes.</div>';
+    return;
+  }
+  const token=++state.skuCompareToken;
+  const lookupToken=state.lookupToken;
+  const channel=state.channel;
+  els.compareExactSku.disabled=true;
+  els.exactSkuComparison.innerHTML=
+    '<div class="panel price-source">Comparaison des relevés Carrefour et E.Leclerc pour ce même EAN…</div>';
+  const options=priceQueryOptions();
+  const stores=["carrefour","leclerc"];
+  const fetched=await Promise.allSettled(stores.map((store)=>
+    fetchPricesByBarcode(code,{...options,store})
+  ));
+  // An old scan, changed channel or a newer comparison must never replace
+  // the currently displayed product with a different SKU.
+  if(token!==state.skuCompareToken || lookupToken!==state.lookupToken
+    || code!==state.productCode || channel!==state.channel) return;
+  els.compareExactSku.disabled=false;
+  const observations={};
+  const errors=new Set();
+  for(let i=0;i<stores.length;i++){
+    const entry=fetched[i];
+    if(entry.status==="fulfilled") observations[stores[i]]=entry.value.observations;
+    else{
+      observations[stores[i]]=[];
+      errors.add(stores[i]);
+    }
+  }
+  if(errors.size===2){
+    els.exactSkuComparison.innerHTML=
+      '<div class="panel price-source">Open Prices est indisponible pour les deux enseignes. Aucun prix n’a été inventé.</div>';
+    return;
+  }
+  const normalizedProduct={...(state.product||{}),code};
+  const candidates=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
+  const comparison=compareExactSku(normalizedProduct,candidates,observations,{
+    channel,quantity:1,now:new Date()
+  });
+  els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors);
+}
+
+function renderExactSkuComparison(result,errors=new Set()){
+  if(result.status!=="ok"){
+    return '<div class="panel price-source">Impossible de comparer : code GTIN ou quantité invalide.</div>';
+  }
+  const storeCards=result.stores.map((row)=>{
+    const unresolved=errors.has(row.store);
+    const observed=row.observation;
+    const priceMarkup=unresolved
+      ? '<strong>Source temporairement indisponible</strong>'
+      : observed
+        ? `<strong>${money.format(row.price)}</strong><small>Relevé du ${escapeHtml(formatDate(observed.date))} · ${escapeHtml(observed.storeName)}${observed.city?" · "+escapeHtml(observed.city):""}</small>`
+        : '<strong>Prix récent non disponible</strong>';
+    const offers=row.exactOffers.slice(0,6).map((offer)=>{
+      const amount=offer.saving!==null
+        ? `Économie éventuelle : ${money.format(offer.saving)} sur 1 article`
+        : offer.status==="already-discounted"
+          ? "Relevé déjà remisé : aucun second gain déduit"
+          : offer.status==="retailer-price-required"
+            ? "Prix magasin ou canal à confirmer : gain non calculé"
+            : offer.status==="quantity-required"
+              ? `Quantité minimale : ${offer.minQuantity} article(s)`
+              : "Économie non calculable sans prix récent";
+      return `<li class="exact-sku-offer">
+        <div>
+          <strong>${escapeHtml(offer.title)}</strong>
+          <small>${escapeHtml(offer.provider)} · ${offer.retailerProof?"GTIN lié à une fiche distributeur":"GTIN présent dans l’offre"}</small>
+          <span>${escapeHtml(amount)}</span>
+        </div>
+        <a href="${escapeHtml(offer.sourceUrl)}" target="_blank" rel="noopener noreferrer">Conditions</a>
+      </li>`;
+    }).join("");
+    const remaining=row.exactOffers.length>6
+      ? `<p class="help">${row.exactOffers.length-6} autre(s) offre(s) à code exact disponibles dans le registre.</p>`
+      : "";
+    return `<article class="exact-sku-store">
+      <h4>${storeLabel(row.store)}</h4>
+      <div class="exact-sku-observation">${priceMarkup}</div>
+      <p class="help">${escapeHtml(unresolved
+        ? "Impossible de charger les relevés de cette enseigne."
+        : row.note)}</p>
+      <strong class="exact-sku-heading">${row.exactCount} offre(s) avec GTIN explicite</strong>
+      ${offers ? `<ul class="exact-sku-offers">${offers}</ul>`
+        : '<p class="help">Aucune promotion actuelle avec cet EAN exact dans le registre. Une correspondance de marque n’est pas suffisante.</p>'}
+      ${remaining}
+      ${row.possibleNetCost!==null
+        ? `<p class="exact-sku-net">Coût hypothétique après la meilleure offre séparée : <strong>${money.format(row.possibleNetCost)}</strong> · sous conditions, non garanti.</p>`
+        : ""}
+    </article>`;
+  }).join("");
+  const best=result.lowerObservedStore
+    ? `Relevé le moins élevé dans les données disponibles : ${storeLabel(result.lowerObservedStore)}. Ce n'est pas une confirmation du prix actuel.`
+    : "Les deux enseignes ne disposent pas forcément de relevés comparables au même moment ; aucun gagnant n'est attribué.";
+  return `<div class="exact-sku-header">
+    <h3>Même produit, deux enseignes</h3>
+    <p>Identité GTIN ${escapeHtml(result.gtin)} · ${escapeHtml(best)}</p>
+    <p>Prix communautaires Open Prices, relevés potentiellement dans des villes et magasins différents. Aucune disponibilité, remise ni cumul garantis.</p>
+  </div>
+  <div class="exact-sku-grid">${storeCards}</div>`;
 }
 
 function renderProduct(product){
