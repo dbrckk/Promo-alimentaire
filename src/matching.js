@@ -109,13 +109,15 @@ export function estimateOfferSaving(price,offer,quantity=1) {
   const formulaSaving=estimateRetailerPromoSaving(value,qty,offer);
   if(Number.isFinite(formulaSaving)) return formulaSaving;
   if(offer.promoFormula && !Number.isFinite(formulaSaving)) return null;
+  const cap=Number.isFinite(offer.savingCapAmount)
+    ? Math.max(0,offer.savingCapAmount) : Infinity;
   if(Number.isFinite(offer.savingAmount)) {
     const multiplier=offer.savingAmountMode==="per-unit" ? qty : 1;
-    return Math.min(value*qty,round(offer.savingAmount*multiplier));
+    return Math.min(value*qty,cap,round(offer.savingAmount*multiplier));
   }
   const percent=effectiveOfferPercent(offer,qty);
   if(Number.isFinite(percent)) {
-    return Math.min(value*qty,round(value*qty*percent/100));
+    return Math.min(value*qty,cap,round(value*qty*percent/100));
   }
   return null;
 }
