@@ -1,7 +1,8 @@
 export function computeSaving(offer) {
-  if (Number.isFinite(offer.savingAmount)) return roundMoney(offer.savingAmount);
+  const cap=Number.isFinite(offer.savingCapAmount) ? Math.max(0,offer.savingCapAmount) : Infinity;
+  if (Number.isFinite(offer.savingAmount)) return roundMoney(Math.min(cap,offer.savingAmount));
   if (Number.isFinite(offer.basePrice) && Number.isFinite(offer.savingPercent)) {
-    return roundMoney(offer.basePrice * offer.savingPercent / 100);
+    return roundMoney(Math.min(cap,offer.basePrice * offer.savingPercent / 100));
   }
   return null;
 }
