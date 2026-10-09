@@ -115,8 +115,12 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
  * Surface why a retailer price is missing without confusing coverage with
  * actual availability or claiming that the retailer does not sell this SKU.
  */
-export function priceCoverageSummary(observations,now=new Date()){
+export function priceCoverageSummary(observations,now=new Date(),lookup={}){
   const records=Array.isArray(observations)?observations:[];
+  const lookupInterrupted=lookup?.partial===true;
+  const moreAvailable=lookup?.moreAvailable===true;
+  const pagesFetched=Number.isInteger(lookup?.pagesFetched)
+    ? lookup.pagesFetched : null;
   const valid=records.filter((record)=>record
     && Number.isFinite(Number(record.price)) && Number(record.price)>0
     && !Number.isNaN(new Date(record.date).getTime()));
@@ -131,6 +135,8 @@ export function priceCoverageSummary(observations,now=new Date()){
   return {
     total:records.length,valid:valid.length,
     recent30Days:recent.length,recent7Days:comparable.length,
+    pagesFetched,lookupInterrupted,moreAvailable,
+    searchIncomplete:lookupInterrupted || moreAvailable,
     latestDate:valid.length
       ? valid.map((record)=>record.date).sort().at(-1) : null,
     status:records.length===0?"no-observation"
@@ -147,7 +153,7 @@ export function priceCoverageSummary(observations,now=new Date()){
  * independent observations, not live store inventory or Drive prices.
  */
 export function compareExactSku(product,offers,priceObservationsByStore,{
-  channel="store",quantity=1,now=new Date()
+  channel="store",quantity=1,now=new Date(),coverageByStore={}
 }={}){
   const gtin=canonicalGtin(product?.code);
   if(!gtin) return {status:"invalid-gtin",gtin:null,stores:[]};
@@ -167,7 +173,7 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
       && (item.pricePer===undefined || item.pricePer==="UNIT")
     );
     comparableCandidates[store]=own;
-    const coverage=priceCoverageSummary(own,now);
+    const coverage=priceCoverageSummary(own,now,coverageByStore[store]);
     // Open Prices is generally a checkout/shelf observation. Do not
     // silently substitute those prices for Drive or delivery quotations.
     const observed=channel==="store"
