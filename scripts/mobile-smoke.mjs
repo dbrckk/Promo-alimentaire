@@ -152,6 +152,7 @@ try{
   assert.match(exactStoreCards,/Carrefour Lyon/);
   assert.match(exactStoreCards,/E.Leclerc Lyon/);
   assert.match(exactStoreCards,/Relevé inférieur : Carrefour/);
+  assert.match(exactStoreCards,/Relevés réellement comparés/);
   assert.match(exactStoreCards,/0,10/);
   // The comparison module must still reject stale or far-away receipts
   // inside the actual Android browser runtime.
