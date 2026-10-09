@@ -7,7 +7,7 @@ const OTHER="4006381333931";
 const now=new Date("2026-10-09T12:00:00Z");
 const valid=(id,store,extras={})=>({
   id,title:id,scope:"produit",provider:store==="carrefour"?"Carrefour":"E.Leclerc",
-  providerId:store,mechanism:"retailer_promo",eans:[CODE],
+  providerId:store,mechanism:"manufacturer_refund",eans:[CODE],
   eanEvidenceUrl:store==="carrefour"
     ? "https://www.carrefour.fr/p/produit-3017624010701"
     : "https://www.e.leclerc/fp/produit-3017624010701",
@@ -123,4 +123,18 @@ test("sans preuves de prix, aucun magasin gagnant n'est inventé",()=>{
   assert.equal(res.lowerObservedStore,null);
   assert.equal(res.stores[0].price,3);
   assert.equal(res.stores[1].price,null);
+});
+
+test("une promo propre au distributeur n'est jamais déduite d'un prix communautaire",()=>{
+  const row=compareExactSku({code:CODE},[
+    valid("retailer","carrefour",{
+      mechanism:"retailer_promo",savingPercent:50
+    })
+  ],{
+    carrefour:[observation("carrefour",4.2)]
+  },{now}).stores[0];
+  assert.equal(row.price,4.2);
+  assert.equal(row.potentialSaving,null);
+  assert.equal(row.possibleNetCost,null);
+  assert.equal(row.exactOffers[0].status,"retailer-price-required");
 });
