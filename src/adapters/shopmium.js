@@ -38,7 +38,8 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
   const savingPercent=quantityTiers.length
     ? Math.max(...quantityTiers.map((tier)=>tier.savingPercent))
     : parseFlatPercent(text);
-  if(!Number.isFinite(savingPercent)) return null;
+  const fixedAmount=Number.isFinite(savingPercent) ? null : parseShopmiumFixedRefund(text);
+  if(!Number.isFinite(savingPercent) && !Number.isFinite(fixedAmount)) return null;
 
   const referenceNames=parseReferenceNames(raw);
   const stores=parseStores(text);
@@ -56,7 +57,8 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
     type:"ODR",
     category:"autre",
     stores,
-    savingPercent,
+    ...(Number.isFinite(savingPercent)?{savingPercent}:{}),
+    ...(Number.isFinite(fixedAmount)?{savingAmount:fixedAmount,savingAmountMode:"per-offer"}:{}),
     ...(savingCapAmount!==null?{savingCapAmount}:{}),
     ...(unlockRequirement?{requiresUnlock:true,unlockConditions:unlockRequirement}:{}),
     verifiedAt,
@@ -66,7 +68,9 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
     scope:"produit",
     referenceNames,
     quantityTiers,
-    minPurchaseQty:quantityTiers.length ? Math.min(...quantityTiers.map((tier)=>tier.minQty)) : 1,
+    minPurchaseQty:quantityTiers.length
+      ? Math.min(...quantityTiers.map((tier)=>tier.minQty))
+      : Number.isFinite(fixedAmount)?parseFixedRefundMinQty(text):1,
     ...(productMatch?{productMatch}:{}),
     mechanism:"manufacturer_refund",
     stackGroup:"manufacturer-refund",
@@ -204,6 +208,26 @@ export function parseFlatPercent(text){
   return Number.isFinite(value)&&value>0&&value<=100 ? value : null;
 }
 
+export function parseShopmiumFixedRefund(text){
+  const normalized=clean(text);
+  const conditions=normalized.split(/Conditions de l'offre/i)[1]
+    ?.split(/En savoir plus|Qu'en disent-ils/i)[0] || "";
+  // Require "remboursement fixe" explicitly; an advertised product price (€)
+  // or a 1 € challenge ceiling is NOT a flat cashback amount.
+  const match=conditions.match(/remboursement\s+fixe\s+de\s*(\d+(?:[,.]\d{1,2})?)\s*€/i);
+  if(!match) return null;
+  const value=Number(match[1].replace(",","."));
+  return Number.isFinite(value) && value>0 && value<=1000
+    ? Math.round(value*100)/100 : null;
+}
+
+function parseFixedRefundMinQty(text){
+  const conditions=clean(text).split(/Conditions de l'offre/i)[1] || "";
+  const hint=conditions.slice(0,400).match(/(?:sur\s+|pour\s+)(\d+)\s+articles?\b/i);
+  if(hint) return Math.min(100,Math.max(1,Number(hint[1])));
+  return 1;
+}
+
 export function parseShopmiumSavingCap(text){
   // This is a *monetary* cap, not the supplier's article-count or quota limit.
   const match=clean(text).match(/(?:dans\s+la\s+limite\s+de|plafonn(?:é|ée?)\s+à)\s*(\d+(?:[,.]\d{1,2})?)\s*€/i);
@@ -226,7 +250,8 @@ export function parseStores(text){
   if(start<0) return [];
   const validity=normalized.slice(start,start+1200)
     .split(/Demande de remboursement possible|R[ée]f[ée]rences?\s+éligibles?|Offre non cumulable/i)[0];
-  const storeClause=validity.match(/\bchez\s+(.{1,240}?)\s+UNIQUEMENT\b/i);
+  const storeClause=validity.match(/\bchez\s+(.{1,240}?)\s+UNIQUEMENT\b/i)
+    || validity.match(/\bchez\s+(.{1,240}?)(?=,\s+dans\s+la\s+limite|\.\s|$)/i);
   const allStores=/\b(?:dans\s+toute|toutes?)\s+enseigne\s+vendante/i.test(validity);
   let supported;
   if(storeClause){
