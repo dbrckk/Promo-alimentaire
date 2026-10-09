@@ -151,7 +151,8 @@ try{
   assert.match(exactStoreCards,/3,59/);
   assert.match(exactStoreCards,/Carrefour Lyon/);
   assert.match(exactStoreCards,/E.Leclerc Lyon/);
-  assert.match(exactStoreCards,/Relevé inférieur : Carrefour/);
+  assert.match(exactStoreCards,/Relevé inférieur sur la paire comparable : Carrefour/);
+  assert.match(exactStoreCards,/Relevés retenus pour la comparaison locale/);
   assert.match(exactStoreCards,/0,10/);
   // The comparison module must still reject stale or far-away receipts
   // inside the actual Android browser runtime.
@@ -177,6 +178,22 @@ try{
     };
   });
   assert.deepEqual(locationSafety,{far:"too-far",near:true,dateMismatch:false});
+  const selectedPair=await page.evaluate(async()=>{
+    const {selectComparablePricePair}=await import("./src/exact-sku-comparison.js");
+    const today=new Date("2026-10-09T12:00:00Z");
+    const make=(store,price,city,postcode,date)=>({
+      id:store+city,price,storeName:store+" "+city,
+      city,postcode,date
+    });
+    const pair=selectComparablePricePair([
+      make("Carrefour",1.2,"Paris","75011","2026-10-09"),
+      make("Carrefour",3.2,"Lyon","69002","2026-10-08")
+    ],[
+      make("E.Leclerc",3.5,"Lyon","69002","2026-10-08")
+    ],today);
+    return pair?.carrefour.city || null;
+  });
+  assert.equal(selectedPair,"Lyon");
   await assertNoHorizontalOverflow(page,"comparaison EAN exact, deux enseignes");
   await page.screenshot({path:OUT+"/08-comparaison-ean-exact.png",fullPage:true});
   await page.locator("#channel").selectOption("drive");
