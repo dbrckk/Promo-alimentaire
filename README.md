@@ -384,3 +384,7 @@ Chaque enseigne dispose de son propre statut :
 - sous-total connu déjà supérieur au budget : alerte de dépassement même si le panier reste incomplet.
 
 Le ticket de caisse réel reste prioritaire. Le comparateur ne réserve pas les prix, ne confirme pas les stocks et n'encaisse aucun paiement.
+
+### Couverture des prix par EAN exact
+
+Les cartes Carrefour et E.Leclerc indiquent maintenant, séparément, si les relevés Open Prices sont absents, non exploitables, anciens (plus de 30 jours), récents (30 jours) ou suffisamment récents (7 jours). Elles indiquent le nombre de relevés exploitables et la date du dernier relevé. **Aucune observation** ne signifie pas **aucun stock** : une absence de prix communautaire n'est jamais une preuve que le produit n'est pas vendu. Une panne de la source est présentée comme une couverture inconnue, non comme une absence de produit.
