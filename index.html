@@ -42,6 +42,7 @@
         <select id="sort">
           <option value="percent">Pourcentage d'économie</option>
           <option value="amount">Argent économisé</option>
+          <option value="estimated">Gain simulé (€) selon mon prix</option>
           <option value="freshness">Données les plus récentes</option>
           <option value="deadline">Échéance</option>
         </select>
@@ -58,6 +59,25 @@
         <label for="search">Recherche</label>
         <input id="search" type="search" placeholder="Produit, marque ou source…" autocomplete="off" />
       </div>
+    </section>
+
+    <section class="panel offer-simulator-panel" aria-label="Simulation des économies">
+      <div class="offer-simulator-copy">
+        <p class="eyebrow dark">Comparer avec mon prix</p>
+        <strong>Simulation du coût après remise ou remboursement</strong>
+        <p>Saisissez un prix unitaire observé et la quantité prévue. Le même prix hypothétique est appliqué aux offres de produits pour les comparer : il ne constitue pas un prix magasin vérifié.</p>
+      </div>
+      <div class="offer-simulator-fields">
+        <div class="field">
+          <label for="simulatedPrice">Prix unitaire avant réduction (€)</label>
+          <input id="simulatedPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 2,49" />
+        </div>
+        <div class="field">
+          <label for="simulatedQuantity">Quantité achetée</label>
+          <input id="simulatedQuantity" type="number" min="1" max="100" step="1" value="1" inputmode="numeric" />
+        </div>
+      </div>
+      <p id="simulatorSummary" class="simulator-summary" aria-live="polite"></p>
     </section>
 
     <section class="panel loyalty-panel" aria-label="Cartes fidélité">

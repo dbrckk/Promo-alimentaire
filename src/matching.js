@@ -97,7 +97,12 @@ export function effectiveOfferPercent(offer,quantity=1) {
   const tier=tiers
     .filter((item)=>qty>=item.minQty && (item.maxQty===null || item.maxQty===undefined || qty<=item.maxQty))
     .sort((a,b)=>b.minQty-a.minQty)[0];
-  if(tier && Number.isFinite(tier.savingPercent)) return tier.savingPercent;
+  if(tiers.length){
+    // The top advertised percent is NOT applicable outside its quantity tier.
+    // In particular, 1 unit cannot inherit the 3-unit maximum, and 5 units
+    // cannot inherit the max of a campaign limited to 4 units.
+    return tier && Number.isFinite(tier.savingPercent) ? tier.savingPercent : null;
+  }
   return Number.isFinite(offer.savingPercent) ? offer.savingPercent : null;
 }
 

@@ -1,3 +1,5 @@
+import {simulateProductOffer} from "./offer-simulator.js";
+
 export function computeSaving(offer) {
   const cap=Number.isFinite(offer.savingCapAmount) ? Math.max(0,offer.savingCapAmount) : Infinity;
   if (Number.isFinite(offer.savingAmount)) return roundMoney(Math.min(cap,offer.savingAmount));
@@ -15,8 +17,20 @@ export function effectivePercent(offer) {
   return null;
 }
 
-export function rankOffers(offers, sort = "percent", now=new Date()) {
+export function rankOffers(offers, sort = "percent", now=new Date(),scenario={}) {
   return [...offers].sort((a, b) => {
+    if(sort==="estimated"){
+      const av=simulateProductOffer(a,scenario);
+      const bv=simulateProductOffer(b,scenario);
+      const aGain=av?.status==="estimated" ? av.saving : null;
+      const bGain=bv?.status==="estimated" ? bv.saving : null;
+      // Unknown or ineligible offers always appear below numeric simulations.
+      if(Number.isFinite(aGain) || Number.isFinite(bGain)){
+        if(!Number.isFinite(aGain)) return 1;
+        if(!Number.isFinite(bGain)) return -1;
+        if(aGain!==bGain) return bGain-aGain;
+      }
+    }
     if (sort === "amount") return nullableNumber(computeSaving(b)) - nullableNumber(computeSaving(a));
     if (sort === "freshness") return new Date(b.verifiedAt) - new Date(a.verifiedAt);
     if (sort === "deadline") {
