@@ -122,7 +122,7 @@ Depuis l’onglet **Produit**, scanner/rechercher un code-barres valide puis sé
 - Une remise n'est **jamais additionnée** à une autre : seule la meilleure économie indépendante est affichée comme scénario conditionnel. Les prix déjà signalés comme remisés ne sont jamais soustraits une seconde fois.
 - Les remises propres au distributeur (promotion enseigne, Ticket fidélité) et les canaux ou prix qui nécessitent une vérification supplémentaire ne sont **jamais soustraits** d'un relevé communautaire : le prix observé peut déjà intégrer la promotion.
 - Un **GTIN en URL de fiche distributeur** atteste de l'identité de référence, pas de la disponibilité de l'offre, du stock ou du prix actuel.
-- Le comparateur fonctionne sur demande (deux appels publics Open Prices) et n'enregistre pas de localisation, ni de prix non confirmés. Il annule l'affichage si le produit ou le canal change pendant la recherche.
+- Le comparateur fonctionne sur demande (deux appels publics Open Prices) et n'enregistre pas de localisation, ni de prix non confirmés. Il invalide le résultat si le produit, le canal, l'enseigne, le rayon de proximité, la géolocalisation ou le profil fidélité change, même pendant une recherche.
 
 ## Principe de fiabilité
 

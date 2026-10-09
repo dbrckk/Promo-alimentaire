@@ -299,6 +299,7 @@ els.dropThreshold.addEventListener("change",()=>{
   renderPriceAlerts();
 });
 els.radiusSelect.addEventListener("change",async()=>{
+  invalidateExactSkuComparison();
   state.radiusKm=Number(els.radiusSelect.value)||25;
   els.listRadiusSelect.value=String(state.radiusKm);
   syncNearbyControls();
@@ -308,6 +309,7 @@ els.radiusSelect.addEventListener("change",async()=>{
   }
 });
 els.listRadiusSelect.addEventListener("change",async()=>{
+  invalidateExactSkuComparison();
   state.radiusKm=Number(els.listRadiusSelect.value)||25;
   els.radiusSelect.value=String(state.radiusKm);
   syncNearbyControls();
@@ -913,6 +915,7 @@ function priceQueryOptions(){
 
 async function toggleNearbyPrices(){
   if(state.nearbyEnabled){
+    invalidateExactSkuComparison();
     state.nearbyEnabled=false;
     state.coords=null;
     syncNearbyControls();
@@ -932,6 +935,7 @@ async function toggleNearbyPrices(){
       longitude:position.coords.longitude
     };
     state.nearbyEnabled=true;
+    invalidateExactSkuComparison();
     syncNearbyControls();
     markBasketPricesStale();
     if(state.productCode) await refreshPrices(state.productCode);
@@ -1627,6 +1631,7 @@ function saveLoyaltyProfile(){
 }
 
 function updateLoyaltyProfile(key,value){
+  invalidateExactSkuComparison();
   state.loyaltyProfile=normalizeLoyaltyProfile({
     ...state.loyaltyProfile,
     [key]:value

@@ -121,7 +121,8 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
 }={}){
   const gtin=canonicalGtin(product?.code);
   if(!gtin) return {status:"invalid-gtin",gtin:null,stores:[]};
-  const qty=Math.trunc(Number(quantity));
+  // A fractional quantity must be rejected, not silently rounded down.
+  const qty=Number(quantity);
   if(!Number.isInteger(qty) || qty<1 || qty>100) {
     return {status:"invalid-quantity",gtin,stores:[]};
   }

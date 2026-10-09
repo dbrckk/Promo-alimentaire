@@ -194,6 +194,15 @@ try{
     return pair?.carrefour.city || null;
   });
   assert.equal(selectedPair,"Lyon");
+  // The previously computed pair must disappear when the comparison context changes.
+  await page.locator("#radiusSelect").selectOption("10");
+  assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
+  await page.locator("#leclercLoyalty").selectOption("card");
+  assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
   await assertNoHorizontalOverflow(page,"comparaison EAN exact, deux enseignes");
   await page.screenshot({path:OUT+"/08-comparaison-ean-exact.png",fullPage:true});
   await page.locator("#channel").selectOption("drive");
