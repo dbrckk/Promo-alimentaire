@@ -26,7 +26,7 @@ test("extractShopmiumOfferUrls déduplique les fiches /fr/n",()=>{
 
 test("parseValidityDates convertit les dates françaises",()=>{
   const dates=parseValidityDates("Valable entre le 01/10/2026 à partir de 08:00 et le 31/10/2026 jusqu'à 23:59");
-  assert.deepEqual(dates,{startsAt:"2026-10-01",expiresAt:"2026-10-31"});
+  assert.deepEqual(dates,{startsAt:"2026-10-01T08:00:00+02:00",expiresAt:"2026-10-31"});
 });
 
 test("parsePercentTiers lit les paliers",()=>{
@@ -300,4 +300,41 @@ test("chaque URL de veille est publique, officielle et dédupliquée",async()=>{
   assert.ok(watchlist.urls.length>=4);
   assert.equal(new Set(watchlist.urls).size,watchlist.urls.length);
   for(const url of watchlist.urls) assert.equal(isOfficialShopmiumOfferUrl(url),true);
+});
+
+test("Shopmium respecte une date de fin à 14h07 au lieu de prolonger artificiellement jusqu'à minuit",async()=>{
+  const dates=parseValidityDates(
+    "Valable entre le 18/11/2025 à partir de 08:00 et le 12/10/2026 jusqu'à 14:07 dans toute enseigne vendante (Drive inclus)."
+  );
+  assert.equal(dates.startsAt,"2025-11-18T08:00:00+01:00");
+  assert.equal(dates.expiresAt,"2026-10-12T14:07:00+02:00");
+  const {isOfferActive}=await import("../src/ingestion.js");
+  const offer={providerId:"shopmium",verifiedAt:"2026-10-12",...dates};
+  assert.equal(isOfferActive(offer,new Date("2026-10-12T12:06:59Z")),true);
+  assert.equal(isOfferActive(offer,new Date("2026-10-12T12:07:01Z")),false);
+});
+
+test("Shopmium décode correctement l'heure française avant et après changement d'heure",()=>{
+  const winter=parseValidityDates(
+    "Valable entre le 01/11/2026 à partir de 08:00 et le 10/12/2026 jusqu'à 14:30."
+  );
+  assert.deepEqual(winter,{
+    startsAt:"2026-11-01T08:00:00+01:00",
+    expiresAt:"2026-12-10T14:30:00+01:00"
+  });
+  const summer=parseValidityDates(
+    "Valable entre le 01/07/2026 à partir de 08:00 et le 10/07/2026 jusqu'à 22:15."
+  );
+  assert.deepEqual(summer,{
+    startsAt:"2026-07-01T08:00:00+02:00",
+    expiresAt:"2026-07-10T22:15:00+02:00"
+  });
+  assert.deepEqual(parseValidityDates(
+    "Valable entre le 01/10/2026 et le 01/11/2026"),
+    {startsAt:"2026-10-01",expiresAt:"2026-11-01"});
+});
+
+test("Shopmium refuse une heure de fin impossible au lieu de publier un délai incertain",()=>{
+  assert.equal(parseValidityDates(
+    "Valable entre le 01/10/2026 et le 12/10/2026 jusqu'à 27:89."),null);
 });
