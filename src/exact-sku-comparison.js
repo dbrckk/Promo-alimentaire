@@ -112,6 +112,36 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
 }
 
 /**
+ * Surface why a retailer price is missing without confusing coverage with
+ * actual availability or claiming that the retailer does not sell this SKU.
+ */
+export function priceCoverageSummary(observations,now=new Date()){
+  const records=Array.isArray(observations)?observations:[];
+  const valid=records.filter((record)=>record
+    && Number.isFinite(Number(record.price)) && Number(record.price)>0
+    && !Number.isNaN(new Date(record.date).getTime()));
+  const recent=valid.filter((record)=>{
+    const age=new Date(now).getTime()-new Date(record.date).getTime();
+    return age>=0 && age<=30*DAY_MS;
+  });
+  const comparable=recent.filter((record)=>{
+    const age=new Date(now).getTime()-new Date(record.date).getTime();
+    return age<=7*DAY_MS;
+  });
+  return {
+    total:records.length,valid:valid.length,
+    recent30Days:recent.length,recent7Days:comparable.length,
+    latestDate:valid.length
+      ? valid.map((record)=>record.date).sort().at(-1) : null,
+    status:records.length===0?"no-observation"
+      : valid.length===0?"invalid-observations"
+        : recent.length===0?"stale-observations"
+          : comparable.length===0?"recent-but-not-comparable"
+            : "recent"
+  };
+}
+
+/**
  * Compare a single validated GTIN across two retailers. No brand-only
  * suggestion can become an exact promotion. Open Prices receipts are
  * independent observations, not live store inventory or Drive prices.
@@ -137,6 +167,7 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
       && (item.pricePer===undefined || item.pricePer==="UNIT")
     );
     comparableCandidates[store]=own;
+    const coverage=priceCoverageSummary(own,now);
     // Open Prices is generally a checkout/shelf observation. Do not
     // silently substitute those prices for Drive or delivery quotations.
     const observed=channel==="store"
@@ -192,7 +223,7 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
     // never sum several refunds or apply them as guaranteed savings.
     const bestCandidate=exactOffers.find((offer)=>offer.saving!==null)||null;
     return {
-      store,channel,price,observation:observed,
+      store,channel,price,observation:observed,coverage,
       initialCost,exactOffers,
       exactCount:exactOffers.length,
       potentialSaving:bestCandidate?.saving??null,

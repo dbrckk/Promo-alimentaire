@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {compareExactSku,comparePriceObservationEvidence,selectComparablePricePair} from "../src/exact-sku-comparison.js";
+import {compareExactSku,comparePriceObservationEvidence,selectComparablePricePair,priceCoverageSummary} from "../src/exact-sku-comparison.js";
 
 const CODE="3017624010701";
 const OTHER="4006381333931";
@@ -301,4 +301,28 @@ test("les quantités de produits doivent être entières, positives et bornées"
   assert.equal(compareExactSku({code:CODE},[],{},{
     now,quantity:"2"
   }).quantity,2);
+});
+
+test("couverture EAN : aucun relevé, ancien, récent et exploitable",()=>{
+  assert.equal(priceCoverageSummary([],now).status,"no-observation");
+  assert.equal(priceCoverageSummary([observation("carrefour",2,CODE,{date:"2026-01-01"})],now).status,"stale-observations");
+  const recent=priceCoverageSummary([observation("carrefour",2,CODE,{date:"2026-09-30"})],now);
+  assert.equal(recent.status,"recent-but-not-comparable");
+  assert.equal(recent.recent30Days,1);
+  assert.equal(recent.recent7Days,0);
+  const fresh=priceCoverageSummary([observation("carrefour",2,CODE,{date:"2026-10-08"})],now);
+  assert.equal(fresh.status,"recent");
+  assert.equal(fresh.latestDate,"2026-10-08");
+  assert.equal(priceCoverageSummary([observation("carrefour",0,CODE)],now).status,"invalid-observations");
+});
+
+test("la couverture par enseigne reste séparée et ne déclare pas de stock",()=>{
+  const res=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",2,CODE,{date:"2026-10-08"})],
+    leclerc:[observation("leclerc",3,CODE,{date:"2026-01-01"})]
+  },{now});
+  assert.equal(res.stores[0].coverage.status,"recent");
+  assert.equal(res.stores[1].coverage.status,"stale-observations");
+  assert.equal(res.stores[1].price,null);
+  assert.equal(res.lowerObservedStore,null);
 });

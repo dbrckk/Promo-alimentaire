@@ -708,6 +708,25 @@ function renderExactSkuComparison(result,errors=new Set()){
       : observed
         ? `<strong>${money.format(row.price)}</strong><small>Relevé du ${escapeHtml(formatDate(observed.date))} · ${escapeHtml(observed.storeName)}${observed.city?" · "+escapeHtml(observed.city):""}</small>`
         : '<strong>Prix récent non disponible</strong>';
+    const coverage=row.coverage||{};
+    const coverageLabel=unresolved
+      ? "Couverture inconnue : service de prix indisponible"
+      : coverage.status==="no-observation"
+        ? "Aucun relevé connu pour cet EAN dans cette enseigne"
+        : coverage.status==="invalid-observations"
+          ? "Relevés présents mais non exploitables"
+          : coverage.status==="stale-observations"
+            ? "Seulement des relevés anciens (plus de 30 jours)"
+            : coverage.status==="recent-but-not-comparable"
+              ? "Relevés des 30 derniers jours, aucun des 7 derniers jours"
+              : "Au moins un relevé des 7 derniers jours";
+    const coverageMarkup=`<p class="help exact-sku-coverage">
+      <strong>Couverture des données :</strong> ${escapeHtml(coverageLabel)}
+      ${!unresolved && coverage.valid ? ` · ${coverage.valid} relevé(s) exploitable(s)` : ""}
+      ${!unresolved && coverage.latestDate
+        ? ` · Dernier relevé : ${escapeHtml(formatDate(coverage.latestDate))}` : ""}
+      <span>Une absence de relevé ne signifie pas que le produit est absent du magasin.</span>
+    </p>`;
     const offers=row.exactOffers.slice(0,6).map((offer)=>{
       const amount=offer.saving!==null
         ? `Économie éventuelle : ${money.format(offer.saving)} sur 1 article`
@@ -733,6 +752,7 @@ function renderExactSkuComparison(result,errors=new Set()){
     return `<article class="exact-sku-store">
       <h4>${storeLabel(row.store)}</h4>
       <div class="exact-sku-observation">${priceMarkup}</div>
+      ${coverageMarkup}
       <p class="help">${escapeHtml(unresolved
         ? "Impossible de charger les relevés de cette enseigne."
         : row.note)}</p>
