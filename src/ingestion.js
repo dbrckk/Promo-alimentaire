@@ -255,6 +255,19 @@ export function isOfferActive(offer,now=new Date()) {
     const reviewEnd=new Date(String(offer.reviewAfter).length===10 ? offer.reviewAfter+"T23:59:59" : offer.reviewAfter);
     if(current>reviewEnd) return false;
   }
+  // Some older Shopmium snapshots have no reviewAfter. Their expiry date is
+  // NOT evidence that the merchant hasn't ended the refund prematurely.
+  // Keep at most five calendar days of unsynchronized source confidence.
+  if(offer.providerId==="shopmium"){
+    const stamp=String(offer.verifiedAt||"");
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(stamp)) return false;
+    const checkedAt=new Date(stamp+"T12:00:00Z");
+    if(Number.isNaN(checkedAt.getTime())) return false;
+    const reviewCutoff=new Date(checkedAt);
+    reviewCutoff.setUTCDate(reviewCutoff.getUTCDate()+5);
+    reviewCutoff.setUTCHours(23,59,59,999);
+    if(current>reviewCutoff) return false;
+  }
   return true;
 }
 
