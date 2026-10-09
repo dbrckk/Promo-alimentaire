@@ -105,6 +105,10 @@ export function normalizeImportedOffer(raw) {
       savingAmountMode,
       minPurchaseQty,
       savingCapAmount:Number.isFinite(savingCapAmount) ? savingCapAmount : null,
+      requiresUnlock:value.requiresUnlock===true,
+      unlockConditions:value.requiresUnlock===true
+        ? String(value.unlockConditions || "Conditions de déblocage à vérifier.").slice(0,280)
+        : null,
       basePrice:Number.isFinite(basePrice) ? basePrice : null,
       sourceRegularPrice:Number.isFinite(sourceRegularPrice) ? sourceRegularPrice : null,
       sourcePromoPrice:Number.isFinite(sourcePromoPrice) ? sourcePromoPrice : null,
@@ -146,6 +150,7 @@ export function normalizeImportedOffer(raw) {
         && value.requiresStoreVerification!==true
         && value.requiresChannelPriceVerification!==true
         && value.multiReference!==true
+        && value.requiresUnlock!==true
         && !value.requiresLoyalty,
       stackingConfidence:value.stackingConfidence || "unknown",
       stacking:value.stacking || "conditions à vérifier",
