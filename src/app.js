@@ -743,13 +743,26 @@ function renderExactSkuComparison(result,errors=new Set()){
         : ""}
     </article>`;
   }).join("");
-  const best=result.lowerObservedStore
-    ? `Relevé le moins élevé dans les données disponibles : ${storeLabel(result.lowerObservedStore)}. Ce n'est pas une confirmation du prix actuel.`
-    : "Les deux enseignes ne disposent pas forcément de relevés comparables au même moment ; aucun gagnant n'est attribué.";
+  const comparabilityReasons={
+    "missing-price":"Comparaison impossible : il manque un prix récent dans au moins une des deux enseignes.",
+    "invalid-date":"Comparaison impossible : la date d'un relevé n'est pas exploitable.",
+    "observations-old":"Comparaison non concluante : les deux relevés ne datent pas tous de moins de 7 jours.",
+    "dates-too-far":"Comparaison non concluante : les dates des deux relevés sont espacées de plus de 3 jours.",
+    "too-far":"Comparaison non concluante : les deux magasins observés sont éloignés de plus de 15 km.",
+    "location-unverified":"Comparaison non concluante : localisation des magasins insuffisante (coordonnées ou même commune et code postal)."
+  };
+  const confidence=result.comparisonEvidence || {};
+  const difference=result.observedPriceDifference;
+  const best=confidence.comparable && result.lowerObservedStore
+    ? `Relevé inférieur : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
+    : confidence.comparable && difference===0
+      ? "Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère."
+      : comparabilityReasons[confidence.status]
+        || "Aucune comparaison de prix fiable possible avec les relevés disponibles.";
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
     <p>Identité GTIN ${escapeHtml(result.gtin)} · ${escapeHtml(best)}</p>
-    <p>Prix communautaires Open Prices, relevés potentiellement dans des villes et magasins différents. Aucune disponibilité, remise ni cumul garantis.</p>
+    <p>Comparaison des prix uniquement avec des relevés proches (15 km maximum), récents (7 jours maximum) et datés à 3 jours d’écart au plus. Prix Open Prices communautaires : disponibilité, remise et cumul non garantis.</p>
   </div>
   <div class="exact-sku-grid">${storeCards}</div>`;
 }
