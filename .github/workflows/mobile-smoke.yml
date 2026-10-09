@@ -15,8 +15,9 @@ on:
 permissions:
   contents: read
 
+# Data syncs on main must not cancel the Android smoke test of a PR.
 concurrency:
-  group: android-viewport-smoke
+  group: android-viewport-smoke-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
