@@ -187,6 +187,7 @@ els.manualPriceDate.max=els.manualPriceDate.value;
 els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")}`;
 
 els.store.addEventListener("change",async()=>{
+  invalidateExactSkuComparison();
   state.store=els.store.value;
   localStorage.setItem("promo-store",state.store);
   els.manualPriceStore.value=state.store;
@@ -196,6 +197,7 @@ els.store.addEventListener("change",async()=>{
   if(state.productCode) await refreshPrices(state.productCode);
 });
 els.channel.addEventListener("change",()=>{
+  invalidateExactSkuComparison();
   state.channel=els.channel.value;
   localStorage.setItem("promo-channel",state.channel);
   render();
@@ -566,6 +568,8 @@ async function lookupBarcode(rawValue){
   try{
     code=normalizeBarcode(rawValue);
   }catch(error){
+    invalidateExactSkuComparison();
+    els.compareExactSku.disabled=true;
     setProductStatus(error.message,true);
     return;
   }
@@ -636,6 +640,12 @@ async function refreshPrices(code){
     if(token!==state.lookupToken) return;
     setProductStatus("Impossible d'actualiser les prix Open Prices.",true);
   }
+}
+
+function invalidateExactSkuComparison(){
+  ++state.skuCompareToken;
+  els.exactSkuComparison.innerHTML="";
+  els.compareExactSku.disabled=!canonicalGtin(state.productCode);
 }
 
 async function compareCurrentExactSku(){
