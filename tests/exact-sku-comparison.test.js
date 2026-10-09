@@ -220,3 +220,36 @@ test("égalité des prix : aucun vainqueur artificiel",()=>{
   assert.equal(result.lowerObservedStore,null);
   assert.equal(result.observedPriceDifference,0);
 });
+
+test("la comparaison récupère une paire proche bien que les derniers magasins soient éloignés",()=>{
+  const lyon={city:"Lyon",postcode:"69002",locationLat:45.76,locationLon:4.84};
+  const paris={city:"Paris",postcode:"75001",locationLat:48.85,locationLon:2.35};
+  const marseille={city:"Marseille",postcode:"13001",locationLat:43.30,locationLon:5.38};
+  const cOld=observation("carrefour",5,CODE,{date:"2026-10-07",...lyon});
+  const lOld=observation("leclerc",4,CODE,{date:"2026-10-08",...lyon});
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",3,CODE,{date:"2026-10-09",...paris}),cOld],
+    leclerc:[observation("leclerc",6,CODE,{date:"2026-10-09",...marseille}),lOld]
+  },{now});
+  assert.equal(result.stores[0].price,3);
+  assert.equal(result.stores[1].price,6);
+  assert.equal(result.comparedPrices.carrefour.price,5);
+  assert.equal(result.comparedPrices.leclerc.price,4);
+  assert.equal(result.lowerObservedStore,"leclerc");
+  assert.equal(result.comparisonUsesOlderReceipts,true);
+});
+
+test("arbitrage non opportuniste des relevés du même jour",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",2),observation("carrefour",4)],
+    leclerc:[observation("leclerc",3.5)]
+  },{now});
+  assert.equal(result.comparedPrices.carrefour.price,4);
+  assert.equal(result.lowerObservedStore,"leclerc");
+});
+
+test("quantité fractionnaire interdite",()=>{
+  assert.equal(compareExactSku({code:CODE},[],{},{
+    quantity:1.5,now
+  }).status,"invalid-quantity");
+});
