@@ -75,6 +75,8 @@ Le filtre « 100 % remboursé sur un produit » **exclut les bundles et cagnotte
 ## Revalidation des fiches Shopmium (octobre 2026)
 
 - Une **liste limitée de fiches officielles** (`data/shopmium-watchlist.json`) complète les offres visibles depuis l'index public. Chaque fiche est **téléchargée et reparsée** lors de la synchronisation ; le fichier de veille n'est **pas** une liste de promotions garanties.
+- Cette surveillance couvre aussi deux offres alimentaires Charal détectées dans les pages officielles (Bœuf Bourguignon et Pièce de bœuf à effilocher). Leur statut est recalculé lors du prochain passage, jamais figé dans le catalogue.
+- Si la source précise **« jusqu'à 14:07 »** (plutôt que 23:59), cette heure est conservée avec le fuseau **Europe/Paris** et son décalage été/hiver. Une offre expirant à 14 h 07 ne reste donc pas visible jusqu'à minuit ; les heures de début explicites sont également conservées.
 - Les pages affichant **« Terminée »** ou **« demandes de remboursements closes »** sont ignorées, même lorsque l'ancien calendrier indiquait une date de fin postérieure. Exemple : fiche du miel L'Apiculteur, clôturée prématurément.
 - L'éligibilité des canaux est explicite : une offre **Drive et livraison UNIQUEMENT** ne peut pas s'afficher dans le filtre **Magasin** ; une offre « Drive inclus » n'est pas automatiquement étendue aux achats en ligne si ces derniers ne sont pas annoncés.
 - Les offres reconfirmées ont une révision programmée au plus tard quatre jours après observation. Par précaution, les **anciens snapshots Shopmium sans échéance de révision** sont masqués après cinq jours sans revalidation, même si leur date de fin était plus lointaine.
