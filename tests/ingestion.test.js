@@ -352,3 +352,32 @@ test("l'ancienne opération 100% Shopmium d'avril 2026 reste expirée",()=>{
     savingCapAmount:1,requiresUnlock:true
   },new Date("2026-10-09T12:00:00Z")),false);
 });
+
+test("Shopmium non revalidé ne reste pas actif plusieurs semaines malgré une date de fin tardive",()=>{
+  const stale={
+    providerId:"shopmium",verifiedAt:"2026-10-07",
+    expiresAt:"2026-12-31",stores:["all"],savingPercent:30
+  };
+  assert.equal(isOfferActive(stale,new Date("2026-10-11T12:00:00Z")),true);
+  assert.equal(isOfferActive(stale,new Date("2026-10-12T12:00:00Z")),true);
+  assert.equal(isOfferActive(stale,new Date("2026-10-13T12:00:00Z")),false);
+  assert.equal(isOfferActive({...stale,reviewAfter:"2026-10-10"},
+    new Date("2026-10-11T12:00:00Z")),false);
+  // A non-Shopmium supplier retains its own contract.
+  assert.equal(isOfferActive({...stale,providerId:"coupon-network"},
+    new Date("2026-11-11T12:00:00Z")),true);
+});
+
+test("une offre Shopmium limitée au Drive conserve ses canaux à l'import",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"shopmium",externalId:"kiri-6",title:"Kiri",
+    verifiedAt:"2026-10-09",reviewAfter:"2026-10-13",
+    startsAt:"2026-10-01",expiresAt:"2026-12-01",
+    sourceUrl:"https://offers.shopmium.com/fr/n/kiri-6",
+    stores:["all"],channels:["drive","online"],
+    savingPercent:30,minPurchaseQty:2,autoStack:false
+  });
+  assert.equal(result.ok,true);
+  assert.deepEqual(result.value.channels,["drive","online"]);
+  assert.equal(result.value.minPurchaseQty,2);
+});

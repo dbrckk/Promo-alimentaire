@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import {
   deriveShopmiumProductMatch,
   extractShopmiumOfferUrls,
+  isOfficialShopmiumOfferUrl,
+  isShopmiumPubliclyClosed,
+  mergeShopmiumOfferUrls,
+  parseShopmiumChannels,
   parsePercentTiers,
   parseReferenceNames,
   parseShopmiumDetailHtml,
@@ -204,4 +208,96 @@ test("montant fixe en pharmacie uniquement : aucun magasin alimentaire éligible
     <p>Conditions de l'offre</p><p>Remboursement fixe de 4,00€ pour toute demande de remboursement.</p>
     <p>Valable entre le 01/10/2026 et le 31/10/2026 en pharmacie UNIQUEMENT, dans la limite des remboursements disponibles.</p>`;
   assert.equal(parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/sommeil",{verifiedAt:"2026-10-09"}),null);
+});
+
+test("une fiche marquée Terminée ne doit jamais renaître avec une date future",()=>{
+  const html=`
+    <title>Shopmium | Miel l'Apiculteur®</title>
+    <div>Terminée</div>
+    <h1>Miel l'Apiculteur®</h1>
+    <h3>Conditions de l'offre</h3>
+    <p>Remboursement fixe de 1,50€ pour toute demande de remboursement.</p>
+    <p>Valable entre le 29/07/2026 et le 04/11/2026 dans toute enseigne vendante (Drive inclus)</p>
+  `;
+  assert.equal(isShopmiumPubliclyClosed(html),true);
+  assert.equal(parseShopmiumDetailHtml(html,
+    "https://offers.shopmium.com/fr/n/miel-l-apiculteur-format-500g",
+    {verifiedAt:"2026-10-09"}),null);
+  const withdrawn=html.replace("<div>Terminée</div>",
+    "<div>Les demandes de remboursements sont closes depuis le 19/09/2026.</div>");
+  assert.equal(isShopmiumPubliclyClosed(withdrawn),true);
+  assert.equal(isShopmiumPubliclyClosed(html.replace("<div>Terminée</div>","")),false);
+});
+
+test("Kiri Drive et livraison uniquement : jamais disponible en magasin",()=>{
+  const valid="Valable entre le 01/10/2026 et le 01/12/2026 jusqu'à 23:59 en Drive et livraison UNIQUEMENT, dans la limite des remboursements disponibles.";
+  assert.deepEqual(parseStores(valid),["all"]);
+  assert.deepEqual(parseShopmiumChannels(valid),["drive","online"]);
+  const html=`
+    <title>Shopmium | Kiri</title>
+    <p>Conditions de l'offre</p>
+    <p>2 articles achetés = -20% sur le prix d'achat de l'article</p>
+    <p>3 à 4 articles achetés = -25% sur le prix d'achat de l'article</p>
+    <p>5 à 6 articles achetés = -30% sur le prix d'achat de l'article</p>
+    <p>${valid}</p>
+    <p>Références éligibles</p>
+    <p>Kiri crème 12 portions</p>
+  `;
+  const offer=parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/kiri-6",
+    {verifiedAt:"2026-10-09"});
+  assert.deepEqual(offer.channels,["drive","online"]);
+  assert.equal(offer.minPurchaseQty,2);
+  assert.equal(offer.savingPercent,30);
+  assert.equal(offer.reviewAfter,"2026-10-13");
+});
+
+test("Shopmium détecte les trois canaux uniquement quand ils sont mentionnés",()=>{
+  const all="Valable entre le 01/10/2026 et le 30/10/2026 dans toute enseigne vendante (Drive et sites en ligne inclus).";
+  const local="Valable entre le 01/10/2026 et le 30/10/2026 chez Carrefour uniquement.";
+  const drive="Valable entre le 01/10/2026 et le 30/10/2026 dans toute enseigne vendante (Drive inclus).";
+  assert.deepEqual(parseShopmiumChannels(all),["store","drive","online"]);
+  assert.deepEqual(parseShopmiumChannels(local),["store"]);
+  assert.deepEqual(parseShopmiumChannels(drive),["store","drive"]);
+  assert.deepEqual(parseShopmiumChannels("Garantie Drive incluse sur les accessoires"),[]);
+  assert.deepEqual(parseStores("Valable entre le 01/10/2026 et le 30/10/2026 dans toutes les enseignes (Drive inclus)."),["all"]);
+});
+
+test("Shopmium lit les paliers officiels avec ou sans signe moins",()=>{
+  assert.deepEqual(parsePercentTiers(
+    "1 article acheté = -20% sur le prix ; 2 articles achetés = -25% ; 3 articles achetés = 30% sur le prix"),
+    [
+      {minQty:1,maxQty:1,savingPercent:20},
+      {minQty:2,maxQty:2,savingPercent:25},
+      {minQty:3,maxQty:3,savingPercent:30}
+    ]
+  );
+});
+
+test("la surveillance n'autorise que des URLs Shopmium officielles",()=>{
+  const valid="https://offers.shopmium.com/fr/n/kiri-6";
+  assert.equal(isOfficialShopmiumOfferUrl(valid),true);
+  for(const bad of [
+    "https://offers.shopmium.com.evil.test/fr/n/kiri-6",
+    "http://offers.shopmium.com/fr/n/kiri-6",
+    "https://offers.shopmium.com/fr/n/kiri-6?ref=stuff",
+    "https://offers.shopmium.com/fr/autre",
+    "https://offers.shopmium.com@evil.test/fr/n/kiri-6",
+    "javascript:alert(1)"
+  ]){
+    assert.equal(isOfficialShopmiumOfferUrl(bad),false,bad);
+  }
+  assert.deepEqual(mergeShopmiumOfferUrls([valid],[valid,
+    "https://offers.shopmium.com/fr/n/les-nouveautes-daddy"]),
+    [valid,"https://offers.shopmium.com/fr/n/les-nouveautes-daddy"]);
+  assert.throws(()=>mergeShopmiumOfferUrls([valid],["https://example.com/deal"]),/non officielle/);
+  assert.throws(()=>mergeShopmiumOfferUrls([],
+    Array.from({length:31},(_,i)=>"https://offers.shopmium.com/fr/n/offer-"+i)),/trop longue/);
+});
+
+test("chaque URL de veille est publique, officielle et dédupliquée",async()=>{
+  const {readFileSync}=await import("node:fs");
+  const watchlist=JSON.parse(readFileSync(new URL("../data/shopmium-watchlist.json",import.meta.url),"utf8"));
+  assert.ok(watchlist.urls.length>=4);
+  assert.equal(new Set(watchlist.urls).size,watchlist.urls.length);
+  for(const url of watchlist.urls) assert.equal(isOfficialShopmiumOfferUrl(url),true);
 });

@@ -1,8 +1,9 @@
 import { readFile,writeFile } from "node:fs/promises";
-import { extractShopmiumOfferUrls,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
+import { extractShopmiumOfferUrls,mergeShopmiumOfferUrls,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
 import { isOfferActive,validateImportBatch } from "../src/ingestion.js";
 
 const INDEX_URL="https://offers.shopmium.com/fr/";
+const WATCHLIST_URL=new URL("../data/shopmium-watchlist.json",import.meta.url);
 const OUTPUT_URL=new URL("../data/import/shopmium-auto.json",import.meta.url);
 const MANIFEST_URL=new URL("../data/import/index.json",import.meta.url);
 const write=process.argv.includes("--write");
@@ -18,9 +19,17 @@ if(!indexResponse.ok) throw new Error("Shopmium index HTTP "+indexResponse.statu
 const indexHtml=await indexResponse.text();
 if(indexHtml.length<5000) throw new Error("Réponse Shopmium anormalement courte.");
 
-const urls=extractShopmiumOfferUrls(indexHtml);
-if(urls.length<minOffers) throw new Error("Découverte Shopmium insuffisante : "+urls.length+" URL(s).");
-console.log("[shopmium] "+urls.length+" fiches publiques découvertes.");
+const indexUrls=extractShopmiumOfferUrls(indexHtml);
+const watchlist=JSON.parse(await readFile(WATCHLIST_URL,"utf8"));
+if(!watchlist || !Array.isArray(watchlist.urls)){
+  throw new Error("Liste de surveillance Shopmium malformée.");
+}
+const urls=mergeShopmiumOfferUrls(indexUrls,watchlist.urls);
+if(indexUrls.length<minOffers){
+  throw new Error("Découverte Shopmium insuffisante : "+indexUrls.length+" URL(s) dans l'index.");
+}
+console.log("[shopmium] "+indexUrls.length+" fiches index + "+watchlist.urls.length+
+  " liens surveillés, soit "+urls.length+" fiches uniques à revalider.");
 
 const parsed=[];
 const batchSize=10;
@@ -32,7 +41,9 @@ for(let start=0;start<urls.length;start+=batchSize){
         headers:{Accept:"text/html,application/xhtml+xml","User-Agent":"PromoAlimentaire/0.1 public-offer-sync"},
         redirect:"follow",signal:AbortSignal.timeout(12000)
       });
-      if(!response.ok) return null;
+      if(!response.ok || !response.url.startsWith("https://offers.shopmium.com/fr/n/")){
+        return null;
+      }
       return parseShopmiumDetailHtml(await response.text(),url,{verifiedAt});
     }catch{return null;}
   }));
