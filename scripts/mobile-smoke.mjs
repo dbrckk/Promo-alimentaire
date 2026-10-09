@@ -139,6 +139,26 @@ try{
   await page.locator('#barcodeForm button[type="submit"]').click();
   await page.locator("#productResult h2").waitFor({timeout:10000});
   assert.match(await page.locator("#productResult").innerText(),/Pâte à tartiner témoin/);
+  // Compare the very same EAN across two retailers; do not use a brand-only
+  // match or a physical-store receipt as a Drive/delivery quotation.
+  await page.locator("#channel").selectOption("store");
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
+  assert.equal(await page.locator("#exactSkuComparison .exact-sku-store").count(),2);
+  const exactStoreCards=await page.locator("#exactSkuComparison").innerText();
+  assert.match(exactStoreCards,/Meme produit|Même produit/);
+  assert.match(exactStoreCards,/3,49/);
+  assert.match(exactStoreCards,/3,59/);
+  assert.match(exactStoreCards,/Carrefour Lyon/);
+  assert.match(exactStoreCards,/E.Leclerc Lyon/);
+  await assertNoHorizontalOverflow(page,"comparaison EAN exact, deux enseignes");
+  await page.screenshot({path:OUT+"/08-comparaison-ean-exact.png",fullPage:true});
+  await page.locator("#channel").selectOption("drive");
+  assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
+  assert.match(await page.locator("#exactSkuComparison").innerText(),
+    /Aucun prix magasin réutilisé comme prix Drive/);
   await page.locator("#priceResults").getByText("Dernier prix observé",{exact:false}).waitFor({timeout:10000});
   assert.match(await page.locator("#priceResults").innerText(),/Observation du/i);
   await page.locator('[data-action="add-current-product"]').click();
