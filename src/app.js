@@ -759,9 +759,22 @@ function renderExactSkuComparison(result,errors=new Set()){
       ? "Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère."
       : comparabilityReasons[confidence.status]
         || "Aucune comparaison de prix fiable possible avec les relevés disponibles.";
+  const paired=result.comparedPrices;
+  const pairedDetails=confidence.comparable && paired
+    ? `<p class="exact-sku-paired-prices">Relevés réellement comparés :
+        Carrefour ${money.format(paired.carrefour.price)} du ${escapeHtml(formatDate(paired.carrefour.observation.date))}
+        (${escapeHtml(paired.carrefour.observation.storeName||"magasin non précisé")}) ·
+        E.Leclerc ${money.format(paired.leclerc.price)} du ${escapeHtml(formatDate(paired.leclerc.observation.date))}
+        (${escapeHtml(paired.leclerc.observation.storeName||"magasin non précisé")}).
+        ${result.comparisonUsesOlderReceipts
+          ? "Cette paire diffère des derniers prix observés affichés dans les cartes ci-dessous."
+          : ""}
+      </p>`
+    : "";
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
     <p>Identité GTIN ${escapeHtml(result.gtin)} · ${escapeHtml(best)}</p>
+    ${pairedDetails}
     <p>Comparaison seulement si les relevés sont récents (7 jours maximum), espacés de 3 jours au plus, et géographiquement proches : coordonnées à 15 km maximum, ou à défaut même commune et même code postal. Prix Open Prices communautaires : disponibilité, remise et cumul non garantis.</p>
   </div>
   <div class="exact-sku-grid">${storeCards}</div>`;
