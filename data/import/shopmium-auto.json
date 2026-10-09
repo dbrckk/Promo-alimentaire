@@ -9,8 +9,13 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "drive",
+      "online"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
     "startsAt": "2026-09-01",
     "expiresAt": "2026-12-31",
     "sourceUrl": "https://offers.shopmium.com/fr/n/apericube-2",
@@ -78,9 +83,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-09-01",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-09-01T08:00:00+02:00",
     "expiresAt": "2026-11-20",
     "sourceUrl": "https://offers.shopmium.com/fr/n/tranches-vege-fleury-michon-1",
     "scope": "produit",
@@ -141,9 +151,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 34,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-10-01",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-10-01T08:00:00+02:00",
     "expiresAt": "2026-10-31",
     "sourceUrl": "https://offers.shopmium.com/fr/n/decouvrez-harrys-american-sandwich-protein",
     "scope": "produit",
@@ -187,9 +202,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 34,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-10-01",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-10-01T08:00:00+02:00",
     "expiresAt": "2026-11-29",
     "sourceUrl": "https://offers.shopmium.com/fr/n/harrys-mini-tressee-pepites-de-chocolat",
     "scope": "produit",
@@ -236,11 +256,16 @@
     "type": "ODR",
     "category": "autre",
     "stores": [
-      "all"
+      "leclerc"
+    ],
+    "channels": [
+      "store",
+      "drive"
     ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-09-07",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-09-07T08:00:00+02:00",
     "expiresAt": "2027-04-25",
     "sourceUrl": "https://offers.shopmium.com/fr/n/yaourt-maison-regilait",
     "scope": "produit",
@@ -288,9 +313,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-10-05",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-10-05T08:00:00+02:00",
     "expiresAt": "2026-12-05",
     "sourceUrl": "https://offers.shopmium.com/fr/n/innocent-smoothies-gourmands",
     "scope": "produit",
@@ -346,11 +376,14 @@
     "type": "ODR",
     "category": "autre",
     "stores": [
-      "carrefour",
-      "leclerc"
+      "all"
+    ],
+    "channels": [
+      "store"
     ],
     "savingPercent": 34,
-    "verifiedAt": "2026-10-07",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
     "startsAt": "2026-09-01",
     "expiresAt": "2026-10-30",
     "sourceUrl": "https://offers.shopmium.com/fr/n/lait-et-boissons-lactees-grandlait-des-p-tits-1",
@@ -404,8 +437,13 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "drive",
+      "online"
+    ],
     "savingPercent": 25,
-    "verifiedAt": "2026-10-07",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
     "startsAt": "2026-08-18",
     "expiresAt": "2026-11-02",
     "sourceUrl": "https://offers.shopmium.com/fr/n/tourtel-twist-sous-tous-ses-formats-3",
@@ -467,9 +505,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-09-15",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-09-15T08:00:00+02:00",
     "expiresAt": "2026-11-15",
     "sourceUrl": "https://offers.shopmium.com/fr/n/cafes-legal-capsules-compatibles-nespresso",
     "scope": "produit",
@@ -524,9 +567,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-08-24",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-08-24T08:00:00+02:00",
     "expiresAt": "2026-10-20",
     "sourceUrl": "https://offers.shopmium.com/fr/n/boissons-fruitees-fruit-shoot",
     "scope": "produit",
@@ -588,10 +636,15 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 34,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-09-01",
-    "expiresAt": "2026-10-09",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-09-01T08:00:00+02:00",
+    "expiresAt": "2026-10-09T18:30:00+02:00",
     "sourceUrl": "https://offers.shopmium.com/fr/n/cristaline-fontaine-8l-1",
     "scope": "produit",
     "referenceNames": [
@@ -638,9 +691,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-07-15",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-07-15T10:00:00+02:00",
     "expiresAt": "2026-12-08",
     "sourceUrl": "https://offers.shopmium.com/fr/n/boissons-aux-fruits-jardin-bio",
     "scope": "produit",
@@ -701,9 +759,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-09-01",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-09-01T08:00:00+02:00",
     "expiresAt": "2026-10-31",
     "sourceUrl": "https://offers.shopmium.com/fr/n/fleury-michon-plats-cuisines-3",
     "scope": "produit",
@@ -769,9 +832,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-10-01",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-10-01T08:00:00+02:00",
     "expiresAt": "2026-10-31",
     "sourceUrl": "https://offers.shopmium.com/fr/n/panes-de-poulet-special-burger-pere-dodu",
     "scope": "produit",
@@ -829,9 +897,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 30,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-08-25",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-08-25T08:00:00+02:00",
     "expiresAt": "2026-12-09",
     "sourceUrl": "https://offers.shopmium.com/fr/n/puree-de-pomme-de-terre-oh-puree-1",
     "scope": "produit",
@@ -890,10 +963,15 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 34,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-10-05",
-    "expiresAt": "2026-11-04",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-10-05T08:00:00+02:00",
+    "expiresAt": "2026-11-04T14:37:00+01:00",
     "sourceUrl": "https://offers.shopmium.com/fr/n/gels-douche-sanex-derma-therapie-2",
     "scope": "produit",
     "referenceNames": [
@@ -955,9 +1033,14 @@
     "stores": [
       "all"
     ],
+    "channels": [
+      "store",
+      "drive"
+    ],
     "savingPercent": 40,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-09-01",
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-09-01T08:00:00+02:00",
     "expiresAt": "2026-10-20",
     "sourceUrl": "https://offers.shopmium.com/fr/n/soupline-adoucissant-parfum-de-linge",
     "scope": "produit",
@@ -1008,48 +1091,62 @@
   {
     "providerId": "shopmium",
     "provider": "Shopmium",
-    "externalId": "auto-monalie-rose-petillant-extra-dry",
-    "title": "MONALIE",
+    "externalId": "auto-kiri-6",
+    "title": "Kiri",
     "type": "ODR",
     "category": "autre",
     "stores": [
       "all"
     ],
-    "savingPercent": 34,
-    "verifiedAt": "2026-10-07",
-    "startsAt": "2026-09-03",
-    "expiresAt": "2027-02-28",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/monalie-rose-petillant-extra-dry",
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-10-01",
+    "expiresAt": "2026-12-01",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/kiri-6",
     "scope": "produit",
     "referenceNames": [
-      "Monalie vin mousseux rosé - 75cl"
+      "Kiri crème 12 portions",
+      "Kiri crème 8 portions",
+      "Kiri Goûter 5 portions",
+      "Kiri Bio Bon & Responsable 144g",
+      "Kiri Délicieusement Fouetté 125g",
+      "Kiri Goûter Blé Complet 175g",
+      "Kiri Chèvre 8 portions",
+      "Kiri Spécialité fromagère au skyr 145g"
     ],
     "quantityTiers": [
       {
-        "minQty": 1,
-        "maxQty": 1,
-        "savingPercent": 25
-      },
-      {
         "minQty": 2,
         "maxQty": 2,
-        "savingPercent": 30
+        "savingPercent": 20
       },
       {
         "minQty": 3,
-        "maxQty": 3,
-        "savingPercent": 34
+        "maxQty": 4,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 5,
+        "maxQty": 6,
+        "savingPercent": 30
       }
     ],
-    "minPurchaseQty": 1,
+    "minPurchaseQty": 2,
     "productMatch": {
       "brands": [
-        "Monalie"
+        "Kiri"
       ],
       "any": [
-        "mousseux",
-        "rosé",
-        "75cl"
+        "crème",
+        "portions",
+        "Goûter",
+        "Responsable",
+        "144g"
       ],
       "minScore": 60
     },
@@ -1059,6 +1156,113 @@
     "autoStack": false,
     "stackingConfidence": "restricted",
     "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "1 article(s): 25% ; 2 article(s): 30% ; 3 article(s): 34% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+    "conditions": "2 article(s): 20% ; 3-4 article(s): 25% ; 5-6 article(s): 30% 8 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-les-nouveautes-daddy",
+    "title": "Les nouveautés Daddy",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-10-01T08:00:00+02:00",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/les-nouveautes-daddy",
+    "scope": "produit",
+    "referenceNames": [
+      "Mordu de Stévia Roux 300g",
+      "Sirop de canne 235g"
+    ],
+    "quantityTiers": [],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "nouveautés"
+      ],
+      "any": [
+        "Mordu",
+        "Stévia",
+        "Roux",
+        "300g",
+        "Sirop"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-ajax-power-mousse",
+    "title": "AJAX POWER MOUSSE",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-09",
+    "reviewAfter": "2026-10-13",
+    "startsAt": "2026-06-01T08:00:00+02:00",
+    "expiresAt": "2026-10-10",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/ajax-power-mousse",
+    "scope": "produit",
+    "referenceNames": [
+      "AJAX SPRAY POWER MOUSSE ANTICA1x12x500ML",
+      "AJAX SPRAY POWER MOUSSE MULTI 1x12x500ML"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 2,
+        "maxQty": 3,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "AJAX"
+      ],
+      "any": [
+        "SPRAY",
+        "POWER",
+        "MOUSSE",
+        "ANTICA1x12x500ML",
+        "MULTI"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 25% ; 2-3 article(s): 34% 2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
   }
 ]
