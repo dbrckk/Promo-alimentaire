@@ -329,3 +329,26 @@ test("un GTIN suggéré par Open Food Facts n'est pas une preuve de promo E.Lecl
   assert.equal(spoof.ok,true);
   assert.equal(spoof.value.eanSuggestion,null);
 });
+
+test("une offre Shopmium à débloquer conserve plafond et déblocage, sans cumul automatique",()=>{
+  const result=normalizeImportedOffer({
+    providerId:"shopmium",externalId:"conditional-full-refund",title:"Défi alimentaire",
+    stores:["leclerc"],savingPercent:100,savingCapAmount:1,
+    requiresUnlock:true,unlockConditions:"2 demandes préalables",
+    verifiedAt:"2026-10-09",startsAt:"2026-10-09",expiresAt:"2026-10-20",
+    sourceUrl:"https://offers.shopmium.com/fr/n/conditional-full-refund",
+    mechanism:"manufacturer_refund",scope:"produit",autoStack:true
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.value.savingCapAmount,1);
+  assert.equal(result.value.requiresUnlock,true);
+  assert.match(result.value.unlockConditions,/2 demandes/);
+  assert.equal(result.value.autoStack,false);
+});
+
+test("l'ancienne opération 100% Shopmium d'avril 2026 reste expirée",()=>{
+  assert.equal(isOfferActive({
+    startsAt:"2026-04-20",expiresAt:"2026-04-26",savingPercent:100,
+    savingCapAmount:1,requiresUnlock:true
+  },new Date("2026-10-09T12:00:00Z")),false);
+});
