@@ -58,6 +58,56 @@ export function comparePriceObservationEvidence(a,b,now=new Date()){
 }
 
 /**
+ * Choose a pair of verifiable receipts without cherry-picking low prices.
+ * First prefer the most recent date shared by both receipts, then the
+ * smallest date gap; never use the price difference to favour a store.
+ *
+ * Inputs must already be filtered to the same GTIN, retailer, unit/currency.
+ */
+export function selectComparableObservationPair(carrefourObservations=[],leclercObservations=[],now=new Date()){
+  const recent=(items)=>(Array.isArray(items)?items:[])
+    .filter((item)=>{
+      if(!item?.date || !Number.isFinite(Number(item.price)) || Number(item.price)<=0) return false;
+      const when=new Date(item.date).getTime();
+      const age=new Date(now).getTime()-when;
+      return Number.isFinite(age) && age>=0 && age<=7*DAY_MS;
+    })
+    .sort((a,b)=>{
+      const dateDiff=new Date(b.date)-new Date(a.date);
+      if(dateDiff!==0) return dateDiff;
+      // Conservative deterministic tie-break for contradictory same-day data.
+      return Number(b.price)-Number(a.price);
+    })
+    .slice(0,100);
+  const carrefour=recent(carrefourObservations);
+  const leclerc=recent(leclercObservations);
+  let best=null;
+  let rank=null;
+  for(const a of carrefour){
+    for(const b of leclerc){
+      const evidence=comparePriceObservationEvidence(a,b,now);
+      if(!evidence.comparable) continue;
+      const aTime=new Date(a.date).getTime(),bTime=new Date(b.date).getTime();
+      const candidateRank=[
+        Math.min(aTime,bTime),
+        -Math.abs(aTime-bTime),
+        Math.max(aTime,bTime),
+        Number(Boolean(a.proofType))+Number(Boolean(b.proofType)),
+        Number(a.price)+Number(b.price)
+      ];
+      const better=!rank || candidateRank.some((v,i)=>
+        v!==rank[i] && candidateRank.slice(0,i).every((q,j)=>q===rank[j]) && v>rank[i]
+      );
+      if(better){
+        best={carrefour:a,leclerc:b,evidence};
+        rank=candidateRank;
+      }
+    }
+  }
+  return best;
+}
+
+/**
  * Compare a single validated GTIN across two retailers. No brand-only
  * suggestion can become an exact promotion. Open Prices receipts are
  * independent observations, not live store inventory or Drive prices.
@@ -67,10 +117,11 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
 }={}){
   const gtin=canonicalGtin(product?.code);
   if(!gtin) return {status:"invalid-gtin",gtin:null,stores:[]};
-  const qty=Math.trunc(Number(quantity));
+  const qty=Number(quantity);
   if(!Number.isInteger(qty) || qty<1 || qty>100) {
     return {status:"invalid-quantity",gtin,stores:[]};
   }
+  const observedByStore={};
   const rows=STORES.map((store)=>{
     const observations=Array.isArray(priceObservationsByStore?.[store])
       ? priceObservationsByStore[store] : [];
@@ -80,6 +131,7 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
       && (item.currency===undefined || item.currency==="EUR")
       && (item.pricePer===undefined || item.pricePer==="UNIT")
     );
+    observedByStore[store]=own;
     // Open Prices is generally a checkout/shelf observation. Do not
     // silently substitute those prices for Drive or delivery quotations.
     const observed=channel==="store"
@@ -148,17 +200,30 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
           : "Prix communautaire daté, non contractuel ; vérifier le prix du magasin."
     };
   });
-  const evidence=comparePriceObservationEvidence(
+  // A latest receipt in another town need not discard a valid same-area
+  // pair from the previous days. Comparison uses the dated pair, while store
+  // cards continue to show each chain's actual latest observed price.
+  const pair=channel==="store"
+    ? selectComparableObservationPair(observedByStore.carrefour,observedByStore.leclerc,now)
+    : null;
+  const evidence=pair?.evidence || comparePriceObservationEvidence(
     rows[0].observation,rows[1].observation,now
   );
+  const comparedPrices=pair ? {
+    carrefour:{price:Number(pair.carrefour.price),observation:pair.carrefour},
+    leclerc:{price:Number(pair.leclerc.price),observation:pair.leclerc}
+  } : null;
   let lowerObservedStore=null;
-  if(evidence.comparable){
-    if(rows[0].price<rows[1].price) lowerObservedStore=rows[0].store;
-    if(rows[1].price<rows[0].price) lowerObservedStore=rows[1].store;
+  if(comparedPrices){
+    if(comparedPrices.carrefour.price<comparedPrices.leclerc.price) lowerObservedStore="carrefour";
+    if(comparedPrices.leclerc.price<comparedPrices.carrefour.price) lowerObservedStore="leclerc";
   }
-  const observedPriceDifference=evidence.comparable
-    ? round(Math.abs(rows[0].price-rows[1].price)) : null;
+  const observedPriceDifference=comparedPrices
+    ? round(Math.abs(comparedPrices.carrefour.price-comparedPrices.leclerc.price)) : null;
+  const comparisonUsesOlderReceipts=Boolean(pair
+    && (pair.carrefour!==rows[0].observation || pair.leclerc!==rows[1].observation));
   return {status:"ok",gtin,quantity:qty,channel,
     lowerObservedStore,comparisonEvidence:evidence,
+    comparedPrices,comparisonUsesOlderReceipts,
     observedPriceDifference,stores:rows};
 }
