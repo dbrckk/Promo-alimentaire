@@ -1,6 +1,7 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import { computeSaving, effectivePercent, filterOffers, offerDeadline, rankOffers } from "./domain.js";
+import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
@@ -61,6 +62,9 @@ const els = {
   loyaltySummary:document.querySelector("#loyaltySummary"),
   sort:document.querySelector("#sort"),
   savingsFocus:document.querySelector("#savingsFocus"),
+  simulatedPrice:document.querySelector("#simulatedPrice"),
+  simulatedQuantity:document.querySelector("#simulatedQuantity"),
+  simulatorSummary:document.querySelector("#simulatorSummary"),
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
   providers:document.querySelector("#providers"),
@@ -134,6 +138,8 @@ const state = {
   savingsFocus:["all","at-least-50","full-refund"].includes(localStorage.getItem("promo-savings-focus"))
     ? localStorage.getItem("promo-savings-focus") : "all",
   search:"",
+  simulatedPrice:"",
+  simulatedQuantity:"1",
   sourceScope:SOURCE_SCOPES.has(localStorage.getItem("promo-source-scope"))
     ? localStorage.getItem("promo-source-scope") : "food",
   sourceSearch:"",
@@ -163,6 +169,7 @@ els.carrefourLoyalty.value=state.loyaltyProfile.carrefour;
 els.leclercLoyalty.value=state.loyaltyProfile.leclerc;
 els.sort.value=state.sort;
 els.savingsFocus.value=state.savingsFocus;
+els.simulatedQuantity.value=state.simulatedQuantity;
 els.sourceScope.value=state.sourceScope;
 els.radiusSelect.value=String(state.radiusKm);
 els.listRadiusSelect.value=String(state.radiusKm);
@@ -205,6 +212,14 @@ els.search.addEventListener("input",()=>{
 els.savingsFocus.addEventListener("change",()=>{
   state.savingsFocus=els.savingsFocus.value;
   localStorage.setItem("promo-savings-focus",state.savingsFocus);
+  render();
+});
+els.simulatedPrice.addEventListener("input",()=>{
+  state.simulatedPrice=els.simulatedPrice.value;
+  render();
+});
+els.simulatedQuantity.addEventListener("input",()=>{
+  state.simulatedQuantity=els.simulatedQuantity.value;
   render();
 });
 els.sourceScope.addEventListener("change",()=>{
@@ -311,8 +326,21 @@ function render(){
     store:state.store,channel:state.channel,search:state.search,
     savingsFocus:state.savingsFocus
   });
-  const ranked=rankOffers(filtered,state.sort);
-  els.offers.innerHTML=ranked.map(renderOffer).join("");
+  const scenario={unitPrice:state.simulatedPrice,quantity:state.simulatedQuantity};
+  const ranked=rankOffers(filtered,state.sort,new Date(),scenario);
+  els.offers.innerHTML=ranked.map((offer)=>renderOffer(offer,scenario)).join("");
+  const entered=state.simulatedPrice.trim();
+  const price=parseSimulatedUnitPrice(entered);
+  const quantity=parseSimulatedQuantity(state.simulatedQuantity);
+  if(!entered){
+    els.simulatorSummary.textContent="Simulation désactivée : aucun prix saisi. Aucun prix de produit n'est supposé.";
+  }else if(price===null || quantity===null){
+    els.simulatorSummary.textContent="Saisir un prix positif en euros (2 décimales max.) et une quantité entière entre 1 et 100.";
+  }else{
+    const applicable=ranked.filter((offer)=>simulateProductOffer(offer,scenario)?.status==="estimated").length;
+    els.simulatorSummary.textContent=applicable+" offre(s) chiffrable(s) avec "+quantity+
+      " article(s) à "+money.format(price)+" chacun. Tous les résultats restent conditionnels et doivent être vérifiés sur la fiche officielle.";
+  }
   els.empty.classList.toggle("hidden",ranked.length>0);
   els.empty.textContent=state.savingsFocus==="full-refund"
     ? "Aucun remboursement intégral de produit identifié actuellement pour ce magasin et ce canal. Ne pas acheter en anticipant une offre absente."
@@ -347,7 +375,21 @@ function render(){
   renderListCount();
 }
 
-function renderOffer(offer){
+function renderOffer(offer,scenario={}){
+  const simulation=simulateProductOffer(offer,scenario);
+  const simulated=simulation?.status==="estimated"
+    ? `<div class="simulated-offer">
+        <strong>Simulation indicative · ${simulation.quantity} article(s) à ${money.format(simulation.unitPrice)}</strong>
+        <div class="simulated-facts">
+          <div><span>${simulation.isRefund?"Débours initial":"Coût avant réduction"}</span><b>${money.format(simulation.upfront)}</b></div>
+          <div><span>Économie potentielle</span><b>${money.format(simulation.saving)}</b></div>
+          <div><span>${simulation.isRefund?"Coût après remboursement éventuel":"Coût après remise théorique"}</span><b>${money.format(simulation.netCost)}</b></div>
+        </div>
+        <p>${simulation.realizedPercent.toLocaleString("fr-FR",{maximumFractionDigits:2})} % effectifs au prix saisi. ${escapeHtml(simulation.reason)} Référence exacte et conditions à confirmer.</p>
+      </div>`
+    : simulation
+      ? `<div class="simulated-offer not-eligible"><p>Simulation non applicable : ${escapeHtml(simulation.reason)}</p></div>`
+      : "";
   const amount=computeSaving(offer);
   const pct=effectivePercent(offer);
   const savingMain=offerPercentLabel(offer) || (amount!==null?money.format(amount):(pct!==null?formatPercent(pct):"—"));
@@ -403,6 +445,7 @@ function renderOffer(offer){
         <div><span>Économie en €</span>${amount===null?"Dépend du prix":money.format(amount)}</div>
         <div><span>Vérifié</span>${formatDate(offer.verifiedAt)}</div>
       </div>
+      ${simulated}
       <p class="conditions">${escapeHtml(offer.conditions)}</p>
       <div class="actions">
         <span class="verified">${escapeHtml(offer.stacking)}</span>
