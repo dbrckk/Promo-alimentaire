@@ -29,7 +29,7 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
   const raw=String(html??"");
   const text=decodeHtml(raw.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ").replace(/<[^>]+>/g," "));
   const title=extractTitle(raw);
-  if(!title) return null;
+  if(!title || isShopmiumPubliclyClosed(raw)) return null;
 
   const dates=parseValidityDates(text);
   if(!dates) return null;
@@ -43,8 +43,9 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
 
   const referenceNames=parseReferenceNames(raw);
   const stores=parseStores(text);
-  // Never publish an offer whose retail eligibility excludes both monitored stores.
-  if(!stores.length) return null;
+  const channels=parseShopmiumChannels(text);
+  // Never publish an offer whose retail or channel eligibility is unknown.
+  if(!stores.length || !channels.length) return null;
   const savingCapAmount=parseShopmiumSavingCap(text);
   const unlockRequirement=parseShopmiumUnlockRequirement(text);
   const productMatch=deriveShopmiumProductMatch(title,referenceNames);
@@ -57,11 +58,13 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
     type:"ODR",
     category:"autre",
     stores,
+    channels,
     ...(Number.isFinite(savingPercent)?{savingPercent}:{}),
     ...(Number.isFinite(fixedAmount)?{savingAmount:fixedAmount,savingAmountMode:"per-offer"}:{}),
     ...(savingCapAmount!==null?{savingCapAmount}:{}),
     ...(unlockRequirement?{requiresUnlock:true,unlockConditions:unlockRequirement}:{}),
     verifiedAt,
+    reviewAfter:reviewDateAfterDays(verifiedAt,4),
     startsAt:dates.startsAt,
     expiresAt:dates.expiresAt,
     sourceUrl,
@@ -94,7 +97,7 @@ export function parseValidityDates(text){
 export function parsePercentTiers(text){
   const normalized=clean(text);
   const tiers=[];
-  const regex=/(\d+)\s*(?:à\s*(\d+)\s*)?articles?\s+achetés?\s*=\s*-\s*(\d+(?:[,.]\d+)?)\s*%/gi;
+  const regex=/(\d+)\s*(?:à\s*(\d+)\s*)?articles?\s+achetés?\s*=\s*-?\s*(\d+(?:[,.]\d+)?)\s*%/gi;
   let match;
   while((match=regex.exec(normalized))){
     const minQty=Number(match[1]);
@@ -244,21 +247,71 @@ export function parseShopmiumUnlockRequirement(text){
   return "Offre à débloquer dans Shopmium : consulter les conditions et vérifier les demandes préalables.";
 }
 
-export function parseStores(text){
+export function isShopmiumPubliclyClosed(html){
+  // Supplier-side closure can happen BEFORE the original purchase end date.
+  // Only scan the public status/intro, never reviews or marketing copy.
+  const lines=htmlToLines(html);
+  const conditions=lines.findIndex((line)=>/Conditions de l['’]offre/i.test(line));
+  const intro=lines.slice(0,conditions>=0?conditions:Math.min(lines.length,60));
+  return intro.some((line)=>
+    /^Termin[ée]e?$/i.test(line)
+    || /(?:cette\s+)?offre\s+(?:est\s+)?termin[ée]e?\s+depuis/i.test(line)
+    || /les\s+demandes\s+de\s+remboursements?\s+sont\s+closes/i.test(line)
+  );
+}
+
+function validityClause(text){
   const normalized=clean(text);
   const start=normalized.search(/Valable\s+entre\s+le\s+\d{2}\/\d{2}\/\d{4}/i);
-  if(start<0) return [];
-  const validity=normalized.slice(start,start+1200)
+  if(start<0) return "";
+  return normalized.slice(start,start+1200)
     .split(/Demande de remboursement possible|R[ée]f[ée]rences?\s+éligibles?|Offre non cumulable/i)[0];
+}
+
+export function parseShopmiumChannels(text){
+  const validity=validityClause(text);
+  if(!validity) return [];
+  if(/\ben\s+Drive\s+et\s+livraison\s+UNIQUEMENT\b/i.test(validity)
+    || /\bDrive\s+et\s+livraison\s+uniquement\b/i.test(validity)){
+    return ["drive","online"];
+  }
+  if(/\bDrive\s+UNIQUEMENT\b/i.test(validity)) return ["drive"];
+  if(/\b(?:sites?\s+en\s+ligne|livraison\s+à\s+domicile)\s+UNIQUEMENT\b/i.test(validity)){
+    return ["online"];
+  }
+  const channels=["store"];
+  if(/\bDrive\s+inclus\b|\bDrive\s+et\s+(?:les\s+)?sites?\s+en\s+ligne\s+inclus/i.test(validity)){
+    channels.push("drive");
+  }
+  if(/\b(?:sites?\s+en\s+ligne|livraison\s+à\s+domicile)\s+inclus/i.test(validity)
+    || /\bDrive\s+et\s+(?:les\s+)?sites?\s+en\s+ligne\s+inclus/i.test(validity)){
+    channels.push("online");
+  }
+  return channels;
+}
+
+function reviewDateAfterDays(verifiedAt,days){
+  const value=String(verifiedAt||"");
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date=new Date(value+"T12:00:00Z");
+  if(Number.isNaN(date.getTime())) return null;
+  date.setUTCDate(date.getUTCDate()+days);
+  return date.toISOString().slice(0,10);
+}
+
+export function parseStores(text){
+  const validity=validityClause(text);
+  if(!validity) return [];
   const storeClause=validity.match(/\bchez\s+(.{1,240}?)\s+UNIQUEMENT\b/i)
     || validity.match(/\bchez\s+(.{1,240}?)(?=,\s+dans\s+la\s+limite|\.\s|$)/i);
-  const allStores=/\b(?:dans\s+toute|toutes?)\s+enseigne\s+vendante/i.test(validity);
+  const allStores=/\bdans\s+toute\s+enseigne\s+vendante\b|\bdans\s+toutes?\s+les\s+enseignes\b/i.test(validity);
+  const driveDeliveryOnly=/\ben\s+Drive\s+et\s+livraison\s+UNIQUEMENT\b/i.test(validity);
   let supported;
   if(storeClause){
     supported=[];
     if(/\bCarrefour\b/i.test(storeClause[1])) supported.push("carrefour");
     if(/\b(?:E\.?\s*)?Leclerc\b/i.test(storeClause[1])) supported.push("leclerc");
-  }else if(allStores){
+  }else if(allStores || driveDeliveryOnly){
     supported=["carrefour","leclerc"];
   }else{
     // A partial or unknown merchant rule is not enough to claim eligibility.
