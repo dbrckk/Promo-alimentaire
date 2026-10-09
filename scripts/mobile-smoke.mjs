@@ -145,6 +145,9 @@ try{
   await page.locator("#compareExactSku").click();
   await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
   assert.equal(await page.locator("#exactSkuComparison .exact-sku-store").count(),2);
+  assert.equal(await page.locator("#exactSkuComparison .exact-sku-coverage").count(),2);
+  assert.match(await page.locator("#exactSkuComparison").innerText(),/Couverture des données/);
+  assert.match(await page.locator("#exactSkuComparison").innerText(),/Une absence de relevé ne signifie pas/);
   const exactStoreCards=await page.locator("#exactSkuComparison").innerText();
   assert.match(exactStoreCards,/Meme produit|Même produit/);
   assert.match(exactStoreCards,/3,49/);
