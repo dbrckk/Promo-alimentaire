@@ -8,6 +8,7 @@ Fonctionnalités actuelles :
 - choix Carrefour / E.Leclerc ;
 - filtre de canal d’achat : Magasin / Drive / En ligne ;
 - tri par pourcentage d'économie, économie en euros ou fraîcheur ;
+- raccourcis pour les offres chiffrées ≥50 % et les remboursements annoncés à 100 % sur un produit (sans les confondre avec une économie garantie) ;
 - recherche d'offres ;
 - chargement runtime de snapshots publics validés (Shopmium, La Belle Adresse, Coupon Network et Envie de Plus au 07/10/2026) avec expiration automatique ;
 - contrôle quotidien de fraîcheur des snapshots via GitHub Actions, avec signalement des sources devenues entièrement obsolètes ;
@@ -57,6 +58,19 @@ L'onglet **Sources** intègre des pistes indépendantes des prix du panier :
 Chaque fiche renvoie vers le service et, lorsqu'elle est distincte, la page source décrivant son mécanisme. Le tarif exact, la disponibilité géographique, le prix de référence et les éventuels quotas doivent être recontrôlés juste avant l'achat. Les pourcentages annoncés « jusqu'à » ne sont pas des promotions systématiquement disponibles. Les dons et essais gratuits ne sont jamais ajoutés au calcul d'économies du panier, et les cartes fidélité ne sont pas assimilées à des remises immédiates.
 
 Les sources dont l'activité actuelle est incertaine restent explicitement **non confirmées**, sans date de vérification fictive ni offre chiffrée. Un service n'est pas ajouté au panier du seul fait de sa présence dans l'annuaire.
+
+## Remboursements complets et restrictions Shopmium
+
+Les offres 100 % sont affichées comme **possibilités conditionnelles**, jamais comme panier gratuit :
+
+- la fiche Shopmium doit réellement mentionner un **remboursement du prix d'achat**, pas « 100 % bio », « 100 % végé » ou une description de produit ;
+- les restrictions magasin `sauf Carrefour`, `hors E.Leclerc` ou une liste de magasins **uniquement** sont appliquées à l'enseigne sélectionnée ; une fiche ambiguë n'est pas importée ;
+- un plafond monétaire (par exemple « 100 % dans la limite de 1 € ») est conservé, affiché et appliqué à l'estimation en euros, y compris dans les tris ;
+- les défis qui demandent de débloquer l'offre ne sont jamais considérés comme un remboursement accessible sans action préalable ;
+- les dates de fin et de revalidation restent obligatoires ; **aucune offre expirée n'est réactivée** pour remplir le filtre 100 %.
+- les **remboursements fixes en euros** (ex. 1,50 € sur un pot de miel) sont extraits uniquement si le texte officiel indique explicitement « remboursement fixe de X € ». Ils restent des montants après achat et non des pourcentages calculés sans prix de référence.
+
+Le filtre « 100 % remboursé sur un produit » **exclut les bundles et cagnotte fidélité** : ces mécanismes ne garantissent pas le remboursement de la totalité du prix d'un article isolé. Si aucune offre courante ne satisfait le filtre, l'application l'indique explicitement.
 
 ## Principe de fiabilité
 

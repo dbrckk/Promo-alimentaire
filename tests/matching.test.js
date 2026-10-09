@@ -201,3 +201,13 @@ test("un GTIN invalide enregistré ne peut pas devenir une correspondance exacte
   assert.equal(result.matched,false);
   assert.equal(result.exact,false);
 });
+
+test("100% remboursés plafonnés à 1 € ne donnent jamais 4 € de remboursement",()=>{
+  assert.equal(estimateOfferSaving(4,{savingPercent:100,savingCapAmount:1}),1);
+  assert.equal(estimateOfferSaving(0.79,{savingPercent:100,savingCapAmount:1}),0.79);
+  assert.equal(estimateOfferSaving(2,{savingPercent:100,savingCapAmount:1},3),1);
+});
+
+test("le plafond monétaire limite également un montant fixe",()=>{
+  assert.equal(estimateOfferSaving(10,{savingAmount:5,savingCapAmount:1.5}),1.5);
+});

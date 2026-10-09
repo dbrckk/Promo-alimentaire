@@ -69,6 +69,21 @@ try{
     assert.match(await page.locator("#sourceHealth").textContent(),/Offres reconfirmées/i);
   }
   await assertNoHorizontalOverflow(page,"page d'accueil");
+  await page.locator("#savingsFocus").selectOption("full-refund");
+  assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");
+  if(await page.locator("#offers .card").count()===0){
+    assert.match(await page.locator("#empty").innerText(),/Aucun remboursement intégral de produit/);
+  }else{
+    for(const card of await page.locator("#offers .card").all()){
+      assert.match(await card.innerText(),/100 % annoncés/);
+    }
+  }
+  await page.reload({waitUntil:"domcontentloaded"});
+  assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");
+  await page.locator("#savingsFocus").selectOption("at-least-50");
+  assert.equal(await page.locator("#savingsFocus").inputValue(),"at-least-50");
+  await page.locator("#savingsFocus").selectOption("all");
+  await assertNoHorizontalOverflow(page,"filtres fortes économies");
   await page.screenshot({path:OUT+"/01-offres.png",fullPage:true});
 
   // Discovery: independent food/free services and 50%+ non-food sources are separated.

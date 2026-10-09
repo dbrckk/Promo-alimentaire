@@ -6,6 +6,11 @@ import {
   parsePercentTiers,
   parseReferenceNames,
   parseShopmiumDetailHtml,
+  parseFlatPercent,
+  parseShopmiumFixedRefund,
+  parseShopmiumSavingCap,
+  parseShopmiumUnlockRequirement,
+  parseStores,
   parseValidityDates
 } from "../src/adapters/shopmium.js";
 
@@ -105,4 +110,98 @@ test("deriveShopmiumProductMatch trouve Fleury Michon en suffixe",()=>{
     ]).brands[0],
     "Fleury Michon"
   );
+});
+
+test("Shopmium exclut Carrefour quand le contrat dit sauf Carrefour",()=>{
+  const full="Valable entre le 01/10/2026 à partir de 08:00 et le 31/10/2026 jusqu'à 23:59 dans toute enseigne vendante (Drive inclus) sauf Carrefour, dans la limite des remboursements disponibles.";
+  assert.deepEqual(parseStores(full),["leclerc"]);
+  assert.deepEqual(parseStores(full.replace("sauf Carrefour","sauf Carrefour et Leclerc")),[]);
+  assert.deepEqual(parseStores(full.replace("sauf Carrefour","sauf Auchan Supermarché et Casino")),["all"]);
+});
+
+test("Shopmium exige des magasins explicitement couverts en cas de liste exclusive",()=>{
+  const dates="Valable entre le 01/10/2026 et le 31/10/2026 chez Carrefour, Carrefour Market, Leclerc, Intermarché et Coopérative U UNIQUEMENT, dans la limite des remboursements disponibles.";
+  assert.deepEqual(parseStores(dates),["all"]);
+  assert.deepEqual(parseStores(dates.replace("Carrefour, Carrefour Market, Leclerc, ","")),[]);
+  assert.deepEqual(parseStores(dates.replace("Carrefour, Carrefour Market, Leclerc, ","Carrefour, ")),["carrefour"]);
+  assert.deepEqual(parseStores("Valable entre le 01/10/2026 et le 31/10/2026 (magasins partenaires à consulter)"),[]);
+});
+
+test("les pourcentages marketing 100% bio ne deviennent pas des remboursements",()=>{
+  assert.equal(parseFlatPercent("Une boisson 100% bio à savourer !"),null);
+  assert.equal(parseFlatPercent("Offre 100% végétale. Conditions de l'offre : 1 article acheté = -25% sur le prix"),null);
+  assert.equal(parseFlatPercent("Conditions de l'offre : remboursement de 100% du prix d’achat de l’article dans la limite de 1,00€"),100);
+});
+
+test("Shopmium capture le plafond monétaire et le déblocage, pas les quotas",()=>{
+  assert.equal(parseShopmiumSavingCap("Remboursement de 100% du prix d’achat de l’article dans la limite de 1,00€"),1);
+  assert.equal(parseShopmiumSavingCap("Valable dans la limite des remboursements disponibles."),null);
+  assert.equal(parseShopmiumUnlockRequirement("Pour débloquer cette offre 100% remboursée, faites 2 demandes !")!==null,true);
+  assert.equal(parseShopmiumUnlockRequirement("Offre classique 25% remboursés"),null);
+});
+
+test("un défi 100% plafonné reste une ODR conditionnelle, jamais un gain garanti",()=>{
+  const html=`
+    <title>Shopmium | Le Défi du Marché</title>
+    <p>Pour débloquer cette offre, faites 2 demandes de remboursement.</p>
+    <p>Conditions de l'offre</p>
+    <p>Remboursement de 100% du prix d’achat de l’article dans la limite de 1,00€</p>
+    <p>Valable entre le 20/04/2026 à partir de 08:00 et le 26/04/2026 jusqu'à 23:59 dans toute enseigne vendante (Drive inclus).</p>
+    <p>Référence(s) éligible(s)</p>
+    <p>Fruits et légumes</p>
+    <p>Remboursement maximum calculé par article</p>
+  `;
+  const offer=parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/le-defi-du-marche",{verifiedAt:"2026-04-22"});
+  assert.equal(offer.savingPercent,100);
+  assert.equal(offer.savingCapAmount,1);
+  assert.equal(offer.requiresUnlock,true);
+  assert.equal(offer.autoStack,false);
+  assert.match(offer.conditions,/plafonné à 1,00 €/);
+  assert.equal(offer.stores[0],"all");
+});
+
+test("l'import Shopmium bloque une offre de deux enseignes exclues",()=>{
+  const html=`<title>Shopmium | Offre limitée</title>
+    <p>Conditions de l'offre</p><p>30% remboursés</p>
+    <p>Valable entre le 01/10/2026 et le 31/10/2026 dans toute enseigne vendante sauf Carrefour et Leclerc, dans la limite des remboursements disponibles.</p>`;
+  assert.equal(parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/offre-limitee",{verifiedAt:"2026-10-09"}),null);
+});
+
+test("remboursement fixe 1,50 € sur le miel : pas de faux pourcentage",()=>{
+  const html=`
+    <title>Shopmium | Miel l'Apiculteur® - Format 500g</title>
+    <p>1,50€ remboursé sur 1 article</p>
+    <p>Conditions de l'offre</p>
+    <p>Offre “1,50€ remboursé sur 1 article” : remboursement fixe de 1,50€ pour toute demande de remboursement.</p>
+    <p>Valable entre le 29/07/2026 à partir de 08:00 et le 04/11/2026 jusqu'à 23:59 dans toute enseigne vendante (Drive inclus), dans la limite des remboursements disponibles.</p>
+    <p>Référence(s) éligible(s) et prix généralement constaté(s)</p>
+    <p>- Miel de Fleurs Liquide Pot verre 500G (7,29€)</p>
+    <p>Remboursement maximum calculé par article</p>`;
+  const offer=parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/miel-l-apiculteur-format-500g",{verifiedAt:"2026-10-09"});
+  assert.equal(offer.savingPercent,undefined);
+  assert.equal(offer.savingAmount,1.5);
+  assert.equal(offer.savingAmountMode,"per-offer");
+  assert.equal(offer.expiresAt,"2026-11-04");
+  assert.deepEqual(offer.stores,["all"]);
+  assert.equal(parseShopmiumFixedRefund("Un pot vaut 1,50€ seulement"),null);
+  assert.equal(parseShopmiumFixedRefund("Conditions de l'offre : remboursement de 100% dans la limite de 1,00€"),null);
+});
+
+test("une offre fixe réservée à Carrefour n'est pas montrée chez Leclerc",()=>{
+  const html=`
+    <title>Shopmium | Coloration Barbe et Moustache Just For Men</title>
+    <p>Conditions de l'offre</p>
+    <p>Remboursement fixe de 2,00€ pour toute demande de remboursement.</p>
+    <p>Valable entre le 02/06/2026 à partir de 08:00 et le 22/11/2026 jusqu'à 23:59 chez Carrefour (Drive inclus), dans la limite des remboursements disponibles.</p>`;
+  const offer=parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/coloration-barbe-et-moustache-just-for-men",{verifiedAt:"2026-10-09"});
+  assert.equal(offer.savingAmount,2);
+  assert.deepEqual(offer.stores,["carrefour"]);
+});
+
+test("montant fixe en pharmacie uniquement : aucun magasin alimentaire éligible",()=>{
+  const html=`
+    <title>Shopmium | Sommeil</title>
+    <p>Conditions de l'offre</p><p>Remboursement fixe de 4,00€ pour toute demande de remboursement.</p>
+    <p>Valable entre le 01/10/2026 et le 31/10/2026 en pharmacie UNIQUEMENT, dans la limite des remboursements disponibles.</p>`;
+  assert.equal(parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/sommeil",{verifiedAt:"2026-10-09"}),null);
 });
