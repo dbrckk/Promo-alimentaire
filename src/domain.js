@@ -29,7 +29,7 @@ export function rankOffers(offers, sort = "percent", now=new Date()) {
   });
 }
 
-export function filterOffers(offers, { store, channel=null, search = "" }) {
+export function filterOffers(offers, { store, channel=null, search = "", savingsFocus="all" }) {
   const needle = search.trim().toLocaleLowerCase("fr");
   return offers.filter((offer) => {
     const storeMatch = offer.stores.includes(store) || offer.stores.includes("all");
@@ -37,6 +37,11 @@ export function filterOffers(offers, { store, channel=null, search = "" }) {
     const channels=Array.isArray(offer.channels) ? offer.channels : [];
     const channelMatch=!channel || channels.length===0 || channels.includes(channel) || channels.includes("all");
     if(!channelMatch) return false;
+    const pct=effectivePercent(offer);
+    if(savingsFocus==="at-least-50" && (!Number.isFinite(pct) || pct<50)) return false;
+    if(savingsFocus==="full-refund"
+      && !(offer.scope==="produit" && offer.mechanism==="manufacturer_refund"
+        && pct===100)) return false;
     if (!needle) return true;
     return [offer.title, offer.provider, offer.category, offer.type]
       .filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle);
