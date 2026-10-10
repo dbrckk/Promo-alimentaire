@@ -427,3 +427,7 @@ Dans le comparateur EAN exact, le canal **Drive/livraison** n'envoie désormais 
 ### Requêtes de prix annulables sur mobile
 
 La comparaison EAN exact annule désormais ses appels Open Prices encore actifs si le produit scanné, la quantité ou les paramètres (enseigne, canal, rayon, fidélité) changent. Une nouvelle comparaison annule également l'ancienne recherche, y compris pendant la pagination. Les recherches qui ne répondent pas dans les **18 secondes** sont interrompues pour éviter un bouton bloqué sur Android. Une annulation utilisateur n'est pas présentée comme une panne du service ; si la limite d'attente est atteinte, l'interface invite à réessayer. Ces mécanismes améliorent le confort et économisent les transferts inutiles, sans promettre un prix temps réel.
+
+### Comparaison d'une quantité d'un même code-barres
+
+Quand la comparaison de deux relevés locaux de l'EAN exact est possible, le comparateur présente le **prix unitaire observé**, une **projection du coût par enseigne** pour la quantité choisie et **l'écart de prix indicatif total hors promotions**. Exemple : 3 articles observés à 3,49 € contre 3,59 € donnent des projections de 10,47 € et 10,77 € : écart indicatif 0,30 €. Il ne s'agit ni d'un prix actuel garanti, ni d'un devis, ni d'une confirmation que la quantité sera disponible. Sans paire locale vérifiable ou en Drive, aucun total comparatif n'est calculé. Les remboursements et coupons restent des estimations distinctes, jamais automatiquement additionnées à cet écart.
