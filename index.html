@@ -135,6 +135,9 @@
           <input id="barcode" inputmode="numeric" pattern="[0-9 ]*" placeholder="Ex. 3017624010701" autocomplete="off" />
           <button class="primary" type="submit">Rechercher</button>
           <button id="scanButton" class="secondary" type="button">Scanner</button>
+          <label class="exact-sku-quantity" for="exactSkuQuantity">Quantité
+            <input id="exactSkuQuantity" type="number" inputmode="numeric" min="1" max="100" step="1" value="1" aria-label="Quantité d'articles à comparer entre les enseignes" />
+          </label>
           <button id="compareExactSku" class="secondary" type="button" disabled>Comparer cet EAN dans les deux enseignes</button>
           <button id="nearbyButton" class="secondary" type="button">Autour de moi</button>
           <select id="radiusSelect" aria-label="Rayon de recherche">

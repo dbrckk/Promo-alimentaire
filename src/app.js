@@ -83,6 +83,7 @@ const els = {
   barcode:document.querySelector("#barcode"),
   scanButton:document.querySelector("#scanButton"),
   compareExactSku:document.querySelector("#compareExactSku"),
+  exactSkuQuantity:document.querySelector("#exactSkuQuantity"),
   exactSkuComparison:document.querySelector("#exactSkuComparison"),
   nearbyButton:document.querySelector("#nearbyButton"),
   radiusSelect:document.querySelector("#radiusSelect"),
@@ -246,6 +247,7 @@ els.barcodeForm.addEventListener("submit",(event)=>{
 });
 els.scanButton.addEventListener("click",startScanner);
 els.compareExactSku.addEventListener("click",()=>compareCurrentExactSku());
+els.exactSkuQuantity.addEventListener("input",invalidateExactSkuComparison);
 els.exactSkuComparison.addEventListener("click",(event)=>{
   if(event.target.closest('[data-action="expand-exact-sku"]')){
     compareCurrentExactSku({deep:true});
@@ -657,6 +659,14 @@ function invalidateExactSkuComparison(){
 
 async function compareCurrentExactSku({deep=false}={}){
   const code=state.productCode;
+  const rawQuantity=els.exactSkuQuantity.value.trim();
+  const quantity=/^\d+$/.test(rawQuantity)?Number(rawQuantity):NaN;
+  if(!Number.isInteger(quantity) || quantity<1 || quantity>100){
+    invalidateExactSkuComparison();
+    els.exactSkuComparison.innerHTML=
+      '<div class="panel price-source" role="alert">Indiquer une quantité entière de 1 à 100 articles avant la comparaison.</div>';
+    return;
+  }
   if(!canonicalGtin(code)){
     els.exactSkuComparison.innerHTML=
       '<div class="panel price-source">Un code-barres EAN/GTIN valide est requis pour comparer deux enseignes.</div>';
@@ -707,7 +717,7 @@ async function compareCurrentExactSku({deep=false}={}){
   const normalizedProduct={...(state.product||{}),code};
   const candidates=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
   const comparison=compareExactSku(normalizedProduct,candidates,observations,{
-    channel,quantity:1,now:new Date(),coverageByStore
+    channel,quantity,now:new Date(),coverageByStore
   });
   els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors,{deep});
 }
@@ -716,6 +726,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
   if(result.status!=="ok"){
     return '<div class="panel price-source">Impossible de comparer : code GTIN ou quantité invalide.</div>';
   }
+  const quantityLabel=result.quantity===1?"1 article":result.quantity+" articles";
   const storeCards=result.stores.map((row)=>{
     const unresolved=errors.has(row.store);
     const observed=row.observation;
@@ -752,7 +763,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
     </p>`;
     const offers=row.exactOffers.slice(0,6).map((offer)=>{
       const amount=offer.saving!==null
-        ? `Économie éventuelle : ${money.format(offer.saving)} sur 1 article`
+        ? `Économie éventuelle : ${money.format(offer.saving)} sur ${quantityLabel}`
         : offer.status==="already-discounted"
           ? "Relevé déjà remisé : aucun second gain déduit"
           : offer.status==="retailer-price-required"
@@ -775,6 +786,9 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
     return `<article class="exact-sku-store">
       <h4>${storeLabel(row.store)}</h4>
       <div class="exact-sku-observation">${priceMarkup}</div>
+      ${row.initialCost!==null
+        ? `<p class="help exact-sku-initial-cost">Débours estimé avant remboursements pour ${escapeHtml(quantityLabel)} : <strong>${money.format(row.initialCost)}</strong> (prix communautaire indicatif).</p>`
+        : ""}
       ${coverageMarkup}
       <p class="help">${escapeHtml(unresolved
         ? "Impossible de charger les relevés de cette enseigne."
@@ -784,7 +798,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
         : '<p class="help">Aucune promotion actuelle avec cet EAN exact dans le registre. Une correspondance de marque n’est pas suffisante.</p>'}
       ${remaining}
       ${row.possibleNetCost!==null
-        ? `<p class="exact-sku-net">Coût hypothétique après la meilleure offre séparée : <strong>${money.format(row.possibleNetCost)}</strong> · sous conditions, non garanti.</p>`
+        ? `<p class="exact-sku-net">Coût hypothétique après la meilleure offre séparée sur ${escapeHtml(quantityLabel)} : <strong>${money.format(row.possibleNetCost)}</strong> · sous conditions, non garanti.</p>`
         : ""}
     </article>`;
   }).join("");
@@ -825,7 +839,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
       Les cartes ci-dessous montrent séparément le dernier prix observé de chaque enseigne : il peut être issu d'un autre magasin.</p>` : "";
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
-    <p>Identité GTIN ${escapeHtml(result.gtin)} · ${escapeHtml(best)}</p>
+    <p>Identité GTIN ${escapeHtml(result.gtin)} · Quantité : ${escapeHtml(quantityLabel)} · ${escapeHtml(best)}</p>
     ${pairedDetails}
     <p>Comparaison seulement si les relevés sont récents (7 jours maximum), espacés de 3 jours au plus, et géographiquement proches : coordonnées à 15 km maximum, ou à défaut même commune et même code postal. Prix Open Prices communautaires : disponibilité, remise et cumul non garantis.</p>
   </div>

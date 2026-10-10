@@ -144,6 +144,7 @@ try{
   // Compare the very same EAN across two retailers; do not use a brand-only
   // match or a physical-store receipt as a Drive/delivery quotation.
   await page.locator("#channel").selectOption("store");
+  await page.locator("#exactSkuQuantity").fill("3");
   await page.locator("#compareExactSku").click();
   await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
   assert.equal(await page.locator("#exactSkuComparison .exact-sku-store").count(),2);
@@ -161,6 +162,20 @@ try{
   assert.equal(await page.locator('[data-action="expand-exact-sku"]').count(),0,
     "Un relevé complet ne nécessite pas de recherche approfondie");
   assert.match(exactStoreCards,/0,10/);
+  assert.match(exactStoreCards,/Quantité : 3 articles/);
+  assert.match(exactStoreCards,/Débours estimé avant remboursements pour 3 articles/);
+  assert.match(exactStoreCards,/10,47/);
+  assert.match(exactStoreCards,/10,77/);
+  // Quantity errors must be handled locally before any network requests.
+  await page.locator("#exactSkuQuantity").fill("0");
+  await page.locator("#compareExactSku").click();
+  assert.match(await page.locator("#exactSkuComparison").innerText(),
+    /quantité entière de 1 à 100/);
+  await page.locator("#exactSkuQuantity").fill("3");
+  assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
+  assert.match(await page.locator("#exactSkuComparison").innerText(),/Quantité : 3 articles/);
   // The comparison module must still reject stale or far-away receipts
   // inside the actual Android browser runtime.
   const locationSafety=await page.evaluate(async()=>{
