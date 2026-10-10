@@ -355,6 +355,8 @@ La santé des sources montre séparément :
 
 Le test Chromium avec émulation Android vérifie aussi les dates des prix, les états des sources, la navigation, le panier et la consultation hors ligne.
 
+La simulation Android utilise des **dates de reçus relatives à l'exécution**, afin que les exemples restent récents lors des futures exécutions CI. Le parcours vérifie également un échec réseau sur la deuxième page Open Prices : les prix déjà chargés restent visibles, la couverture est explicitement signalée comme partielle, et l'approfondissement reste une action volontaire. Les tests historiques des échéances d'offres utilisent, eux, des horloges fixées intentionnellement pour vérifier les bornes exactes.
+
 
 ### Relevé personnel de prix en magasin
 
