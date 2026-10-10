@@ -357,10 +357,24 @@ try{
   await page.unroute("https://prices.openfoodfacts.org/**",secondPageFailure);
   await page.locator("#channel").selectOption("drive");
   assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
+  const drivePriceRequests=[];
+  const drivePriceProbe=async(route)=>{
+    drivePriceRequests.push(route.request().url());
+    await route.fallback();
+  };
+  await page.route("https://prices.openfoodfacts.org/**",drivePriceProbe);
   await page.locator("#compareExactSku").click();
   await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
+  assert.deepEqual(drivePriceRequests,[],
+    "Le mode Drive ne doit pas consulter inutilement les prix de magasins physiques");
+  await page.unroute("https://prices.openfoodfacts.org/**",drivePriceProbe);
   assert.match(await page.locator("#exactSkuComparison").innerText(),
     /Aucun prix magasin réutilisé comme prix Drive/);
+  assert.match(await page.locator("#exactSkuComparison").innerText(),
+    /Prix physiques non interrogés/);
+  assert.doesNotMatch(await page.locator("#exactSkuComparison").innerText(),
+    /Aucun relevé trouvé pour cet EAN/);
+  assert.equal(await page.locator('[data-action="expand-exact-sku"]').count(),0);
   await page.locator("#priceResults").getByText("Dernier prix observé",{exact:false}).waitFor({timeout:10000});
   assert.match(await page.locator("#priceResults").innerText(),/Observation du/i);
   await page.locator('[data-action="add-current-product"]').click();

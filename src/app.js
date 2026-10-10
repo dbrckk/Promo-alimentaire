@@ -675,6 +675,20 @@ async function compareCurrentExactSku({deep=false}={}){
   const token=++state.skuCompareToken;
   const lookupToken=state.lookupToken;
   const channel=state.channel;
+  // A checkout/shelf observation cannot quote a Drive or delivery price.
+  // Do not consume two Open Prices requests to compute an unavailable price.
+  if(channel!=="store"){
+    const normalizedProduct={...(state.product||{}),code};
+    const candidates=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
+    const comparison=compareExactSku(normalizedProduct,candidates,{
+      carrefour:[],leclerc:[]
+    },{
+      channel,quantity,now:new Date(),
+      coverageByStore:{carrefour:{skipped:true},leclerc:{skipped:true}}
+    });
+    els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison);
+    return;
+  }
   els.compareExactSku.disabled=true;
   els.exactSkuComparison.innerHTML=
     `<div class="panel price-source" role="status">${deep
@@ -738,7 +752,9 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
     const coverage=row.coverage||{};
     const coverageLabel=unresolved
       ? "Couverture inconnue : service de prix indisponible"
-      : coverage.status==="no-observation"
+      : coverage.status==="not-queried"
+        ? "Prix physiques non interrogés : canal Drive/livraison"
+        : coverage.status==="no-observation"
         ? "Aucun relevé trouvé pour cet EAN dans les pages consultées"
         : coverage.status==="invalid-observations"
           ? "Relevés consultés mais non exploitables"
@@ -827,7 +843,9 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
   const confidence=result.comparisonEvidence || {};
   const difference=result.observedPriceDifference;
   const paired=result.comparisonPair;
-  const best=confidence.comparable && result.lowerObservedStore
+  const best=result.channel!=="store"
+    ? "Aucun tarif Drive ou livraison ne peut être déduit de relevés physiques. Les offres compatibles avec ce canal restent consultables."
+    : confidence.comparable && result.lowerObservedStore
     ? `${incomplete ? "Parmi les relevés consultés, relevé inférieur" : "Relevé inférieur"} sur la paire comparable : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
     : confidence.comparable && difference===0
       ? "Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère."

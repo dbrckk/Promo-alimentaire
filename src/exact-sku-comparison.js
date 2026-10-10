@@ -122,6 +122,7 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
  */
 export function priceCoverageSummary(observations,now=new Date(),lookup={}){
   const records=Array.isArray(observations)?observations:[];
+  const lookupSkipped=lookup?.skipped===true;
   const lookupInterrupted=lookup?.partial===true;
   const moreAvailable=lookup?.moreAvailable===true;
   const pagesFetched=Number.isInteger(lookup?.pagesFetched)
@@ -147,11 +148,12 @@ export function priceCoverageSummary(observations,now=new Date(),lookup={}){
   return {
     total:records.length,valid:valid.length,
     recent30Days:recent.length,recent7Days:comparable.length,
-    pagesFetched,lookupInterrupted,moreAvailable,
-    searchIncomplete:lookupInterrupted || moreAvailable,
+    pagesFetched,lookupSkipped,lookupInterrupted,moreAvailable,
+    searchIncomplete:!lookupSkipped && (lookupInterrupted || moreAvailable),
     latestDate:valid.length
       ? valid.map((record)=>record.date).sort().at(-1) : null,
-    status:records.length===0?"no-observation"
+    status:lookupSkipped?"not-queried"
+      : records.length===0?"no-observation"
       : valid.length===0?"invalid-observations"
         : recent.length===0?"stale-observations"
           : comparable.length===0?"recent-but-not-comparable"
