@@ -484,9 +484,21 @@ try{
   assert.match(await page.locator("#listCount").textContent(),/1/);
   await page.locator("#shoppingBudget").fill("3,00");
   assert.match(await page.locator("#budgetSummary").innerText(),/Prix indisponibles/);
+  const basketRequests=[];
+  const basketRequestProbe=async(route)=>{
+    const url=route.request().url();
+    if(new URL(url).searchParams.get("product_code")==="3017624010701"){
+      basketRequests.push(url);
+    }
+    await route.fallback();
+  };
+  await page.route("https://prices.openfoodfacts.org/**",basketRequestProbe);
   await page.locator("#refreshList").click();
   await page.locator("#refreshList").waitFor({state:"visible"});
   await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,{timeout:15000});
+  await page.unroute("https://prices.openfoodfacts.org/**",basketRequestProbe);
+  assert.equal(basketRequests.length,1,
+    "L'actualisation d'un EAN doit télécharger une seule fois la page commune Carrefour/E.Leclerc");
   assert.match(await page.locator("#basketComparison").innerText(),/Relevé du/i);
   assert.match(await page.locator("#budgetSummary").innerText(),/Plafond dépassé sur les données disponibles/);
   assert.match(await page.locator("#budgetSummary").innerText(),/3,49/);
