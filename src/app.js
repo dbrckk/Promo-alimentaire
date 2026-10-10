@@ -169,6 +169,11 @@ const state = {
   skuCompareToken:0
 };
 
+// Shared by both retailer lookups. Any change of product/filters aborts
+// obsolete network traffic instead of merely discarding its eventual reply.
+let skuComparisonController=null;
+const EXACT_SKU_TIMEOUT_MS=18000;
+
 els.store.value=state.store;
 els.channel.value=state.channel;
 els.carrefourLoyalty.value=state.loyaltyProfile.carrefour;
@@ -652,6 +657,8 @@ async function refreshPrices(code){
 }
 
 function invalidateExactSkuComparison(){
+  skuComparisonController?.abort();
+  skuComparisonController=null;
   ++state.skuCompareToken;
   els.exactSkuComparison.innerHTML="";
   els.compareExactSku.disabled=!canonicalGtin(state.productCode);
@@ -673,6 +680,8 @@ async function compareCurrentExactSku({deep=false}={}){
     return;
   }
   const token=++state.skuCompareToken;
+  skuComparisonController?.abort();
+  skuComparisonController=null;
   const lookupToken=state.lookupToken;
   const channel=state.channel;
   // A checkout/shelf observation cannot quote a Drive or delivery price.
@@ -697,10 +706,22 @@ async function compareCurrentExactSku({deep=false}={}){
     }</div>`;
   const options=priceQueryOptions();
   const stores=["carrefour","leclerc"];
-  const fetched=await Promise.allSettled(stores.map((store)=>
-    fetchPricesByBarcode(code,{...options,store,
-      ...(deep ? {maxPages:3,minimumMatches:20} : {})})
-  ));
+  const controller=new AbortController();
+  skuComparisonController=controller;
+  // Network stalls are especially disruptive on mobile data connections.
+  // A bounded request also ensures that the compare button is re-enabled.
+  const timeout=setTimeout(()=>controller.abort(),EXACT_SKU_TIMEOUT_MS);
+  let fetched;
+  try{
+    fetched=await Promise.allSettled(stores.map((store)=>
+      fetchPricesByBarcode(code,{...options,store,
+        signal:controller.signal,
+        ...(deep ? {maxPages:3,minimumMatches:20} : {})})
+    ));
+  }finally{
+    clearTimeout(timeout);
+    if(skuComparisonController===controller) skuComparisonController=null;
+  }
   // An old scan, changed channel or a newer comparison must never replace
   // the currently displayed product with a different SKU.
   if(token!==state.skuCompareToken || lookupToken!==state.lookupToken
@@ -724,8 +745,9 @@ async function compareCurrentExactSku({deep=false}={}){
     }
   }
   if(errors.size===2){
-    els.exactSkuComparison.innerHTML=
-      '<div class="panel price-source">Open Prices est indisponible pour les deux enseignes. Aucun prix n’a été inventé.</div>';
+    els.exactSkuComparison.innerHTML=controller.signal.aborted
+      ? '<div class="panel price-source" role="alert">La recherche de prix a dépassé 18 secondes. Réessayer lorsque la connexion est stable ; aucun prix n’a été inventé.</div>'
+      : '<div class="panel price-source">Open Prices est indisponible pour les deux enseignes. Aucun prix n’a été inventé.</div>';
     return;
   }
   const normalizedProduct={...(state.product||{}),code};
