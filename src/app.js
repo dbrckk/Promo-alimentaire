@@ -1569,14 +1569,21 @@ async function refreshShoppingList(){
   const next={carrefour:{},leclerc:{}};
   let failures=0;
   let partialRequests=0;
+  // Cache duplicate product-code pages only for this explicit refresh.
+  // Each retailer still gets its own filtered receipts and coverage state.
+  const sharedFetch=createSharedPriceFetch();
 
   try{
     for(let index=0;index<state.shoppingList.length;index+=1){
       const item=state.shoppingList[index];
       setListStatus(`Actualisation ${index+1}/${state.shoppingList.length} : ${item.product.name || item.product.code}…`);
       const [carrefour,leclerc]=await Promise.allSettled([
-        fetchPricesByBarcode(item.product.code,basketQueryOptions("carrefour")),
-        fetchPricesByBarcode(item.product.code,basketQueryOptions("leclerc"))
+        fetchPricesByBarcode(item.product.code,{
+          ...basketQueryOptions("carrefour"),fetchImpl:sharedFetch
+        }),
+        fetchPricesByBarcode(item.product.code,{
+          ...basketQueryOptions("leclerc"),fetchImpl:sharedFetch
+        })
       ]);
       if(carrefour.status==="fulfilled"){
         next.carrefour[item.product.code]=carrefour.value.observations;
