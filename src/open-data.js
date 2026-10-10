@@ -48,7 +48,7 @@ export async function fetchProductByBarcode(value, fetchImpl=fetch) {
 
 export async function fetchPricesByBarcode(value,{
   store,size=100,coords=null,radiusKm=25,fetchImpl=fetch,
-  maxPages=2,minimumMatches=4
+  maxPages=2,minimumMatches=4,signal=null
 }={}) {
   const code=normalizeBarcode(value);
   const canonicalQuery=canonicalGtin(code);
@@ -91,19 +91,27 @@ export async function fetchPricesByBarcode(value,{
   let recentUsableMatches=0;
 
   for(let page=1;page<=pageLimit;page++){
+    if(signal?.aborted) {
+      throw new DOMException("Recherche annulée","AbortError");
+    }
     // Page 1 omits the page query for backwards compatibility with callers.
     const pageParams=new URLSearchParams(params);
     if(page>1) pageParams.set("page",String(page));
     const pageUrl=`${OPEN_PRICES_API}?${pageParams}`;
     let payload;
     try{
-      const response=await fetchImpl(pageUrl,{headers:{Accept:"application/json"}});
+      const response=await fetchImpl(pageUrl,{
+        headers:{Accept:"application/json"},signal
+      });
       if(!response.ok) throw new Error(`HTTP ${response.status}`);
       payload=await response.json();
       if(!payload || !Array.isArray(payload.items)){
         throw new Error("Réponse Open Prices invalide");
       }
     }catch(error){
+      // An obsolete search must stop immediately, including after page 1.
+      // It is not a provider outage and must never be reported as partial.
+      if(signal?.aborted) throw error;
       if(page===1) throw new Error(`Open Prices indisponible (${error.message}).`);
       partial=true;
       break;
