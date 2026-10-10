@@ -357,3 +357,42 @@ test("une recherche sans page restante n'est pas marquée incomplète",()=>{
   assert.equal(complete.searchIncomplete,false);
   assert.equal(complete.pagesFetched,1);
 });
+
+test("le comparateur projette l'écart observé sur la quantité sans y ajouter les promotions",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",3.49)],
+    leclerc:[observation("leclerc",3.59)]
+  },{quantity:3,now});
+  assert.equal(result.quantity,3);
+  assert.equal(result.observedPriceDifference,0.1);
+  assert.equal(result.observedTotalPriceDifference,0.3);
+  assert.deepEqual(result.observedQuantityTotals,{carrefour:10.47,leclerc:10.77});
+  assert.equal(result.lowerObservedStore,"carrefour");
+  assert.equal(result.stores[0].potentialSaving,null);
+});
+
+test("aucun total comparatif n'est fabriqué sans paire locale valide ou en Drive",()=>{
+  const far=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",2,CODE,{city:"Paris",postcode:"75011"})],
+    leclerc:[observation("leclerc",5,CODE,{city:"Marseille",postcode:"13001"})]
+  },{quantity:12,now});
+  assert.equal(far.observedQuantityTotals,null);
+  assert.equal(far.observedTotalPriceDifference,null);
+  assert.equal(far.lowerObservedStore,null);
+  const drive=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",2)],
+    leclerc:[observation("leclerc",3)]
+  },{channel:"drive",quantity:3,now});
+  assert.equal(drive.observedQuantityTotals,null);
+  assert.equal(drive.observedTotalPriceDifference,null);
+});
+
+test("prix identiques : le total observé de chaque enseigne est le même",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",4.99)],
+    leclerc:[observation("leclerc",4.99)]
+  },{quantity:5,now});
+  assert.equal(result.lowerObservedStore,null);
+  assert.equal(result.observedTotalPriceDifference,0);
+  assert.deepEqual(result.observedQuantityTotals,{carrefour:24.95,leclerc:24.95});
+});
