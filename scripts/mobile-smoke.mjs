@@ -201,6 +201,26 @@ try{
     return pair?.carrefour.city || null;
   });
   assert.equal(selectedPair,"Lyon");
+  // Dense public receipt histories must stay responsive on mobile without
+  // materializing and sorting all 180 x 180 cross-store combinations.
+  const densePair=await page.evaluate((date)=>{
+    const code="3017624010701";
+    const make=(store,id,price,lat,lon)=>({
+      id:store+id,productCode:code,price,date,storeName:store,
+      city:"Lyon",postcode:"69002",locationLat:lat,locationLon:lon
+    });
+    const a=Array.from({length:180},(_,i)=>make("c",i,3+i/100,45.760,4.840));
+    const b=Array.from({length:180},(_,i)=>make("l",i,4+i/100,45.761,4.841));
+    return import("./src/exact-sku-comparison.js").then(({selectComparablePricePair})=>{
+      const winner=selectComparablePricePair(a,b,new Date());
+      return {carrefour:winner?.carrefour.id,leclerc:winner?.leclerc.id,
+        distance:winner?.evidence.distanceKm};
+    });
+  },RECENT_RECEIPT_DATE);
+  assert.deepEqual({carrefour:densePair.carrefour,leclerc:densePair.leclerc},
+    {carrefour:"c179",leclerc:"l179"});
+  assert.ok(densePair.distance<2);
+
   // The previously computed pair must disappear when the comparison context changes.
   await page.locator("#radiusSelect").selectOption("10");
   assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
