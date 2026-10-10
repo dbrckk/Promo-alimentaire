@@ -386,6 +386,38 @@ try{
   await page.waitForFunction(()=>document.querySelector(".exact-sku-search-depth")
     ?.textContent?.includes("Couverture toujours partielle"),{timeout:15000});
   await page.unroute("https://prices.openfoodfacts.org/**",secondPageFailure);
+  // A discounted single-unit receipt must never be extrapolated into the
+  // checkout cost for three units, even though its unit price is visible.
+  const discountedReceiptRoute=async(route)=>{
+    const code=new URL(route.request().url()).searchParams.get("product_code");
+    await route.fulfill({status:200,contentType:"application/json",
+      body:JSON.stringify({total:2,items:[
+        {id:801,product_code:code,price:1.49,price_is_discounted:true,
+          currency:"EUR",date:RECENT_RECEIPT_DATE,
+          location:{osm_brand:"Carrefour",osm_name:"Carrefour Lyon",
+            osm_lat:45.760,osm_lon:4.84,osm_address_postcode:"69002",
+            osm_address_city:"Lyon"}},
+        {id:802,product_code:code,price:3.59,
+          currency:"EUR",date:RECENT_RECEIPT_DATE,
+          location:{osm_brand:"E.Leclerc",osm_name:"E.Leclerc Lyon",
+            osm_lat:45.761,osm_lon:4.85,osm_address_postcode:"69003",
+            osm_address_city:"Lyon"}}
+      ]})
+    });
+  };
+  await page.route("https://prices.openfoodfacts.org/**",discountedReceiptRoute);
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
+  const discountedCard=page.locator("#exactSkuComparison .exact-sku-store").first();
+  assert.match(await discountedCard.innerText(),/prix remisé ponctuel/i);
+  assert.match(await discountedCard.innerText(),/n'est pas projeté/i);
+  assert.equal(await discountedCard.locator(".exact-sku-initial-cost").count(),0);
+  assert.equal(await discountedCard.locator(".exact-sku-discount-warning").count(),1);
+  assert.equal(await page.locator("#exactSkuComparison .exact-sku-initial-cost").count(),1,
+    "La projection de l'autre enseigne non remisée reste disponible");
+  assert.doesNotMatch(await page.locator("#exactSkuComparison").innerText(),
+    /Relevé inférieur sur la paire comparable/);
+  await page.unroute("https://prices.openfoodfacts.org/**",discountedReceiptRoute);
   await page.locator("#channel").selectOption("drive");
   assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
   const drivePriceRequests=[];
