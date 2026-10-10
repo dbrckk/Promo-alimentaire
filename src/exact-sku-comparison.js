@@ -121,15 +121,22 @@ export function priceCoverageSummary(observations,now=new Date(),lookup={}){
   const moreAvailable=lookup?.moreAvailable===true;
   const pagesFetched=Number.isInteger(lookup?.pagesFetched)
     ? lookup.pagesFetched : null;
-  const valid=records.filter((record)=>record
-    && Number.isFinite(Number(record.price)) && Number(record.price)>0
-    && !Number.isNaN(new Date(record.date).getTime()));
+  const nowTime=new Date(now).getTime();
+  const valid=records.filter((record)=>{
+    if(!record || !Number.isFinite(Number(record.price))
+      || Number(record.price)<=0 || !record.date) return false;
+    const timestamp=new Date(record.date).getTime();
+    // Future-dated, invalid or missing receipts must not inflate coverage
+    // or masquerade as a recent observed price.
+    return Number.isFinite(timestamp) && Number.isFinite(nowTime)
+      && timestamp>0 && timestamp<=nowTime;
+  });
   const recent=valid.filter((record)=>{
-    const age=new Date(now).getTime()-new Date(record.date).getTime();
-    return age>=0 && age<=30*DAY_MS;
+    const age=nowTime-new Date(record.date).getTime();
+    return age<=30*DAY_MS;
   });
   const comparable=recent.filter((record)=>{
-    const age=new Date(now).getTime()-new Date(record.date).getTime();
+    const age=nowTime-new Date(record.date).getTime();
     return age<=7*DAY_MS;
   });
   return {
