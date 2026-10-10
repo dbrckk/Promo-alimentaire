@@ -2,7 +2,7 @@ import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import { computeSaving, effectivePercent, filterOffers, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
-import { fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
+import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
@@ -711,11 +711,15 @@ async function compareCurrentExactSku({deep=false}={}){
   // Network stalls are especially disruptive on mobile data connections.
   // A bounded request also ensures that the compare button is re-enabled.
   const timeout=setTimeout(()=>controller.abort(),EXACT_SKU_TIMEOUT_MS);
+  // Carrefour/E.Leclerc share an Open Prices product-code endpoint; the
+  // filtering remains retailer-specific but each identical page is fetched
+  // and decoded only once during this comparison.
+  const sharedFetch=createSharedPriceFetch();
   let fetched;
   try{
     fetched=await Promise.allSettled(stores.map((store)=>
       fetchPricesByBarcode(code,{...options,store,
-        signal:controller.signal,
+        signal:controller.signal,fetchImpl:sharedFetch,
         ...(deep ? {maxPages:3,minimumMatches:20} : {})})
     ));
   }finally{
@@ -1565,14 +1569,21 @@ async function refreshShoppingList(){
   const next={carrefour:{},leclerc:{}};
   let failures=0;
   let partialRequests=0;
+  // Cache duplicate product-code pages only for this explicit refresh.
+  // Each retailer still gets its own filtered receipts and coverage state.
+  const sharedFetch=createSharedPriceFetch();
 
   try{
     for(let index=0;index<state.shoppingList.length;index+=1){
       const item=state.shoppingList[index];
       setListStatus(`Actualisation ${index+1}/${state.shoppingList.length} : ${item.product.name || item.product.code}…`);
       const [carrefour,leclerc]=await Promise.allSettled([
-        fetchPricesByBarcode(item.product.code,basketQueryOptions("carrefour")),
-        fetchPricesByBarcode(item.product.code,basketQueryOptions("leclerc"))
+        fetchPricesByBarcode(item.product.code,{
+          ...basketQueryOptions("carrefour"),fetchImpl:sharedFetch
+        }),
+        fetchPricesByBarcode(item.product.code,{
+          ...basketQueryOptions("leclerc"),fetchImpl:sharedFetch
+        })
       ]);
       if(carrefour.status==="fulfilled"){
         next.carrefour[item.product.code]=carrefour.value.observations;

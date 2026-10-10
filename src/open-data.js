@@ -46,6 +46,36 @@ export async function fetchProductByBarcode(value, fetchImpl=fetch) {
   };
 }
 
+/**
+ * One short-lived request pool for a single two-retailer comparison.
+ * Open Prices returns the same product-code pages irrespective of retailer:
+ * the retailer is filtered locally by fetchPricesByBarcode. Share identical
+ * GET/JSON responses to avoid downloading the same page twice on Android.
+ * Both consumers must use the same AbortSignal and query options. Never
+ * retain this pool between comparisons, products or sessions.
+ */
+export function createSharedPriceFetch(fetchImpl=fetch){
+  const requests=new Map();
+  return async (url,options={})=>{
+    const key=String(url);
+    if(!requests.has(key)){
+      const job=(async()=>{
+        const response=await fetchImpl(url,options);
+        return {
+          ok:response.ok,status:response.status,
+          payload:response.ok ? await response.json() : null
+        };
+      })();
+      requests.set(key,job);
+    }
+    const response=await requests.get(key);
+    // Consumers receive independent response-like objects; the JSON body
+    // is decoded only once and treated as read-only by the normalization code.
+    return {ok:response.ok,status:response.status,
+      json:async()=>response.payload};
+  };
+}
+
 export async function fetchPricesByBarcode(value,{
   store,size=100,coords=null,radiusKm=25,fetchImpl=fetch,
   maxPages=2,minimumMatches=4,signal=null

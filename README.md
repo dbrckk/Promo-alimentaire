@@ -435,3 +435,9 @@ Quand la comparaison de deux relevés locaux de l'EAN exact est possible, le com
 ### Relevés de prix remisés
 
 Un ticket Open Prices signalé comme **déjà remisé** reste visible, mais ne peut pas servir à désigner l'enseigne au prix habituel le plus bas, ni à projeter un panier de plusieurs unités. Pour une quantité supérieure à un, la carte du magasin ne multiplie plus non plus le prix remisé d'un ticket individuel en un prétendu **débours avant remboursements** ; elle affiche un avertissement explicite. Le prix d'un ticket non remisé dans l'autre enseigne reste consultable et peut encore donner une estimation distincte, sans inventer de comparaison entre les deux. Si une paire plus ancienne de relevés non remisés reste récente (7 jours), proche dans le temps (3 jours) et géographiquement comparable, elle peut être retenue à la place. Les gains conditionnels ne sont jamais cumulés automatiquement avec un ticket remisé.
+
+### Réduction des données téléchargées par comparaison
+
+Les deux enseignes partagent les mêmes pages de recherche par GTIN dans Open Prices. Pour une comparaison EAN ou une actualisation explicite du panier, l'application **télécharge et décode chaque URL de page une seule fois**, puis **filtre séparément** les relevés Carrefour et E.Leclerc. La déduplication est limitée à l'opération en cours (aucun cache inter-produit ou durable), et respecte le même signal d'annulation pour les deux enseignes. Ainsi, une page demandée par les deux enseignes ne coûte plus deux réponses réseau identiques. Les garde-fous propres à chaque enseigne, la recherche incomplète et le choix des magasins comparables restent inchangés.
+
+Le parcours Android contrôle la mutualisation sur deux pages paginées et vérifie les prix propres à chaque enseigne, ainsi que le nombre réel d'appels lors d'une actualisation du panier.
