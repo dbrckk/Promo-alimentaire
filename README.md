@@ -404,3 +404,10 @@ La recherche approfondie ne garantit ni stock ni prix en caisse. Lorsque des pag
 ### Performances de la comparaison mobile
 
 Pour un EAN disposant de nombreux relevés, le moteur conserve uniquement **la meilleure paire comparable trouvée au cours du parcours**. Il n'accumule et ne trie plus toutes les combinaisons Carrefour × E.Leclerc en mémoire. Les règles de sélection restent identiques : dates récentes, proximité démontrée, preuves, puis prix prudent lorsque les observations se contredisent. Le coût mémoire supplémentaire devient constant (au lieu de croître avec le nombre de paires). Le parcours Android vérifie une simulation de 180 relevés par enseigne, soit **32 400 paires candidates**.
+
+
+### Provenance temporelle des relevés Open Prices
+
+Seule la **date réelle du relevé de prix** (champ date de la fiche Open Prices) peut servir à qualifier un tarif comme récent. La date de création ou de mise à jour du **dossier informatique** ne prouve pas qu'un prix a été observé ce jour-là : ces dates de métadonnées ne sont jamais utilisées comme dates de ticket ou de rayon. Les observations sans date sont conservées comme non exploitables pour la couverture, mais ne sont pas retenues pour chiffrer un prix ou déclarer un magasin moins cher. Elles ne bloquent plus la recherche d'une page suivante : le seuil d'arrêt anticipé porte sur les **relevés exploitables de 30 jours au plus**, et non sur le nombre brut de fiches.
+
+Le parcours Android vérifie ce scénario avec quatre lignes sans date, pourtant récemment mises à jour, puis une fiche correctement datée trouvée sur la page suivante.

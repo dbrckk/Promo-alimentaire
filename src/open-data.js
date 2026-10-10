@@ -88,6 +88,7 @@ export async function fetchPricesByBarcode(value,{
   let total=null;
   let partial=false;
   let moreAvailable=false;
+  let recentUsableMatches=0;
 
   for(let page=1;page<=pageLimit;page++){
     // Page 1 omits the page query for backwards compatibility with callers.
@@ -134,6 +135,9 @@ export async function fetchPricesByBarcode(value,{
       if(seen.has(key)) continue;
       seen.add(key);
       all.push(observation);
+      // Undated, stale or future-dated records must not exhaust the
+      // search budget: only truly recent receipts satisfy the target count.
+      if(isFreshObservation(observation,30)) recentUsableMatches+=1;
     }
 
     const declaredPages=Number(payload.pages);
@@ -146,7 +150,7 @@ export async function fetchPricesByBarcode(value,{
     // at the request limit or after finding enough matches. This distinction
     // is crucial when saying that no EAN price was found for an enseigne.
     moreAvailable=hasMore && items.length>0;
-    if(page>=pageLimit || all.length>=minMatches || items.length===0) break;
+    if(page>=pageLimit || recentUsableMatches>=minMatches || items.length===0) break;
     if(!moreAvailable) break;
     // Short pages without explicit page count cannot safely imply that
     // another page exists, even if the reported total is inconsistent.
@@ -228,7 +232,9 @@ export function normalizePriceObservation(item,originCoords=null) {
       && Number(item.price_without_discount)>0
       ? Number(item.price_without_discount) : null,
     discountType:item.discount_type || null,
-    date:item.date || item.updated || item.created || null,
+    // updated/created are metadata timestamps, not proof of a shelf or
+    // checkout price observation. Never invent a receipt date from them.
+    date:item.date || null,
     retailerText,
     storeName:location.osm_name || location.osm_brand || "Magasin non précisé",
     city:location.osm_address_city || "",
