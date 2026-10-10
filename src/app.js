@@ -827,6 +827,9 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
       ${row.initialCost!==null
         ? `<p class="help exact-sku-initial-cost">Débours estimé avant remboursements pour ${escapeHtml(quantityLabel)} : <strong>${money.format(row.initialCost)}</strong> (prix communautaire indicatif).</p>`
         : ""}
+      ${observed?.isDiscounted===true && result.quantity>1
+        ? `<p class="help exact-sku-discount-warning">Prix remisé observé sur un ticket individuel : le coût pour ${escapeHtml(quantityLabel)} n'est pas projeté, car la remise et la disponibilité de plusieurs unités ne sont pas établies.</p>`
+        : ""}
       ${coverageMarkup}
       <p class="help">${escapeHtml(unresolved
         ? "Impossible de charger les relevés de cette enseigne."
