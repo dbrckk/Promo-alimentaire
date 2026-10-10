@@ -814,7 +814,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
   const difference=result.observedPriceDifference;
   const paired=result.comparisonPair;
   const best=confidence.comparable && result.lowerObservedStore
-    ? `${incomplete ? "Parmi les relevés consultés, " : ""}relevé inférieur sur la paire comparable : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
+    ? `${incomplete ? "Parmi les relevés consultés, relevé inférieur" : "Relevé inférieur"} sur la paire comparable : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
     : confidence.comparable && difference===0
       ? "Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère."
       : comparabilityReasons[confidence.status]
