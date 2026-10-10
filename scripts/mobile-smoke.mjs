@@ -507,8 +507,38 @@ try{
   await assertNoHorizontalOverflow(page,"liste de courses");
   await page.screenshot({path:OUT+"/02-panier.png",fullPage:true});
 
-  // Manual shelf-price note: never a guaranteed retailer promotion.
+  // A successful first and second page do not make a basket exhaustive if
+  // Open Prices advertises further pages. Budget confidence must drop.
   await page.locator("#channel").selectOption("store");
+  const limitedBasketSearch=async(route)=>{
+    const u=new URL(route.request().url());
+    const pageNumber=Number(u.searchParams.get("page")||1);
+    const code=u.searchParams.get("product_code");
+    await route.fulfill({status:200,contentType:"application/json",
+      body:JSON.stringify({pages:4,total:400,items:[
+        {id:900+pageNumber*2,product_code:code,price:3.49,
+          currency:"EUR",date:RECENT_RECEIPT_DATE,
+          location:{osm_brand:"Carrefour",osm_name:"Carrefour Lyon",
+            osm_lat:45.760,osm_lon:4.84,osm_address_postcode:"69002",
+            osm_address_city:"Lyon"}},
+        {id:901+pageNumber*2,product_code:code,price:3.59,
+          currency:"EUR",date:RECENT_RECEIPT_DATE,
+          location:{osm_brand:"E.Leclerc",osm_name:"E.Leclerc Lyon",
+            osm_lat:45.761,osm_lon:4.85,osm_address_postcode:"69003",
+            osm_address_city:"Lyon"}}
+      ]})
+    });
+  };
+  await page.route("https://prices.openfoodfacts.org/**",limitedBasketSearch);
+  await page.locator("#refreshList").click();
+  await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,{timeout:15000});
+  const limitedBasketStatus=await page.locator("#listStatus").innerText();
+  assert.match(limitedBasketStatus,/Actualisation indicative/);
+  assert.match(limitedBasketStatus,/2 limitée/);
+  assert.match(await page.locator("#budgetSummary").innerText(),/Recherche de prix incomplète/);
+  await page.unroute("https://prices.openfoodfacts.org/**",limitedBasketSearch);
+
+  // Manual shelf-price note: never a guaranteed retailer promotion.
   await page.locator("#manualPricePanel").evaluate((element)=>{element.open=true;});
   await page.locator("#manualPriceStore").selectOption("carrefour");
   await page.locator("#manualPriceAmount").fill("2.69");

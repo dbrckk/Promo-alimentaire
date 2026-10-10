@@ -1568,7 +1568,8 @@ async function refreshShoppingList(){
   els.refreshList.disabled=true;
   const next={carrefour:{},leclerc:{}};
   let failures=0;
-  let partialRequests=0;
+  let interruptedRequests=0;
+  let limitedRequests=0;
   // Cache duplicate product-code pages only for this explicit refresh.
   // Each retailer still gets its own filtered receipts and coverage state.
   const sharedFetch=createSharedPriceFetch();
@@ -1587,26 +1588,31 @@ async function refreshShoppingList(){
       ]);
       if(carrefour.status==="fulfilled"){
         next.carrefour[item.product.code]=carrefour.value.observations;
-        if(carrefour.value.partial) partialRequests+=1;
+        if(carrefour.value.partial) interruptedRequests+=1;
+        else if(carrefour.value.searchIncomplete) limitedRequests+=1;
         recordProductObservation(item.product,"carrefour",carrefour.value.observations);
       }else { next.carrefour[item.product.code]=[]; failures+=1; }
       if(leclerc.status==="fulfilled"){
         next.leclerc[item.product.code]=leclerc.value.observations;
-        if(leclerc.value.partial) partialRequests+=1;
+        if(leclerc.value.partial) interruptedRequests+=1;
+        else if(leclerc.value.searchIncomplete) limitedRequests+=1;
         recordProductObservation(item.product,"leclerc",leclerc.value.observations);
       }else { next.leclerc[item.product.code]=[]; failures+=1; }
     }
     state.basketPriceData=next;
-    state.basketPriceCoverageIncomplete=partialRequests>0;
+    // A successful HTTP response may still cover only the first few pages.
+    // Missing pages and outright provider failures must lower budget confidence.
+    state.basketPriceCoverageIncomplete=failures>0
+      || interruptedRequests>0 || limitedRequests>0;
     const scenarios=evaluateCurrentBasketScenarios();
     recordComparisonHistory(scenarios);
     renderShoppingList();
     const locality=state.nearbyEnabled ? ` dans un rayon de ${state.radiusKm} km` : " sans filtre géographique";
     setListStatus(
-      failures || partialRequests
-        ? `Actualisation indicative : ${failures} requête(s) indisponible(s), ${partialRequests} recherche(s) paginée(s) partielles${locality}.`
+      failures || interruptedRequests || limitedRequests
+        ? `Actualisation indicative : ${failures} requête(s) indisponible(s), ${interruptedRequests} recherche(s) interrompue(s), ${limitedRequests} limitée(s) aux premières pages${locality}. Le total ne représente que les prix consultés.`
         : `Prix actualisés pour Carrefour et E.Leclerc${locality}.`,
-      failures>0 || partialRequests>0
+      failures>0 || interruptedRequests>0 || limitedRequests>0
     );
   }finally{
     state.basketRefreshing=false;
