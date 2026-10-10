@@ -865,17 +865,24 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
   const confidence=result.comparisonEvidence || {};
   const difference=result.observedPriceDifference;
   const paired=result.comparisonPair;
+  const totalDifference=result.observedTotalPriceDifference;
+  const quantityProjection=result.quantity>1 && result.observedQuantityTotals
+    ? ` Pour ${quantityLabel}, écart indicatif hors promotions : ${money.format(totalDifference)}. Projection de prix unitaires, sans garantie de stock ni de quantité disponible.`
+    : "";
   const best=result.channel!=="store"
     ? "Aucun tarif Drive ou livraison ne peut être déduit de relevés physiques. Les offres compatibles avec ce canal restent consultables."
     : confidence.comparable && result.lowerObservedStore
-    ? `${incomplete ? "Parmi les relevés consultés, relevé inférieur" : "Relevé inférieur"} sur la paire comparable : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
+    ? `${incomplete ? "Parmi les relevés consultés, relevé inférieur" : "Relevé inférieur"} sur la paire comparable : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité).${quantityProjection} Il ne s'agit pas d'un prix actuel confirmé.`
     : confidence.comparable && difference===0
-      ? "Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère."
+      ? `Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère.${quantityProjection}`
       : comparabilityReasons[confidence.status]
         || "Aucune comparaison de prix fiable possible avec les relevés disponibles.";
   const pairedDetails=paired ? `<p>Relevés retenus pour la comparaison locale :
       Carrefour ${money.format(Number(paired.carrefour.price))} (${escapeHtml(formatDate(paired.carrefour.date))}, ${escapeHtml(paired.carrefour.storeName || "magasin non précisé")})
       · E.Leclerc ${money.format(Number(paired.leclerc.price))} (${escapeHtml(formatDate(paired.leclerc.date))}, ${escapeHtml(paired.leclerc.storeName || "magasin non précisé")}).
+      ${result.quantity>1 && result.observedQuantityTotals
+        ? `Projection pour ${escapeHtml(quantityLabel)} : Carrefour ${money.format(result.observedQuantityTotals.carrefour)} · E.Leclerc ${money.format(result.observedQuantityTotals.leclerc)} (hors remises, prix et stocks non garantis).`
+        : ""}
       Les cartes ci-dessous montrent séparément le dernier prix observé de chaque enseigne : il peut être issu d'un autre magasin.</p>` : "";
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
