@@ -431,3 +431,7 @@ La comparaison EAN exact annule désormais ses appels Open Prices encore actifs 
 ### Comparaison d'une quantité d'un même code-barres
 
 Quand la comparaison de deux relevés locaux de l'EAN exact est possible, le comparateur présente le **prix unitaire observé**, une **projection du coût par enseigne** pour la quantité choisie et **l'écart de prix indicatif total hors promotions**. Exemple : 3 articles observés à 3,49 € contre 3,59 € donnent des projections de 10,47 € et 10,77 € : écart indicatif 0,30 €. Il ne s'agit ni d'un prix actuel garanti, ni d'un devis, ni d'une confirmation que la quantité sera disponible. Sans paire locale vérifiable ou en Drive, aucun total comparatif n'est calculé. Les remboursements et coupons restent des estimations distinctes, jamais automatiquement additionnées à cet écart.
+
+### Relevés de prix remisés
+
+Un ticket Open Prices signalé comme **déjà remisé** reste visible, mais ne peut pas servir à désigner l'enseigne au prix habituel le plus bas, ni à projeter un panier de plusieurs unités. Si une paire plus ancienne de relevés non remisés reste récente (7 jours), proche dans le temps (3 jours) et géographiquement comparable, elle peut être retenue à la place. Les gains conditionnels ne sont jamais cumulés automatiquement avec un ticket remisé.
