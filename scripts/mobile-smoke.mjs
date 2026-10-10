@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import {mkdir,readFile} from "node:fs/promises";
 import {chromium,devices} from "playwright";
 
+const RECENT_RECEIPT_DATE=new Date(Date.now()-24*60*60*1000)
+  .toISOString().slice(0,10); // fresh regardless of when GitHub Actions runs
 const BASE=process.env.SMOKE_URL || "http://127.0.0.1:4173/";
 const OUT=process.env.SMOKE_OUTPUT || "artifacts/mobile";
 await mkdir(OUT,{recursive:true});
@@ -39,11 +41,11 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
   route.fulfill({
     status:200,contentType:"application/json",
     body:JSON.stringify({total:2,items:[
-      {id:1,product_code:code,price:3.49,currency:"EUR",date:"2026-10-07",
+      {id:1,product_code:code,price:3.49,currency:"EUR",date:RECENT_RECEIPT_DATE,
         location_id:42,location:{id:42,osm_brand:"Carrefour",
         osm_name:"Carrefour Lyon",osm_lat:45.760,osm_lon:4.84,
         osm_address_postcode:"69002",osm_address_city:"Lyon"}},
-      {id:2,product_code:code,price:3.59,currency:"EUR",date:"2026-10-07",
+      {id:2,product_code:code,price:3.59,currency:"EUR",date:RECENT_RECEIPT_DATE,
         location_id:99,location:{id:99,osm_brand:"E.Leclerc",
         osm_name:"E.Leclerc Lyon",osm_lat:45.761,osm_lon:4.85,
         osm_address_postcode:"69003",osm_address_city:"Lyon"}}
@@ -156,6 +158,8 @@ try{
   assert.match(exactStoreCards,/E.Leclerc Lyon/);
   assert.match(exactStoreCards,/Relevé inférieur sur la paire comparable : Carrefour/);
   assert.match(exactStoreCards,/Relevés retenus pour la comparaison locale/);
+  assert.equal(await page.locator('[data-action="expand-exact-sku"]').count(),0,
+    "Un relevé complet ne nécessite pas de recherche approfondie");
   assert.match(exactStoreCards,/0,10/);
   // The comparison module must still reject stale or far-away receipts
   // inside the actual Android browser runtime.
@@ -217,11 +221,11 @@ try{
     await route.fulfill({
       status:200,contentType:"application/json",
       body:JSON.stringify({total:250,pages:3,items:[
-        {id:1,product_code:code,price:3.49,currency:"EUR",date:"2026-10-07",
+        {id:1,product_code:code,price:3.49,currency:"EUR",date:RECENT_RECEIPT_DATE,
           location:{osm_brand:"Carrefour",osm_name:"Carrefour Lyon",
             osm_lat:45.760,osm_lon:4.84,osm_address_postcode:"69002",
             osm_address_city:"Lyon"}},
-        {id:2,product_code:code,price:3.59,currency:"EUR",date:"2026-10-07",
+        {id:2,product_code:code,price:3.59,currency:"EUR",date:RECENT_RECEIPT_DATE,
           location:{osm_brand:"E.Leclerc",osm_name:"E.Leclerc Lyon",
             osm_lat:45.761,osm_lon:4.85,osm_address_postcode:"69003",
             osm_address_city:"Lyon"}}
