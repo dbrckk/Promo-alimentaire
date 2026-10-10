@@ -538,6 +538,45 @@ try{
   assert.match(await page.locator("#budgetSummary").innerText(),/Recherche de prix incomplète/);
   await page.unroute("https://prices.openfoodfacts.org/**",limitedBasketSearch);
 
+  // An in-flight basket refresh must not inject obsolete prices after the
+  // shopper switches channels. Delay a real browser request before aborting.
+  const slowBasketRoute=async(route)=>{
+    const code=new URL(route.request().url()).searchParams.get("product_code");
+    await new Promise((resolve)=>setTimeout(resolve,900));
+    try{
+      await route.fulfill({status:200,contentType:"application/json",
+        body:JSON.stringify({total:2,items:[
+          {id:1101,product_code:code,price:9.99,currency:"EUR",
+            date:RECENT_RECEIPT_DATE,
+            location:{osm_brand:"Carrefour",osm_name:"Carrefour Lyon",
+              osm_lat:45.760,osm_lon:4.84,osm_address_postcode:"69002",
+              osm_address_city:"Lyon"}},
+          {id:1102,product_code:code,price:8.88,currency:"EUR",
+            date:RECENT_RECEIPT_DATE,
+            location:{osm_brand:"E.Leclerc",osm_name:"E.Leclerc Lyon",
+              osm_lat:45.761,osm_lon:4.85,osm_address_postcode:"69003",
+              osm_address_city:"Lyon"}}
+        ]})
+      });
+    }catch{
+      // Aborted browser requests can close before the mock fulfils.
+    }
+  };
+  await page.route("https://prices.openfoodfacts.org/**",slowBasketRoute);
+  const slowRequestStarted=page.waitForRequest((request)=>
+    request.url().includes("prices.openfoodfacts.org")
+      && request.url().includes("product_code=3017624010701"),{timeout:8000});
+  await page.locator("#refreshList").click();
+  await slowRequestStarted;
+  await page.locator("#channel").selectOption("drive");
+  assert.match(await page.locator("#listStatus").innerText(),/Actualisation annulée/);
+  assert.equal(await page.locator("#refreshList").isDisabled(),false);
+  await new Promise((resolve)=>setTimeout(resolve,1050));
+  await page.locator("#channel").selectOption("store");
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/9,99|8,88/,
+    "Les anciens relevés reçus après annulation ne doivent pas remplacer les prix du panier");
+  await page.unroute("https://prices.openfoodfacts.org/**",slowBasketRoute);
+
   // Manual shelf-price note: never a guaranteed retailer promotion.
   await page.locator("#manualPricePanel").evaluate((element)=>{element.open=true;});
   await page.locator("#manualPriceStore").selectOption("carrefour");
