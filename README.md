@@ -399,3 +399,8 @@ Les cartes Carrefour et E.Leclerc indiquent maintenant, séparément, si les rel
 Si la comparaison Carrefour / E.Leclerc indique une recherche partielle ou interrompue, le bouton **« Approfondir la recherche »** permet, sur demande, de refaire les deux recherches Open Prices jusqu'à **3 pages** avec un seuil de **20 relevés** exploitables par enseigne, au lieu du parcours rapide initial de 2 pages et 4 relevés. Il s'agit d'une action réseau volontaire, pas d'une surveillance en arrière-plan. Le résultat peut rester incomplet si les données sont paginées davantage ou si une source échoue. Les cartes restent spécifiques à l'EAN, aux enseignes et au canal choisi ; aucun prix Drive n'est déduit d'un relevé en magasin.
 
 La recherche approfondie ne garantit ni stock ni prix en caisse. Lorsque des pages restent inconnues, le texte précise que la comparaison porte uniquement sur les relevés consultés. Les observations datées dans le futur ne sont plus comptabilisées comme une couverture valide.
+
+
+### Performances de la comparaison mobile
+
+Pour un EAN disposant de nombreux relevés, le moteur conserve uniquement **la meilleure paire comparable trouvée au cours du parcours**. Il n'accumule et ne trie plus toutes les combinaisons Carrefour × E.Leclerc en mémoire. Les règles de sélection restent identiques : dates récentes, proximité démontrée, preuves, puis prix prudent lorsque les observations se contredisent. Le coût mémoire supplémentaire devient constant (au lieu de croître avec le nombre de paires). Le parcours Android vérifie une simulation de 180 relevés par enseigne, soit **32 400 paires candidates**.
