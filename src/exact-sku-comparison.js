@@ -245,7 +245,11 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
         }
         return String(a.title).localeCompare(String(b.title),"fr");
       });
-    const initialCost=price!==null?round(price*qty):null;
+    // A markdown on a receipt is a one-off observed unit price: multiplying
+    // it by the requested quantity would imply repeatable availability.
+    const initialCost=price!==null
+      && !(observed?.isDiscounted===true && qty>1)
+      ? round(price*qty) : null;
     // Alternative promotions are independent and may be incompatible:
     // never sum several refunds or apply them as guaranteed savings.
     const bestCandidate=exactOffers.find((offer)=>offer.saving!==null)||null;
