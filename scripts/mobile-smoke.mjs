@@ -163,6 +163,10 @@ try{
     "Un relevé complet ne nécessite pas de recherche approfondie");
   assert.match(exactStoreCards,/0,10/);
   assert.match(exactStoreCards,/Quantité : 3 articles/);
+  assert.match(exactStoreCards,/Projection pour 3 articles/);
+  assert.match(exactStoreCards,/10,47/);
+  assert.match(exactStoreCards,/10,77/);
+  assert.match(exactStoreCards,/écart indicatif hors promotions : 0,30/);
   assert.match(exactStoreCards,/Débours estimé avant remboursements pour 3 articles/);
   assert.match(exactStoreCards,/10,47/);
   assert.match(exactStoreCards,/10,77/);
