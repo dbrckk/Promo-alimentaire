@@ -106,6 +106,7 @@ const els = {
   manualPriceStatus:document.querySelector("#manualPriceStatus"),
   manualPriceEntries:document.querySelector("#manualPriceEntries"),
   refreshList:document.querySelector("#refreshList"),
+  cancelRefreshList:document.querySelector("#cancelRefreshList"),
   listNearbyButton:document.querySelector("#listNearbyButton"),
   listRadiusSelect:document.querySelector("#listRadiusSelect"),
   clearList:document.querySelector("#clearList"),
@@ -265,6 +266,7 @@ els.exactSkuComparison.addEventListener("click",(event)=>{
 els.nearbyButton.addEventListener("click",toggleNearbyPrices);
 els.listNearbyButton.addEventListener("click",toggleNearbyPrices);
 els.refreshList.addEventListener("click",refreshShoppingList);
+els.cancelRefreshList.addEventListener("click",cancelBasketPriceRefresh);
 els.exportList.addEventListener("click",downloadShoppingListBackup);
 els.importList.addEventListener("click",()=>{
   if(state.basketRefreshing){
@@ -1575,6 +1577,7 @@ async function refreshShoppingList(){
   if(state.basketRefreshing || !state.shoppingList.length) return;
   state.basketRefreshing=true;
   els.refreshList.disabled=true;
+  els.cancelRefreshList.classList.remove("hidden");
   const refreshToken=++basketRefreshToken;
   const controller=new AbortController();
   basketRefreshController=controller;
@@ -1641,6 +1644,7 @@ async function refreshShoppingList(){
       basketRefreshController=null;
       state.basketRefreshing=false;
       els.refreshList.disabled=false;
+      els.cancelRefreshList.classList.add("hidden");
     }
   }
 }
@@ -1653,6 +1657,7 @@ function cancelBasketPriceRefresh(){
   controller.abort();
   state.basketRefreshing=false;
   els.refreshList.disabled=false;
+  els.cancelRefreshList.classList.add("hidden");
   setListStatus("Actualisation annulée : la liste ou les paramètres ont changé. Relance la recherche de prix.",true);
 }
 
