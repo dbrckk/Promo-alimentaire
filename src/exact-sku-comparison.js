@@ -274,10 +274,22 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
   }
   const observedPriceDifference=pairPrices
     ? round(Math.abs(pairPrices.carrefour-pairPrices.leclerc)) : null;
+  // These totals extrapolate a unit observation to the requested quantity.
+  // They are NOT receipts for a multi-unit purchase, confirmed stock or
+  // coupon-adjusted totals. Only expose them for a comparable local pair.
+  const observedQuantityTotals=pairPrices ? {
+    carrefour:round(pairPrices.carrefour*qty),
+    leclerc:round(pairPrices.leclerc*qty)
+  } : null;
+  const observedTotalPriceDifference=observedQuantityTotals
+    ? round(Math.abs(
+      observedQuantityTotals.carrefour-observedQuantityTotals.leclerc
+    )) : null;
   return {status:"ok",gtin,quantity:qty,channel,
     lowerObservedStore,comparisonEvidence:evidence,
     comparisonPair:pair ? {
       carrefour:pair.carrefour,leclerc:pair.leclerc
     } : null,
-    observedPriceDifference,stores:rows};
+    observedPriceDifference,observedQuantityTotals,
+    observedTotalPriceDifference,stores:rows};
 }
