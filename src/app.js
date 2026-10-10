@@ -173,6 +173,9 @@ const state = {
 // obsolete network traffic instead of merely discarding its eventual reply.
 let skuComparisonController=null;
 const EXACT_SKU_TIMEOUT_MS=18000;
+// An obsolete basket lookup must not commit its old prices after UI changes.
+let basketRefreshController=null;
+let basketRefreshToken=0;
 
 els.store.value=state.store;
 els.channel.value=state.channel;
@@ -204,6 +207,7 @@ els.store.addEventListener("change",async()=>{
 });
 els.channel.addEventListener("change",()=>{
   invalidateExactSkuComparison();
+  cancelBasketPriceRefresh();
   state.channel=els.channel.value;
   localStorage.setItem("promo-channel",state.channel);
   render();
@@ -281,6 +285,7 @@ els.shoppingBudget.addEventListener("input",()=>{
   renderBudgetSummary(evaluateCurrentBasketScenarios());
 });
 els.clearList.addEventListener("click",()=>{
+  cancelBasketPriceRefresh();
   state.shoppingList=[];
   state.basketPriceData={carrefour:{},leclerc:{}};
   state.basketPriceCoverageIncomplete=false;
@@ -316,8 +321,9 @@ els.radiusSelect.addEventListener("change",async()=>{
   els.listRadiusSelect.value=String(state.radiusKm);
   syncNearbyControls();
   if(state.nearbyEnabled){
-    if(state.productCode) await refreshPrices(state.productCode);
+    // Invalidate immediately, before the asynchronous product lookup.
     markBasketPricesStale();
+    if(state.productCode) await refreshPrices(state.productCode);
   }
 });
 els.listRadiusSelect.addEventListener("change",async()=>{
@@ -326,8 +332,9 @@ els.listRadiusSelect.addEventListener("change",async()=>{
   els.radiusSelect.value=String(state.radiusKm);
   syncNearbyControls();
   if(state.nearbyEnabled){
-    if(state.productCode) await refreshPrices(state.productCode);
+    // Invalidate immediately, before the asynchronous product lookup.
     markBasketPricesStale();
+    if(state.productCode) await refreshPrices(state.productCode);
   }
 });
 els.closeScan.addEventListener("click",()=>els.scanDialog.close());
@@ -1396,6 +1403,7 @@ function renderListCount(){
 
 function addCurrentProduct(){
   if(!state.product) return;
+  cancelBasketPriceRefresh();
   const code=state.product.code;
   const existing=state.shoppingList.find((item)=>item.product.code===code);
   if(existing){
@@ -1431,6 +1439,7 @@ function handleShoppingListAction(event){
   const code=button.dataset.code;
   const index=state.shoppingList.findIndex((item)=>item.product.code===code);
   if(index<0) return;
+  cancelBasketPriceRefresh();
   const action=button.dataset.listAction;
   if(action==="remove"){
     state.shoppingList.splice(index,1);
@@ -1566,6 +1575,14 @@ async function refreshShoppingList(){
   if(state.basketRefreshing || !state.shoppingList.length) return;
   state.basketRefreshing=true;
   els.refreshList.disabled=true;
+  const refreshToken=++basketRefreshToken;
+  const controller=new AbortController();
+  basketRefreshController=controller;
+  const listSnapshot=[...state.shoppingList];
+  const queryOptionsByStore={
+    carrefour:basketQueryOptions("carrefour"),
+    leclerc:basketQueryOptions("leclerc")
+  };
   const next={carrefour:{},leclerc:{}};
   let failures=0;
   let interruptedRequests=0;
@@ -1575,17 +1592,21 @@ async function refreshShoppingList(){
   const sharedFetch=createSharedPriceFetch();
 
   try{
-    for(let index=0;index<state.shoppingList.length;index+=1){
-      const item=state.shoppingList[index];
-      setListStatus(`Actualisation ${index+1}/${state.shoppingList.length} : ${item.product.name || item.product.code}…`);
+    for(let index=0;index<listSnapshot.length;index+=1){
+      if(controller.signal.aborted || refreshToken!==basketRefreshToken) return;
+      const item=listSnapshot[index];
+      setListStatus(`Actualisation ${index+1}/${listSnapshot.length} : ${item.product.name || item.product.code}…`);
       const [carrefour,leclerc]=await Promise.allSettled([
         fetchPricesByBarcode(item.product.code,{
-          ...basketQueryOptions("carrefour"),fetchImpl:sharedFetch
+          ...queryOptionsByStore.carrefour,fetchImpl:sharedFetch,
+          signal:controller.signal
         }),
         fetchPricesByBarcode(item.product.code,{
-          ...basketQueryOptions("leclerc"),fetchImpl:sharedFetch
+          ...queryOptionsByStore.leclerc,fetchImpl:sharedFetch,
+          signal:controller.signal
         })
       ]);
+      if(controller.signal.aborted || refreshToken!==basketRefreshToken) return;
       if(carrefour.status==="fulfilled"){
         next.carrefour[item.product.code]=carrefour.value.observations;
         if(carrefour.value.partial) interruptedRequests+=1;
@@ -1599,6 +1620,7 @@ async function refreshShoppingList(){
         recordProductObservation(item.product,"leclerc",leclerc.value.observations);
       }else { next.leclerc[item.product.code]=[]; failures+=1; }
     }
+    if(controller.signal.aborted || refreshToken!==basketRefreshToken) return;
     state.basketPriceData=next;
     // A successful HTTP response may still cover only the first few pages.
     // Missing pages and outright provider failures must lower budget confidence.
@@ -1615,9 +1637,23 @@ async function refreshShoppingList(){
       failures>0 || interruptedRequests>0 || limitedRequests>0
     );
   }finally{
-    state.basketRefreshing=false;
-    els.refreshList.disabled=false;
+    if(basketRefreshController===controller){
+      basketRefreshController=null;
+      state.basketRefreshing=false;
+      els.refreshList.disabled=false;
+    }
   }
+}
+
+function cancelBasketPriceRefresh(){
+  basketRefreshToken+=1;
+  const controller=basketRefreshController;
+  if(!controller) return;
+  basketRefreshController=null;
+  controller.abort();
+  state.basketRefreshing=false;
+  els.refreshList.disabled=false;
+  setListStatus("Actualisation annulée : la liste ou les paramètres ont changé. Relance la recherche de prix.",true);
 }
 
 function basketQueryOptions(store){
@@ -1630,6 +1666,7 @@ function basketQueryOptions(store){
 }
 
 function markBasketPricesStale(){
+  cancelBasketPriceRefresh();
   state.basketPriceData={carrefour:{},leclerc:{}};
   state.basketPriceCoverageIncomplete=false;
   renderShoppingList();
