@@ -411,3 +411,10 @@ Pour un EAN disposant de nombreux relevés, le moteur conserve uniquement **la m
 Seule la **date réelle du relevé de prix** (champ date de la fiche Open Prices) peut servir à qualifier un tarif comme récent. La date de création ou de mise à jour du **dossier informatique** ne prouve pas qu'un prix a été observé ce jour-là : ces dates de métadonnées ne sont jamais utilisées comme dates de ticket ou de rayon. Les observations sans date sont conservées comme non exploitables pour la couverture, mais ne sont pas retenues pour chiffrer un prix ou déclarer un magasin moins cher. Elles ne bloquent plus la recherche d'une page suivante : le seuil d'arrêt anticipé porte sur les **relevés exploitables de 30 jours au plus**, et non sur le nombre brut de fiches.
 
 Le parcours Android vérifie ce scénario avec quatre lignes sans date, pourtant récemment mises à jour, puis une fiche correctement datée trouvée sur la page suivante.
+
+
+### Quantités dans le comparateur EAN exact
+
+L'onglet **Produit** accepte maintenant une **quantité entière de 1 à 100** avant de comparer Carrefour et E.Leclerc. Les prix relevés restent exprimés par unité ; les cartes ajoutent le débours hypothétique pour la quantité choisie, avant remboursements. Les offres rattachées à l'EAN exact respectent leur quantité minimale. Lorsqu'un remboursement est chiffrable, son montant et le coût après remboursement concernent la **quantité sélectionnée** ; l'application n'additionne toujours pas plusieurs offres incompatibles.
+
+Modifier la quantité efface immédiatement l'ancien résultat. Une quantité vide, fractionnaire ou hors limites empêche la requête API et affiche un message clair. Les prix restent communautaires et indicatifs : aucun montant affiché n'est un total de caisse garanti. Le parcours Android vérifie trois unités et le rejet d'une quantité invalide.
