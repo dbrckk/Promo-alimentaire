@@ -321,8 +321,9 @@ els.radiusSelect.addEventListener("change",async()=>{
   els.listRadiusSelect.value=String(state.radiusKm);
   syncNearbyControls();
   if(state.nearbyEnabled){
-    if(state.productCode) await refreshPrices(state.productCode);
+    // Invalidate immediately, before the asynchronous product lookup.
     markBasketPricesStale();
+    if(state.productCode) await refreshPrices(state.productCode);
   }
 });
 els.listRadiusSelect.addEventListener("change",async()=>{
@@ -331,8 +332,9 @@ els.listRadiusSelect.addEventListener("change",async()=>{
   els.radiusSelect.value=String(state.radiusKm);
   syncNearbyControls();
   if(state.nearbyEnabled){
-    if(state.productCode) await refreshPrices(state.productCode);
+    // Invalidate immediately, before the asynchronous product lookup.
     markBasketPricesStale();
+    if(state.productCode) await refreshPrices(state.productCode);
   }
 });
 els.closeScan.addEventListener("click",()=>els.scanDialog.close());
