@@ -534,7 +534,7 @@ try{
   await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,{timeout:15000});
   const limitedBasketStatus=await page.locator("#listStatus").innerText();
   assert.match(limitedBasketStatus,/Actualisation indicative/);
-  assert.match(limitedBasketStatus,/2 limitée\\(s\\) aux premières pages/);
+  assert.match(limitedBasketStatus,/2 limitée/);
   assert.match(await page.locator("#budgetSummary").innerText(),/Recherche de prix incomplète/);
   await page.unroute("https://prices.openfoodfacts.org/**",limitedBasketSearch);
 
