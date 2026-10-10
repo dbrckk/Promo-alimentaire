@@ -575,6 +575,22 @@ try{
   await page.locator("#channel").selectOption("store");
   assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/9,99|8,88/,
     "Les anciens relevés reçus après annulation ne doivent pas remplacer les prix du panier");
+  assert.equal(await page.locator("#cancelRefreshList").isVisible(),false);
+  // A user with limited mobile data needs an explicit way to cancel a slow
+  // refresh without changing the current store or clearing the basket.
+  const userCancelStarted=page.waitForRequest((request)=>
+    request.url().includes("prices.openfoodfacts.org")
+      && request.url().includes("product_code=3017624010701"),{timeout:8000});
+  await page.locator("#refreshList").click();
+  await userCancelStarted;
+  assert.equal(await page.locator("#cancelRefreshList").isVisible(),true);
+  assert.equal(await page.locator("#refreshList").isDisabled(),true);
+  await page.locator("#cancelRefreshList").click();
+  assert.equal(await page.locator("#cancelRefreshList").isVisible(),false);
+  assert.equal(await page.locator("#refreshList").isDisabled(),false);
+  assert.match(await page.locator("#listStatus").innerText(),/Actualisation annulée/);
+  await new Promise((resolve)=>setTimeout(resolve,1050));
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/9,99|8,88/);
   await page.unroute("https://prices.openfoodfacts.org/**",slowBasketRoute);
 
   // Manual shelf-price note: never a guaranteed retailer promotion.
