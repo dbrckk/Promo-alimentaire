@@ -418,3 +418,8 @@ Le parcours Android vérifie ce scénario avec quatre lignes sans date, pourtant
 L'onglet **Produit** accepte maintenant une **quantité entière de 1 à 100** avant de comparer Carrefour et E.Leclerc. Les prix relevés restent exprimés par unité ; les cartes ajoutent le débours hypothétique pour la quantité choisie, avant remboursements. Les offres rattachées à l'EAN exact respectent leur quantité minimale. Lorsqu'un remboursement est chiffrable, son montant et le coût après remboursement concernent la **quantité sélectionnée** ; l'application n'additionne toujours pas plusieurs offres incompatibles.
 
 Modifier la quantité efface immédiatement l'ancien résultat. Une quantité vide, fractionnaire ou hors limites empêche la requête API et affiche un message clair. Les prix restent communautaires et indicatifs : aucun montant affiché n'est un total de caisse garanti. Le parcours Android vérifie trois unités et le rejet d'une quantité invalide.
+
+
+### Canal Drive / livraison et comparaison EAN
+
+Dans le comparateur EAN exact, le canal **Drive/livraison** n'envoie désormais **aucune requête Open Prices destinée aux prix des magasins physiques**. Il affiche les offres de l'enseigne compatibles avec le canal sélectionné, mais aucun prix ou total fictif : les relevés de rayon ou de caisse ne constituent pas des devis Drive. La couverture indique explicitement **« Prix physiques non interrogés »**, et non « Aucun relevé trouvé ». Le retour au mode magasin réactive la recherche de prix ordinaire. Le scénario est contrôlé dans le parcours Android avec un compteur d'appels réseau.
