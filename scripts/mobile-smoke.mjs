@@ -220,6 +220,37 @@ try{
   assert.deepEqual({carrefour:densePair.carrefour,leclerc:densePair.leclerc},
     {carrefour:"c179",leclerc:"l179"});
   assert.ok(densePair.distance<2);
+  // The Open Prices record creation/update timestamps are not proof of
+  // when a receipt was observed. Undated rows must not suppress later pages.
+  const observedDateProvenance=await page.evaluate(async(receiptDate)=>{
+    const {fetchPricesByBarcode,selectBestRecentPrice}=
+      await import("./src/open-data.js");
+    const code="3017624010701",pages=[];
+    const source=(id,hasReceiptDate=false)=>({
+      id,product_code:code,price:hasReceiptDate?4.5:2.1,
+      currency:"EUR",updated:receiptDate,created:receiptDate,
+      ...(hasReceiptDate?{date:receiptDate}:{}),
+      location:{osm_brand:"Carrefour",osm_name:"Carrefour Lyon"}
+    });
+    const lookup=await fetchPricesByBarcode(code,{
+      store:"carrefour",size:4,maxPages:2,minimumMatches:1,
+      fetchImpl:async(url)=>{
+        const p=Number(new URL(url).searchParams.get("page")||1);
+        pages.push(p);
+        return {ok:true,json:async()=>({
+          pages:2,total:5,
+          items:p===1?[source(1),source(2),source(3),source(4)]:[source(5,true)]
+        })};
+      }
+    });
+    return {
+      pages,undated:lookup.observations.filter(x=>!x.date).length,
+      best:selectBestRecentPrice(lookup.observations,30)?.price??null
+    };
+  },RECENT_RECEIPT_DATE);
+  assert.deepEqual(observedDateProvenance,
+    {pages:[1,2],undated:4,best:4.5});
+
 
   // The previously computed pair must disappear when the comparison context changes.
   await page.locator("#radiusSelect").selectOption("10");
