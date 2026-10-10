@@ -204,6 +204,44 @@ try{
     };
   });
   assert.deepEqual(locationSafety,{far:"too-far",near:true,dateMismatch:false});
+  // Run the actual fetch/normalization path in Android Chrome: two retailer
+  // callers must reuse each Open Prices page while keeping prices isolated.
+  const sharedPriceProbe=await page.evaluate(async()=>{
+    const {createSharedPriceFetch,fetchPricesByBarcode}
+      =await import("./src/open-data.js");
+    let httpCalls=0,jsonDecodes=0;
+    const today=new Date().toISOString().slice(0,10);
+    const backend=async(url)=>{
+      httpCalls+=1;
+      const pageNumber=Number(new URL(url).searchParams.get("page")||1);
+      const brand=pageNumber===1?"Carrefour":"E.Leclerc";
+      return {ok:true,status:200,json:async()=>{
+        jsonDecodes+=1;
+        return {pages:2,total:2,items:[{
+          id:pageNumber,product_code:"3017624010701",
+          price:pageNumber===1?3.49:3.59,currency:"EUR",date:today,
+          location:{osm_brand:brand,osm_name:brand+" Lyon"}
+        }]};
+      }};
+    };
+    const shared=createSharedPriceFetch(backend);
+    const [carrefour,leclerc]=await Promise.all(["carrefour","leclerc"]
+      .map((store)=>fetchPricesByBarcode("3017624010701",{
+        store,fetchImpl:shared,size:1,maxPages:2,minimumMatches:3
+      })));
+    return {
+      httpCalls,jsonDecodes,
+      pricesCarrefour:carrefour.observations.map(x=>x.price),
+      pricesLeclerc:leclerc.observations.map(x=>x.price),
+      pagesCarrefour:carrefour.pagesFetched,
+      pagesLeclerc:leclerc.pagesFetched
+    };
+  });
+  assert.deepEqual(sharedPriceProbe,{
+    httpCalls:2,jsonDecodes:2,
+    pricesCarrefour:[3.49],pricesLeclerc:[3.59],
+    pagesCarrefour:2,pagesLeclerc:2
+  });
   const selectedPair=await page.evaluate(async()=>{
     const {selectComparablePricePair}=await import("./src/exact-sku-comparison.js");
     const today=new Date("2026-10-09T12:00:00Z");
