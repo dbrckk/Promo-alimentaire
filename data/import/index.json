@@ -1,12 +1,12 @@
 {
-  "verifiedAt": "2026-10-09",
+  "verifiedAt": "2026-10-10",
   "files": [
     "la-belle-adresse-2026-10-07.json",
     "envie-de-plus-2026-10-07.json",
     "coupon-network-auto.json",
     "leclerc-catalog-2026-10-07.json",
     "carrefour-promotions-auto.json",
-    "payment-discounts-auto.json",
-    "shopmium-auto.json"
+    "shopmium-auto.json",
+    "payment-discounts-auto.json"
   ]
 }
