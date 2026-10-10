@@ -245,7 +245,12 @@ els.barcodeForm.addEventListener("submit",(event)=>{
   lookupBarcode(els.barcode.value);
 });
 els.scanButton.addEventListener("click",startScanner);
-els.compareExactSku.addEventListener("click",compareCurrentExactSku);
+els.compareExactSku.addEventListener("click",()=>compareCurrentExactSku());
+els.exactSkuComparison.addEventListener("click",(event)=>{
+  if(event.target.closest('[data-action="expand-exact-sku"]')){
+    compareCurrentExactSku({deep:true});
+  }
+});
 els.nearbyButton.addEventListener("click",toggleNearbyPrices);
 els.listNearbyButton.addEventListener("click",toggleNearbyPrices);
 els.refreshList.addEventListener("click",refreshShoppingList);
@@ -650,7 +655,7 @@ function invalidateExactSkuComparison(){
   els.compareExactSku.disabled=!canonicalGtin(state.productCode);
 }
 
-async function compareCurrentExactSku(){
+async function compareCurrentExactSku({deep=false}={}){
   const code=state.productCode;
   if(!canonicalGtin(code)){
     els.exactSkuComparison.innerHTML=
@@ -662,11 +667,15 @@ async function compareCurrentExactSku(){
   const channel=state.channel;
   els.compareExactSku.disabled=true;
   els.exactSkuComparison.innerHTML=
-    '<div class="panel price-source">Comparaison des relevés Carrefour et E.Leclerc pour ce même EAN…</div>';
+    `<div class="panel price-source" role="status">${deep
+      ? "Recherche approfondie des relevés Carrefour et E.Leclerc (jusqu’à 3 pages par requête)…"
+      : "Comparaison des relevés Carrefour et E.Leclerc pour ce même EAN…"
+    }</div>`;
   const options=priceQueryOptions();
   const stores=["carrefour","leclerc"];
   const fetched=await Promise.allSettled(stores.map((store)=>
-    fetchPricesByBarcode(code,{...options,store})
+    fetchPricesByBarcode(code,{...options,store,
+      ...(deep ? {maxPages:3,minimumMatches:20} : {})})
   ));
   // An old scan, changed channel or a newer comparison must never replace
   // the currently displayed product with a different SKU.
@@ -700,10 +709,10 @@ async function compareCurrentExactSku(){
   const comparison=compareExactSku(normalizedProduct,candidates,observations,{
     channel,quantity:1,now:new Date(),coverageByStore
   });
-  els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors);
+  els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors,{deep});
 }
 
-function renderExactSkuComparison(result,errors=new Set()){
+function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
   if(result.status!=="ok"){
     return '<div class="panel price-source">Impossible de comparer : code GTIN ou quantité invalide.</div>';
   }
@@ -787,11 +796,25 @@ function renderExactSkuComparison(result,errors=new Set()){
     "too-far":"Comparaison non concluante : les deux magasins observés sont éloignés de plus de 15 km.",
     "location-unverified":"Comparaison non concluante : localisation des magasins insuffisante (coordonnées ou même commune et code postal)."
   };
+  const incomplete=result.stores.some((row)=>row.coverage?.searchIncomplete===true)
+    || errors.size>0;
+  const coverageActions=!deep && incomplete
+    ? `<div class="exact-sku-deep-search">
+        <button type="button" class="secondary" data-action="expand-exact-sku">
+          Approfondir la recherche (jusqu’à 3 pages par enseigne)
+        </button>
+        <p class="help">Recherche volontaire, limitée à 3 pages et à 20 relevés par enseigne. Aucun tarif ou stock en temps réel garanti.</p>
+      </div>`
+    : deep
+      ? `<p class="help exact-sku-search-depth">Recherche approfondie terminée : jusqu’à 3 pages consultées par enseigne.${incomplete
+        ? " Couverture toujours partielle ou service indisponible : aucun résultat exhaustif garanti."
+        : " Les relevés restent communautaires et non contractuels."}</p>`
+      : "";
   const confidence=result.comparisonEvidence || {};
   const difference=result.observedPriceDifference;
   const paired=result.comparisonPair;
   const best=confidence.comparable && result.lowerObservedStore
-    ? `Relevé inférieur sur la paire comparable : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
+    ? `${incomplete ? "Parmi les relevés consultés, relevé inférieur" : "Relevé inférieur"} sur la paire comparable : ${storeLabel(result.lowerObservedStore)} (écart observé ${money.format(difference)} par unité). Il ne s'agit pas d'un prix actuel confirmé.`
     : confidence.comparable && difference===0
       ? "Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère."
       : comparabilityReasons[confidence.status]
@@ -806,6 +829,7 @@ function renderExactSkuComparison(result,errors=new Set()){
     ${pairedDetails}
     <p>Comparaison seulement si les relevés sont récents (7 jours maximum), espacés de 3 jours au plus, et géographiquement proches : coordonnées à 15 km maximum, ou à défaut même commune et même code postal. Prix Open Prices communautaires : disponibilité, remise et cumul non garantis.</p>
   </div>
+  ${coverageActions}
   <div class="exact-sku-grid">${storeCards}</div>`;
 }
 

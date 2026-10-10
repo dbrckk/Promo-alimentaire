@@ -210,7 +210,9 @@ try{
   await page.screenshot({path:OUT+"/08-comparaison-ean-exact.png",fullPage:true});
   // Emulate a paginated source where only the first pages were consulted;
   // the UI must not present this as a complete store inventory search.
+  const requestedPricePages=[];
   const partialSearchRoute=async(route)=>{
+    requestedPricePages.push(Number(new URL(route.request().url()).searchParams.get("page")||1));
     const code=new URL(route.request().url()).searchParams.get("product_code");
     await route.fulfill({
       status:200,contentType:"application/json",
@@ -235,6 +237,20 @@ try{
   );
   assert.equal(await page.locator("#exactSkuComparison .exact-sku-store").count(),2);
   assert.match(await page.locator("#exactSkuComparison").innerText(),/dans les pages consultées/);
+  const expand=page.locator('[data-action="expand-exact-sku"]');
+  await expand.waitFor({timeout:15000});
+  await expand.click();
+  await page.waitForFunction(()=>document.querySelector(".exact-sku-search-depth")?.textContent?.includes("Recherche approfondie terminée"),{timeout:15000});
+  assert.ok(requestedPricePages.includes(3),"Le bouton doit interroger la troisième page Open Prices");
+  assert.equal(await expand.count(),0,"Pas de boucle d'extension une fois la recherche approfondie terminée");
+  const futureCoverage=await page.evaluate(async()=>{
+    const {priceCoverageSummary}=await import("./src/exact-sku-comparison.js");
+    return priceCoverageSummary([{price:3.49,date:"2026-10-11"}],
+      new Date("2026-10-09T12:00:00Z")).status;
+  });
+  assert.equal(futureCoverage,"invalid-observations",
+    "Un relevé futur ne peut pas devenir un prix récent");
+  await assertNoHorizontalOverflow(page,"recherche EAN approfondie");
   await page.unroute("https://prices.openfoodfacts.org/**",partialSearchRoute);
   await page.locator("#channel").selectOption("drive");
   assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
