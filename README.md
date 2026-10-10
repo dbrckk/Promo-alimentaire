@@ -423,3 +423,7 @@ Modifier la quantité efface immédiatement l'ancien résultat. Une quantité vi
 ### Canal Drive / livraison et comparaison EAN
 
 Dans le comparateur EAN exact, le canal **Drive/livraison** n'envoie désormais **aucune requête Open Prices destinée aux prix des magasins physiques**. Il affiche les offres de l'enseigne compatibles avec le canal sélectionné, mais aucun prix ou total fictif : les relevés de rayon ou de caisse ne constituent pas des devis Drive. La couverture indique explicitement **« Prix physiques non interrogés »**, et non « Aucun relevé trouvé ». Le retour au mode magasin réactive la recherche de prix ordinaire. Le scénario est contrôlé dans le parcours Android avec un compteur d'appels réseau.
+
+### Requêtes de prix annulables sur mobile
+
+La comparaison EAN exact annule désormais ses appels Open Prices encore actifs si le produit scanné, la quantité ou les paramètres (enseigne, canal, rayon, fidélité) changent. Une nouvelle comparaison annule également l'ancienne recherche, y compris pendant la pagination. Les recherches qui ne répondent pas dans les **18 secondes** sont interrompues pour éviter un bouton bloqué sur Android. Une annulation utilisateur n'est pas présentée comme une panne du service ; si la limite d'attente est atteinte, l'interface invite à réessayer. Ces mécanismes améliorent le confort et économisent les transferts inutiles, sans promettre un prix temps réel.
