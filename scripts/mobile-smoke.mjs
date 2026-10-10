@@ -256,6 +256,39 @@ try{
     "Un relevé futur ne peut pas devenir un prix récent");
   await assertNoHorizontalOverflow(page,"recherche EAN approfondie");
   await page.unroute("https://prices.openfoodfacts.org/**",partialSearchRoute);
+  // A second-page outage must be visible as incomplete coverage and keep
+  // the first-page observations usable. Retry is a deliberate user action.
+  const secondPageFailure=async(route)=>{
+    const query=new URL(route.request().url()).searchParams;
+    if(query.get("page")==="2"){
+      await route.fulfill({status:503,contentType:"text/plain",body:"temporary outage"});
+      return;
+    }
+    const code=query.get("product_code");
+    await route.fulfill({status:200,contentType:"application/json",
+      body:JSON.stringify({pages:3,total:300,items:[
+        {id:51,product_code:code,price:3.49,currency:"EUR",
+          date:RECENT_RECEIPT_DATE,
+          location:{osm_brand:"Carrefour",osm_name:"Carrefour Lyon",
+            osm_lat:45.760,osm_lon:4.84,osm_address_postcode:"69002",
+            osm_address_city:"Lyon"}},
+        {id:52,product_code:code,price:3.59,currency:"EUR",
+          date:RECENT_RECEIPT_DATE,
+          location:{osm_brand:"E.Leclerc",osm_name:"E.Leclerc Lyon",
+            osm_lat:45.761,osm_lon:4.85,osm_address_postcode:"69003",
+            osm_address_city:"Lyon"}}
+      ]})
+    });
+  };
+  await page.route("https://prices.openfoodfacts.org/**",secondPageFailure);
+  await page.locator("#compareExactSku").click();
+  await page.waitForFunction(()=>document.querySelector("#exactSkuComparison")
+    ?.textContent?.includes("Recherche partiellement interrompue"),{timeout:15000});
+  assert.match(await page.locator("#exactSkuComparison").innerText(),/3,49/);
+  await page.locator('[data-action="expand-exact-sku"]').click();
+  await page.waitForFunction(()=>document.querySelector(".exact-sku-search-depth")
+    ?.textContent?.includes("Couverture toujours partielle"),{timeout:15000});
+  await page.unroute("https://prices.openfoodfacts.org/**",secondPageFailure);
   await page.locator("#channel").selectOption("drive");
   assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
   await page.locator("#compareExactSku").click();
