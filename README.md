@@ -449,3 +449,7 @@ L'actualisation de la liste de courses ne considère plus une réponse Open Pric
 ### Annulation des actualisations de panier devenues obsolètes
 
 Une actualisation des prix de la liste de courses utilise une **copie figée de la liste et des paramètres géographiques** au départ de la recherche. Si la liste (ajout, suppression ou quantité), le canal d'achat, la proximité ou le rayon change pendant la récupération, les requêtes encore en cours sont **annulées**. Les réponses de l'ancienne recherche ne peuvent plus écraser les prix affichés, même si elles arrivent après une nouvelle actualisation ; le bouton redevient disponible. Les prix réellement présents avant la recherche annulée ne sont pas remplacés par des réponses obsolètes. Un scénario fonctionnel Android simule une réponse tardive, modifie le canal pendant la recherche puis vérifie l'absence de prix périmés injectés dans le panier.
+
+### Annuler une recherche de prix trop lente
+
+Pendant l'actualisation de la **liste de courses**, un bouton visible **« Annuler l’actualisation »** permet d'interrompre immédiatement la recherche en cours, sans supprimer les produits, modifier le canal ou effacer les anciens prix déjà disponibles. L'actualisation active est annulée via son contrôleur réseau et les réponses tardives sont ignorées. Le bouton **« Actualiser les prix »** redevient actif pour un nouvel essai. Le parcours Android teste l'annulation manuelle pendant une réponse retardée et vérifie qu'aucun ancien résultat ne remplace le panier.
