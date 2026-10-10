@@ -76,39 +76,44 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
   });
   const candidatesA=lastWeek(carrefourObservations);
   const candidatesB=lastWeek(leclercObservations);
-  const ranked=[];
+  // Maintain only the leading pair. Building and sorting every candidate
+  // pair can allocate tens of thousands of objects on an Android browser.
+  // Preserve the previous sort priority and stable first-seen tie behavior.
+  function outranks(a,b){
+    if(a.oldestAt!==b.oldestAt) return a.oldestAt>b.oldestAt;
+    if(a.newestAt!==b.newestAt) return a.newestAt>b.newestAt;
+    const dA=a.evidence.distanceKm, dB=b.evidence.distanceKm;
+    if(dA!==null && dB!==null && dA!==dB) return dA<dB;
+    if((dA!==null)!==(dB!==null)) return dA!==null;
+    const proofsA=Number(Boolean(a.carrefour.proofType))+Number(Boolean(a.leclerc.proofType));
+    const proofsB=Number(Boolean(b.carrefour.proofType))+Number(Boolean(b.leclerc.proofType));
+    if(proofsA!==proofsB) return proofsA>proofsB;
+    // For tied dates/distances, remain conservative about conflicting
+    // receipts rather than selecting the lowest reported shelf price.
+    if(Number(a.carrefour.price)!==Number(b.carrefour.price)){
+      return Number(a.carrefour.price)>Number(b.carrefour.price);
+    }
+    if(Number(a.leclerc.price)!==Number(b.leclerc.price)){
+      return Number(a.leclerc.price)>Number(b.leclerc.price);
+    }
+    return (String(a.carrefour.id||"")+"|"+String(a.leclerc.id||""))
+      .localeCompare(String(b.carrefour.id||"")+"|"+String(b.leclerc.id||""))<0;
+  }
+  let best=null;
   for(const carrefour of candidatesA){
     for(const leclerc of candidatesB){
       const evidence=comparePriceObservationEvidence(carrefour,leclerc,current);
       if(!evidence.comparable) continue;
-      ranked.push({carrefour,leclerc,evidence,
-        oldestAt:Math.min(new Date(carrefour.date).getTime(),new Date(leclerc.date).getTime()),
-        newestAt:Math.max(new Date(carrefour.date).getTime(),new Date(leclerc.date).getTime())
-      });
+      const aTime=new Date(carrefour.date).getTime();
+      const bTime=new Date(leclerc.date).getTime();
+      const candidate={carrefour,leclerc,evidence,
+        oldestAt:Math.min(aTime,bTime),
+        newestAt:Math.max(aTime,bTime)
+      };
+      if(!best || outranks(candidate,best)) best=candidate;
     }
   }
-  ranked.sort((a,b)=>{
-    // Favor the newest complete pair, then the most recent second receipt.
-    if(a.oldestAt!==b.oldestAt) return b.oldestAt-a.oldestAt;
-    if(a.newestAt!==b.newestAt) return b.newestAt-a.newestAt;
-    const dA=a.evidence.distanceKm, dB=b.evidence.distanceKm;
-    if(dA!==null && dB!==null && dA!==dB) return dA-dB;
-    if((dA!==null)!==(dB!==null)) return dA!==null ? -1:1;
-    const proofsA=Number(Boolean(a.carrefour.proofType))+Number(Boolean(a.leclerc.proofType));
-    const proofsB=Number(Boolean(b.carrefour.proofType))+Number(Boolean(b.leclerc.proofType));
-    if(proofsA!==proofsB) return proofsB-proofsA;
-    // Same-day ambiguous receipts: conservative higher prices win, not
-    // cherry-picked low reported prices.
-    if(Number(a.carrefour.price)!==Number(b.carrefour.price)){
-      return Number(b.carrefour.price)-Number(a.carrefour.price);
-    }
-    if(Number(a.leclerc.price)!==Number(b.leclerc.price)){
-      return Number(b.leclerc.price)-Number(a.leclerc.price);
-    }
-    return (String(a.carrefour.id||"")+"|"+String(a.leclerc.id||""))
-      .localeCompare(String(b.carrefour.id||"")+"|"+String(b.leclerc.id||""));
-  });
-  return ranked[0] || null;
+  return best;
 }
 
 /**
