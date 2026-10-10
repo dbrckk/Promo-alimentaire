@@ -471,3 +471,60 @@ test("une page pleine sans métadonnées de pagination ne prouve pas l'exhaustiv
   assert.equal(result.moreAvailable,true);
   assert.equal(result.searchIncomplete,true);
 });
+
+test("Open Prices refuse toute recherche déjà annulée avant le premier appel réseau",async()=>{
+  const controller=new AbortController();
+  controller.abort();
+  let requests=0;
+  await assert.rejects(()=>fetchPricesByBarcode("3017624010701",{
+    store:"carrefour",signal:controller.signal,
+    fetchImpl:async()=>{requests++;return {ok:true,json:async()=>({items:[]})};}
+  }),{name:"AbortError"});
+  assert.equal(requests,0);
+});
+
+test("Open Prices cesse la pagination lorsqu'un ancien scan est annulé",async()=>{
+  const controller=new AbortController();
+  const pages=[];
+  const code="3017624010701";
+  await assert.rejects(()=>fetchPricesByBarcode(code,{
+    store:"carrefour",size:1,maxPages:3,minimumMatches:4,
+    signal:controller.signal,
+    fetchImpl:async(url,{signal})=>{
+      assert.equal(signal,controller.signal);
+      const page=Number(new URL(url).searchParams.get("page")||1);
+      pages.push(page);
+      controller.abort();
+      return {ok:true,json:async()=>({
+        pages:3,total:3,items:[{id:1,product_code:code,
+          price:2,currency:"EUR",date:"2026-10-09",
+          location:{osm_brand:"Carrefour"}}]
+      })};
+    }
+  }),{name:"AbortError"});
+  assert.deepEqual(pages,[1],"Une annulation ne doit jamais charger les pages suivantes");
+});
+
+test("un AbortError de page 2 n'est pas une panne partielle du fournisseur",async()=>{
+  const controller=new AbortController();
+  const code="3017624010701";
+  let page=0;
+  await assert.rejects(()=>fetchPricesByBarcode(code,{
+    store:"carrefour",size:1,maxPages:3,minimumMatches:3,
+    signal:controller.signal,
+    fetchImpl:async(url,{signal})=>{
+      assert.equal(signal,controller.signal);
+      page+=1;
+      if(page===2){
+        controller.abort();
+        throw new DOMException("Annulé","AbortError");
+      }
+      return {ok:true,json:async()=>({
+        pages:3,total:3,items:[{id:1,product_code:code,
+          price:2,currency:"EUR",date:"2026-10-09",
+          location:{osm_brand:"Carrefour"}}]
+      })};
+    }
+  }),{name:"AbortError"});
+  assert.equal(page,2);
+});

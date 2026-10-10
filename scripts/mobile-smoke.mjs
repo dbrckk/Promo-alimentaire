@@ -265,6 +265,33 @@ try{
   },RECENT_RECEIPT_DATE);
   assert.deepEqual(observedDateProvenance,
     {pages:[1,2],undated:4,best:4.5});
+  // A cancelled price request must stop immediately in the real Android
+  // browser runtime and must not be treated as incomplete provider coverage.
+  const abortedPriceLookup=await page.evaluate(async()=>{
+    const {fetchPricesByBarcode}=await import("./src/open-data.js");
+    const controller=new AbortController();
+    let networkCalls=0,abortNotified=false;
+    const lookup=fetchPricesByBarcode("3017624010701",{
+      store:"carrefour",signal:controller.signal,
+      fetchImpl:(_url,{signal})=>new Promise((_resolve,reject)=>{
+        networkCalls++;
+        signal.addEventListener("abort",()=>{
+          abortNotified=true;
+          reject(new DOMException("Aborted","AbortError"));
+        },{once:true});
+      })
+    });
+    controller.abort();
+    try{
+      await lookup;
+      return {error:"missing",networkCalls,abortNotified};
+    }catch(error){
+      return {error:error.name,networkCalls,abortNotified};
+    }
+  });
+  assert.deepEqual(abortedPriceLookup,
+    {error:"AbortError",networkCalls:1,abortNotified:true});
+
 
 
   // The previously computed pair must disappear when the comparison context changes.
