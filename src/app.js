@@ -769,7 +769,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
     const priceMarkup=unresolved
       ? '<strong>Source temporairement indisponible</strong>'
       : observed
-        ? `<strong>${money.format(row.price)}</strong><small>Relevé du ${escapeHtml(formatDate(observed.date))} · ${escapeHtml(observed.storeName)}${observed.city?" · "+escapeHtml(observed.city):""}</small>`
+        ? `<strong>${money.format(row.price)}</strong><small>Relevé du ${escapeHtml(formatDate(observed.date))} · ${escapeHtml(observed.storeName)}${observed.city?" · "+escapeHtml(observed.city):""}${observed.isDiscounted===true?" · prix remisé ponctuel":""}</small>`
         : '<strong>Prix récent non disponible</strong>';
     const coverage=row.coverage||{};
     const coverageLabel=unresolved
@@ -842,6 +842,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
   }).join("");
   const comparabilityReasons={
     "missing-price":"Comparaison impossible : il manque un prix récent dans au moins une des deux enseignes.",
+    "discounted-observation":"Comparaison de prix habituels impossible : au moins un relevé comprend une remise ponctuelle. Les prix observés restent visibles mais ne servent pas à désigner une enseigne moins chère.",
     "invalid-date":"Comparaison impossible : la date d'un relevé n'est pas exploitable.",
     "observations-old":"Comparaison non concluante : les deux relevés ne datent pas tous de moins de 7 jours.",
     "dates-too-far":"Comparaison non concluante : les dates des deux relevés sont espacées de plus de 3 jours.",

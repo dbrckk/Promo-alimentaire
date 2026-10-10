@@ -396,3 +396,38 @@ test("prix identiques : le total observé de chaque enseigne est le même",()=>{
   assert.equal(result.observedTotalPriceDifference,0);
   assert.deepEqual(result.observedQuantityTotals,{carrefour:24.95,leclerc:24.95});
 });
+
+test("un ticket remisé ne désigne pas le magasin le moins cher et ne projette pas de panier",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[observation("carrefour",1.99,CODE,{isDiscounted:true})],
+    leclerc:[observation("leclerc",3.49)]
+  },{now,quantity:4});
+  assert.equal(result.comparisonEvidence.status,"discounted-observation");
+  assert.equal(result.comparisonPair,null);
+  assert.equal(result.lowerObservedStore,null);
+  assert.equal(result.observedPriceDifference,null);
+  assert.equal(result.observedQuantityTotals,null);
+  assert.equal(result.stores[0].price,1.99,"le prix observé reste consultable");
+});
+
+test("une paire de prix normaux peut être retenue malgré un ticket remisé plus récent",()=>{
+  const result=compareExactSku({code:CODE},[],{
+    carrefour:[
+      observation("carrefour",1.99,CODE,{isDiscounted:true,date:"2026-10-09"}),
+      observation("carrefour",3.19,CODE,{isDiscounted:false,date:"2026-10-08"})
+    ],
+    leclerc:[observation("leclerc",3.49)]
+  },{now,quantity:2});
+  assert.equal(result.comparisonEvidence.comparable,true);
+  assert.equal(result.comparisonPair.carrefour.price,3.19);
+  assert.equal(result.observedPriceDifference,0.3);
+  assert.equal(result.observedTotalPriceDifference,0.6);
+});
+
+test("une observation remisée n'est pas comparable à un prix normal même si les lieux concordent",()=>{
+  const evidence=comparePriceObservationEvidence(
+    observation("carrefour",1,CODE,{isDiscounted:true}),
+    observation("leclerc",2),now);
+  assert.equal(evidence.comparable,false);
+  assert.equal(evidence.status,"discounted-observation");
+});

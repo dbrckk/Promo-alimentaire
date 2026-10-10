@@ -48,6 +48,13 @@ export function comparePriceObservationEvidence(a,b,now=new Date()){
   if(dateGapDays>3){
     return {comparable:false,status:"dates-too-far",dateGapDays,distanceKm:null};
   }
+  // A temporary markdown, coupon or loyalty price cannot be used as a
+  // regular-price retailer winner or extrapolated as a repeatable basket price.
+  // Keep the individual receipt visible, but withhold the winner.
+  if(a.isDiscounted===true || b.isDiscounted===true){
+    return {comparable:false,status:"discounted-observation",dateGapDays,
+      distanceKm:null};
+  }
   const location=geographicEvidence(a,b);
   if(!location.ok){
     return {comparable:false,status:location.status,dateGapDays,
