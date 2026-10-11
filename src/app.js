@@ -45,6 +45,7 @@ import {
   addPriceObservation,
   addStorePriceObservations,
   detectPriceDrops,
+  historyProductKey,
   productHistory,
   productPriceTrend
 } from "./product-history.js";
@@ -1927,12 +1928,12 @@ function renderProductPriceHistory(){
 
 function renderPriceAlerts(){
   if(!els.priceAlerts) return;
-  const listCodes=new Set(state.shoppingList.map((item)=>String(item.product.code)));
+  const listCodes=new Set(state.shoppingList.map((item)=>historyProductKey(item.product.code)));
   // Do not present a months-old price movement as a current shopping alert.
   const alerts=detectPriceDrops(state.productPriceHistory,{
     thresholdPercent:state.dropThreshold,
     now:new Date(),maxAgeDays:14
-  }).filter((alert)=>listCodes.has(String(alert.code)));
+  }).filter((alert)=>listCodes.has(historyProductKey(alert.code)));
 
   if(!alerts.length){
     els.priceAlerts.innerHTML="";
