@@ -779,6 +779,50 @@ try{
   });
   assert.deepEqual(trendEvidence,{shop:"id:77",delta:-1,pinned:null});
   await assertNoHorizontalOverflow(page,"tendance historique de magasin comparable");
+  // Functional regression: UPC-A/EAN-13/GTIN-14 are the same verified GS1
+  // product across historical records, repeated receipts and drop alerts.
+  const barcodeHistory=await page.evaluate(async()=>{
+    const {addPriceObservation,historyProductKey,productHistory,productPriceTrend,detectPriceDrops}
+      =await import("./src/product-history.js");
+    const upc="036000291452",ean="0036000291452",gtin14="00036000291452";
+    const on=(offset)=>{
+      const d=new Date();d.setUTCDate(d.getUTCDate()+offset);
+      return d.toISOString().slice(0,10);
+    };
+    const old={
+      id:"legacy-upca",code:upc,store:"carrefour",
+      date:on(-3),price:10,locationId:77,storeName:"Carrefour Lyon",
+      name:"Produit témoin",recordedAt:new Date().toISOString()
+    };
+    const same=addPriceObservation([old],{
+      product:{code:ean,name:"Produit témoin"},store:"carrefour",
+      observation:{date:on(-3),price:10,locationId:77,storeName:"Carrefour Lyon"},
+      recordedAt:new Date()
+    });
+    const newer=addPriceObservation(same,{
+      product:{code:gtin14,name:"Produit témoin"},store:"carrefour",
+      observation:{date:on(-1),price:8,locationId:77,storeName:"Carrefour Lyon"},
+      recordedAt:new Date()
+    });
+    const trend=productPriceTrend(newer,{code:upc,store:"carrefour"});
+    const alerts=detectPriceDrops(newer,{
+      thresholdPercent:10,maxAgeDays:14,now:new Date()
+    });
+    return {
+      canonical:historyProductKey(ean)===historyProductKey(upc)
+        && historyProductKey(gtin14)===historyProductKey(ean),
+      rows:productHistory(newer,{code:ean,store:"carrefour"}).length,
+      deduplicated:same.length===1,
+      delta:trend?.delta,alertCount:alerts.length,
+      sameAlertKey:alerts[0]?.code===historyProductKey(upc),
+      legacyKey:historyProductKey("123")==="123"
+    };
+  });
+  assert.deepEqual(barcodeHistory,{
+    canonical:true,rows:2,deduplicated:true,delta:-2,
+    alertCount:1,sameAlertKey:true,legacyKey:true
+  });
+  await assertNoHorizontalOverflow(page,"historique multi-GTIN compatible Android");
 
   for(const width of [360,320]){
     await page.setViewportSize({width,height:750});

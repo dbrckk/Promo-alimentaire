@@ -346,6 +346,8 @@ Le panier privilégie le **relevé le plus récent**, même si un ancien prix pr
 
 L'historique conserve les relevés pour plusieurs magasins physiques identifiables, au lieu de retenir un seul prix pour toute l'enseigne. Les baisses ne sont jamais détectées à partir de magasins distincts ou de prix contradictoires d'un même jour. Les observations dont le magasin n'est pas identifiable ne déclenchent pas d'alerte. Si le dernier magasin observé n'a qu'un seul relevé, l'onglet Produit recherche le **magasin identifié le plus récent avec deux dates comparables**, plutôt que d'afficher une fausse absence de tendance. Le calcul ne mélange jamais les magasins. Les dates de la tendance sont affichées, avec une mise en garde sur les anciens prix ou tickets remisés.
 
+L'identité du produit dans l'historique local et les alertes est maintenant harmonisée en **GTIN-14 canonique** lorsque la clé de contrôle GS1 est valide. Les variantes UPC-A, EAN-13 et GTIN-14 du même produit correspondent à une seule référence ; les données existantes sur le téléphone restent lisibles sans migration destructive. Les relevés répétés de même prix, date et magasin sont dédoublonnés. Les codes locaux non-GTIN déjà enregistrés restent compatibles, sans être interprétés comme des EAN fiables.
+
 Une promotion immédiate ne devient pas automatiquement une économie acquise lorsque le dernier prix normal observé date de **plus de sept jours** ; elle reste candidate, à vérifier.
 
 La santé des sources montre séparément :
