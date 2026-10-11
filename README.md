@@ -90,7 +90,7 @@ Cette stratégie sacrifie temporairement la visibilité d'offres non revalidées
 L'onglet **Produit** propose une comparaison à la demande de l'**EAN/GTIN exact** entre Carrefour et E.Leclerc. Les promotions de simple marque ou gamme, sans GTIN confirmé, ne deviennent **jamais** des offres exactes. Les prix proviennent d'Open Prices et restent des observations communautaires, pas des prix de caisse garantis.
 
 La comparaison montre le prix de chaque enseigne même si les observations ne sont pas directement comparables. Elle n'annonce un « relevé inférieur » qu'avec :
-- **les deux prix disponibles**, datés chacun de **7 jours au maximum**, et avec un écart entre dates de **3 jours au maximum** ;
+- **les deux prix disponibles**, datés chacun de **7 jours au maximum**, et avec un écart entre dates de **3 jours au maximum** (durée exacte, sans arrondir avant le contrôle) ;
 - une **proximité justifiée** par des coordonnées à **15 km maximum**, ou, sans coordonnées, par une même commune **et** un même code postal à cinq chiffres ;
 - une même référence GTIN valide et un canal d'achat compatible. Les relevés de magasins physiques ne sont pas traités comme des devis Drive/livraison.
 
