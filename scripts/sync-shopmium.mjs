@@ -1,5 +1,5 @@
 import { readFile,writeFile } from "node:fs/promises";
-import { extractShopmiumOfferUrls,extractShopmiumLandingDetailUrls,isOfficialShopmiumOfferUrl,mergeShopmiumOfferUrls,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
+import { extractShopmiumOfferUrls,extractShopmiumLandingDetailUrls,isOfficialShopmiumOfferUrl,isShopmiumPubliclyClosed,mergeShopmiumOfferUrls,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
 import { isOfferActive,validateImportBatch } from "../src/ingestion.js";
 
 const INDEX_URL="https://offers.shopmium.com/fr/";
@@ -9,7 +9,7 @@ const MANIFEST_URL=new URL("../data/import/index.json",import.meta.url);
 const write=process.argv.includes("--write");
 const minOffers=Math.max(5,Number(process.env.MIN_SHOPMIUM_OFFERS||12));
 const verifiedAt=new Date().toISOString().slice(0,10);
-const now=new Date(verifiedAt+"T12:00:00Z");
+const now=new Date();
 
 const indexResponse=await fetch(INDEX_URL,{
   headers:{Accept:"text/html,application/xhtml+xml","User-Agent":"PromoAlimentaire/0.1 public-offer-sync"},
@@ -33,6 +33,7 @@ console.log("[shopmium] "+indexUrls.length+" fiches index + "+watchlist.urls.len
 
 const parsed=[];
 const discoveredDetails=new Set();
+const publiclyClosedUrls=new Set();
 const batchSize=8;
 // Bounded public-page crawl: official offers index -> campaign landing page
 // -> individual official terms, with no deeper traversal or guessed offers.
@@ -64,6 +65,7 @@ async function inspectPages(candidates,{allowLandingDiscovery=false}={}){
         }
         const html=await response.text();
         fetched+=1;
+        if(isShopmiumPubliclyClosed(html)) publiclyClosedUrls.add(url);
         const offer=parseShopmiumDetailHtml(html,url,{verifiedAt});
         const children=allowLandingDiscovery && !offer
           ? extractShopmiumLandingDetailUrls(html,url) : [];
@@ -96,19 +98,30 @@ await inspectPages(childUrls);
 console.log("[shopmium] "+fetched+" page(s) officielles lues, "+
   unavailable+" indisponible(s), accès limité="+accessDenied+".");
 
-const byId=new Map(parsed.map((offer)=>[offer.externalId,offer]));
-const active=[...byId.values()].filter((offer)=>isOfferActive(offer,now));
+const freshById=new Map(parsed.map((offer)=>[offer.externalId,offer]));
+const fresh=[...freshById.values()].filter((offer)=>isOfferActive(offer,now));
 if(accessDenied) throw new Error("Shopmium refuse ou limite les requêtes publiques (401/403/429) ; snapshot existant préservé sans prolonger les offres.");
-if(active.length<minOffers){
-  throw new Error("Extraction Shopmium active insuffisante : "+active.length+" offre(s), minimum "+minOffers+".");
+if(fresh.length<minOffers){
+  throw new Error("Extraction Shopmium active insuffisante : "+fresh.length+" offre(s), minimum "+minOffers+".");
 }
+// A temporary partial catalog must not erase an independently confirmed
+// offer that remains within its original short review window. Its proof
+// date is NEVER advanced unless the individual official detail was read.
+const previous=JSON.parse(await readFile(OUTPUT_URL,"utf8"));
+if(!Array.isArray(previous)) throw new Error("Ancien snapshot Shopmium invalide.");
+const retained=previous.filter((offer)=>isOfferActive(offer,now)
+  && !publiclyClosedUrls.has(offer.sourceUrl)
+  && !freshById.has(offer.externalId));
+const active=[...fresh,...retained];
 const validation=validateImportBatch(active);
 if(!validation.ok){
   const sample=validation.errors.slice(0,5).map((item)=>"index "+item.index+": "+item.errors.join(" | ")).join("\n");
   throw new Error("Snapshot Shopmium invalide : "+validation.errors.length+" erreur(s).\n"+sample);
 }
 
-console.log("[shopmium] "+validation.normalized.length+" offres actives validées.");
+console.log("[shopmium] "+fresh.length+" offres officielles reconfirmées ; "+
+  retained.length+" anciennes encore dans leur propre fenêtre de révision ; "+
+  validation.normalized.length+" actives validées.");
 if(write){
   await writeFile(OUTPUT_URL,JSON.stringify(active,null,2)+"\n","utf8");
   const manifest=JSON.parse(await readFile(MANIFEST_URL,"utf8"));
