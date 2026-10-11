@@ -199,7 +199,7 @@ els.shoppingBudget.value=state.shoppingBudget===null?"":state.shoppingBudget.toF
 els.manualPriceDate.value=new Date(Date.now()-new Date().getTimezoneOffset()*60000)
   .toISOString().slice(0,10);
 els.manualPriceDate.max=els.manualPriceDate.value;
-els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")}`;
+els.datasetDate.textContent=`Catalogue de référence : ${formatDate(DATASET_DATE)} · chargement des offres publiques…`;
 
 els.store.addEventListener("change",async()=>{
   invalidateExactSkuComparison();
@@ -2530,10 +2530,17 @@ async function hydrateImportedOffers(){
     const result=await loadImportedOffers();
     offers=mergeOffers(baseOffers,result.offers);
     state.sourceHealth=result.sourceStats || [];
+    // Distinguish the dated static reference catalogue from individual active
+    // imported offers. A manifest refresh or page load does not reverify them.
+    const latestEvidence=result.offers
+      .map((offer)=>offer.verifiedAt).filter(Boolean)
+      .sort((a,b)=>new Date(a)-new Date(b)).at(-1);
     const suffix=result.errors.length
-      ? ` · ${result.offers.length} offres publiques chargées, ${result.errors.length} lot(s) en erreur`
-      : ` · ${result.offers.length} offres publiques chargées`;
-    els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")}${suffix}`;
+      ? ` · ${result.errors.length} lot(s) d'import en erreur`
+      : "";
+    els.datasetDate.textContent=`Catalogue de référence : ${formatDate(DATASET_DATE)} · ${result.offers.length} offre(s) importée(s) active(s)`+
+      (latestEvidence ? ` · Dernière preuve d'offre active : ${formatDate(latestEvidence)}` : "")+
+      suffix;
     render();
     renderSourceHealth();
     renderOptimizer();
@@ -2542,7 +2549,7 @@ async function hydrateImportedOffers(){
   }catch(error){
     state.sourceHealth=[];
     renderSourceHealth();
-    els.datasetDate.textContent=`Offres vérifiées : ${new Date(DATASET_DATE+"T12:00:00").toLocaleDateString("fr-FR")} · imports indisponibles`;
+    els.datasetDate.textContent=`Catalogue de référence : ${formatDate(DATASET_DATE)} · offres publiques indisponibles (aucune revalidation)`;
   }
 }
 
