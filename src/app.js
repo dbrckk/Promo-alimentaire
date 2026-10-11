@@ -1386,10 +1386,24 @@ function loadShoppingList(){
   try{
     const parsed=JSON.parse(localStorage.getItem("promo-shopping-list-v1") || "[]");
     if(!Array.isArray(parsed)) return [];
-    return parsed
-      .filter((item)=>item?.product?.code)
-      .slice(0,30)
-      .map((item)=>({product:item.product,quantity:normalizeQuantity(item.quantity)}));
+    const restored=[];
+    const keys=new Map();
+    // Local lists saved by older versions may contain UPC-A/EAN-13/GTIN-14
+    // aliases of the same GS1 product. Merge only when the 99-unit ceiling
+    // allows it; never silently discard quantities exceeding that ceiling.
+    for(const item of parsed.filter((value)=>value?.product?.code).slice(0,30)){
+      const code=String(item.product.code);
+      const quantity=normalizeQuantity(item.quantity);
+      const key=canonicalGtin(code)||code;
+      const index=keys.get(key);
+      if(index!==undefined && restored[index].quantity+quantity<=99){
+        restored[index].quantity+=quantity;
+      }else{
+        if(index===undefined) keys.set(key,restored.length);
+        restored.push({product:item.product,quantity});
+      }
+    }
+    return restored;
   }catch{
     return [];
   }
@@ -1408,7 +1422,10 @@ function addCurrentProduct(){
   if(!state.product) return;
   cancelBasketPriceRefresh();
   const code=state.product.code;
-  const existing=state.shoppingList.find((item)=>item.product.code===code);
+  const key=canonicalGtin(code)||String(code);
+  const existing=state.shoppingList.find((item)=>
+    (canonicalGtin(item.product.code)||String(item.product.code))===key
+  );
   if(existing){
     existing.quantity=normalizeQuantity(existing.quantity+1);
   }else{
@@ -1430,10 +1447,16 @@ function addCurrentProduct(){
       quantity:1
     });
   }
-  state.basketPriceData[state.store][code]=state.priceObservations;
+  // Keep the original list barcode for remote product URLs, basket pricing
+  // and manual-price keys. A later equivalent scan must not create an
+  // orphan price entry under another representation.
+  const listCode=existing?.product.code || code;
+  state.basketPriceData[state.store][listCode]=state.priceObservations;
   saveShoppingList();
   renderShoppingList();
-  setProductStatus("Produit ajouté à la liste.");
+  setProductStatus(existing
+    ? "Même GTIN déjà présent : quantité mise à jour dans la liste."
+    : "Produit ajouté à la liste.");
 }
 
 function handleShoppingListAction(event){
