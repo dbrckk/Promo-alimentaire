@@ -564,6 +564,10 @@ La PWA utilise désormais des requêtes JSON interruptibles : 8 secondes maximum
 
 Ce mécanisme réduit les blocages possibles sur Android et la durée de démarrage lorsque plusieurs sources publiques sont lentes. Il ne prouve pas que les offres sont fraîches, n'autorise aucun contournement des sites commerçants et n'ajoute pas de nouvelles promotions.
 
+### Consulter les catalogues officiels si une source est indisponible
+
+Quand Carrefour ou E.Leclerc ne peut pas reconfirmer automatiquement les offres dans son catalogue, la rubrique **État des données importées** affiche un lien direct vers le catalogue officiel du commerçant. Ce lien est un **recours manuel**, pas une offre importée : les prix, les références, le magasin, les dates et le mode d'achat doivent être vérifiés auprès de l'enseigne. Les fiches expirées ne sont jamais réactivées grâce à ce lien.
+
 ### Limite du cache hors ligne sur Android (stabilisation)
 
 Le service worker v82 conserve hors ligne les modules HTML/CSS/JavaScript déclarés, les fichiers d'installation et **les lots JSON explicitement inscrits dans le manifeste validé**. Il ne met plus en cache toute ressource HTTP 200 accessible sur l'origine : cela évite de remplir le stockage du téléphone avec des fichiers annexes, des chemins inattendus ou des variantes de requêtes `?...`. Les requêtes vers Open Food Facts et Open Prices restent hors du service worker.

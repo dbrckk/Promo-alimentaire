@@ -566,6 +566,17 @@ function renderSourceHealth(){
           error:"Erreur"
         }[item.status] || item.status;
         const badgeClass=item.status==="ok" ? "good" : "warn";
+        // A retailer may block automated reading yet still publish a useful
+        // official catalogue for manual consultation on the shopper's phone.
+        // This link is NOT a replacement for verified SKU and price data.
+        const catalogLink=item.providerIds?.includes("carrefour")
+          ? {url:"https://www.carrefour.fr/catalogue",label:"Catalogues Carrefour"}
+          : item.providerIds?.includes("leclerc")
+            ? {url:"https://www.e.leclerc/prospectus",label:"Catalogues E.Leclerc"}
+            : null;
+        const sourceNotConfirmed=item.status==="stale"
+          || item.status==="sync-warning"
+          || ["unavailable","partial"].includes(item.syncState?.status);
         return `
           <article class="source-health-card">
             <div>
@@ -601,6 +612,15 @@ function renderSourceHealth(){
               Les anciennes offres expirent normalement et ne sont pas garanties.
               ${escapeHtml(item.syncState.reason)}
             </p>`:""}
+            ${catalogLink && sourceNotConfirmed ? `
+              <p class="conditions">
+                L'import automatique de ces promotions n'a pas apporté de preuve suffisante.
+                <a class="open" href="${catalogLink.url}" target="_blank" rel="noopener noreferrer">
+                  Ouvrir les ${catalogLink.label} officiels
+                </a>.
+                Vérifiez sur place le magasin, la période et les produits éligibles :
+                aucun gain n'est ajouté au panier sur la base de ce lien.
+              </p>` : ""}
           </article>`;
       }).join("")}
     </div>`;
