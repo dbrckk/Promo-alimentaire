@@ -2169,6 +2169,8 @@ function renderBasketScenario(scenario){
     }
     const place=line.bestPrice?.storeName ? ` · ${escapeHtml(line.bestPrice.storeName)}` : "";
     const priceAge=priceFreshness(line.bestPrice);
+    const receiptLink=line.manualPrice ? ""
+      : openPricesReceiptLink(line.bestPrice,"Vérifier ce relevé Open Prices");
     const priceObservationNote=`<div class="price-age-note ${priceAge.ageDays!==null && priceAge.ageDays>30?"outdated":""}">
       Relevé du ${formatDate(line.bestPrice?.date)} · ${priceAge.ageDays===null?"âge inconnu":priceAge.ageDays+" jour(s)"}
       ${priceAge.ageDays!==null && priceAge.ageDays>30?" · Ancien prix : reconfirmer avant achat":""}
@@ -2220,6 +2222,7 @@ function renderBasketScenario(scenario){
       <div class="scenario-line"><span>${escapeHtml(line.product?.name || line.code)} × ${line.quantity}${place}</span><strong>${money.format(line.baseCost)}</strong></div>
       ${line.manualPrice?'<div class="source"><strong>Prix saisi personnellement — non vérifié.</strong> Aucun cumul automatique sur cette référence.</div>':""}
       ${priceObservationNote}
+      ${receiptLink ? `<div class="source basket-price-source">${receiptLink}</div>` : ""}
       ${line.alreadyRetailDiscounted?'<div class="source">Prix observé déjà remisé en magasin : promotion enseigne non déduite une seconde fois.</div>':""}
       ${line.retailerPromoPriceConflict?'<div class="source">Prix observé différent du tarif normal annoncé : promotion catalogue non redéduite sans nouvelle vérification.</div>':""}
       ${line.retailerPromoAgeWarning?'<div class="source">Le dernier prix normal a plus de 7 jours : promotion catalogue conservée comme candidate, non déduite automatiquement.</div>':""}
