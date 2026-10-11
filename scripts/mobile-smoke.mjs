@@ -209,6 +209,36 @@ try{
   assert.match(exactStoreCards,/Projection pour 3 articles/);
   assert.match(exactStoreCards,/10,47/);
   assert.match(exactStoreCards,/10,77/);
+  // A user with a stalled mobile connection must be able to cancel the
+  // exact-SKU lookup and immediately retry without stale results appearing.
+  let releaseSlowPriceRoute,markSlowRequest;
+  const slowPriceGate=new Promise((resolve)=>{releaseSlowPriceRoute=resolve;});
+  const slowPriceStarted=new Promise((resolve)=>{markSlowRequest=resolve;});
+  const stalledExactSkuRoute=async(route)=>{
+    markSlowRequest();
+    await slowPriceGate;
+    try{
+      await route.fulfill({status:200,contentType:"application/json",
+        body:JSON.stringify({total:0,items:[]})});
+    }catch{
+      // Expected when AbortController cancels an intercepted request.
+    }
+  };
+  await page.route("https://prices.openfoodfacts.org/**",stalledExactSkuRoute);
+  await page.locator("#compareExactSku").click();
+  await slowPriceStarted;
+  await page.locator('[data-action="cancel-exact-sku"]').click();
+  assert.match(await page.locator("#exactSkuComparison").innerText(),/Recherche annulée/);
+  assert.equal(await page.locator("#compareExactSku").isEnabled(),true);
+  releaseSlowPriceRoute();
+  await page.unroute("https://prices.openfoodfacts.org/**",stalledExactSkuRoute);
+  await page.waitForTimeout(150);
+  assert.equal(await page.locator("#exactSkuComparison .exact-sku-store").count(),0,
+    "Une réponse arrivée après annulation ne doit jamais réafficher les cartes");
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid").waitFor({timeout:15000});
+  assert.equal(await page.locator("#exactSkuComparison .exact-sku-store").count(),2);
+
   assert.match(exactStoreCards,/écart indicatif hors promotions : 0,30/);
   assert.match(exactStoreCards,/Débours estimé avant remboursements pour 3 articles/);
   assert.match(exactStoreCards,/10,47/);

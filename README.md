@@ -434,6 +434,8 @@ Dans le comparateur EAN exact, le canal **Drive/livraison** n'envoie désormais 
 
 ### Requêtes de prix annulables sur mobile
 
+Pendant une comparaison lente ou approfondie, le bouton **« Annuler la recherche »** interrompt immédiatement les requêtes réseau et libère le bouton de comparaison. Une réponse tardive ne peut plus rétablir un ancien résultat : l'utilisateur peut relancer volontairement sa recherche, y compris avec une connexion Android instable.
+
 La comparaison EAN exact annule désormais ses appels Open Prices encore actifs si le produit scanné, la quantité ou les paramètres (enseigne, canal, rayon, fidélité) changent. Une nouvelle comparaison annule également l'ancienne recherche, y compris pendant la pagination. Les recherches qui ne répondent pas dans les **18 secondes** sont interrompues pour éviter un bouton bloqué sur Android. Une annulation utilisateur n'est pas présentée comme une panne du service ; si la limite d'attente est atteinte, l'interface invite à réessayer. Ces mécanismes améliorent le confort et économisent les transferts inutiles, sans promettre un prix temps réel.
 
 ### Comparaison d'une quantité d'un même code-barres
