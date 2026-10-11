@@ -296,9 +296,28 @@ try{
   }
   assert.equal(failedSourceSafety.older.autoStack,true);
   assert.equal(failedSourceSafety.future.autoStack,true);
+  // A failed source refresh must never dominate the default offers screen.
+  assert.equal(await page.locator("#sourceProof").inputValue(),"without-failure");
+  const safeInitialCount=await page.locator("#offers .card").count();
+  assert.match(await page.locator("#offerVerificationSummary").innerText(),
+    /offre\(s\).*(masquée|masquées)/);
+  assert.doesNotMatch(await page.locator("#offers").innerText(),/Source non reconfirmée/);
+  await page.locator("#sourceProof").selectOption("all");
+  const allCount=await page.locator("#offers .card").count();
+  assert.ok(allCount>=safeInitialCount);
   if(failedSourceSafety.realWarningCount>0){
+    assert.ok(allCount>safeInitialCount,
+      "Un candidat non reconfirmé doit redevenir consultable via Toutes.");
     assert.match(await page.locator("#offers").innerText(),/Source non reconfirmée/);
   }
+  await page.locator("#sourceProof").selectOption("failed");
+  for(const card of await page.locator("#offers .card").all()){
+    assert.match(await card.innerText(),/Source non reconfirmée/);
+  }
+  await page.locator("#sourceProof").selectOption("without-failure");
+  assert.equal(await page.locator("#offers .card").count(),safeInitialCount);
+  await page.reload({waitUntil:"domcontentloaded"});
+  assert.equal(await page.locator("#sourceProof").inputValue(),"without-failure");
   const statusFixture=JSON.parse(await readFile(
     new URL("../data/import/source-sync-status.json",import.meta.url),"utf8"
   ));
