@@ -879,6 +879,51 @@ try{
   assert.match(backupAlias,/Code-barres répété/);
   await assertNoHorizontalOverflow(page,"dédoublonnage UPC EAN de la liste de courses");
 
+  // A personal price entered against an equivalent UPC-A must be visible
+  // for the EAN-13 list entry, without reusing another store or another SKU.
+  const manualBarcode=await page.evaluate(async()=>{
+    const {
+      manualPriceObservations,mergeManualPriceObservations,
+      saveManualPrice,removeManualPrice
+    }=await import("./src/manual-prices.js");
+    const now=new Date();
+    const date=new Date(now.getTime()-now.getTimezoneOffset()*60000)
+      .toISOString().slice(0,10);
+    const upc="036000291452",ean="0036000291452";
+    const input={
+      code:upc,store:"leclerc",storeName:"E.Leclerc Lyon Centre",
+      postcode:"69002",date,price:"2,50"
+    };
+    const matched=manualPriceObservations([input],{store:"leclerc",code:ean,now});
+    const unrelated=manualPriceObservations([input],{
+      store:"leclerc",code:"4006381333931",now
+    });
+    const wrongStore=manualPriceObservations([input],{
+      store:"carrefour",code:ean,now
+    });
+    const merged=mergeManualPriceObservations({
+      [ean]:[{id:"existing",price:2.99,date}]
+    },[input],{store:"leclerc",now});
+    const updated=saveManualPrice([input],{
+      ...input,code:ean,price:"2,20"
+    },{now});
+    return {
+      match:matched.length,unrelated:unrelated.length,
+      wrongStore:wrongStore.length,
+      targetCount:merged[ean].length,
+      aliasCreated:upc in merged,
+      sameId:updated.length===1,
+      updatedPrice:updated[0]?.price,
+      removed:removeManualPrice(updated,updated[0].id,{now}).length
+    };
+  });
+  assert.deepEqual(manualBarcode,{
+    match:1,unrelated:0,wrongStore:0,
+    targetCount:2,aliasCreated:false,
+    sameId:true,updatedPrice:2.2,removed:0
+  });
+  await assertNoHorizontalOverflow(page,"prix personnels et variantes GTIN");
+
   for(const width of [360,320]){
     await page.setViewportSize({width,height:750});
     await assertNoHorizontalOverflow(page,"largeur "+width+"px");
