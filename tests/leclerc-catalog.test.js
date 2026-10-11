@@ -43,7 +43,7 @@ test("refuse un taux voisin si le taux attendu manque",()=>{
   assert.ok(result.reasons.includes("remise sur le 2e absente"));
   // A 68% discount elsewhere in the magazine cannot validate Gullón.
   const unrelated="<div>GULLÓN BISCUITS PETIT DÉJEUNER</div>"+
-    " ".repeat(1200)+
+    " article-sans-rapport ".repeat(160)+
     "<div>68% SUR LE 2e PRODUIT ACHETÉ CHOCOLAT MARQUE DIFFÉRENTE</div>";
   const crossPage=verifyLeclercCatalogOffer(unrelated,{
     promoFormula:{type:"nth_percent",nth:2,cycle:2,percent:68},
