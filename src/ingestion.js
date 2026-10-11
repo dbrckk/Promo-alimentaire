@@ -131,7 +131,11 @@ export function normalizeImportedOffer(raw) {
       rewardType:value.rewardType || null,
       benefitTiming:value.benefitTiming || null,
       requiresLoyalty:value.requiresLoyalty || null,
-      autoStackWhenEligible:value.autoStackWhenEligible===true,
+      // Imported data is not an authority to restore automatic savings.
+      // resolveOffersForLoyalty() promotes autoStackWhenEligible after card
+      // selection; this must never bypass EAN, merchant/source, activation,
+      // store verification or non-stackable refund checks.
+      autoStackWhenEligible:false,
       requiresStoreVerification:value.requiresStoreVerification===true,
       requiresChannelPriceVerification:value.requiresChannelPriceVerification===true,
       multiReference:value.multiReference===true,
