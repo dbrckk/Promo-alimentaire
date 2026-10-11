@@ -37,6 +37,9 @@ jobs:
       - name: Record factual Shopmium source availability
         env:
           SHOPMIUM_SYNC_OUTCOME: ${{ steps.source.outcome }}
+          SHOPMIUM_CONFIRMED_COUNT: ${{ steps.source.outputs.confirmed_count }}
+          SHOPMIUM_RETAINED_COUNT: ${{ steps.source.outputs.retained_count }}
+          SHOPMIUM_SNAPSHOT_COUNT: ${{ steps.source.outputs.snapshot_count }}
         run: node scripts/record-shopmium-sync-status.mjs --write
       - name: Validate generated data
         run: npm run verify
