@@ -247,6 +247,22 @@ try{
     };
   });
   assert.deepEqual(locationSafety,{far:"too-far",near:true,dateMismatch:false});
+  // Precision matters: rounding 3 days + 30 min to one decimal used to
+  // incorrectly permit a store price comparison.
+  const strictDateGap=await page.evaluate(async()=>{
+    const {comparePriceObservationEvidence}=await import("./src/exact-sku-comparison.js");
+    const base={date:"2026-10-08T12:00:00Z",
+      city:"Lyon",postcode:"69002",locationLat:45.76,locationLon:4.84};
+    const compare=(date)=>comparePriceObservationEvidence(base,
+      {...base,date},new Date("2026-10-11T15:00:00Z"));
+    const exact=compare("2026-10-11T12:00:00Z");
+    const over=compare("2026-10-11T12:30:00Z");
+    return {exact:exact.comparable,over:over.comparable,
+      reason:over.status,reportedGap:over.dateGapDays};
+  });
+  assert.deepEqual(strictDateGap,
+    {exact:true,over:false,reason:"dates-too-far",reportedGap:3.03});
+
   // Run the actual fetch/normalization path in Android Chrome: two retailer
   // callers must reuse each Open Prices page while keeping prices isolated.
   const sharedPriceProbe=await page.evaluate(async()=>{
