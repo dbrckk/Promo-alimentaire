@@ -309,6 +309,17 @@ function parseObservationDay(value){
     ? date : null;
 }
 
+// Other screens may receive either calendar days or full ISO timestamps.
+// Validate the civil date before parsing: JavaScript can silently normalize
+// an impossible YYYY-MM-DD, including inside an otherwise valid timestamp.
+export function parsePriceEvidenceDate(value){
+  if(typeof value!=="string") return null;
+  const match=/^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2}))?$/.exec(value);
+  if(!match || !parseObservationDay(match[1])) return null;
+  const date=value.length===10 ? parseObservationDay(value) : new Date(value);
+  return date && Number.isFinite(date.getTime()) ? date : null;
+}
+
 export function isFreshObservation(observation,maxAgeDays=120,now=new Date()) {
   if(!observation?.date) return false;
   const date=parseObservationDay(observation.date);
