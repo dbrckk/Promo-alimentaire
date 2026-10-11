@@ -133,6 +133,15 @@ export const providers = [
     note:"Dons alimentaires de particuliers et de professionnels et garde-mangers solidaires. Les modalités et les zones couvertes sont à vérifier."
   },
   {
+    id:"olio",name:"Olio",kinds:["dons alimentaires","anti-gaspi","gratuit"],priority:"fort",
+    stores:[],segment:"food",potentialFree:true,
+    targetLabel:"Partage local de produits alimentaires, collecte sur place selon disponibilité",
+    url:"https://olioapp.com/",
+    verificationUrl:"https://play.google.com/store/apps/details?id=com.olioex.android",
+    discoveryVerifiedAt:"2026-10-11",
+    note:"Particuliers et bénévoles peuvent proposer de la nourriture gratuite à récupérer localement. Réductions alimentaires possibles selon zone. Pas de livraison pour les dons, aucune disponibilité garantie."
+  },
+  {
     id:"lidl-plus",name:"Lidl Plus",kinds:["coupons","fidélité"],priority:"fort",
     stores:[],segment:"food",targetLabel:"Lidl uniquement",
     url:"https://www.lidl.fr/c/lidl-plus/s10017570",
@@ -171,6 +180,15 @@ export const providers = [
     verificationUrl:"https://www.nousantigaspi.com/les-produits-a-marque-nous/",
     discoveryVerifiedAt:"2026-10-08",
     note:"Épiceries de produits sauvés et marque NOUS à prix réduit. Une économie doit être comparée produit par produit, sans taux uniforme."
+  },
+  {
+    id:"bene-bono",name:"Bene Bono",kinds:["courses anti-gaspi","livraison alimentaire","prix réduits"],priority:"fort",
+    stores:[],segment:"food",
+    targetLabel:"Courses anti-gaspillage à livrer, éligibilité et frais selon le code postal",
+    url:"https://benebono.fr/",
+    verificationUrl:"https://benebono.fr/",
+    discoveryVerifiedAt:"2026-10-11",
+    note:"Fruits, légumes, produits frais et épicerie sauvés du gaspillage. Tarifs et réductions variables à vérifier par article, frais et modalités de livraison à contrôler. Non assimilé aux prix Carrefour/E.Leclerc."
   },
   {
     id:"quoty",name:"Quoty",kinds:["ODR","cashback ticket","courses"],priority:"complément",
