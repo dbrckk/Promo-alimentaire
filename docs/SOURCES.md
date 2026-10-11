@@ -14,7 +14,7 @@ La vérification des journaux GitHub Actions établit deux défaillances différ
 
 **Chemins d'intégration conformes :** rechercher des API/flux de catalogue **publics ou officiellement autorisés**, obtenir un accord de données/partenariat, ou importer manuellement des offres possédant URL de source, preuve d'éligibilité exacte, magasin, prix, réduction et échéance. Ne pas traiter un HTTP 200 d'un simple squelette HTML comme une revalidation. Ne pas utiliser d'API privées ou de contournement anti-bot.
 
-Les workflows disposant de la permission `contents: write` et d'un déclencheur `push` sont restreints à la branche `main`, afin qu'une modification sur une branche de travail ne puisse pas être automatiquement publiée comme données de production.
+Les workflows de synchronisation possédant la permission `contents: write` restreignent les déclenchements `push` à `main` et exécutent leurs jobs d'écriture uniquement lorsque `github.ref == 'refs/heads/main'`. Cela inclut un déclenchement manuel (`workflow_dispatch`) sélectionnant une autre branche : aucune publication en production n'est autorisée depuis ce contexte.
 
 ## Priorité 1 — indispensables aux courses
 
