@@ -5,6 +5,7 @@ on:
     - cron: "17 6 * * *"
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - "scripts/sync-leclerc-catalog.mjs"
       - "scripts/source-sync-status.mjs"
