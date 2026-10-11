@@ -98,35 +98,40 @@ function usableHistory(history,{code,store}={}){
 
 export function productPriceTrend(history,{code,store,locationId=null,locationKey=null}={}) {
   const values=usableHistory(history,{code,store});
-  const key=locationKey || (locationId!==null ? "id:"+String(locationId) : values[0]?.locationKey);
-  if(!key) return null;
-  const sameLocation=values.filter((item)=>item.locationKey===key);
-  if(sameLocation.length<2) return null;
+  // An explicit shop must never fall back to receipts from other locations.
+  const pinnedKey=locationKey || (locationId!==null ? "id:"+String(locationId) : null);
+  // Without a selected shop, prefer the newest location for which an actual
+  // two-day trend exists. The newest observation alone is insufficient.
+  const keys=pinnedKey ? [pinnedKey] : [...new Set(values.map((item)=>item.locationKey))];
+  for(const key of keys){
+    const sameLocation=values.filter((item)=>item.locationKey===key);
+    if(sameLocation.length<2) continue;
 
-  // Use the highest observed amount within each calendar day when sources
-  // disagree. This avoids falsely reporting a price drop from one cheap
-  // promotional receipt despite a higher same-day checkout price.
-  const latestDay=new Date(sameLocation[0].date).toISOString().slice(0,10);
-  const latest=[...sameLocation]
-    .filter((item)=>new Date(item.date).toISOString().slice(0,10)===latestDay)
-    .sort((a,b)=>b.price-a.price)[0];
-  const previousCandidates=sameLocation.filter((item)=>
-    new Date(item.date).toISOString().slice(0,10)<latestDay
-  );
-  if(!previousCandidates.length) return null;
-  const previousDay=new Date(previousCandidates[0].date).toISOString().slice(0,10);
-  const previous=[...previousCandidates]
-    .filter((item)=>new Date(item.date).toISOString().slice(0,10)===previousDay)
-    .sort((a,b)=>b.price-a.price)[0];
+    // Same-day contradictory receipts use the highest observed price so
+    // a temporary cheap checkout does not manufacture a price drop.
+    const latestDay=new Date(sameLocation[0].date).toISOString().slice(0,10);
+    const latest=sameLocation.filter((item)=>
+      new Date(item.date).toISOString().slice(0,10)===latestDay
+    ).sort((a,b)=>b.price-a.price)[0];
+    const previousCandidates=sameLocation.filter((item)=>
+      new Date(item.date).toISOString().slice(0,10)<latestDay
+    );
+    if(!previousCandidates.length) continue;
+    const previousDay=new Date(previousCandidates[0].date).toISOString().slice(0,10);
+    const previous=previousCandidates.filter((item)=>
+      new Date(item.date).toISOString().slice(0,10)===previousDay
+    ).sort((a,b)=>b.price-a.price)[0];
 
-  const delta=round(latest.price-previous.price);
-  const percent=previous.price>0
-    ? Math.round((delta/previous.price)*10000)/100
-    : 0;
-  return {
-    latest,previous,delta,percent,locationKey:key,
-    direction:delta<0?"down":delta>0?"up":"flat"
-  };
+    const delta=round(latest.price-previous.price);
+    const percent=previous.price>0
+      ? Math.round((delta/previous.price)*10000)/100
+      : 0;
+    return {
+      latest,previous,delta,percent,locationKey:key,
+      direction:delta<0?"down":delta>0?"up":"flat"
+    };
+  }
+  return null;
 }
 
 /**

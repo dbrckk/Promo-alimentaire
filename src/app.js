@@ -1889,9 +1889,26 @@ function renderProductPriceHistory(){
     code:state.product.code,
     store:state.store
   });
+  const trendAge=trend ? priceFreshness(trend.latest) : null;
+  const trendOutdated=trendAge && ["old","stale","unknown"].includes(trendAge.level);
+  const trendDiscounted=trend?.latest?.isDiscounted===true;
+  const trendTone=trendOutdated || trendDiscounted ? ""
+    : trend?.direction==="down" ? "good" : trend?.direction==="up" ? "bad" : "";
   const trendHtml=trend
-    ? `<div class="history-trend ${trend.direction==="down"?"good":trend.direction==="up"?"bad":""}">${trend.direction==="down"?"Baisse":trend.direction==="up"?"Hausse":"Stable"} de ${money.format(Math.abs(trend.delta))} (${Math.abs(trend.percent).toLocaleString("fr-FR",{maximumFractionDigits:1})} %) dans le même magasin : ${escapeHtml(trend.latest.storeName || "magasin identifié")}.</div>`
-    : '<div class="history-trend">Tendance indisponible : il faut deux dates de prix distinctes dans le même magasin physique identifié.</div>';
+    ? `<div class="history-trend ${trendTone}">
+        <strong>${trend.direction==="down"?"Baisse":trend.direction==="up"?"Hausse":"Stabilité"} observée</strong>
+        de ${money.format(Math.abs(trend.delta))}
+        (${Math.abs(trend.percent).toLocaleString("fr-FR",{maximumFractionDigits:1})} %)
+        dans le même magasin : ${escapeHtml(trend.latest.storeName || "magasin identifié")}.
+        <small>Relevés du ${escapeHtml(formatDate(trend.previous.date))} et du ${escapeHtml(formatDate(trend.latest.date))}.
+          ${trendDiscounted
+            ? "Dernier ticket remisé : cette évolution peut être ponctuelle."
+            : trendOutdated
+              ? "Ancien relevé : ne pas interpréter cette évolution comme une offre actuelle."
+              : "Prix communautaires indicatifs, non garantis aujourd'hui."}
+        </small>
+      </div>`
+    : '<div class="history-trend">Tendance indisponible : il faut deux dates de prix distinctes dans un même magasin physique identifié.</div>';
 
   els.productPriceHistory.innerHTML=`
     <div class="product-offers-head">
