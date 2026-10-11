@@ -8,6 +8,12 @@ Une carte Club Carrefour ou PASS **ne prouve pas** que les Avantages Fruits & L�
 
 La génération d'une offre contextualisée depuis Open Food Facts ne constitue pas une **preuve EAN exacte** chez Carrefour. Les anciennes offres sont filtrées **aussi dans l'évaluateur du panier**, y compris pour les appels hors interface. La revue des avantages contextualisés expire le 25/10/2026 : après cette date, aucune estimation ancienne n'est appliquée sans nouvelle confirmation.
 
+## Correctif du budget et des prix historiques (11 octobre 2026)
+
+Le budget de courses rejette maintenant **tout coût de caisse absent** (`null`, vide ou booléen) : aucune donnée manquante ne peut être convertie artificiellement en **0 €**. Un panier signalé « complet » doit réellement avoir un prix pour **chaque** référence. Les relevés Open Prices datés de plus de **7 jours** restent consultables comme informations historiques, mais le respect du budget passe obligatoirement au statut **indicatif** ; un comparateur de stratégies ne peut plus annoncer le magasin gagnant si l'un des paniers reposait sur un relevé ancien. Un relevé frais n'est pas une promesse de prix ou de stock actuel.
+
+Ces protections ont été vérifiées dans le parcours navigateur Android, en testant ensemble les vrais modules panier, budget et stratégie, y compris les totaux manquants et les relevés vieillissants.
+
 ## État
 
 Fonctionnalités actuelles :
