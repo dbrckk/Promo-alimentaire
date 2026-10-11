@@ -20,19 +20,6 @@ import {
   parseValidityDates
 } from "../src/adapters/shopmium.js";
 
-test("le rayon officiel Shopmium sépare alimentaire et non alimentaire",()=>{
-  assert.equal(classifyShopmiumRayon("<p>Au rayon Épicerie salée</p>"),"alimentaire");
-  assert.equal(classifyShopmiumRayon("<p>Au rayon Hygiène et beauté</p>"),"non-alimentaire");
-  assert.equal(classifyShopmiumRayon("<p>Au rayon Entretien</p>"),"non-alimentaire");
-  assert.equal(classifyShopmiumRayon("<p>Au rayon Douche</p>"),"non-alimentaire");
-  assert.equal(classifyShopmiumRayon("<p>Au rayon Adoucissants</p>"),"non-alimentaire");
-  assert.equal(classifyShopmiumRayon("<p>Au rayon Brosse à dents</p>"),"non-alimentaire");
-  assert.equal(classifyShopmiumRayon("<p>Au rayon Boissons pour enfants</p>"),"alimentaire");
-  assert.equal(classifyShopmiumRayon("<p>Au rayon Crèmerie</p>"),"alimentaire");
-  assert.equal(classifyShopmiumRayon("<p>Au rayon inconnu</p>"),"autre");
-  assert.equal(classifyShopmiumRayon("<p>Sans rayon explicite</p>"),"autre");
-});
-
 test("extractShopmiumOfferUrls déduplique les fiches /fr/n",()=>{
   const html='<a href="/fr/n/a-chacun-son-daddy">A</a><a href="https://offers.shopmium.com/fr/n/a-chacun-son-daddy">B</a><a href="/fr/autre">X</a>';
   const urls=extractShopmiumOfferUrls(html);
@@ -75,6 +62,17 @@ test("deriveShopmiumProductMatch déduit Daddy et Fleury Michon",()=>{
 });
 
 test("parseShopmiumDetailHtml produit une offre prudente active",()=>{
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Épicerie salée</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Hygiène et beauté</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Entretien</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Douche</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Adoucissants</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Brosse à dents</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Boissons pour enfants</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Crèmerie</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon inconnu</p>"),"autre");
+  assert.equal(classifyShopmiumRayon("<p>Sans rayon explicite</p>"),"autre");
+
   const html=`
     <title>Shopmium | À chacun son Daddy</title>
     <div>1 article acheté = -20%</div>
