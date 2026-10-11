@@ -471,3 +471,7 @@ Une actualisation des prix de la liste de courses utilise une **copie figée de 
 ### Annuler une recherche de prix trop lente
 
 Pendant l'actualisation de la **liste de courses**, un bouton visible **« Annuler l’actualisation »** permet d'interrompre immédiatement la recherche en cours, sans supprimer les produits, modifier le canal ou effacer les anciens prix déjà disponibles. L'actualisation active est annulée via son contrôleur réseau et les réponses tardives sont ignorées. Le bouton **« Actualiser les prix »** redevient actif pour un nouvel essai. Le parcours Android teste l'annulation manuelle pendant une réponse retardée et vérifie qu'aucun ancien résultat ne remplace le panier.
+
+### Saisie sûre des codes-barres
+
+La recherche accepte les EAN/UPC/GTIN composés de 8, 12, 13 ou 14 chiffres, avec éventuellement des espaces ou des tirets de présentation. Elle refuse les lettres, ponctuations et caractères de contrôle au lieu de les supprimer silencieusement : une saisie mal copiée ne peut ainsi être interprétée comme un autre produit. Les vérifications de cohérence GTIN existantes restent en place.
