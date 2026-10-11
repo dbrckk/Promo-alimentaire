@@ -28,6 +28,16 @@ export function summarizeBasketStrategies(scenarios,{
       reason:"Aucun scénario complet et suffisamment identifié n’est disponible."
     };
   }
+  // Both stores must have recent comparable receipt coverage before
+  // declaring a winner; a price from weeks ago is merely an indication.
+  if(reliable.some((scenario)=>
+    Number.isFinite(scenario.oldestPriceAgeDays) && scenario.oldestPriceAgeDays>7
+  )){
+    return {
+      status:"indicative",
+      reason:"Au moins un panier utilise un prix relevé il y a plus de 7 jours. Impossible d'affirmer quel magasin est le moins cher aujourd'hui."
+    };
+  }
 
   const guaranteed=[...reliable].sort((a,b)=>a.finalCost-b.finalCost)[0];
   const prudent=[...reliable].sort((a,b)=>
