@@ -68,7 +68,7 @@ export function carrefourClubEligibility(product){
     "en:fruits-and-vegetables"
   ]);
   if(categories.some((tag)=>exact.has(tag))){
-    return {kind:"fruit-veg",confidence:"high",label:"Fruits & légumes"};
+    return {kind:"fruit-veg",confidence:"high",label:"Fruits & légumes",matchedCategory:categories.find((tag)=>exact.has(tag))};
   }
   return null;
 }
@@ -76,7 +76,7 @@ export function carrefourClubEligibility(product){
 export function buildProductLoyaltyOffers(product,{
   store,
   profile={},
-  verifiedAt="2026-10-07"
+  verifiedAt="2026-10-11"
 }={}){
   if(store!=="carrefour") return [];
   const eligibility=carrefourClubEligibility(product);
@@ -89,6 +89,12 @@ export function buildProductLoyaltyOffers(product,{
   const isKnown=normalized.carrefour==="club" || isPass;
   const rate=isPass ? 15 : 10;
   const requirement=isPass ? "carrefour-pass" : "carrefour-club";
+  // OFF classification / brand is not proof that the individual SKU belongs
+  // to an activated Carrefour Club offer. Never manufacture an exact GTIN
+  // promotion from the product currently being viewed.
+  const productMatch=eligibility.kind==="carrefour-bio"
+    ? {brands:["Carrefour Bio","Carrefour Soft Bio"],minScore:55}
+    : {all:[eligibility.matchedCategory],minScore:10};
 
   return [{
     id:`carrefour-club-${product?.code || eligibility.kind}-${rate}`,
@@ -103,7 +109,7 @@ export function buildProductLoyaltyOffers(product,{
     channels:["store","drive","online"],
     savingPercent:rate,
     verifiedAt,
-    reviewAfter:"2026-10-21",
+    reviewAfter:"2026-10-25",
     sourceUrl:isPass ? CARREFOUR_PASS_SOURCE : CARREFOUR_SOURCE,
     scope:"produit",
     mechanism:"retailer_loyalty",
@@ -112,18 +118,21 @@ export function buildProductLoyaltyOffers(product,{
     stackGroup:"carrefour-club-benefit",
     stackOrder:20,
     savingBasis:"current",
-    autoStack:isKnown,
-    autoStackWhenEligible:true,
+    // Card possession does not prove that the benefit was activated, that
+    // the item is not excluded/promoted or that PASS was used for payment.
+    autoStack:false,
+    autoStackWhenEligible:false,
     requiresLoyalty:requirement,
-    loyaltyEligibility:isKnown ? "eligible" : "unknown",
-    stackingConfidence:isKnown ? "high" : "unknown",
-    stacking:"Avantage Club/PASS non cumulable avec un autre niveau Club sur le même produit.",
+    loyaltyEligibility:isKnown ? "activation-unverified" : "unknown",
+    stackingConfidence:"unknown",
+    stacking:"Estimation seulement : activation, prix, exclusions, magasin et éventuel paiement PASS à vérifier ; ne pas cumuler avec une autre promotion.",
     conditions:isPass
-      ? "15% avec Carte PASS et Club Carrefour sur les catégories éligibles ; conditions et exclusions Carrefour applicables."
+      ? "15% potentiels crédités en cagnotte avec avantages activés et Carte PASS liée au Club utilisée pour le paiement ; exclusions des produits promus, lots, 0,99€/1,29€, frais/surgelés/conserves selon rayon. Vérifier l'enseigne et le produit."
       : normalized.carrefour==="club"
-        ? "10% avec Club Carrefour sur les catégories éligibles ; conditions et exclusions Carrefour applicables."
-        : "10% si Club Carrefour activé ; la Carte PASS peut porter l'avantage à 15%. Profil fidélité à confirmer.",
-    eans:product?.code ? [String(product.code)] : []
+        ? "10% potentiels crédités en cagnotte uniquement après activation des avantages Club ; catégories et exclusions (produits promus, lots, 0,99€/1,29€, etc.) à vérifier auprès du magasin."
+        : "10% potentiels seulement après activation des avantages Club ; PASS peut porter à 15% selon le paiement et les exclusions. Profil à confirmer.",
+    eans:[],
+    productMatch
   }];
 }
 
