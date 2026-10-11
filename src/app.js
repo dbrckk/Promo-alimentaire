@@ -65,6 +65,8 @@ const els = {
   loyaltySummary:document.querySelector("#loyaltySummary"),
   sort:document.querySelector("#sort"),
   savingsFocus:document.querySelector("#savingsFocus"),
+  sourceProof:document.querySelector("#sourceProof"),
+  offerVerificationSummary:document.querySelector("#offerVerificationSummary"),
   simulatedPrice:document.querySelector("#simulatedPrice"),
   simulatedQuantity:document.querySelector("#simulatedQuantity"),
   simulatorSummary:document.querySelector("#simulatorSummary"),
@@ -145,6 +147,8 @@ const state = {
   sort:localStorage.getItem("promo-sort") || "percent",
   savingsFocus:["all","at-least-50","full-refund"].includes(localStorage.getItem("promo-savings-focus"))
     ? localStorage.getItem("promo-savings-focus") : "all",
+  sourceProof:["without-failure","all","failed"].includes(localStorage.getItem("promo-source-proof"))
+    ? localStorage.getItem("promo-source-proof") : "without-failure",
   search:"",
   simulatedPrice:"",
   simulatedQuantity:"1",
@@ -189,6 +193,7 @@ els.carrefourLoyalty.value=state.loyaltyProfile.carrefour;
 els.leclercLoyalty.value=state.loyaltyProfile.leclerc;
 els.sort.value=state.sort;
 els.savingsFocus.value=state.savingsFocus;
+els.sourceProof.value=state.sourceProof;
 els.simulatedQuantity.value=state.simulatedQuantity;
 els.sourceScope.value=state.sourceScope;
 els.radiusSelect.value=String(state.radiusKm);
@@ -235,6 +240,11 @@ els.search.addEventListener("input",()=>{
 els.savingsFocus.addEventListener("change",()=>{
   state.savingsFocus=els.savingsFocus.value;
   localStorage.setItem("promo-savings-focus",state.savingsFocus);
+  render();
+});
+els.sourceProof.addEventListener("change",()=>{
+  state.sourceProof=els.sourceProof.value;
+  localStorage.setItem("promo-source-proof",state.sourceProof);
   render();
 });
 els.simulatedPrice.addEventListener("input",()=>{
@@ -378,10 +388,20 @@ function setTab(tab){
 
 function render(){
   const resolvedOffers=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
-  const filtered=filterOffers(resolvedOffers,{
+  const matching=filterOffers(resolvedOffers,{
     store:state.store,channel:state.channel,search:state.search,
     savingsFocus:state.savingsFocus
   });
+  const nonReconfirmed=matching.filter((offer)=>Boolean(offer.sourceSyncWarning)).length;
+  const filtered=matching.filter((offer)=>
+    state.sourceProof==="all"
+    || (state.sourceProof==="failed" ? Boolean(offer.sourceSyncWarning) : !offer.sourceSyncWarning)
+  );
+  els.offerVerificationSummary.textContent=state.sourceProof==="without-failure"
+    ? nonReconfirmed+" offre(s) dont la source n'a pas pu reconfirmer les données sont masquée(s). Choisir « Toutes » pour les examiner. Absence d'alerte ≠ économie garantie."
+    : state.sourceProof==="failed"
+      ? nonReconfirmed+" offre(s) anciennes non reconfirmées : ne pas acheter sans vérification officielle."
+      : nonReconfirmed+" offre(s) non reconfirmée(s) sur "+matching.length+" candidate(s). Les gains affichés sont conditionnels.";
   const scenario={unitPrice:state.simulatedPrice,quantity:state.simulatedQuantity};
   const ranked=rankOffers(filtered,state.sort,new Date(),scenario);
   els.offers.innerHTML=ranked.map((offer)=>renderOffer(offer,scenario)).join("");
@@ -402,7 +422,7 @@ function render(){
     ? "Aucun remboursement intégral de produit identifié actuellement pour ce magasin et ce canal. Ne pas acheter en anticipant une offre absente."
     : state.savingsFocus==="at-least-50"
       ? "Aucune offre de 50 % ou plus annoncée actuellement selon les données disponibles."
-      : "Aucune offre ne correspond aux filtres.";
+      : "Aucune offre ne correspond aux filtres ou aucune source sans échec récent n'est disponible. Le filtre « Toutes » permet de consulter les offres non reconfirmées.";
 
   const activeProviders=filterDiscoveryProviders(providers,{
     scope:state.sourceScope,search:state.sourceSearch
@@ -424,9 +444,9 @@ function render(){
   const numericPercents=ranked.map(effectivePercent).filter(Number.isFinite);
   const maxPercent=numericPercents.length?Math.max(...numericPercents):null;
   els.stats.innerHTML=[
-    stat(ranked.length,"offres chiffrées"),
-    stat(activeProviders.length,"sources utiles"),
-    stat(maxPercent===null?"—":formatPercent(maxPercent),"meilleure remise")
+    stat(ranked.length,"offres consultables"),
+    stat(nonReconfirmed,"offres de sources non reconfirmées"),
+    stat(maxPercent===null?"—":formatPercent(maxPercent),"remise maximale annoncée")
   ].join("");
   renderListCount();
 }

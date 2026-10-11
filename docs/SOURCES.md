@@ -268,3 +268,7 @@ L'API publique Open Prices (<https://openfoodfacts.github.io/documentation/docs/
 - Les frais de déplacement, de livraison et les stocks ne sont pas inclus dans un prix observé communautaire.
 
 Une source de promotion contenant des codes EAN explicites s'applique **uniquement à ces références** : une correspondance marque/nom sur un autre code ne peut plus réintroduire l'offre en tant que suggestion potentielle. Les remises génériques sans EAN prouvé restent accessibles comme pistes heuristiques à vérifier.
+
+### Présentation des offres avec échec de source — 11/10/2026
+
+Une dernière synchronisation `unavailable` ou `partial`, plus récente que la preuve `verifiedAt`, ajoute `sourceSyncWarning` à chaque offre active concernée et désactive son cumul automatique. Le filtre des offres masque **par défaut** ces candidates non reconfirmées, mais un réglage explicite permet de les consulter et de vérifier les liens officiels. La date `verifiedAt`, `reviewAfter` et le taux ne sont ni prolongés ni artificiellement revalidés. Les sources dont le diagnostic manque ne deviennent pas pour autant des réductions garanties. L'audit de fraîcheur strict continue à signaler les sources totalement expirées.

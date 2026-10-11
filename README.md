@@ -533,3 +533,9 @@ Le journal et le résumé GitHub Actions indiquent désormais **la source concer
 ### Contrôle Android après la publication
 
 Le workflow Pages lance maintenant **un parcours complet Chromium simulant un Pixel 7 sur l'URL publique**, uniquement après une publication et une vérification CDN réussies. Le parcours couvre l'ouverture de la PWA, les filtres, la recherche EAN, les offres importées, la liste et le panier, le stockage local, les erreurs réseau simulées et le fonctionnement hors ligne. Les captures d'écran sont conservées dans les artefacts GitHub Actions sous `android-live-pages-<run-id>`. Une erreur de rendu ou de navigation rend le déploiement **non entièrement validé**, même si GitHub Pages a effectivement mis le site en ligne. Cette simulation ne prétend pas remplacer un essai sur un smartphone physique.
+
+### Filtre de fiabilité des synchronisations (11 octobre 2026)
+
+Par défaut, la liste d'offres exclut celles qui ont un **échec récent de reconfirmation** dans les diagnostics des synchronisations publiques (notamment Coupon Network, Carrefour et E.Leclerc lorsque leurs sources sont inaccessibles). Cela évite qu'un ancien taux de remboursement non reconfirmé soit proposé comme « meilleure remise » à l'ouverture de l'application.
+
+Le sélecteur **Fiabilité de la synchronisation** propose « Sans échec récent connu » (défaut), « Toutes, y compris non reconfirmées » et « Non reconfirmées uniquement ». Les candidates masquées ne sont **pas supprimées** : elles restent consultables à titre informatif, avec avertissement et lien vers l'offre officielle. L'état choisi est mémorisé uniquement sur cet appareil. Les statistiques parlent désormais de **remise maximale annoncée**, pas de réduction garantie. L'absence d'échec de synchronisation ne suffit jamais à garantir l'éligibilité d'un produit ou l'économie réelle.
