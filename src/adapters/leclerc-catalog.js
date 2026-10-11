@@ -21,7 +21,7 @@ function decodeUnicodeEscapes(value){
   );
 }
 
-export function verifyLeclercCatalogOffer(html,offer){
+export function verifyLeclercCatalogOffer(html,offer,{requireNearbyEvidence=false}={}){
   const text=normalize(textContent(html));
   if(!text) return {ok:false,reasons:["page vide"]};
 
@@ -64,6 +64,30 @@ export function verifyLeclercCatalogOffer(html,offer){
     if(!new RegExp(pct+"\\s*%").test(text)){
       reasons.push("taux promo absent");
     }
+  }
+
+  // Generic catalogue pages can mention 20% for product A and a totally
+  // different brand B elsewhere. Require a bounded product/promotion window
+  // when reconfirming a real campaign from a large public brochure.
+  if(requireNearbyEvidence){
+    const anchors=brands;
+    let linked=false;
+    for(const brand of anchors){
+      let offset=0;
+      let checked=0;
+      while((offset=text.indexOf(brand,offset))!==-1 && checked++<24){
+        const window=text.slice(Math.max(0,offset-420),Math.min(text.length,offset+620));
+        if(verifyLeclercCatalogOffer(window,offer).ok){
+          linked=true;
+          break;
+        }
+        offset+=Math.max(1,brand.length);
+      }
+      if(linked) break;
+    }
+    if(!linked) reasons.push(
+      "produit et mécanisme promo non liés dans un même passage du catalogue"
+    );
   }
 
   return {
