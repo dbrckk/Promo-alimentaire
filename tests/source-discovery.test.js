@@ -8,7 +8,13 @@ test("les sources de découverte ont des IDs, preuves et liens utilisables",()=>
   const ids=providers.map((source)=>source.id);
   assert.equal(new Set(ids).size,ids.length);
   for(const source of providers.filter((s)=>s.discoveryVerifiedAt)){
-    assert.match(source.discoveryVerifiedAt,/^2026-10-(?:08|09)$/);
+    // New providers must not require changing a fixed whitelist of dates.
+    // Validate a real civil date and reject future-dated verification claims.
+    assert.match(source.discoveryVerifiedAt,/^\d{4}-\d{2}-\d{2}$/);
+    const verified=new Date(source.discoveryVerifiedAt+"T00:00:00Z");
+    assert.equal(verified.toISOString().slice(0,10),source.discoveryVerifiedAt);
+    assert.ok(source.discoveryVerifiedAt<=new Date().toISOString().slice(0,10),
+      "Une future vérification n'est pas une preuve valable.");
     assert.ok(source.verificationUrl.startsWith("https://"));
   }
 });
