@@ -836,7 +836,7 @@
     "externalId": "auto-gels-douche-sanex-derma-therapie-2",
     "title": "Gels Douche Sanex Derma Thérapie",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -906,7 +906,7 @@
     "externalId": "auto-soupline-adoucissant-parfum-de-linge",
     "title": "Soupline Parfum de Linge",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -1089,7 +1089,7 @@
     "externalId": "auto-ajax-power-mousse",
     "title": "AJAX POWER MOUSSE",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -2309,7 +2309,7 @@
     "externalId": "auto-jordan-ultralite-sensible-3",
     "title": "JORDAN ULTRALITE SENSIBLE",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -2364,7 +2364,7 @@
     "externalId": "auto-jordan-ultralite-blancheur-3",
     "title": "JORDAN ULTRALITE BLANCHEUR",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -2420,7 +2420,7 @@
     "externalId": "auto-jordan-ultralite-classique-3",
     "title": "JORDAN ULTRALITE CLASSIQUE",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -2475,7 +2475,7 @@
     "externalId": "auto-mouchoirs-lotion-acide-hyaluronique",
     "title": "Mouchoirs innovants Renova",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -2535,7 +2535,7 @@
     "externalId": "auto-mouchoirs-magic-touch-douceur-4d",
     "title": "Mouchoirs innovants Renova",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -2596,7 +2596,7 @@
     "externalId": "auto-coloration-barbe-et-moustache-just-for-men",
     "title": "Coloration Barbe et Moustache Just For Men",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "carrefour"
     ],
@@ -2644,7 +2644,7 @@
     "externalId": "auto-coloration-original-formula-just-for-men",
     "title": "Coloration Original Formula Just For Men",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "carrefour"
     ],
@@ -2691,7 +2691,7 @@
     "externalId": "auto-papier-toilette-textile-4-epaisseurs",
     "title": "Renova TextilPapier",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -2750,7 +2750,7 @@
     "externalId": "auto-essuie-tout-textile-3-epaisseurs",
     "title": "Renova TextilPapier",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -2809,7 +2809,7 @@
     "externalId": "auto-ajax-power-clean-1",
     "title": "AJAX POWER CLEAN",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
