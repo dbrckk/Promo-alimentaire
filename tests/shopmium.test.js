@@ -24,6 +24,10 @@ test("le rayon officiel Shopmium sépare alimentaire et non alimentaire",()=>{
   assert.equal(classifyShopmiumRayon("<p>Au rayon Épicerie salée</p>"),"alimentaire");
   assert.equal(classifyShopmiumRayon("<p>Au rayon Hygiène et beauté</p>"),"non-alimentaire");
   assert.equal(classifyShopmiumRayon("<p>Au rayon Entretien</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Douche</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Adoucissants</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Brosse à dents</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Boissons pour enfants</p>"),"alimentaire");
   assert.equal(classifyShopmiumRayon("<p>Au rayon Crèmerie</p>"),"alimentaire");
   assert.equal(classifyShopmiumRayon("<p>Au rayon inconnu</p>"),"autre");
   assert.equal(classifyShopmiumRayon("<p>Sans rayon explicite</p>"),"autre");
