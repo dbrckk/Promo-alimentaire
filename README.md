@@ -563,3 +563,12 @@ Le synchroniseur Shopmium inspecte désormais une seule profondeur supplémentai
 Cinq fiches alimentaires officielles vérifiées le **11/10/2026** ont été ajoutées au snapshot : Bonduelle carottes râpées et taboulés (25/30/34% selon 1/2/3 articles, jusqu'au 30/12), deux opérations Barilla Al Bronzo (20/30% selon les références et quantités jusqu'au 31/10) et Daddy (20/25% selon la quantité, jusqu'au 31/10). Les EAN ne sont **pas inventés**, les remboursements dépendent du ticket, des quotas et de l'acceptation du dossier, et les offres restent **non cumulables** avec les promotions quand la fiche l'indique. Les pourcentages présentés ne sont pas des prix magasin, ni des gains garantis.
 
 Les sources sont revérifiées **chaque jour**, ainsi qu'après modification de l'extracteur ou de la liste de veille. Les fiches non retrouvées restent au maximum jusqu'à leur **ancienne date de révision non prolongée**, sauf si la page les déclare officiellement terminées. Une synchronisation insuffisante ne remplace pas un lot fiable par une liste appauvrie.
+
+
+### Publication automatique des offres synchronisées (11 octobre 2026)
+
+Les jobs Shopmium, Coupon Network, Carrefour, E.Leclerc, La Belle Adresse et remises de paiement peuvent écrire des instantanés sur `main` via le `GITHUB_TOKEN` de GitHub Actions. Ce type de commit **ne déclenche pas** le workflow `push` CI. Le workflow **CI** écoute désormais la fin de ces synchronisations et ne se relance que si :
+- la synchronisation s'est terminée avec succès sur **la branche `main` du dépôt propriétaire** ;
+- le SHA courant de `main` diffère du SHA dont est parti le synchroniseur, ce qui indique un nouveau commit à contrôler.
+
+Le code et les imports sont revérifiés par `npm run verify` sur le dernier `main`, puis le workflow Pages existant publie ce commit exact, contrôle les fichiers publics en HTTPS, et lance le parcours complet Chromium Android contre la PWA publiée. Si une source est simplement inaccessible et n'a pas écrit de nouveau commit, **aucun redéploiement inutile n'est lancé** par ce mécanisme. Un échec de CI interdit toujours la publication. L'exécution quotidienne de secours reste active à 08:33 UTC.
