@@ -19,12 +19,15 @@ export function evaluateShoppingBudget(scenarios,{
   if(target===null) return {configured:false,budget:null,results:[]};
   const results=(scenarios || []).filter(Boolean).map((scenario)=>{
     const store=String(scenario.store || "");
-    const total=Number(scenario.checkoutCost);
-    const complete=scenario.isComplete===true
-      && Number(scenario.distinctCount)>0
-      && Number(scenario.missingCount)===0;
+    // Number(null), Number("") and Number(false) all equal zero. Missing
+    // checkout data must never become a fictitious free basket.
+    const total=typeof scenario.checkoutCost==="number"
+      ? scenario.checkoutCost : NaN;
     const pricedCount=Number(scenario.pricedCount)||0;
     const distinctCount=Number(scenario.distinctCount)||0;
+    const complete=scenario.isComplete===true
+      && distinctCount>0 && pricedCount===distinctCount
+      && Number(scenario.missingCount)===0;
     if(!pricedCount || !Number.isFinite(total) || total<0){
       return {
         store,status:"unavailable",checkoutCost:null,
@@ -47,6 +50,14 @@ export function evaluateShoppingBudget(scenarios,{
     }
     if(coverageIncomplete){
       reasons.push("Recherche de prix incomplète.");
+    }
+    // The cheapest receipt from 3 months ago cannot prove that the budget
+    // is respected in a store today, even if every SKU has a price.
+    const oldest=Number(scenario.oldestPriceAgeDays);
+    if(scenario.oldestPriceAgeDays!==null
+      && scenario.oldestPriceAgeDays!==undefined
+      && Number.isFinite(oldest) && oldest>7){
+      reasons.push("Au moins un prix a été relevé il y a plus de 7 jours.");
     }
     if(Number(scenario.manualPriceCount)>0){
       reasons.push("Présence de relevés personnels non vérifiés.");
