@@ -43,8 +43,8 @@ export function summarizeBasketStrategies(scenarios,{
   // Prices without an actual age, old observations and personal receipts
   // are useful for budgeting but do not establish a current store winner.
   if(reliable.some((scenario)=>
-    !Number.isFinite(scenario.oldestPriceAgeDays)
-    || scenario.oldestPriceAgeDays<0 || scenario.oldestPriceAgeDays>7
+    !Number.isFinite(scenario.oldestPriceAgeExactDays)
+    || scenario.oldestPriceAgeExactDays<0 || scenario.oldestPriceAgeExactDays>7
     || Number(scenario.manualPriceCount)>0
   )){
     return {
