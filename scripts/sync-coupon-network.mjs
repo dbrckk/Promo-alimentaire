@@ -68,6 +68,10 @@ for(const sourceUrl of SOURCE_URLS){
       signal:AbortSignal.timeout(15000)
     });
     if(!response.ok) throw new Error("HTTP "+response.status);
+    if(sourceUrl===PUBLIC_CARDS_URL
+      && new URL(response.url || sourceUrl).hostname!=="prod-cn-offers.couponnetwork.fr"){
+      throw new Error("Redirection en dehors du catalogue public officiel.");
+    }
     const html=await response.text();
     if(html.length<5000) throw new Error("réponse anormalement courte");
     // The official public cards view puts the offer amount AFTER its
@@ -101,6 +105,9 @@ if(!assessCouponNetworkSnapshot(offers,{previousCount,minimum:minOffers}).publis
     await page.goto(PUBLIC_CARDS_URL,{
       waitUntil:"domcontentloaded",timeout:25000
     });
+    if(new URL(page.url()).hostname!=="prod-cn-offers.couponnetwork.fr"){
+      throw new Error("Redirection navigateur hors du domaine officiel.");
+    }
     await page.waitForFunction(()=>{
       const text=document.body?.innerText || "";
       return /sur l['’]achat/i.test(text) && /rembours/i.test(text);
