@@ -677,6 +677,7 @@ try{
       octoberUtc:parsePriceEvidenceDate("2026-10-25")?.toISOString(),
       weekLevel:priceFreshness({date:"2026-10-04"},atNoon).level,
       monthLevel:priceFreshness({date:"2026-09-11"},atNoon).level,
+      expiredLevel:priceFreshness({date:"2026-06-13"},atNoon).level,
       weekDayCount:priceFreshness({date:"2026-10-04"},atNoon).ageDays,
       impossible:isFreshObservation({date:"2026-02-30"},7,atNoon)
     };
@@ -685,7 +686,8 @@ try{
     sameDay:true,sameDayAge:0,marchMidnight:true,octoberMidnight:true,
     marchUtc:"2026-03-28T23:00:00.000Z",
     octoberUtc:"2026-10-24T22:00:00.000Z",
-    weekLevel:"recent",monthLevel:"old",weekDayCount:7,
+    weekLevel:"recent",monthLevel:"old",expiredLevel:"stale",
+    weekDayCount:7,
     impossible:false
   });
 
