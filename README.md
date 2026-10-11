@@ -598,3 +598,10 @@ La vérification des offres Shopmium dispose désormais de son propre diagnostic
 À chaque synchronisation, le workflow consigne le nombre de fiches effectivement reconfirmées **aujourd'hui**, la date de contrôle et l'état : `updated` (toutes confirmées), `partial` (seulement certaines), `unavailable` (aucune preuve exploitable ou erreur). Si l'extracteur échoue ou si Shopmium limite l'accès, **l'ancien snapshot n'est ni remplacé par zéro offre, ni artificiellement prolongé**. Le diagnostic est publié dans un fichier indépendant ; la PWA affiche alors « source non actualisée » et écarte les candidates non reconfirmées du filtre de fiabilité par défaut. Les fiches arrivent toujours à expiration selon **leur propre date de révision**.
 
 Le job d'actualisation sépare les erreurs d'accès aux données commerciales des erreurs techniques du dépôt : il conserve les avertissements dans GitHub Actions et valide le code ainsi que les données avant de publier le diagnostic. La copie de ce diagnostic est incluse dans les ressources essentielles pour l'utilisation hors ligne. La présence d'un statut `updated` n'est pas une garantie d'éligibilité produit, de stock ni de remboursement en caisse.
+
+
+### Fiabilité du compteur de reconfirmations Shopmium
+
+Le compteur affiché dans `source-sync-shopmium.json` est produit à partir des **fiches réellement lues et validées pendant chaque exécution**, et non à partir du champ `verifiedAt` qui ne contient qu'une date (sans heure). Deux contrôles le même jour ne peuvent donc plus confondre une fiche ancienne conservée avec une fiche nouvellement vérifiée. Le synchroniseur transmet les nombres `confirmed_count`, `retained_count` et `snapshot_count` au gestionnaire de statut via les sorties numériques de l'étape GitHub Actions.
+
+Si ces trois nombres manquent ou sont incohérents avec le snapshot enregistré, le statut ne peut pas annoncer `updated` : la publication s'interrompt au lieu de produire un faux bilan de vérification. Les offres conservées restent datées de leur dernière preuve réelle et le seuil de fraîcheur de la PWA n'est jamais prolongé automatiquement.
