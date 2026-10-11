@@ -2,7 +2,8 @@ name: Offer freshness
 
 on:
   schedule:
-    - cron: "17 5 * * *"
+    # Run after scheduled retailer, coupon and payment syncs (05:xx-06:xx UTC).
+    - cron: "17 8 * * *"
   workflow_dispatch:
 
 permissions:
