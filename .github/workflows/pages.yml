@@ -44,10 +44,17 @@ jobs:
       # Build an inspectable Pages artifact even before the repository owner
       # enables GitHub Pages in Settings > Pages > Source: GitHub Actions.
       - name: Prepare static PWA
+        env:
+          DEPLOY_COMMIT: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
         run: |
+          if [[ ! "$DEPLOY_COMMIT" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Invalid deployment commit."
+            exit 1
+          fi
           mkdir -p _site
           cp index.html styles.css manifest.webmanifest icon.svg sw.js _site/
           cp -R src data _site/
+          printf '{"commit":"%s"}\n' "$DEPLOY_COMMIT" > _site/deployment.json
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -84,3 +91,23 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify public HTTPS release and required PWA assets
+        env:
+          DEPLOY_URL: ${{ steps.deployment.outputs.page_url }}
+          EXPECTED_DEPLOY_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+        run: node scripts/check-public-pages.mjs
+      - name: Record publicly verified release
+        env:
+          DEPLOY_URL: ${{ steps.deployment.outputs.page_url }}
+          EXPECTED_DEPLOY_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          echo "### Promo Alimentaire — release verified" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Pages: $DEPLOY_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: $EXPECTED_DEPLOY_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "- HTTPS HTML, JavaScript, CSS, PWA manifest, service worker, data manifest: verified" >> "$GITHUB_STEP_SUMMARY"

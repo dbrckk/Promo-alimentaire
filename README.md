@@ -505,3 +505,9 @@ Le workflow `Deploy PWA to GitHub Pages` se déclenche après une **CI réussie*
 
 La CI s'exécute aussi une fois par jour à **08 h 33 UTC**, car les écritures effectuées par des workflows GitHub utilisant `GITHUB_TOKEN` ne déclenchent pas elles-mêmes d'autres workflows `push`. Cette validation quotidienne permet de redéployer les snapshots mis à jour, sans prétendre qu'une source inaccessible a été revalidée. Le statut de l'hébergement doit toujours être constaté dans les journaux de déploiement, et l'URL ouverte depuis un navigateur avant toute annonce de disponibilité.
 
+
+### Adresse Android et vérification de publication
+
+La PWA déployée sur GitHub Pages est disponible à [https://dbrckk.github.io/Promo-alimentaire/](https://dbrckk.github.io/Promo-alimentaire/). Depuis Android (Chrome), ouvrir l'URL puis, si proposé, utiliser **Installer l'application** dans le menu du navigateur.
+
+Chaque build Pages contient `deployment.json` avec le **SHA du commit réellement construit**. Après `actions/deploy-pages`, le script `scripts/check-public-pages.mjs` vérifie depuis le runner GitHub, via HTTPS et avec réessais pendant la propagation CDN, que l'URL publique sert **ce commit précis**, l'interface, le JavaScript, le CSS, le manifeste installable, le service worker et le manifeste des offres. Une diffusion de fichiers obsolètes ou manquants fait échouer le workflow de publication ; une simple réussite de l'envoi de l'artefact ne suffit plus. Ce contrôle ne constitue pas un test Android physique et ne garantit pas que chaque fournisseur d'offres soit actualisé.
