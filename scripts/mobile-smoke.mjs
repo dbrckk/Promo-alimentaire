@@ -157,12 +157,20 @@ try{
   assert.match(await page.locator("#providers").innerText(),/Bene Bono/);
   await page.locator("#sourceSearch").fill("Bene Bono");
   assert.equal(await page.locator("#providers .provider-card").count(),1);
+  assert.equal(await page.locator("#providers .provider-card a.open").first()
+    .getAttribute("href"),"https://benebono.fr/");
   await page.locator("#sourceSearch").fill("");
   assert.doesNotMatch(await page.locator("#providers").innerText(),/Showroomprivé/);
   await page.locator("#sourceScope").selectOption("free-food");
   assert.match(await page.locator("#providers").innerText(),/Sampleo/);
   assert.match(await page.locator("#providers").innerText(),/The Insiders/);
   assert.match(await page.locator("#providers").innerText(),/Olio/);
+  const olioSource=page.locator("#providers .provider-card")
+    .filter({hasText:"Olio"});
+  assert.equal(await olioSource.locator('a.open').first().getAttribute("href"),
+    "https://olioapp.com/");
+  assert.equal(await olioSource.locator('a.open').nth(1).getAttribute("href"),
+    "https://play.google.com/store/apps/details?id=com.olioex.android");
   assert.doesNotMatch(await page.locator("#providers").innerText(),/Bene Bono/);
   assert.doesNotMatch(await page.locator("#providers").innerText(),/Quoty/);
   await page.locator("#sourceScope").selectOption("food-odr");
