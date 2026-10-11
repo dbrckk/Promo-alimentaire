@@ -1,4 +1,4 @@
-function textContent(html){
+function textContent(html,{includeEmbedded=true}={}){
   const raw=decodeUnicodeEscapes(String(html ?? ""));
   const visible=raw
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ")
@@ -7,7 +7,7 @@ function textContent(html){
   const embedded=raw
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
     .replace(/<[^>]+>/g," ");
-  return (visible+" "+embedded)
+  return (includeEmbedded ? visible+" "+embedded : visible)
     .replace(/&nbsp;|&#160;/gi," ")
     .replace(/&amp;/gi,"&")
     .replace(/&quot;|&#34;/gi,'"')
@@ -22,7 +22,7 @@ function decodeUnicodeEscapes(value){
 }
 
 export function verifyLeclercCatalogOffer(html,offer,{requireNearbyEvidence=false}={}){
-  const text=normalize(textContent(html));
+  const text=normalize(textContent(html,{includeEmbedded:!requireNearbyEvidence}));
   if(!text) return {ok:false,reasons:["page vide"]};
 
   const reasons=[];
