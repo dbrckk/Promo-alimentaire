@@ -755,6 +755,31 @@ try{
   assert.match(await page.locator("#priceAlerts").innerText(),/Prix remisé sur le ticket/);
   await assertNoHorizontalOverflow(page,"alertes de baisse datées sur Android");
 
+  // A newer singleton receipt in shop A must not hide the valid two-day
+  // price trend from shop B. A caller pinning shop A still gets no trend.
+  const trendEvidence=await page.evaluate(async()=>{
+    const {productPriceTrend}=await import("./src/product-history.js");
+    const date=(days)=>{
+      const d=new Date();
+      d.setUTCDate(d.getUTCDate()+days);
+      return d.toISOString().slice(0,10);
+    };
+    const row=(id,price,days)=>({
+      id:"receipt-"+id+"-"+days,
+      code:"3017624010701",store:"carrefour",
+      locationId:id,storeName:"Carrefour shop "+id,
+      price,date:date(days)
+    });
+    const history=[row(88,4,0),row(77,10,-5),row(77,9,-2)];
+    const chosen=productPriceTrend(history,{code:"3017624010701",store:"carrefour"});
+    const pinned=productPriceTrend(history,{
+      code:"3017624010701",store:"carrefour",locationId:88
+    });
+    return {shop:chosen?.locationKey,delta:chosen?.delta,pinned};
+  });
+  assert.deepEqual(trendEvidence,{shop:"id:77",delta:-1,pinned:null});
+  await assertNoHorizontalOverflow(page,"tendance historique de magasin comparable");
+
   for(const width of [360,320]){
     await page.setViewportSize({width,height:750});
     await assertNoHorizontalOverflow(page,"largeur "+width+"px");
