@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  classifyShopmiumRayon,
   deriveShopmiumProductMatch,
   extractShopmiumOfferUrls,
   extractShopmiumLandingDetailUrls,
@@ -18,6 +19,15 @@ import {
   parseStores,
   parseValidityDates
 } from "../src/adapters/shopmium.js";
+
+test("le rayon officiel Shopmium sépare alimentaire et non alimentaire",()=>{
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Épicerie salée</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Hygiène et beauté</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Entretien</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Crèmerie</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon inconnu</p>"),"autre");
+  assert.equal(classifyShopmiumRayon("<p>Sans rayon explicite</p>"),"autre");
+});
 
 test("extractShopmiumOfferUrls déduplique les fiches /fr/n",()=>{
   const html='<a href="/fr/n/a-chacun-son-daddy">A</a><a href="https://offers.shopmium.com/fr/n/a-chacun-son-daddy">B</a><a href="/fr/autre">X</a>';
