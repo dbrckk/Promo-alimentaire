@@ -66,7 +66,7 @@ let verifiedRendered=0;
 for(const offer of active){
   const html=pages.get(offer.sourceUrl);
   if(!html) continue;
-  const result=verifyLeclercCatalogOffer(html,offer);
+  const result=verifyLeclercCatalogOffer(html,offer,{requireNearbyEvidence:true});
   if(result.ok){
     confirmations.set(offer.externalId,result);
     verifiedRaw++;
@@ -110,7 +110,7 @@ if(pendingUrls.length){
         let confirmedHere=0;
         for(const offer of active.filter((item)=>
           item.sourceUrl===url && !confirmations.has(item.externalId))){
-          const result=verifyLeclercCatalogOffer(publicText,offer);
+          const result=verifyLeclercCatalogOffer(publicText,offer,{requireNearbyEvidence:true});
           if(!result.ok) continue;
           confirmations.set(offer.externalId,result);
           verifiedRendered++;
