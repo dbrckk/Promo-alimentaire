@@ -495,3 +495,8 @@ La recherche accepte les EAN/UPC/GTIN composés de 8, 12, 13 ou 14 chiffres, ave
 ### Recherches produit lentes sur Android
 
 Lors de la **première recherche de produit par code-barres**, le bouton « Annuler la recherche du produit » permet d'arrêter immédiatement les requêtes Open Food Facts et Open Prices. Un nouveau scan interrompt également la recherche précédente. Une limite de **15 secondes** empêche qu'une des deux sources bloque indéfiniment le résultat : si une source a déjà répondu, sa donnée reste visible avec un avertissement de couverture partielle. Après annulation manuelle, aucun ancien résultat ne peut réapparaître et une nouvelle recherche est possible directement. Le parcours Android intercepte une requête volontairement bloquée, annule, tente une réponse tardive, puis vérifie la reprise d'une recherche normale.
+
+
+## Déploiement continu de la PWA
+
+Le workflow `Deploy PWA to GitHub Pages` se déclenche après une exécution **réussie** du workflow `CI` sur `main`, ou manuellement depuis `main`. Les jobs de vérification, construction et déploiement sont conditionnés à la réussite de la CI et à l'origine du dépôt, et récupèrent exactement le commit validé (`workflow_run.head_sha`) plutôt que le dernier `main` potentiellement plus récent. Le déploiement relance `npm run verify` sur ce commit avant publication. Le statut de déploiement réel reste consultable dans GitHub Actions et dépend de la configuration GitHub Pages du dépôt.
