@@ -547,7 +547,9 @@ try{
     };
   });
   assert.deepEqual(failedSourceSafety.confirmed,{
-    autoStack:true,autoStackWhenEligible:true,warning:null,
+    // Proof-backed normal autoStack stays allowed, but the imported
+    // post-card reactivation flag is always suppressed.
+    autoStack:true,autoStackWhenEligible:false,warning:null,
     verifiedAt:"2026-10-10"
   });
   for(const state of [failedSourceSafety.failed,failedSourceSafety.partial]){
