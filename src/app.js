@@ -602,8 +602,19 @@ async function lookupBarcode(rawValue){
   try{
     code=normalizeBarcode(rawValue);
   }catch(error){
+    // A bad new scan invalidates pending replies and all previous product UI.
+    // Never allow an old (valid) lookup to repopulate a rejected SKU.
+    ++state.lookupToken;
+    state.productCode=null;
+    state.product=null;
+    state.priceObservations=[];
     invalidateExactSkuComparison();
     els.compareExactSku.disabled=true;
+    els.productResult.innerHTML="";
+    els.productResult.classList.add("hidden");
+    els.productOffers.innerHTML="";
+    els.priceResults.innerHTML="";
+    els.productPriceHistory.innerHTML="";
     setProductStatus(error.message,true);
     return;
   }
