@@ -92,7 +92,7 @@ let offers=pages[0]?.parsed || [];
 // own JavaScript has run. A headless Chromium view of the same public,
 // unauthenticated page is an alternative to treating HTML 200 as proof.
 // Never log in, call private APIs, bypass challenges or fabricate offers.
-if(offers.length<minOffers){
+if(!assessCouponNetworkSnapshot(offers,{previousCount,minimum:minOffers}).publish){
   let browser=null;
   try{
     const {chromium}=await import("playwright");
@@ -119,7 +119,7 @@ if(offers.length<minOffers){
     if(browser) await browser.close();
   }
 }
-if(offers.length<minOffers){
+if(!assessCouponNetworkSnapshot(offers,{previousCount,minimum:minOffers}).publish){
   const { extractCouponNetworkDetailUrls, parseCouponNetworkDetailHtml } = await import("../src/adapters/coupon-network.js");
   const urls=[...new Set(pages.flatMap((page)=>extractCouponNetworkDetailUrls(page.html)))];
   console.log("[coupon-network] listes directes insuffisantes ("+offers.length+"), bascule sur "+urls.length+" fiches publiques uniques.");
@@ -145,7 +145,7 @@ if(offers.length<minOffers){
     await new Promise((resolve)=>setTimeout(resolve,80));
   }
   const unique=new Map(details.map((offer)=>[offer.externalId,offer]));
-  offers=[...unique.values()];
+  if(unique.size>offers.length) offers=[...unique.values()];
 }
 const assessment=assessCouponNetworkSnapshot(offers,{
   previousCount,minimum:minOffers
