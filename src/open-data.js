@@ -300,13 +300,23 @@ export function normalizePriceObservation(item,originCoords=null) {
   };
 }
 
-// Open Prices dates are civil days, not arbitrary JavaScript timestamps.
-// Date.parse rolls impossible days (e.g. 2026-02-30) into another month.
+// Open Prices dates are French civil days, not timestamps. At 00:30
+// in Paris a receipt dated today must not look "future" merely because
+// UTC is still on yesterday. Use Paris midnight, including DST changes.
+const PARIS_MIDNIGHT_HOUR=new Intl.DateTimeFormat("en-GB",{
+  timeZone:"Europe/Paris",hour:"2-digit",hourCycle:"h23"
+});
+const DAY_MS=24*60*60*1000;
 function parseObservationDay(value){
   if(typeof value!=="string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
-  const date=new Date(value+"T00:00:00Z");
-  return Number.isFinite(date.getTime()) && date.toISOString().slice(0,10)===value
-    ? date : null;
+  const utcDay=new Date(value+"T00:00:00Z");
+  if(!Number.isFinite(utcDay.getTime())
+    || utcDay.toISOString().slice(0,10)!==value) return null;
+  // Europe/Paris is UTC+01/+02 at local midnight. The offset observed
+  // at UTC 00:00 is the same as at Paris midnight, even on DST days.
+  const offsetHours=Number(PARIS_MIDNIGHT_HOUR.format(utcDay));
+  if(!Number.isInteger(offsetHours) || offsetHours<0 || offsetHours>3) return null;
+  return new Date(utcDay.getTime()-offsetHours*60*60*1000);
 }
 
 // Other screens may receive either calendar days or full ISO timestamps.
@@ -324,8 +334,8 @@ export function isFreshObservation(observation,maxAgeDays=120,now=new Date()) {
   if(!observation?.date) return false;
   const date=parseObservationDay(observation.date);
   if(!date) return false;
-  const ageMs=now-date;
-  return ageMs >= 0 && ageMs <= maxAgeDays*24*60*60*1000;
+  const ageMs=new Date(now).getTime()-date.getTime();
+  return Number.isFinite(ageMs) && ageMs>=0 && ageMs<=maxAgeDays*DAY_MS;
 }
 
 
@@ -350,17 +360,22 @@ export function observationAgeDays(observation,now=new Date()) {
   if(!observation?.date) return null;
   const date=parseObservationDay(observation.date);
   if(!date) return null;
-  const ageMs=now-date;
-  if(ageMs<0) return null;
-  return Math.floor(ageMs/(24*60*60*1000));
+  const ageMs=new Date(now).getTime()-date.getTime();
+  if(!Number.isFinite(ageMs) || ageMs<0) return null;
+  return Math.floor(ageMs/DAY_MS);
 }
 
 export function priceFreshness(observation,now=new Date()) {
-  const ageDays=observationAgeDays(observation,now);
-  if(ageDays===null) return {level:"unknown",label:"date inconnue",ageDays:null};
-  if(ageDays<=7) return {level:"very-recent",label:"≤ 7 jours",ageDays};
-  if(ageDays<=30) return {level:"recent",label:"≤ 30 jours",ageDays};
-  if(ageDays<=120) return {level:"old",label:"31–120 jours",ageDays};
+  const date=parseObservationDay(observation?.date);
+  const ageMs=date ? new Date(now).getTime()-date.getTime() : NaN;
+  if(!Number.isFinite(ageMs) || ageMs<0){
+    return {level:"unknown",label:"date inconnue",ageDays:null};
+  }
+  const ageDays=Math.floor(ageMs/DAY_MS);
+  // Whole days are for display only: 7 days + 1 hour is NOT ≤ 7 days.
+  if(ageMs<=7*DAY_MS) return {level:"very-recent",label:"≤ 7 jours",ageDays};
+  if(ageMs<=30*DAY_MS) return {level:"recent",label:"≤ 30 jours",ageDays};
+  if(ageMs<=120*DAY_MS) return {level:"old",label:"31–120 jours",ageDays};
   return {level:"stale",label:"> 120 jours",ageDays};
 }
 
