@@ -1,4 +1,4 @@
-import {assertValidGtin} from "./gtin.js";
+import {assertValidGtin,canonicalGtin} from "./gtin.js";
 import {parseShoppingBudget} from "./budget.js";
 
 const FORMAT="promo-alimentaire-shopping-list";
@@ -38,8 +38,12 @@ function normalizeItems(items){
     }catch{
       throw new Error("Code-barres GTIN invalide à la ligne "+(index+1)+".");
     }
-    if(seen.has(code)) throw new Error("Code-barres répété dans la sauvegarde : "+code+".");
-    seen.add(code);
+    // Different-length UPC-A, EAN-13 and GTIN-14 may be the same SKU.
+    // Reject ambiguous duplicate rows on import/export, rather than double
+    // counting a product or silently collapsing user-provided quantities.
+    const identity=canonicalGtin(code);
+    if(seen.has(identity)) throw new Error("Code-barres répété dans la sauvegarde (même GTIN) : "+code+".");
+    seen.add(identity);
     if(!Number.isInteger(entry.quantity) || entry.quantity<1 || entry.quantity>99){
       throw new Error("Quantité invalide pour "+code+" (1 à 99 requis).");
     }
