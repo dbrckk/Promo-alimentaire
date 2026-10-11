@@ -19,7 +19,7 @@ test("rankOffers trie les valeurs inconnues après les valeurs connues",()=>{
   assert.deepEqual(result.map((x)=>x.id),["c","b","a"]);
 });
 
-test("les produits non alimentaires exigent 50%, jamais un montant sans base",()=>{
+test("filterOffers filtre magasin et recherche",()=>{
   const offer=(category,savingPercent,savingAmount,basePrice)=>({
     category,savingPercent,savingAmount,basePrice,
     title:"Article",provider:"Exemple",type:"ODR",stores:["all"]
@@ -38,9 +38,7 @@ test("les produits non alimentaires exigent 50%, jamais un montant sans base",()
   ];
   assert.deepEqual(filterOffers(inputs,{store:"carrefour"}).map(x=>x.category),
     ["alimentaire","non-alimentaire"]);
-});
 
-test("filterOffers filtre magasin et recherche",()=>{
   const list=[
     {title:"Mir",provider:"A",type:"ODR",category:"entretien",stores:["carrefour","leclerc"],savingPercent:60},
     {title:"Carte cadeau",provider:"B",type:"bon",category:"panier",stores:["carrefour"]}
