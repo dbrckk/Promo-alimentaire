@@ -824,6 +824,61 @@ try{
   });
   await assertNoHorizontalOverflow(page,"historique multi-GTIN compatible Android");
 
+  // Functional integration: a list saved by an older version with multiple
+  // barcode forms of one GS1 SKU is safely consolidated after reload.
+  await page.evaluate(()=>{
+    const base={name:"Produit alias",brands:"Marque témoin",quantity:"1 paquet"};
+    localStorage.setItem("promo-shopping-list-v1",JSON.stringify([
+      {product:{...base,code:"036000291452"},quantity:1},
+      {product:{...base,code:"0036000291452"},quantity:2}
+    ]));
+  });
+  await page.reload({waitUntil:"domcontentloaded"});
+  await page.locator('[data-tab="list"]').click();
+  assert.equal(await page.locator("#listCount").textContent(),"1");
+  assert.equal(await page.locator("#shoppingListItems .list-item").count(),1);
+  assert.match(await page.locator("#shoppingListItems").innerText(),/Produit alias/);
+  assert.match(await page.locator("#shoppingListItems .qty").innerText(),/3/);
+
+  const barcodeProductMock=async(route)=>{
+    const requestedCode=new URL(route.request().url()).pathname.split("/").at(-1);
+    await route.fulfill({
+      status:200,contentType:"application/json",
+      body:JSON.stringify({product:{
+        code:requestedCode,product_name:"Produit alias",
+        brands:"Marque témoin",quantity:"1 paquet"
+      }})
+    });
+  };
+  await page.route("https://world.openfoodfacts.org/api/v3/product/**",barcodeProductMock);
+  await page.locator('[data-tab="product"]').click();
+  await page.locator("#barcode").fill("0036000291452");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  await page.locator("#productResult h2").waitFor({timeout:10000});
+  await page.locator('[data-action="add-current-product"]').click();
+  await page.locator('[data-tab="list"]').click();
+  assert.equal(await page.locator("#listCount").textContent(),"1",
+    "Deux représentations GTIN du même produit ne créent pas deux lignes");
+  assert.match(await page.locator("#shoppingListItems .qty").innerText(),/4/);
+  await page.unroute("https://world.openfoodfacts.org/api/v3/product/**",barcodeProductMock);
+
+  // Backups containing two UPC/EAN aliases must reject duplicates, rather
+  // than quietly overcount products or discard quantities.
+  const backupAlias=await page.evaluate(async()=>{
+    const {serializeShoppingList}=await import("./src/shopping-list-transfer.js");
+    const product=(code)=>({product:{code,name:"Produit alias"},quantity:2});
+    try{
+      serializeShoppingList([
+        product("036000291452"),product("0036000291452")
+      ]);
+      return "accepted";
+    }catch(error){
+      return String(error.message);
+    }
+  });
+  assert.match(backupAlias,/Code-barres répété/);
+  await assertNoHorizontalOverflow(page,"dédoublonnage UPC EAN de la liste de courses");
+
   for(const width of [360,320]){
     await page.setViewportSize({width,height:750});
     await assertNoHorizontalOverflow(page,"largeur "+width+"px");
