@@ -350,6 +350,8 @@ L'identité du produit dans l'historique local et les alertes est maintenant har
 
 La **liste de courses** reconnaît également les codes UPC-A/EAN-13/GTIN-14 ayant la même clé GS1 : rescanner le même produit augmente sa quantité dans la ligne existante tout en conservant le code initial pour les liens et les recherches de prix. Une ancienne liste locale contenant des représentations dupliquées est consolidée tant que la quantité totale reste dans la limite de 99 ; aucune quantité supérieure à cette limite n'est effacée silencieusement. Les sauvegardes JSON rejettent les produits dupliqués sous des représentations équivalentes, plutôt que de créer des doublons artificiels.
 
+Les **prix saisis manuellement** suivent la même identité GS1 vérifiée : un prix personnel associé à un UPC-A peut être utilisé par la ligne de panier EAN-13/GTIN-14 équivalente, uniquement pour la même enseigne. Les doublons de relevés personnels ayant le même magasin, code postal et date sont regroupés, en conservant le relevé le plus récemment enregistré. La provenance **personnelle, non vérifiée** reste indiquée : aucun prix manuel ne devient un prix confirmé par Carrefour ou E.Leclerc.
+
 Une promotion immédiate ne devient pas automatiquement une économie acquise lorsque le dernier prix normal observé date de **plus de sept jours** ; elle reste candidate, à vérifier.
 
 La santé des sources montre séparément :
