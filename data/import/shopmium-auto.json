@@ -67,7 +67,7 @@
     "externalId": "auto-tranches-vege-fleury-michon-1",
     "title": "Tranches Végé Fleury Michon",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -135,7 +135,7 @@
     "externalId": "auto-decouvrez-harrys-american-sandwich-protein",
     "title": "Harrys",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -186,7 +186,7 @@
     "externalId": "auto-harrys-mini-tressee-pepites-de-chocolat",
     "title": "Harrys",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -362,7 +362,7 @@
     "externalId": "auto-lait-et-boissons-lactees-grandlait-des-p-tits-1",
     "title": "GrandLait des P'tits",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -421,7 +421,7 @@
     "externalId": "auto-boissons-fruitees-fruit-shoot",
     "title": "FRUIT SHOOT",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -558,7 +558,7 @@
     "externalId": "auto-apericube-2",
     "title": "Apéricube",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -632,7 +632,7 @@
     "externalId": "auto-fleury-michon-plats-cuisines-3",
     "title": "Fleury Michon Plats Cuisinés",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -705,7 +705,7 @@
     "externalId": "auto-panes-de-poulet-special-burger-pere-dodu",
     "title": "Père Dodu - Panés de Poulet spécial burger",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1041,7 +1041,7 @@
     "externalId": "auto-les-nouveautes-daddy",
     "title": "Les nouveautés Daddy",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1089,7 +1089,7 @@
     "externalId": "auto-ajax-power-mousse",
     "title": "AJAX POWER MOUSSE",
     "type": "ODR",
-    "category": "non-alimentaire",
+    "category": "autre",
     "stores": [
       "all"
     ],
@@ -1148,7 +1148,7 @@
     "externalId": "auto-a-chacun-son-daddy",
     "title": "À chacun son Daddy",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1211,7 +1211,7 @@
     "externalId": "auto-une-accroche-de-sauce-parfaite",
     "title": "Barilla Al Bronzo",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1257,7 +1257,7 @@
     "externalId": "auto-barilla-al-bronzo-5",
     "title": "Barilla Al Bronzo",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1322,7 +1322,7 @@
     "externalId": "auto-la-vache-qui-rit-7",
     "title": "La Vache qui rit",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1392,7 +1392,7 @@
     "externalId": "auto-boursin-3",
     "title": "Boursin",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1530,7 +1530,7 @@
     "externalId": "auto-carotte-citron-de-sicile-bonduelle",
     "title": "Carotte râpée Citron Bonduelle",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1592,7 +1592,7 @@
     "externalId": "auto-taboule-bonduelle",
     "title": "Taboulé Bonduelle",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1865,7 +1865,7 @@
     "externalId": "auto-pack-eau-minerale-naturelle-mont-blanc-6x1-5l-2",
     "title": "EAU MINERALE NATURELLE MONT BLANC",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1928,7 +1928,7 @@
     "externalId": "auto-pack-eau-minerale-naturelle-mont-blanc-6x1l-2",
     "title": "EAU MINERALE NATURELLE MONT BLANC",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1991,7 +1991,7 @@
     "externalId": "auto-pulpes-de-tomates",
     "title": "Pulpes de tomates",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -2059,7 +2059,7 @@
     "externalId": "auto-sauces-tomates",
     "title": "Sauces tomates",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -2125,7 +2125,7 @@
     "externalId": "auto-purees-coulis-de-tomates",
     "title": "Purées & Coulis de tomates",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -2809,7 +2809,7 @@
     "externalId": "auto-ajax-power-clean-1",
     "title": "AJAX POWER CLEAN",
     "type": "ODR",
-    "category": "non-alimentaire",
+    "category": "autre",
     "stores": [
       "all"
     ],
