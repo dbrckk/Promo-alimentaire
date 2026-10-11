@@ -44,8 +44,11 @@ export function comparePriceObservationEvidence(a,b,now=new Date()){
   if(ages.some((days)=>days<0 || days>7)){
     return {comparable:false,status:"observations-old",dateGapDays:null,distanceKm:null};
   }
-  const dateGapDays=Math.round(Math.abs(dates[0]-dates[1])/DAY_MS*10)/10;
-  if(dateGapDays>3){
+  const exactGapDays=Math.abs(dates[0].getTime()-dates[1].getTime())/DAY_MS;
+  // Do not compare after rounding. A gap of 3 days and 30 minutes
+  // rounds to 3.0 days at one decimal but exceeds the actual safety limit.
+  const dateGapDays=Math.ceil(exactGapDays*100)/100;
+  if(exactGapDays>3){
     return {comparable:false,status:"dates-too-far",dateGapDays,distanceKm:null};
   }
   // A temporary markdown, coupon or loyalty price cannot be used as a
