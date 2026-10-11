@@ -2,6 +2,357 @@
   {
     "providerId": "shopmium",
     "provider": "Shopmium",
+    "externalId": "auto-kiri-6",
+    "title": "Kiri",
+    "type": "ODR",
+    "category": "alimentaire",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "drive",
+      "online"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-01",
+    "expiresAt": "2026-12-01",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/kiri-6",
+    "scope": "produit",
+    "referenceNames": [
+      "Kiri crème 12 portions",
+      "Kiri crème 8 portions",
+      "Kiri Goûter 5 portions",
+      "Kiri Bio Bon & Responsable 144g",
+      "Kiri Délicieusement Fouetté 125g",
+      "Kiri Goûter Blé Complet 175g",
+      "Kiri Chèvre 8 portions",
+      "Kiri Spécialité fromagère au skyr 145g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 4,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 5,
+        "maxQty": 6,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 2,
+    "productMatch": {
+      "brands": [
+        "Kiri"
+      ],
+      "any": [
+        "crème",
+        "portions",
+        "Goûter",
+        "Responsable",
+        "144g"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "2 article(s): 20% ; 3-4 article(s): 25% ; 5-6 article(s): 30% 8 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-les-nouveautes-daddy",
+    "title": "Les nouveautés Daddy",
+    "type": "ODR",
+    "category": "alimentaire",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-01T08:00:00+02:00",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/les-nouveautes-daddy",
+    "scope": "produit",
+    "referenceNames": [
+      "Mordu de Stévia Roux 300g",
+      "Sirop de canne 235g"
+    ],
+    "quantityTiers": [],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "nouveautés"
+      ],
+      "any": [
+        "Mordu",
+        "Stévia",
+        "Roux",
+        "300g",
+        "Sirop"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-ajax-power-mousse",
+    "title": "AJAX POWER MOUSSE",
+    "type": "ODR",
+    "category": "non-alimentaire",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-06-01T08:00:00+02:00",
+    "expiresAt": "2026-10-13T15:53:00+02:00",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/ajax-power-mousse",
+    "scope": "produit",
+    "referenceNames": [
+      "AJAX SPRAY POWER MOUSSE ANTICA1x12x500ML",
+      "AJAX SPRAY POWER MOUSSE MULTI 1x12x500ML"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 2,
+        "maxQty": 3,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "AJAX"
+      ],
+      "any": [
+        "SPRAY",
+        "POWER",
+        "MOUSSE",
+        "ANTICA1x12x500ML",
+        "MULTI"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 25% ; 2-3 article(s): 34% 2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-a-chacun-son-daddy",
+    "title": "À chacun son Daddy",
+    "type": "ODR",
+    "category": "alimentaire",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 25,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-01T08:00:00+02:00",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/a-chacun-son-daddy",
+    "scope": "produit",
+    "referenceNames": [
+      "Cassonade pure canne 750g",
+      "Cassonade pure canne BIO 750g",
+      "Sucre complet Muscovado Blond 500g",
+      "Sucre complet Muscovado Brun 500g",
+      "Cassonade Brune Dack Demerara 500g",
+      "Mordu de Stévia Blanc 300g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Daddy"
+      ],
+      "any": [
+        "Cassonade",
+        "pure",
+        "canne",
+        "750g",
+        "Sucre"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 20% ; 2 article(s): 25% 6 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-une-accroche-de-sauce-parfaite",
+    "title": "Barilla Al Bronzo",
+    "type": "ODR",
+    "category": "alimentaire",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-01T08:00:00+02:00",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/une-accroche-de-sauce-parfaite",
+    "scope": "produit",
+    "referenceNames": [
+      "RADIATORI",
+      "SPAGHETTI ONDULATI"
+    ],
+    "quantityTiers": [],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Barilla Bronzo"
+      ],
+      "any": [
+        "RADIATORI",
+        "SPAGHETTI",
+        "ONDULATI"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-barilla-al-bronzo-5",
+    "title": "Barilla Al Bronzo",
+    "type": "ODR",
+    "category": "alimentaire",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-01T08:00:00+02:00",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/barilla-al-bronzo-5",
+    "scope": "produit",
+    "referenceNames": [
+      "FUSILLI",
+      "FUSILLONI",
+      "LINGUINE",
+      "MEZZI RIGATONI",
+      "PENNE",
+      "SPAGHETTI QUADRATI",
+      "SPAGHETTONI",
+      "TORTIGLIONI"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Barilla Bronzo"
+      ],
+      "any": [
+        "FUSILLI",
+        "FUSILLONI",
+        "LINGUINE",
+        "MEZZI",
+        "RIGATONI"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1-2 article(s): 20% ; 3 article(s): 30% 8 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
     "externalId": "auto-cafes-legal-capsules-compatibles-nespresso",
     "title": "Cafés Legal",
     "type": "ODR",
@@ -968,128 +1319,10 @@
   {
     "providerId": "shopmium",
     "provider": "Shopmium",
-    "externalId": "auto-kiri-6",
-    "title": "Kiri",
+    "externalId": "auto-carotte-citron-de-sicile-bonduelle",
+    "title": "Carotte râpée Citron Bonduelle",
     "type": "ODR",
     "category": "alimentaire",
-    "stores": [
-      "all"
-    ],
-    "channels": [
-      "drive",
-      "online"
-    ],
-    "savingPercent": 30,
-    "verifiedAt": "2026-10-11",
-    "reviewAfter": "2026-10-15",
-    "startsAt": "2026-10-01",
-    "expiresAt": "2026-12-01",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/kiri-6",
-    "scope": "produit",
-    "referenceNames": [
-      "Kiri crème 12 portions",
-      "Kiri crème 8 portions",
-      "Kiri Goûter 5 portions",
-      "Kiri Bio Bon & Responsable 144g",
-      "Kiri Délicieusement Fouetté 125g",
-      "Kiri Goûter Blé Complet 175g",
-      "Kiri Chèvre 8 portions",
-      "Kiri Spécialité fromagère au skyr 145g"
-    ],
-    "quantityTiers": [
-      {
-        "minQty": 2,
-        "maxQty": 2,
-        "savingPercent": 20
-      },
-      {
-        "minQty": 3,
-        "maxQty": 4,
-        "savingPercent": 25
-      },
-      {
-        "minQty": 5,
-        "maxQty": 6,
-        "savingPercent": 30
-      }
-    ],
-    "minPurchaseQty": 2,
-    "productMatch": {
-      "brands": [
-        "Kiri"
-      ],
-      "any": [
-        "crème",
-        "portions",
-        "Goûter",
-        "Responsable",
-        "144g"
-      ],
-      "minScore": 60
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "restricted",
-    "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "2 article(s): 20% ; 3-4 article(s): 25% ; 5-6 article(s): 30% 8 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
-  },
-  {
-    "providerId": "shopmium",
-    "provider": "Shopmium",
-    "externalId": "auto-les-nouveautes-daddy",
-    "title": "Les nouveautés Daddy",
-    "type": "ODR",
-    "category": "alimentaire",
-    "stores": [
-      "all"
-    ],
-    "channels": [
-      "store",
-      "drive"
-    ],
-    "savingPercent": 30,
-    "verifiedAt": "2026-10-11",
-    "reviewAfter": "2026-10-15",
-    "startsAt": "2026-10-01T08:00:00+02:00",
-    "expiresAt": "2026-10-31",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/les-nouveautes-daddy",
-    "scope": "produit",
-    "referenceNames": [
-      "Mordu de Stévia Roux 300g",
-      "Sirop de canne 235g"
-    ],
-    "quantityTiers": [],
-    "minPurchaseQty": 1,
-    "productMatch": {
-      "brands": [
-        "nouveautés"
-      ],
-      "any": [
-        "Mordu",
-        "Stévia",
-        "Roux",
-        "300g",
-        "Sirop"
-      ],
-      "minScore": 60
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "restricted",
-    "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
-  },
-  {
-    "providerId": "shopmium",
-    "provider": "Shopmium",
-    "externalId": "auto-ajax-power-mousse",
-    "title": "AJAX POWER MOUSSE",
-    "type": "ODR",
-    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -1100,13 +1333,13 @@
     "savingPercent": 34,
     "verifiedAt": "2026-10-11",
     "reviewAfter": "2026-10-15",
-    "startsAt": "2026-06-01T08:00:00+02:00",
-    "expiresAt": "2026-10-13T15:53:00+02:00",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/ajax-power-mousse",
+    "startsAt": "2026-08-31T08:00:00+02:00",
+    "expiresAt": "2026-12-30",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/carotte-citron-de-sicile-bonduelle",
     "scope": "produit",
     "referenceNames": [
-      "AJAX SPRAY POWER MOUSSE ANTICA1x12x500ML",
-      "AJAX SPRAY POWER MOUSSE MULTI 1x12x500ML"
+      "Carotte Citron de Sicile 320g",
+      "Carotte Citron de Sicile 500g"
     ],
     "quantityTiers": [
       {
@@ -1116,6 +1349,11 @@
       },
       {
         "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 3,
         "maxQty": 3,
         "savingPercent": 34
       }
@@ -1123,14 +1361,12 @@
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "AJAX"
+        "Bonduelle"
       ],
       "any": [
-        "SPRAY",
-        "POWER",
-        "MOUSSE",
-        "ANTICA1x12x500ML",
-        "MULTI"
+        "Sicile",
+        "320g",
+        "500g"
       ],
       "minScore": 60
     },
@@ -1140,13 +1376,79 @@
     "autoStack": false,
     "stackingConfidence": "restricted",
     "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "1 article(s): 25% ; 2-3 article(s): 34% 2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+    "conditions": "1 article(s): 25% ; 2 article(s): 30% ; 3 article(s): 34% 2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
   },
   {
     "providerId": "shopmium",
     "provider": "Shopmium",
-    "externalId": "auto-a-chacun-son-daddy",
-    "title": "À chacun son Daddy",
+    "externalId": "auto-taboule-bonduelle",
+    "title": "Taboulé Bonduelle",
+    "type": "ODR",
+    "category": "alimentaire",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-08-31T08:00:00+02:00",
+    "expiresAt": "2026-12-30",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/taboule-bonduelle",
+    "scope": "produit",
+    "referenceNames": [
+      "Taboulé Oriental 300g",
+      "Taboulé Oriental 500g",
+      "Taboulé Poulet Rôti 300g",
+      "Taboulé Poulet Rôti 500g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Bonduelle"
+      ],
+      "any": [
+        "Oriental",
+        "300g",
+        "500g",
+        "Poulet",
+        "Rôti"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 25% ; 2 article(s): 30% ; 3 article(s): 34% 4 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-pack-eau-minerale-naturelle-mont-blanc-6x1-5l-2",
+    "title": "EAU MINERALE NATURELLE MONT BLANC",
     "type": "ODR",
     "category": "alimentaire",
     "stores": [
@@ -1159,152 +1461,41 @@
     "savingPercent": 25,
     "verifiedAt": "2026-10-11",
     "reviewAfter": "2026-10-15",
-    "startsAt": "2026-10-01T08:00:00+02:00",
-    "expiresAt": "2026-10-31",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/a-chacun-son-daddy",
+    "startsAt": "2026-10-05T08:00:00+02:00",
+    "expiresAt": "2026-11-04",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/pack-eau-minerale-naturelle-mont-blanc-6x1-5l-2",
     "scope": "produit",
     "referenceNames": [
-      "Cassonade pure canne 750g",
-      "Cassonade pure canne BIO 750g",
-      "Sucre complet Muscovado Blond 500g",
-      "Sucre complet Muscovado Brun 500g",
-      "Cassonade Brune Dack Demerara 500g",
-      "Mordu de Stévia Blanc 300g"
+      "Pack eau minérale naturelle Mont Blanc - 6x1,5L"
     ],
     "quantityTiers": [
       {
         "minQty": 1,
         "maxQty": 1,
-        "savingPercent": 20
+        "savingPercent": 15
       },
       {
         "minQty": 2,
-        "maxQty": 2,
-        "savingPercent": 25
-      }
-    ],
-    "minPurchaseQty": 1,
-    "productMatch": {
-      "brands": [
-        "Daddy"
-      ],
-      "any": [
-        "Cassonade",
-        "pure",
-        "canne",
-        "750g",
-        "Sucre"
-      ],
-      "minScore": 60
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "restricted",
-    "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "1 article(s): 20% ; 2 article(s): 25% 6 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
-  },
-  {
-    "providerId": "shopmium",
-    "provider": "Shopmium",
-    "externalId": "auto-une-accroche-de-sauce-parfaite",
-    "title": "Barilla Al Bronzo",
-    "type": "ODR",
-    "category": "alimentaire",
-    "stores": [
-      "all"
-    ],
-    "channels": [
-      "store",
-      "drive"
-    ],
-    "savingPercent": 30,
-    "verifiedAt": "2026-10-11",
-    "reviewAfter": "2026-10-15",
-    "startsAt": "2026-10-01T08:00:00+02:00",
-    "expiresAt": "2026-10-31",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/une-accroche-de-sauce-parfaite",
-    "scope": "produit",
-    "referenceNames": [
-      "RADIATORI",
-      "SPAGHETTI ONDULATI"
-    ],
-    "quantityTiers": [],
-    "minPurchaseQty": 1,
-    "productMatch": {
-      "brands": [
-        "Barilla Bronzo"
-      ],
-      "any": [
-        "RADIATORI",
-        "SPAGHETTI",
-        "ONDULATI"
-      ],
-      "minScore": 60
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "restricted",
-    "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
-  },
-  {
-    "providerId": "shopmium",
-    "provider": "Shopmium",
-    "externalId": "auto-barilla-al-bronzo-5",
-    "title": "Barilla Al Bronzo",
-    "type": "ODR",
-    "category": "alimentaire",
-    "stores": [
-      "all"
-    ],
-    "channels": [
-      "store",
-      "drive"
-    ],
-    "savingPercent": 30,
-    "verifiedAt": "2026-10-11",
-    "reviewAfter": "2026-10-15",
-    "startsAt": "2026-10-01T08:00:00+02:00",
-    "expiresAt": "2026-10-31",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/barilla-al-bronzo-5",
-    "scope": "produit",
-    "referenceNames": [
-      "FUSILLI",
-      "FUSILLONI",
-      "LINGUINE",
-      "MEZZI RIGATONI",
-      "PENNE",
-      "SPAGHETTI QUADRATI",
-      "SPAGHETTONI",
-      "TORTIGLIONI"
-    ],
-    "quantityTiers": [
-      {
-        "minQty": 1,
         "maxQty": 2,
         "savingPercent": 20
       },
       {
         "minQty": 3,
         "maxQty": 3,
-        "savingPercent": 30
+        "savingPercent": 25
       }
     ],
     "minPurchaseQty": 1,
     "productMatch": {
       "brands": [
-        "Barilla Bronzo"
+        "Mont Blanc"
       ],
       "any": [
-        "FUSILLI",
-        "FUSILLONI",
-        "LINGUINE",
-        "MEZZI",
-        "RIGATONI"
+        "Pack",
+        "minérale",
+        "naturelle",
+        "Mont",
+        "Blanc"
       ],
       "minScore": 60
     },
@@ -1314,7 +1505,70 @@
     "autoStack": false,
     "stackingConfidence": "restricted",
     "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "1-2 article(s): 20% ; 3 article(s): 30% 8 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+    "conditions": "1 article(s): 15% ; 2 article(s): 20% ; 3 article(s): 25% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-pack-eau-minerale-naturelle-mont-blanc-6x1l-2",
+    "title": "EAU MINERALE NATURELLE MONT BLANC",
+    "type": "ODR",
+    "category": "alimentaire",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 25,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-05T08:00:00+02:00",
+    "expiresAt": "2026-11-04",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/pack-eau-minerale-naturelle-mont-blanc-6x1l-2",
+    "scope": "produit",
+    "referenceNames": [
+      "Pack eau minérale naturelle Mont Blanc - 6x1L"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 15
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 25
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Mont Blanc"
+      ],
+      "any": [
+        "Pack",
+        "minérale",
+        "naturelle",
+        "Mont",
+        "Blanc"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "1 article(s): 15% ; 2 article(s): 20% ; 3 article(s): 25% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
   },
   {
     "providerId": "shopmium",
@@ -1527,134 +1781,6 @@
   {
     "providerId": "shopmium",
     "provider": "Shopmium",
-    "externalId": "auto-carotte-citron-de-sicile-bonduelle",
-    "title": "Carotte râpée Citron Bonduelle",
-    "type": "ODR",
-    "category": "alimentaire",
-    "stores": [
-      "all"
-    ],
-    "channels": [
-      "store",
-      "drive"
-    ],
-    "savingPercent": 34,
-    "verifiedAt": "2026-10-11",
-    "reviewAfter": "2026-10-15",
-    "startsAt": "2026-08-31T08:00:00+02:00",
-    "expiresAt": "2026-12-30",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/carotte-citron-de-sicile-bonduelle",
-    "scope": "produit",
-    "referenceNames": [
-      "Carotte Citron de Sicile 320g",
-      "Carotte Citron de Sicile 500g"
-    ],
-    "quantityTiers": [
-      {
-        "minQty": 1,
-        "maxQty": 1,
-        "savingPercent": 25
-      },
-      {
-        "minQty": 2,
-        "maxQty": 2,
-        "savingPercent": 30
-      },
-      {
-        "minQty": 3,
-        "maxQty": 3,
-        "savingPercent": 34
-      }
-    ],
-    "minPurchaseQty": 1,
-    "productMatch": {
-      "brands": [
-        "Bonduelle"
-      ],
-      "any": [
-        "Sicile",
-        "320g",
-        "500g"
-      ],
-      "minScore": 60
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "restricted",
-    "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "1 article(s): 25% ; 2 article(s): 30% ; 3 article(s): 34% 2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
-  },
-  {
-    "providerId": "shopmium",
-    "provider": "Shopmium",
-    "externalId": "auto-taboule-bonduelle",
-    "title": "Taboulé Bonduelle",
-    "type": "ODR",
-    "category": "alimentaire",
-    "stores": [
-      "all"
-    ],
-    "channels": [
-      "store",
-      "drive"
-    ],
-    "savingPercent": 34,
-    "verifiedAt": "2026-10-11",
-    "reviewAfter": "2026-10-15",
-    "startsAt": "2026-08-31T08:00:00+02:00",
-    "expiresAt": "2026-12-30",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/taboule-bonduelle",
-    "scope": "produit",
-    "referenceNames": [
-      "Taboulé Oriental 300g",
-      "Taboulé Oriental 500g",
-      "Taboulé Poulet Rôti 300g",
-      "Taboulé Poulet Rôti 500g"
-    ],
-    "quantityTiers": [
-      {
-        "minQty": 1,
-        "maxQty": 1,
-        "savingPercent": 25
-      },
-      {
-        "minQty": 2,
-        "maxQty": 2,
-        "savingPercent": 30
-      },
-      {
-        "minQty": 3,
-        "maxQty": 3,
-        "savingPercent": 34
-      }
-    ],
-    "minPurchaseQty": 1,
-    "productMatch": {
-      "brands": [
-        "Bonduelle"
-      ],
-      "any": [
-        "Oriental",
-        "300g",
-        "500g",
-        "Poulet",
-        "Rôti"
-      ],
-      "minScore": 60
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "restricted",
-    "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "1 article(s): 25% ; 2 article(s): 30% ; 3 article(s): 34% 4 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
-  },
-  {
-    "providerId": "shopmium",
-    "provider": "Shopmium",
     "externalId": "auto-barres-lait-noisettes-et-nutbar",
     "title": "KNOPPERS Barres",
     "type": "ODR",
@@ -1858,132 +1984,6 @@
     "stackingConfidence": "restricted",
     "stacking": "non cumulable avec toute autre promotion",
     "conditions": "1 article(s): 20% ; 2 article(s): 30% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
-  },
-  {
-    "providerId": "shopmium",
-    "provider": "Shopmium",
-    "externalId": "auto-pack-eau-minerale-naturelle-mont-blanc-6x1-5l-2",
-    "title": "EAU MINERALE NATURELLE MONT BLANC",
-    "type": "ODR",
-    "category": "alimentaire",
-    "stores": [
-      "all"
-    ],
-    "channels": [
-      "store",
-      "drive"
-    ],
-    "savingPercent": 25,
-    "verifiedAt": "2026-10-11",
-    "reviewAfter": "2026-10-15",
-    "startsAt": "2026-10-05T08:00:00+02:00",
-    "expiresAt": "2026-11-04",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/pack-eau-minerale-naturelle-mont-blanc-6x1-5l-2",
-    "scope": "produit",
-    "referenceNames": [
-      "Pack eau minérale naturelle Mont Blanc - 6x1,5L"
-    ],
-    "quantityTiers": [
-      {
-        "minQty": 1,
-        "maxQty": 1,
-        "savingPercent": 15
-      },
-      {
-        "minQty": 2,
-        "maxQty": 2,
-        "savingPercent": 20
-      },
-      {
-        "minQty": 3,
-        "maxQty": 3,
-        "savingPercent": 25
-      }
-    ],
-    "minPurchaseQty": 1,
-    "productMatch": {
-      "brands": [
-        "Mont Blanc"
-      ],
-      "any": [
-        "Pack",
-        "minérale",
-        "naturelle",
-        "Mont",
-        "Blanc"
-      ],
-      "minScore": 60
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "restricted",
-    "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "1 article(s): 15% ; 2 article(s): 20% ; 3 article(s): 25% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
-  },
-  {
-    "providerId": "shopmium",
-    "provider": "Shopmium",
-    "externalId": "auto-pack-eau-minerale-naturelle-mont-blanc-6x1l-2",
-    "title": "EAU MINERALE NATURELLE MONT BLANC",
-    "type": "ODR",
-    "category": "alimentaire",
-    "stores": [
-      "all"
-    ],
-    "channels": [
-      "store",
-      "drive"
-    ],
-    "savingPercent": 25,
-    "verifiedAt": "2026-10-11",
-    "reviewAfter": "2026-10-15",
-    "startsAt": "2026-10-05T08:00:00+02:00",
-    "expiresAt": "2026-11-04",
-    "sourceUrl": "https://offers.shopmium.com/fr/n/pack-eau-minerale-naturelle-mont-blanc-6x1l-2",
-    "scope": "produit",
-    "referenceNames": [
-      "Pack eau minérale naturelle Mont Blanc - 6x1L"
-    ],
-    "quantityTiers": [
-      {
-        "minQty": 1,
-        "maxQty": 1,
-        "savingPercent": 15
-      },
-      {
-        "minQty": 2,
-        "maxQty": 2,
-        "savingPercent": 20
-      },
-      {
-        "minQty": 3,
-        "maxQty": 3,
-        "savingPercent": 25
-      }
-    ],
-    "minPurchaseQty": 1,
-    "productMatch": {
-      "brands": [
-        "Mont Blanc"
-      ],
-      "any": [
-        "Pack",
-        "minérale",
-        "naturelle",
-        "Mont",
-        "Blanc"
-      ],
-      "minScore": 60
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "restricted",
-    "stacking": "non cumulable avec toute autre promotion",
-    "conditions": "1 article(s): 15% ; 2 article(s): 20% ; 3 article(s): 25% 1 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
   },
   {
     "providerId": "shopmium",
