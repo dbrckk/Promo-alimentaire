@@ -8,6 +8,7 @@ import {
   isOfficialShopmiumOfferUrl,
   isShopmiumPubliclyClosed,
   mergeShopmiumOfferUrls,
+  planShopmiumCrawl,
   parseShopmiumChannels,
   parsePercentTiers,
   parseReferenceNames,
@@ -330,6 +331,26 @@ test("la surveillance n'autorise que des URLs Shopmium officielles",()=>{
   assert.throws(()=>mergeShopmiumOfferUrls([valid],["https://example.com/deal"]),/non officielle/);
   assert.throws(()=>mergeShopmiumOfferUrls([],
     Array.from({length:31},(_,i)=>"https://offers.shopmium.com/fr/n/offer-"+i)),/trop longue/);
+});
+
+test("Shopmium garde les fiches surveillées et réserve des places aux campagnes",()=>{
+  const url=(n)=>"https://offers.shopmium.com/fr/n/offer-"+n;
+  const index=Array.from({length:150},(_,i)=>url(i));
+  const watched=[url(149),url(148),url(5)];
+  const result=planShopmiumCrawl(index,watched,{
+    maximumPages:30,reservedDetailPages:8
+  });
+  assert.equal(result.primaryUrls.length,22);
+  assert.equal(result.remainingPages,8);
+  assert.deepEqual(result.primaryUrls.slice(0,3),watched);
+  assert.equal(result.primaryUrls.filter((u)=>u===url(5)).length,1);
+  assert.equal(result.primaryUrls.includes(url(149)),true);
+  const small=planShopmiumCrawl([url(1)],[url(2)],{
+    maximumPages:30,reservedDetailPages:8
+  });
+  assert.deepEqual(small.primaryUrls,[url(2),url(1)]);
+  assert.equal(small.remainingPages,28);
+  assert.throws(()=>planShopmiumCrawl(index,["https://bad.example/fr/n/x"]),/non officielle/);
 });
 
 test("chaque URL de veille est publique, officielle et dédupliquée",async()=>{
