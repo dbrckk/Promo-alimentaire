@@ -38,6 +38,8 @@ export function normalizeBarcode(value) {
 
 export async function fetchProductByBarcode(value, fetchImpl=fetch, {signal=null}={}) {
   const code=normalizeBarcode(value);
+  const canonicalQuery=canonicalGtin(code);
+  if(!canonicalQuery) throw new Error("Checksum GTIN invalide : recherche de produit annulée.");
   const fields=[
     "code","product_name","generic_name","brands","quantity",
     "image_front_url","nutrition_grades","categories_tags"
@@ -48,10 +50,9 @@ export async function fetchProductByBarcode(value, fetchImpl=fetch, {signal=null
   const payload=await response.json();
   if(!payload?.product) throw new Error("Produit introuvable dans Open Food Facts.");
   const returnedCode=String(payload.product.code || code);
-  const canonicalQuery=canonicalGtin(code);
   // Protect against mismatched API/cache product records: the name, photo
   // and nutritional information must describe the scanned SKU itself.
-  if(canonicalQuery && canonicalGtin(returnedCode)!==canonicalQuery){
+  if(canonicalGtin(returnedCode)!==canonicalQuery){
     throw new Error("Fiche Open Food Facts d'un autre code-barres : correspondance refusée.");
   }
   return {
@@ -102,6 +103,7 @@ export async function fetchPricesByBarcode(value,{
 }={}) {
   const code=normalizeBarcode(value);
   const canonicalQuery=canonicalGtin(code);
+  if(!canonicalQuery) throw new Error("Checksum GTIN invalide : recherche de prix annulée.");
   const pageSize=Math.min(Math.max(Math.trunc(Number(size)||100),1),100);
   const pageLimit=Math.min(Math.max(Math.trunc(Number(maxPages)||2),1),3);
   const minMatches=Math.min(Math.max(Math.trunc(Number(minimumMatches)||4),1),20);
