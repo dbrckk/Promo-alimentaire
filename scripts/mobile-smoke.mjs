@@ -75,11 +75,11 @@ try{
   const latestReceipt=await page.evaluate(async()=>{
     const {priceCoverageSummary}=await import("./src/exact-sku-comparison.js");
     return priceCoverageSummary([
-      {price:3,date:"2026-10-10T23:30:00Z"},
+      {price:3,date:"2026-10-11T00:30:00Z"},
       {price:4,date:"2026-10-11"}
     ],new Date("2026-10-11T12:00:00Z")).latestDate;
   });
-  assert.equal(latestReceipt,"2026-10-11");
+  assert.equal(latestReceipt,"2026-10-11T00:30:00Z");
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.locator("#savingsFocus").selectOption("full-refund");
   assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");
