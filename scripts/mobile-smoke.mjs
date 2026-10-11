@@ -1428,7 +1428,7 @@ try{
   // Offline imported data must still honour stale-source and Drive-only rules.
   const shopmiumOffline=await page.evaluate(async()=>{
     const {isOfferActive}=await import("./src/ingestion.js");
-    const {filterOffers}=await import("./src/domain.js");
+    const {filterOffers,offerDeadline}=await import("./src/domain.js");
     const campaign={
       providerId:"shopmium",verifiedAt:"2026-10-07",
       expiresAt:"2026-12-31",savingPercent:30
@@ -1447,11 +1447,23 @@ try{
       store:filterOffers([kiri],{store:"leclerc",channel:"store"}).length,
       drive:filterOffers([kiri],{store:"leclerc",channel:"drive"}).length,
       beforeDeadline:isOfferActive(timed,new Date("2026-10-12T12:06:59Z")),
-      afterDeadline:isOfferActive(timed,new Date("2026-10-12T12:07:01Z"))
+      afterDeadline:isOfferActive(timed,new Date("2026-10-12T12:07:01Z")),
+      parisLastMinute:isOfferActive({
+        verifiedAt:"2026-10-11",expiresAt:"2026-10-11"
+      },new Date("2026-10-11T21:59:59Z")),
+      parisNextDay:isOfferActive({
+        verifiedAt:"2026-10-11",expiresAt:"2026-10-11"
+      },new Date("2026-10-11T22:00:00Z")),
+      countdownTomorrow:offerDeadline({expiresAt:"2026-10-12"},
+        new Date("2026-10-11T21:59:59Z")).daysUntil,
+      countdownToday:offerDeadline({expiresAt:"2026-10-12"},
+        new Date("2026-10-11T22:00:00Z")).daysUntil
     };
   });
   assert.deepEqual(shopmiumOffline,{
-    stale:false,store:0,drive:1,beforeDeadline:true,afterDeadline:false
+    stale:false,store:0,drive:1,beforeDeadline:true,afterDeadline:false,
+    parisLastMinute:true,parisNextDay:false,
+    countdownTomorrow:1,countdownToday:0
   });
   await page.locator('[data-tab="list"]').click();
   assert.equal(await page.locator("#shoppingBudget").inputValue(),"6,00");

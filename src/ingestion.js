@@ -254,34 +254,52 @@ export function shopmiumLegacyReviewCutoff(offer){
   return checkedAt;
 }
 
+// A date without a clock is the French shopping calendar day, never UTC
+// midnight or whichever timezone the CI runner/device happens to use.
+// Explicit ISO timestamps, by contrast, always refer to a precise instant.
+const PARIS_DAY_FORMATTER=new Intl.DateTimeFormat("en-GB",{
+  timeZone:"Europe/Paris",year:"numeric",month:"2-digit",day:"2-digit"
+});
+export function parisCivilDay(now=new Date()){
+  const date=new Date(now);
+  if(!Number.isFinite(date.getTime())) return null;
+  const parts=PARIS_DAY_FORMATTER.formatToParts(date);
+  const read=(key)=>parts.find((part)=>part.type===key)?.value;
+  return [read("year"),read("month"),read("day")].join("-");
+}
+
 export function isOfferActive(offer,now=new Date()) {
   const current=new Date(now);
-  if(Number.isNaN(current.getTime()) || !offer || typeof offer!=="object") return false;
-  // A timestamp from tomorrow must not turn an unverified cashback into an
-  // eligible offer today. Missing verification is tolerated for legacy
-  // static rules, but a supplied invalid/future date always fails closed.
-  if(offer.verifiedAt){
-    const stamp=String(offer.verifiedAt);
-    const verifiedTime=new Date(stamp.length===10 ? stamp+"T00:00:00Z" : stamp);
-    if(!validOfferDate(stamp) || !Number.isFinite(verifiedTime.getTime())
-      || verifiedTime>current) return false;
-  }
+  const day=parisCivilDay(current);
+  if(!day || !offer || typeof offer!=="object") return false;
+
+  // Date-only fields are inclusive for their entire civil day in France.
+  // The lexicographic comparison works because dates were checked as strict
+  // ISO YYYY-MM-DD. Precise timestamps retain exact second resolution.
+  const reached=(raw)=>{
+    const text=String(raw);
+    return text.length===10 ? text<=day : new Date(text)<=current;
+  };
+  const notEnded=(raw)=>{
+    const text=String(raw);
+    return text.length===10 ? text>=day : new Date(text)>=current;
+  };
+  // Missing verification may occur in legacy static rules, but an invalid
+  // or future verification date must never count as proof.
+  if(offer.verifiedAt && (!validOfferDate(String(offer.verifiedAt))
+    || !reached(offer.verifiedAt))) return false;
   if(offer.startsAt && (!validOfferDate(String(offer.startsAt))
-    || current<new Date(offer.startsAt))) return false;
-  if(offer.reviewAfter && !validOfferDate(String(offer.reviewAfter))) return false;
-  if(offer.expiresAt && !validOfferDate(String(offer.expiresAt))) return false;
-  if(offer.expiresAt){
-    const end=new Date(String(offer.expiresAt).length===10 ? offer.expiresAt+"T23:59:59" : offer.expiresAt);
-    if(current>end) return false;
-  }
-  if(offer.reviewAfter){
-    const reviewEnd=new Date(String(offer.reviewAfter).length===10 ? offer.reviewAfter+"T23:59:59" : offer.reviewAfter);
-    if(current>reviewEnd) return false;
-  }
-  // The campaign end date is not proof that Shopmium has not closed early.
+    || !reached(offer.startsAt))) return false;
+  if(offer.reviewAfter && (!validOfferDate(String(offer.reviewAfter))
+    || !notEnded(offer.reviewAfter))) return false;
+  if(offer.expiresAt && (!validOfferDate(String(offer.expiresAt))
+    || !notEnded(offer.expiresAt))) return false;
+  // The campaign's advertised expiry alone does not prove that Shopmium
+  // remains open. Legacy unconfirmed offers expire after the fifth French
+  // review day, consistently on CI (UTC) and Android (local timezone).
   if(offer.providerId==="shopmium"){
     const reviewCutoff=shopmiumLegacyReviewCutoff(offer);
-    if(!reviewCutoff || current>reviewCutoff) return false;
+    if(!reviewCutoff || day>reviewCutoff.toISOString().slice(0,10)) return false;
   }
   return true;
 }

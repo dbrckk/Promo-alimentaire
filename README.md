@@ -585,3 +585,7 @@ Le catalogue source complet demeure consultable dans `data/import/` à des fins 
 ### Classement Shopmium par rayon officiel (11 octobre 2026)
 
 Le fournisseur affiche parfois « **A retrouver au rayon frais** », « **Au rayon cafés** », « **Au rayon ferments lactiques** » ou « **Au rayon Produits ménagers** ». L'application reconnaît désormais ces variantes (y compris les libellés intégrés à une ligne Drive) et applique le filtre convenu : **alimentaire prioritaire ; non-alimentaire visible seulement à partir de 50 % de remise attestée**. Huit offres du dernier snapshot ont été reclassées à partir de leurs pages Shopmium officielles, sans modifier leurs périodes ni leurs gains. Les cas non prouvés restent à vérifier, et aucune économie n'est devenue garantie.
+
+### Dates et changement d'heure (stabilisation)
+
+Les offres datées `YYYY-MM-DD` sont actives sur **toute la journée française (Europe/Paris)**, y compris lorsque l'appareil Android ou GitHub Actions utilise un autre fuseau horaire. Les offres avec heure précise conservent leurs horaires exacts, notamment la clôture anticipée d'une ODR. La PWA et ses badges de date sont synchronisés sur cette logique, y compris lors du changement d'heure. Cette correction ne reconfirme pas les offres arrivées à expiration.

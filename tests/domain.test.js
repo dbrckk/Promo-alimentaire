@@ -98,6 +98,20 @@ test("offerDeadline signale une expiration demain",()=>{
   assert.equal(deadline.label,"Expire demain");
 });
 
+test("échéance du catalogue : aujourd'hui dès minuit à Paris, même si UTC est encore hier",()=>{
+  const offer={reviewAfter:"2026-10-12"};
+  const before=offerDeadline(offer,new Date("2026-10-11T21:59:59Z"));
+  const after=offerDeadline(offer,new Date("2026-10-11T22:00:00Z"));
+  assert.equal(before.daysUntil,1);
+  assert.equal(before.label,"Révision demain");
+  assert.equal(after.daysUntil,0);
+  assert.equal(after.label,"Révision aujourd’hui");
+  const past=offerDeadline({expiresAt:"2026-10-11"},
+    new Date("2026-10-11T22:00:00Z"));
+  assert.equal(past.daysUntil,-1);
+  assert.equal(past.label,"Expire dépassée");
+});
+
 test("offerDeadline retourne null sans échéance",()=>{
   assert.equal(offerDeadline({},new Date("2026-10-07T12:00:00Z")),null);
 });
