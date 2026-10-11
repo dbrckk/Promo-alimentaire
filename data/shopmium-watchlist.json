@@ -1,5 +1,5 @@
 {
-  "description": "Fiches publiques officielles à revérifier à chaque synchronisation. Une URL ici ne garantit ni disponibilité ni remboursement. Les fiches clôturées sont ignorées.",
+  "description": "Fiches et pages campagne Shopmium officielles. Les pages regroupant plusieurs offres peuvent proposer des fiches de conditions individuelles : le robot les visite une seule fois, sans déduire de prix depuis la page marketing. Une URL n'est jamais une preuve de disponibilité/remboursement.",
   "urls": [
     "https://offers.shopmium.com/fr/n/kiri-6",
     "https://offers.shopmium.com/fr/n/les-nouveautes-daddy",
@@ -8,6 +8,13 @@
     "https://offers.shopmium.com/fr/n/lunch-box-100-vege-et-plaisir",
     "https://offers.shopmium.com/fr/n/miel-l-apiculteur-format-500g",
     "https://offers.shopmium.com/fr/n/boeuf-bourguignon",
-    "https://offers.shopmium.com/fr/n/piece-de-boeuf-a-effilocher"
+    "https://offers.shopmium.com/fr/n/piece-de-boeuf-a-effilocher",
+    "https://offers.shopmium.com/fr/n/salades-traiteur-a-domicile-bonduelle",
+    "https://offers.shopmium.com/fr/n/barilla-al-bronzo-6",
+    "https://offers.shopmium.com/fr/n/une-pause-gourmande-milka-1",
+    "https://offers.shopmium.com/fr/n/eau-minerale-naturelle-mont-blanc-3",
+    "https://offers.shopmium.com/fr/n/a-chacun-son-daddy",
+    "https://offers.shopmium.com/fr/n/une-accroche-de-sauce-parfaite",
+    "https://offers.shopmium.com/fr/n/barilla-al-bronzo-5"
   ]
 }
