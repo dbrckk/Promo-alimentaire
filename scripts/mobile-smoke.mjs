@@ -561,6 +561,35 @@ try{
       assert.match(text,/Les anciennes offres expirent normalement/);
     }
   }
+  // The published snapshot includes its own trusted Shopmium diagnostics,
+  // independently from the legacy Coupon Network and retailer status files.
+  const currentShopmiumStatus=JSON.parse(await readFile(
+    new URL("../data/import/source-sync-shopmium.json",import.meta.url),"utf8"
+  )).sources?.shopmium;
+  assert.ok(["updated","partial","unavailable"].includes(
+    currentShopmiumStatus?.status
+  ));
+  const currentShopmiumHealth=await page.evaluate(async()=>{
+    const {loadImportedOffers}=await import("./src/import-loader.js");
+    const catalog=await loadImportedOffers();
+    const statistic=catalog.sourceStats.find((row)=>
+      row.file==="shopmium-auto.json"
+    );
+    return {
+      count:catalog.offers.filter((row)=>row.providerId==="shopmium").length,
+      status:statistic?.status||null,
+      failure:statistic?.syncState?.status||null
+    };
+  });
+  assert.ok(currentShopmiumHealth.count>0,
+    "Le catalogue officiel Shopmium doit rester chargé sur Android");
+  if(currentShopmiumStatus.status==="updated"){
+    assert.equal(currentShopmiumHealth.failure,null,
+      "La dernière réussite Shopmium ne doit pas apparaître comme une panne");
+  }else{
+    assert.equal(currentShopmiumHealth.failure,currentShopmiumStatus.status,
+      "Le diagnostic Shopmium dédié doit apparaître dans la PWA Android");
+  }
   // Mixed Open Prices date formats must be ordered by actual timestamps.
   const latestReceipt=await page.evaluate(async()=>{
     const {priceCoverageSummary}=await import("./src/exact-sku-comparison.js");
