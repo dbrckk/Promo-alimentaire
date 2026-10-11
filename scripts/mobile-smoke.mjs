@@ -79,6 +79,40 @@ try{
     ],new Date("2026-10-11T12:00:00Z")).latestDate;
   });
   assert.equal(latestReceipt,"2026-10-11T00:30:00Z");
+
+  // Check the *real browser module* against inconsistent pagination metadata.
+  // A source that advertises more pages must not become an exhaustive
+  // "no price found" just because the current page is empty or short.
+  const paginationCoverage=await page.evaluate(async()=>{
+    const {fetchPricesByBarcode}=await import("./src/open-data.js");
+    const code="3017624010701";
+    const receipt={product_code:code,price:2.45,currency:"EUR",price_per:"UNIT",
+      date:new Date(Date.now()-86400000).toISOString().slice(0,10),
+      location:{osm_brand:"Carrefour"}};
+    const run=async(payload)=>{
+      let calls=0;
+      const result=await fetchPricesByBarcode(code,{
+        store:"carrefour",size:2,maxPages:3,minimumMatches:4,
+        fetchImpl:async()=>{
+          calls++;
+          return {ok:true,json:async()=>payload};
+        }
+      });
+      return {calls,moreAvailable:result.moreAvailable,
+        incomplete:result.searchIncomplete,matched:result.observations.length};
+    };
+    return {
+      emptyDeclared:await run({pages:4,total:8,items:[]}),
+      shortTotal:await run({total:8,items:[receipt]}),
+      complete:await run({total:1,items:[receipt]})
+    };
+  });
+  assert.deepEqual(paginationCoverage,{
+    emptyDeclared:{calls:1,moreAvailable:true,incomplete:true,matched:0},
+    shortTotal:{calls:1,moreAvailable:true,incomplete:true,matched:1},
+    complete:{calls:1,moreAvailable:false,incomplete:false,matched:1}
+  });
+
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.locator("#savingsFocus").selectOption("full-refund");
   assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");

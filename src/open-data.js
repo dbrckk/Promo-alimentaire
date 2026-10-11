@@ -184,18 +184,15 @@ export async function fetchPricesByBarcode(value,{
       : total!==null
         ? page*pageSize<total
         : items.length>=pageSize;
-    // Even a successful response is NOT an exhaustive search if we stopped
-    // at the request limit or after finding enough matches. This distinction
-    // is crucial when saying that no EAN price was found for an enseigne.
-    moreAvailable=hasMore && items.length>0;
+    // An empty or short response does not negate the source's own
+    // "there are more pages" metadata. We may stop paging to avoid a broken
+    // endpoint loop, but must NOT present the search as exhaustive.
+    moreAvailable=hasMore;
     if(page>=pageLimit || recentUsableMatches>=minMatches || items.length===0) break;
     if(!moreAvailable) break;
-    // Short pages without explicit page count cannot safely imply that
-    // another page exists, even if the reported total is inconsistent.
-    if(!Number.isInteger(declaredPages) && items.length<pageSize) {
-      moreAvailable=false;
-      break;
-    }
+    // Without an explicit page count, a short page and a larger total are
+    // contradictory signals. Stop safely, retaining incomplete coverage.
+    if(!Number.isInteger(declaredPages) && items.length<pageSize) break;
   }
 
   const observations=all.sort((a,b)=>{
