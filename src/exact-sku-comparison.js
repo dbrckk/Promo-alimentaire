@@ -1,7 +1,7 @@
 import {canonicalGtin} from "./gtin.js";
 import {isOfferActive} from "./ingestion.js";
 import {estimateOfferSaving,matchOfferToProduct,requiredQuantity} from "./matching.js";
-import {haversineKm,isUnambiguousRetailer,selectBestRecentPrice} from "./open-data.js";
+import {haversineKm,isUnambiguousRetailer,parsePriceEvidenceDate,selectBestRecentPrice} from "./open-data.js";
 import {validateRetailerGtinEvidence} from "./retailer-ean-evidence.js";
 
 const STORES=["carrefour","leclerc"];
@@ -36,8 +36,8 @@ function geographicEvidence(a,b){
 export function comparePriceObservationEvidence(a,b,now=new Date()){
   if(!a || !b) return {comparable:false,status:"missing-price",dateGapDays:null,distanceKm:null};
   const current=new Date(now);
-  const dates=[new Date(a.date),new Date(b.date)];
-  if(Number.isNaN(current.getTime()) || dates.some((date)=>Number.isNaN(date.getTime()))){
+  const dates=[parsePriceEvidenceDate(a.date),parsePriceEvidenceDate(b.date)];
+  if(Number.isNaN(current.getTime()) || dates.some((date)=>date===null)){
     return {comparable:false,status:"invalid-date",dateGapDays:null,distanceKm:null};
   }
   const ages=dates.map((date)=>(current.getTime()-date.getTime())/DAY_MS);
@@ -80,7 +80,7 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
   const lastWeek=(observations)=>(observations||[]).filter((observation)=>{
     if(!observation?.date || !Number.isFinite(Number(observation.price))
       || Number(observation.price)<=0) return false;
-    const timestamp=new Date(observation.date).getTime();
+    const timestamp=parsePriceEvidenceDate(observation.date)?.getTime() ?? NaN;
     const age=current.getTime()-timestamp;
     return Number.isFinite(timestamp) && age>=0 && age<=7*DAY_MS;
   });
@@ -114,8 +114,8 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
     for(const leclerc of candidatesB){
       const evidence=comparePriceObservationEvidence(carrefour,leclerc,current);
       if(!evidence.comparable) continue;
-      const aTime=new Date(carrefour.date).getTime();
-      const bTime=new Date(leclerc.date).getTime();
+      const aTime=parsePriceEvidenceDate(carrefour.date).getTime();
+      const bTime=parsePriceEvidenceDate(leclerc.date).getTime();
       const candidate={carrefour,leclerc,evidence,
         oldestAt:Math.min(aTime,bTime),
         newestAt:Math.max(aTime,bTime)
@@ -141,18 +141,18 @@ export function priceCoverageSummary(observations,now=new Date(),lookup={}){
   const valid=records.filter((record)=>{
     if(!record || !Number.isFinite(Number(record.price))
       || Number(record.price)<=0 || !record.date) return false;
-    const timestamp=new Date(record.date).getTime();
+    const timestamp=parsePriceEvidenceDate(record.date)?.getTime() ?? NaN;
     // Future-dated, invalid or missing receipts must not inflate coverage
     // or masquerade as a recent observed price.
     return Number.isFinite(timestamp) && Number.isFinite(nowTime)
       && timestamp>0 && timestamp<=nowTime;
   });
   const recent=valid.filter((record)=>{
-    const age=nowTime-new Date(record.date).getTime();
+    const age=nowTime-parsePriceEvidenceDate(record.date).getTime();
     return age<=30*DAY_MS;
   });
   const comparable=recent.filter((record)=>{
-    const age=nowTime-new Date(record.date).getTime();
+    const age=nowTime-parsePriceEvidenceDate(record.date).getTime();
     return age<=7*DAY_MS;
   });
   return {
@@ -164,7 +164,7 @@ export function priceCoverageSummary(observations,now=new Date(),lookup={}){
     // Lexical ordering cannot identify the chronologically latest receipt.
     latestDate:valid.length
       ? valid.reduce((latest,record)=>
-          new Date(record.date).getTime()>new Date(latest.date).getTime()
+          parsePriceEvidenceDate(record.date).getTime()>parsePriceEvidenceDate(latest.date).getTime()
             ? record : latest
         ).date : null,
     status:lookupSkipped?"not-queried"

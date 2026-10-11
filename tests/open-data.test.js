@@ -40,6 +40,20 @@ test("isFreshObservation applique la fenêtre de fraîcheur",()=>{
   assert.equal(isFreshObservation({date:"2025-01-01"},120,now),false);
 });
 
+test("les jours de relevé impossibles ou ambigus ne sont pas des prix frais",()=>{
+  const now=new Date("2026-03-02T12:00:00Z");
+  for(const date of [
+    "2026-02-30","2026-02-29","2026-13-01","2026-00-01",
+    "2026-03-02T11:00:00Z","2026-3-2","02/03/2026","2026-03-02extra"
+  ]){
+    assert.equal(isFreshObservation({date},30,now),false,date);
+    assert.equal(observationAgeDays({date},now),null,date);
+    assert.equal(selectBestRecentPrice([{price:1,date}],30,now),null,date);
+  }
+  assert.equal(isFreshObservation({date:"2024-02-29"},1000,now),true);
+  assert.equal(isFreshObservation({date:"2026-03-02"},30,now),true);
+});
+
 test("fetchProductByBarcode normalise la réponse Open Food Facts",async()=>{
   const mockFetch=async()=>({
     ok:true,

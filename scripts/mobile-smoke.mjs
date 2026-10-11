@@ -341,6 +341,36 @@ try{
     ],new Date("2026-10-11T12:00:00Z")).latestDate;
   });
   assert.equal(latestReceipt,"2026-10-11T00:30:00Z");
+  // A bad Open Prices date must never create a false recent price or a
+  // cross-retailer winner in the installed browser module.
+  const invalidPriceDateSafety=await page.evaluate(async()=>{
+    const {isFreshObservation}=await import("./src/open-data.js");
+    const {comparePriceObservationEvidence,priceCoverageSummary}=await import(
+      "./src/exact-sku-comparison.js"
+    );
+    const today=new Date("2026-03-02T12:00:00Z");
+    const entry=(date,brand)=>({
+      date,price:1.5,locationLat:46,locationLon:4,
+      retailerText:brand,productCode:"3017624010701"
+    });
+    return {
+      impossibleFresh:isFreshObservation(entry("2026-02-30","Carrefour"),7,today),
+      impossibleCoverage:priceCoverageSummary([
+        entry("2026-02-30","Carrefour")
+      ],today).recent7Days,
+      impossiblePair:comparePriceObservationEvidence(
+        entry("2026-02-30","Carrefour"),
+        entry("2026-03-02","E.Leclerc"),today
+      ).comparable,
+      validIsoCoverage:priceCoverageSummary([
+        entry("2026-03-02T00:30:00+01:00","Carrefour")
+      ],today).recent7Days
+    };
+  });
+  assert.deepEqual(invalidPriceDateSafety,{
+    impossibleFresh:false,impossibleCoverage:0,impossiblePair:false,
+    validIsoCoverage:1
+  });
 
   // Check the *real browser module* against inconsistent pagination metadata.
   // A source that advertises more pages must not become an exhaustive
