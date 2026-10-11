@@ -294,3 +294,12 @@ Fiches consultées individuellement le **11/10/2026** et ajoutées au snapshot a
 | Daddy cassonades et sucres | 20% sur 1, 25% sur 2 | 31/10/2026 | https://offers.shopmium.com/fr/n/a-chacun-son-daddy |
 
 Les prix moyens affichés par Shopmium ne sont pas des prix garantis dans un Carrefour/E.Leclerc précis. Les remboursements restent soumis à l'achat des références admissibles, à la quantité, aux exclusions, à la preuve d'achat et à la disponibilité des demandes. Les offres non cumulables ne sont jamais automatiquement soustraites d'une réduction déjà appliquée. Une fiche conservée faute d'accès garde sa date de contrôle initiale ; après la date de révision elle n'est plus proposée.
+
+
+## Rayons Shopmium et politique non alimentaire ≥50 % — 11 octobre 2026
+
+Le champ public **« Au rayon … »** des fiches Shopmium est utilisé pour distinguer les produits alimentaires et les produits non alimentaires, sans fabriquer d'identifiant EAN ni confondre la vente en supermarché avec de l'alimentaire. Exemples officiels consultés : [Fruit Shoot, « Boissons pour enfants »](https://offers.shopmium.com/fr/n/boissons-fruitees-fruit-shoot), [Sanex, « Douche »](https://offers.shopmium.com/fr/n/gels-douche-sanex-derma-therapie-2), [Soupline, « Adoucissants »](https://offers.shopmium.com/fr/n/soupline-adoucissant-parfum-de-linge), [Renova, « Hygiène »](https://offers.shopmium.com/fr/n/papier-toilette-textile-4-epaisseurs).
+
+Les catégories source qui expriment explicitement un produit hors alimentaire (entretien, hygiène, maison, non-alimentaire, etc.) sont exclues du parcours courses lorsque `effectivePercent < 50`, ou lorsque le pourcentage est **inconnu** (ex. remboursement fixe de 2 € sans prix de référence vérifié). Les offres de panier s'appliquant à l'alimentaire restent admises. Une catégorie « autre » reste non classée : elle ne doit pas être présentée comme une preuve alimentaire, et les fiches ambiguës doivent faire l'objet de vérifications futures.
+
+Les 13 fiches déjà présentes et manifestement non alimentaires ont été étiquetées `category: "non-alimentaire"` afin de corriger immédiatement les résultats jusqu'à la prochaine synchronisation officielle, sans les supprimer de l'archive. Le filtrage est appliqué dans `src/domain.js` et `src/app.js`, et fait l'objet d'un contrôle navigateur Android sur le JSON de production.
