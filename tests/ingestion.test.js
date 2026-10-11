@@ -183,7 +183,9 @@ test("normalizeImportedOffer conserve l'exigence de carte fidélité",()=>{
   });
   assert.equal(result.ok,true);
   assert.equal(result.value.requiresLoyalty,"leclerc-card");
-  assert.equal(result.value.autoStackWhenEligible,true);
+  assert.equal(result.value.autoStack,false);
+  assert.equal(result.value.autoStackWhenEligible,false,
+    "la déclaration d'une carte fidélité ne prouve pas l'économie d'un import");
 });
 
 
