@@ -223,7 +223,7 @@ export function classifyShopmiumRayon(html){
   if(/\b(hygiene|beaute|cosmetique|dentaire|dentifrice|brosses?|papier|mouchoirs?|parfumerie|entretien|menage|nettoyage|lessive|maison|sanitaire|toilette|sante|animalerie|chien|chat|douches?|adoucissants?|soins?|shampooings?|colorations?|savons?|textiles?|essuie.tout|linges?)\b/.test(label)){
     return "non-alimentaire";
   }
-  if(/\b(epicerie|traiteur|cremerie|fromage|charcuterie|boucherie|poissonnerie|boulangerie|patisserie|confiserie|biscuit|boisson|sodas?|eaux?|lait|surgeles?|frais|fruits?|legumes?|pates?|riz|cafe|the|sucre|petit.dejeuner|alimentaire)\b/.test(label)){
+  if(/\b(epicerie|traiteur|cremerie|fromage|charcuterie|boucherie|poissonnerie|boulangerie|patisserie|confiserie|biscuit|boissons?|sodas?|eaux?|lait|surgeles?|frais|fruits?|legumes?|pates?|riz|cafe|the|sucre|petit.dejeuner|alimentaire)\b/.test(label)){
     return "alimentaire";
   }
   return "autre";
