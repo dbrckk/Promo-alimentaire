@@ -5,6 +5,7 @@ on:
   schedule:
     - cron: "43 6 * * 2"
   push:
+    branches: [main]
     paths:
       - "src/ean-resolver.js"
       - "scripts/enrich-leclerc-eans.mjs"
@@ -20,6 +21,7 @@ concurrency:
 
 jobs:
   enrich:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

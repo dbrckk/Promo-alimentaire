@@ -2,6 +2,20 @@
 
 Dernière revue : 2026-10-07.
 
+## Incident de synchronisation constaté le 10 octobre 2026
+
+La vérification des journaux GitHub Actions établit deux défaillances différentes :
+
+- **Carrefour** : les onze pages produit contrôlées ont répondu `HTTP 403` depuis le runner GitHub. Il s'agit d'un refus d'accès, pas d'une confirmation négative du prix. Le synchroniseur s'arrête désormais au premier 401/403 pour éviter les sollicitations répétées ; il ne contourne ni l'authentification ni les protections du site.
+- **E.Leclerc** : les quatre pages de catalogue testées ont répondu, mais leur HTML récupéré ne contenait ni les libellés exacts ni les pourcentages/mécaniques des cinq offres attendues. Une page techniquement accessible ne constitue **pas** une preuve de promotion active. Le contenu peut dépendre d'un rendu dynamique.
+- **Coupon Network** : le lien historique `index.rss` est indisponible (404 observé). Les fiches visibles dans une application rendue par JavaScript ne peuvent pas être assimilées à des preuves présentes dans le HTML brut accessible au synchroniseur.
+
+**Comportement après correction :** les campagnes dont la révision ou la date de fin est dépassée ne sont plus interrogées ni reconfirmées. Les snapshots archivés restent en place, mais leurs offres périmées sont masquées par l'application. La dernière tentative d'accès reste consignée dans les diagnostics sans prolongation des dates.
+
+**Chemins d'intégration conformes :** rechercher des API/flux de catalogue **publics ou officiellement autorisés**, obtenir un accord de données/partenariat, ou importer manuellement des offres possédant URL de source, preuve d'éligibilité exacte, magasin, prix, réduction et échéance. Ne pas traiter un HTTP 200 d'un simple squelette HTML comme une revalidation. Ne pas utiliser d'API privées ou de contournement anti-bot.
+
+Les workflows de synchronisation possédant la permission `contents: write` restreignent les déclenchements `push` à `main` et exécutent leurs jobs d'écriture uniquement lorsque `github.ref == 'refs/heads/main'`. Cela inclut un déclenchement manuel (`workflow_dispatch`) sélectionnant une autre branche : aucune publication en production n'est autorisée depuis ce contexte.
+
 ## Priorité 1 — indispensables aux courses
 
 | Source | Valeur | Intégration visée |

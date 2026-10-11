@@ -54,6 +54,7 @@ async function sourceUnavailable(reason,extractedCount=0){
 }
 
 const pages=[];
+const sourceFailures=[];
 for(const sourceUrl of SOURCE_URLS){
   try{
     const response=await fetch(sourceUrl,{
@@ -71,11 +72,12 @@ for(const sourceUrl of SOURCE_URLS){
     console.log("[coupon-network] "+sourceUrl+" -> "+parsed.length+" offre(s) via liste publique.");
     pages.push({sourceUrl,html,parsed});
   }catch(error){
+    sourceFailures.push(sourceUrl+" : "+error.message);
     console.warn("[coupon-network] "+sourceUrl+" indisponible: "+error.message);
   }
 }
 if(!pages.length){
-  await sourceUnavailable("Aucune page publique exploitable");
+  await sourceUnavailable("Aucune page publique exploitable ("+sourceFailures.join(" ; ").slice(0,145)+")");
   process.exit();
 }
 
@@ -113,6 +115,12 @@ const assessment=assessCouponNetworkSnapshot(offers,{
   previousCount,minimum:minOffers
 });
 if(!assessment.publish){
+  // The old index.rss is HTTP 404 and the current homepage may render
+  // offers only after JavaScript execution. An HTTP 200 page shell is NOT
+  // evidence of active offers; give an actionable diagnostic instead.
+  const dynamicListing=assessment.count===0
+    && pages.every((entry)=>entry.parsed.length===0)
+    && pages.some((entry)=>entry.sourceUrl==="https://www.couponnetwork.fr/");
   const labels={
     "too-few-offers":"Extraction publique insuffisante",
     "suspiciously-large-drop":"Baisse brutale suspecte du nombre d'offres",
@@ -121,9 +129,10 @@ if(!assessment.publish){
     "invalid-result":"Réponse du fournisseur invalide"
   };
   await sourceUnavailable(
-    (labels[assessment.reason] || "Snapshot public non publiable")+
-      " ("+assessment.count+" détectées, minimum "+minOffers+
-      ", "+previousCount+" dans le précédent catalogue)",
+    (dynamicListing
+      ? "Page publique accessible sans offres exploitables dans son HTML (rendu JavaScript possible ; flux public autorisé nécessaire)"
+      : labels[assessment.reason] || "Snapshot public non publiable")+
+      " ("+assessment.count+" détectées, "+previousCount+" anciennes conservées, seuil "+minOffers+")",
     assessment.count
   );
   process.exit();

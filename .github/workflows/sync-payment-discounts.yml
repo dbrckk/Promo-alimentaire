@@ -5,6 +5,7 @@ on:
     - cron: "31 5 * * *"
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - "scripts/sync-payment-discounts.mjs"
       - "src/adapters/payment-discounts.js"
@@ -22,6 +23,7 @@ env:
 
 jobs:
   sync:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
