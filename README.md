@@ -2,6 +2,12 @@
 
 PWA mobile-first pour regrouper et comparer les économies disponibles chez **Carrefour** et **E.Leclerc** : promotions, cashback, offres de remboursement (ODR), coupons, bons d'achat remisés et prix observés.
 
+## Correctif de fiabilité des remises Club Carrefour (11 octobre 2026)
+
+Une carte Club Carrefour ou PASS **ne prouve pas** que les Avantages Fruits & Légumes / Carrefour Bio ont été activés, ni que le produit est éligible sans exclusion, ni que la Carte PASS sera utilisée pour payer. Le moteur propose donc une **économie potentielle conditionnelle** de 10 % ou 15 % mais ne l'ajoute plus au « gain garanti » par simple sélection d'une carte. Ces économies sont des **crédits en cagnotte**, pas des baisses automatiques du ticket de caisse. La règle est basée sur les [conditions officielles PASS](https://www.carrefour.fr/services/carte-pass) et les [modalités d'activation du Club Carrefour](https://www.carrefour.fr/faq?question=comment-puis-je-adherer-primes-fidelite), consultées le 11/10/2026. Les promotions en cours, lots et références exclues doivent être vérifiés avant achat.
+
+La génération d'une offre contextualisée depuis Open Food Facts ne constitue pas une **preuve EAN exacte** chez Carrefour. Les anciennes offres sont filtrées **aussi dans l'évaluateur du panier**, y compris pour les appels hors interface. La revue des avantages contextualisés expire le 25/10/2026 : après cette date, aucune estimation ancienne n'est appliquée sans nouvelle confirmation.
+
 ## État
 
 Fonctionnalités actuelles :
