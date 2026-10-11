@@ -64,6 +64,7 @@ select:focus,input:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(1
 .exact-sku-quantity{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 9px;border:1px solid var(--line);border-radius:10px;font-size:.78rem;font-weight:650;white-space:nowrap;background:var(--surface)}
 .exact-sku-quantity input{width:66px;min-width:0;padding:7px;border:1px solid var(--line);border-radius:8px}
 @media(max-width:720px){.inline-form>.exact-sku-quantity{grid-column:1/-1}.exact-sku-quantity input{width:92px}}
+.product-lookup-cancel{justify-self:start}
 .status{min-height:20px;font-size:.82rem;color:var(--muted)}
 .status.error{color:var(--danger)}
 .product-result{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}

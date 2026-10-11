@@ -254,6 +254,46 @@ try{
   await page.locator('#barcodeForm button[type="submit"]').click();
   await page.locator("#productResult h2").waitFor({timeout:10000});
   assert.match(await page.locator("#productResult").innerText(),/Pâte à tartiner témoin/);
+  assert.equal(await page.locator("#cancelBarcodeLookup").isVisible(),false);
+  // Stall a real product request while price data remains available. Cancelling
+  // must clear any prior SKU and ignore even a late success from Open Food Facts.
+  let releaseStalledProduct;
+  let markProductStalled;
+  const productStalled=new Promise((resolve)=>{markProductStalled=resolve;});
+  const stalledProductHandler=async(route)=>{
+    markProductStalled();
+    await new Promise((resolve)=>{releaseStalledProduct=resolve;});
+    try{
+      await route.fulfill({status:200,contentType:"application/json",
+        body:JSON.stringify({product:{
+          code:"3017624010701",product_name:"Réponse tardive non autorisée"
+        }})});
+    }catch{
+      // Expected if the browser aborted this request before fulfilment.
+    }
+  };
+  const stalledProductPattern="https://world.openfoodfacts.org/api/v3/product/**";
+  await page.route(stalledProductPattern,stalledProductHandler);
+  await page.locator("#barcode").fill("3017624010701");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  await productStalled;
+  assert.equal(await page.locator("#cancelBarcodeLookup").isVisible(),true);
+  await page.locator("#cancelBarcodeLookup").click();
+  assert.match(await page.locator("#productStatus").innerText(),/Recherche annulée/);
+  assert.equal(await page.locator("#cancelBarcodeLookup").isVisible(),false);
+  assert.equal(await page.locator("#productResult").isVisible(),false);
+  assert.equal(await page.locator("#compareExactSku").isDisabled(),true);
+  releaseStalledProduct();
+  await page.unroute(stalledProductPattern,stalledProductHandler);
+  await page.waitForTimeout(100);
+  assert.doesNotMatch(await page.locator("#productStatus").innerText(),/Recherche du produit/);
+  assert.equal(await page.locator("#productResult").isVisible(),false);
+  // A new clean search must immediately work after manual cancellation.
+  await page.locator("#barcode").fill("3017624010701");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  await page.locator("#productResult h2").waitFor({timeout:10000});
+  assert.match(await page.locator("#productResult").innerText(),/Pâte à tartiner témoin/);
+  assert.equal(await page.locator("#cancelBarcodeLookup").isVisible(),false);
   // Compare the very same EAN across two retailers; do not use a brand-only
   // match or a physical-store receipt as a Drive/delivery quotation.
   await page.locator("#channel").selectOption("store");
