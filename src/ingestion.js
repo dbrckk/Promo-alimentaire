@@ -308,7 +308,7 @@ function httpsUrl(value,field,errors){
 // Date.parse alone silently normalizes impossible dates such as February 30.
 function validOfferDate(value){
   const text=String(value);
-  const match=/^(\\d{4})-(\\d{2})-(\\d{2})(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2}))?$/.exec(text);
+  const match=/^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2}))?$/.exec(text);
   if(!match) return false;
   const civil=match[1]+"-"+match[2]+"-"+match[3];
   const day=new Date(civil+"T12:00:00Z");
