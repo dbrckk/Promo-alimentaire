@@ -331,3 +331,36 @@ test("la fiche Shopmium affiche l'échéance de revue plutôt qu'une fausse fin 
   assert.equal(stale.sourceStats[0].status,"stale");
   assert.equal(stale.sourceStats[0].nextDeadline,null);
 });
+
+test("un manifeste distant ne peut charger ni chemins ni URLs arbitraires",async()=>{
+  const {inspectImportManifest}=await import("../src/import-manifest.js");
+  assert.deepEqual(inspectImportManifest({files:["one.json","shopmium-auto.json"]}).files,
+    ["one.json","shopmium-auto.json"]);
+  const malicious=[
+    "../other.json","/x.json","http://evil.example/x.json",
+    "https://evil.example/x.json","../secret/offer.json",
+    "one.json?token=x","one.json#fragment","a\\\\b.json",
+    "index.json","source-sync-status.json","source-sync-other.json",
+    "ONE.JSON","one.json%2Fother.json","épreuve.json","-bad.json"
+  ];
+  for(const name of malicious){
+    assert.equal(inspectImportManifest({files:[name]}).ok,false,name);
+  }
+  assert.equal(inspectImportManifest({files:["one.json","one.json"]}).ok,false);
+  assert.equal(inspectImportManifest({files:Array.from({length:61},(_,i)=>"source-"+i+".json")}).ok,false);
+  assert.equal(inspectImportManifest({files:null}).ok,false);
+
+  let calls=0;
+  const fetchImpl=async(url)=>{
+    calls+=1;
+    assert.equal(new URL(url).pathname.endsWith("/data/import/index.json"),true);
+    return {ok:true,json:async()=>({
+      files:["one.json","../secret.json"]
+    })};
+  };
+  await assert.rejects(
+    loadImportedOffers({fetchImpl,now:new Date("2026-10-11T12:00:00Z")}),
+    /Manifeste d'offres refusé/
+  );
+  assert.equal(calls,1,"Aucun autre fichier ou statut source n'est demandé");
+});
