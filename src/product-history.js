@@ -129,7 +129,17 @@ export function productPriceTrend(history,{code,store,locationId=null,locationKe
   };
 }
 
-export function detectPriceDrops(history,{thresholdPercent=10}={}) {
+/**
+ * Historical drops are not real-time prices. Consumers may opt into a
+ * freshness window for user-facing alerts; archival analysis remains
+ * available without a cutoff for older saved records and reports.
+ */
+export function detectPriceDrops(history,{
+  thresholdPercent=10,now=new Date(),maxAgeDays=null
+}={}) {
+  const cutoffEnabled=maxAgeDays!==null && Number.isFinite(maxAgeDays)
+    && maxAgeDays>=0;
+  const nowTime=new Date(now).getTime();
   const groups=new Map();
   for(const item of history || []){
     const key=priceLocationKey(item);
@@ -142,6 +152,12 @@ export function detectPriceDrops(history,{thresholdPercent=10}={}) {
   for(const group of groups.values()){
     const trend=productPriceTrend(history,group);
     if(!trend || trend.direction!=="down") continue;
+    if(cutoffEnabled){
+      const latestTime=new Date(trend.latest.date).getTime();
+      const age=nowTime-latestTime;
+      if(!Number.isFinite(nowTime) || !Number.isFinite(latestTime)
+        || age<0 || age>maxAgeDays*24*60*60*1000) continue;
+    }
     const drop=Math.abs(trend.percent);
     if(drop<thresholdPercent) continue;
     alerts.push({
@@ -152,6 +168,8 @@ export function detectPriceDrops(history,{thresholdPercent=10}={}) {
       name:trend.latest.name,
       latestPrice:trend.latest.price,
       previousPrice:trend.previous.price,
+      latestIsDiscounted:trend.latest.isDiscounted===true,
+      previousIsDiscounted:trend.previous.isDiscounted===true,
       dropPercent:drop,
       date:trend.latest.date,
       recordedAt:trend.latest.recordedAt
