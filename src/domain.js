@@ -1,4 +1,5 @@
 import {simulateProductOffer} from "./offer-simulator.js";
+import {parisCivilDay} from "./ingestion.js";
 
 export function computeSaving(offer) {
   const cap=Number.isFinite(offer.savingCapAmount) ? Math.max(0,offer.savingCapAmount) : Infinity;
@@ -102,12 +103,14 @@ export function offerDeadline(offer,now=new Date()){
   if(!candidates.length) return null;
   candidates.sort((a,b)=>a.date-b.date);
   const next=candidates[0];
-  const currentDay=Date.UTC(
-    current.getUTCFullYear(),current.getUTCMonth(),current.getUTCDate()
-  );
-  const deadlineDay=Date.UTC(
-    next.date.getUTCFullYear(),next.date.getUTCMonth(),next.date.getUTCDate()
-  );
+  // Daily offers are displayed for shoppers in France. At 00:30 in
+  // Paris, GitHub Actions may still be on the previous UTC date; use a
+  // single calendar convention for badges and the actual eligibility gate.
+  const currentParisDay=parisCivilDay(current);
+  const nextParisDay=String(next.value).length===10
+    ? String(next.value) : parisCivilDay(next.date);
+  const currentDay=Date.parse(currentParisDay+"T12:00:00Z");
+  const deadlineDay=Date.parse(nextParisDay+"T12:00:00Z");
   const daysUntil=Math.round((deadlineDay-currentDay)/(24*60*60*1000));
   const prefix=next.kind==="expires" ? "Expire" : "Révision";
   const label=daysUntil<0
