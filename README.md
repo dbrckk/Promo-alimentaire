@@ -46,6 +46,8 @@ Fonctionnalités actuelles :
 - PWA installable et fonctionnement hors ligne pour l'interface ;
 - tests métier sans dépendance externe.
 
+Le validateur d'annuaire refuse désormais les **dates de vérification fictives, impossibles ou postérieures au jour courant en France**. Un service identifié ne doit jamais sembler avoir été confirmé dans le futur, notamment si l'application est consultée depuis un autre fuseau horaire.
+
 ## Services de découverte (8 et 9 octobre 2026)
 
 L'onglet **Sources** intègre des pistes indépendantes des prix du panier :
