@@ -62,6 +62,51 @@ try{
     document.querySelector("#datasetDate")?.textContent?.includes("offre(s) importée(s) active(s)"),
     null,{timeout:12000}
   );
+  // Browser-level end-to-end contract for public campaign landing pages:
+  // a hub is discovery only, never an invented rebate. Its individual
+  // official detail has real tiers, merchant coverage and explicit brand.
+  const shopmiumHubJourney=await page.evaluate(async()=>{
+    const {extractShopmiumLandingDetailUrls,parseShopmiumDetailHtml}=
+      await import("./src/adapters/shopmium.js");
+    const {validateImportBatch}=await import("./src/ingestion.js");
+    const hub=`<title>Shopmium | Salades Bonduelle</title>
+      <a href="/fr/n/carotte-citron-de-sicile-bonduelle">Carottes</a>
+      <a href="/fr/n/taboule-bonduelle">Taboulé</a>
+      <a href="https://untrusted.example/fr/n/fake">Hors site</a>
+      <p>Découvrir ces offres</p>`;
+    const children=extractShopmiumLandingDetailUrls(hub,
+      "https://offers.shopmium.com/fr/n/salades-traiteur-a-domicile-bonduelle");
+    const details=`<title>Shopmium | Carotte râpée Citron Bonduelle</title>
+      <h1>Carotte râpée Citron Bonduelle</h1>
+      <p>1 article acheté = -25%</p>
+      <p>2 articles achetés = -30%</p>
+      <p>3 articles achetés = -34%</p>
+      <p>Valable entre le 31/08/2026 à partir de 08:00 et le 30/12/2026
+        jusqu'à 23:59 dans toute enseigne vendante (Drive inclus).</p>
+      <p>Référence(s) éligible(s) et prix généralement constaté(s) :</p>
+      <p>- Carotte Citron de Sicile 320g (1,48€)</p>
+      <p>- Carotte Citron de Sicile 500g (2,30€)</p>
+      <p>Remboursement maximum calculé par article</p>
+      <p>Cette offre vous est proposée par : Bonduelle</p>`;
+    const offer=parseShopmiumDetailHtml(details,children[0],{
+      verifiedAt:"2026-10-11"
+    });
+    return {
+      childCount:children.length,allOfficial:children.every((url)=>
+        url.startsWith("https://offers.shopmium.com/fr/n/")),
+      brand:offer?.productMatch?.brands?.[0]||null,
+      savingPercent:offer?.savingPercent||null,
+      tierCount:offer?.quantityTiers?.length||0,
+      channels:offer?.channels||null,
+      autoStack:offer?.autoStack,
+      importValid:validateImportBatch([offer]).ok
+    };
+  });
+  assert.deepEqual(shopmiumHubJourney,{
+    childCount:2,allOfficial:true,brand:"Bonduelle",
+    savingPercent:34,tierCount:3,channels:["store","drive"],
+    autoStack:false,importValid:true
+  });
   // A manipulated public JSON manifest cannot make the installed
   // application fetch data outside /data/import, including cross-origin URLs.
   const manifestProtection=await page.evaluate(async()=>{
