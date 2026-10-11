@@ -24,6 +24,16 @@ La vérification des journaux GitHub Actions établit deux défaillances différ
 
 Les workflows de synchronisation possédant la permission `contents: write` restreignent les déclenchements `push` à `main` et exécutent leurs jobs d'écriture uniquement lorsque `github.ref == 'refs/heads/main'`. Cela inclut un déclenchement manuel (`workflow_dispatch`) sélectionnant une autre branche : aucune publication en production n'est autorisée depuis ce contexte.
 
+## Nouvelle voie publique Coupon Network — 11 octobre 2026
+
+La page officielle [prod-cn-offers.couponnetwork.fr](https://prod-cn-offers.couponnetwork.fr/) présente un catalogue public de remboursements avec titres, descriptions, montant en euros et action « Activer l'offre ». Une version indexée du contenu comporte environ 126 offres, mais le chargement HTML non exécuté peut aussi produire un catalogue vide. **Le nombre n'est ni un engagement de disponibilité, ni une preuve que le runner GitHub peut lire ces fiches.**
+
+Le synchroniseur tente désormais cette page **sans connexion ni endpoint privé**, avant la page principale et l'ancien RSS. Si son HTML initial ne révèle rien, le job GitHub Actions utilise **Chromium/Playwright open source** pour consulter seulement la page publique normalement visible à un visiteur, sans identifiant, endpoint privé, contournement ou imitation anti-bot. Un second analyseur reconnaît uniquement la séquence **titre + condition d'achat + montant + mention remboursé + bouton d'activation**. Une publicité indiquant « jusqu'à 409 € » ne devient pas une offre et un squelette de page sans cartes ne réactualise aucun remboursement.
+
+Les offres extraites sont des **candidats de remboursement différé**, jamais des gains en caisse garantis : pas d'EAN exact inventé, pas de cumul automatique, référence et conditions toujours à vérifier avant achat. Les sauvegardes ne sont remplacées que si le nombre et la validité des nouvelles fiches passent les seuils existants ; une chute anormale conserve l'ancien snapshot et ses échéances sans les prolonger.
+
+La CI valide les modules et un scénario navigateur Android vérifie la forme de carte réellement publiée, un montant isolé non éligible, et le cas d'un site dynamique retournant zéro offre. Il faut contrôler les journaux du prochain workflow GitHub Actions exécuté sur `main` pour conclure si l'extraction fonctionne **avec les réponses réseau réellement servies au runner**.
+
 ## Priorité 1 — indispensables aux courses
 
 | Source | Valeur | Intégration visée |

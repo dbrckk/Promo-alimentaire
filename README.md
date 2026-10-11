@@ -20,6 +20,10 @@ Les dates simples de l'API Open Prices représentent désormais le **début du j
 
 Le parcours fonctionnel sur navigateur Android vérifie le basculement de jour en France, les deux dates de changement d'heure, le rejet des dates impossibles et les frontières des catégories de fraîcheur.
 
+## Synchronisation Coupon Network : source publique supplémentaire (11 octobre 2026)
+
+Le collecteur consulte désormais également la [page officielle des offres publiques Coupon Network](https://prod-cn-offers.couponnetwork.fr/). Si le HTML initial ne contient pas de cartes complètes, le job GitHub Actions tente un rendu Chromium public et sans connexion, avec Playwright open source. Si le contenu effectivement lu révèle des cartes complètes (produit, conditions, montant et action d'activation), elles peuvent remplacer l'ancien snapshot **après validation du nombre, des identifiants et des conditions**. Un simple chargement dynamique affichant zéro offre, l'ancien RSS indisponible ou une réponse trop courte n'actualise aucune date et ne remplace jamais l'archive. Ces remboursements après achat restent des **candidats**, sans EAN exact ni réduction immédiate garantie. La réussite du synchroniseur sur le runner GitHub doit être vérifiée séparément de la présence de ce code.
+
 ## État
 
 Fonctionnalités actuelles :

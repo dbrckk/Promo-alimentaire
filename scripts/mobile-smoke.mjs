@@ -588,6 +588,52 @@ try{
       assert.match(text,/Les anciennes offres expirent normalement/);
     }
   }
+  // Real Coupon Network public catalogue cards place the amount after
+  // the product condition, unlike the historical coupon pages. Exercise
+  // the browser adapter, including a shell with no product offers, before
+  // trusting an automated source refresh.
+  const publicCouponCards=await page.evaluate(async()=>{
+    const {parseCouponNetworkCards,assessCouponNetworkSnapshot}=
+      await import("./src/adapters/coupon-network.js");
+    const html=`<main>
+      <p>Jusqu'à 409 € d'économies sur vos courses</p>
+      <article><h3>Bonduelle - Carottes râpées au Citron de Sicile</h3>
+      <p>Sur l'achat d'une barquette de carottes râpées Bonduelle.</p>
+      <span>0,20 €</span><span>remboursé</span><button>Activer l'offre</button></article>
+      <article><h3>Grand'Mère - Café moulu</h3>
+      <p>Sur l'achat de 2 paquets de café moulu Grand'Mère.</p>
+      <strong>1,20 € remboursé</strong><button>Activer l'offre</button></article>
+      <article><h3>Publicité sans remboursement prouvé</h3>
+      <p>Sur l'achat d'une bouteille.</p><span>5 €</span>
+      <button>Découvrir</button></article>
+    </main>`;
+    const options={verifiedAt:"2026-10-11",
+      sourceUrl:"https://prod-cn-offers.couponnetwork.fr/"};
+    const offers=parseCouponNetworkCards(html,options);
+    return {
+      count:offers.length,
+      titles:offers.map((offer)=>offer.title),
+      amounts:offers.map((offer)=>offer.savingAmount),
+      minimum:offers.map((offer)=>offer.minPurchaseQty),
+      source:offers[0]?.sourceUrl,
+      unsafe:offers.some((offer)=>offer.autoStack===true
+        || (offer.eans||[]).length>0),
+      empty:parseCouponNetworkCards("<main>Offres disponibles 0</main>",options).length,
+      otherDomain:parseCouponNetworkCards(html,{
+        ...options,sourceUrl:"https://example.com/"
+      }).length,
+      publishEmpty:assessCouponNetworkSnapshot([],{minimum:20,previousCount:118}).publish
+    };
+  });
+  assert.deepEqual(publicCouponCards,{
+    count:2,
+    titles:["Bonduelle - Carottes râpées au Citron de Sicile",
+      "Grand'Mère - Café moulu"],
+    amounts:[0.2,1.2],minimum:[1,2],
+    source:"https://prod-cn-offers.couponnetwork.fr/",
+    unsafe:false,empty:0,otherDomain:0,publishEmpty:false
+  });
+
   // The published snapshot includes its own trusted Shopmium diagnostics,
   // independently from the legacy Coupon Network and retailer status files.
   const currentShopmiumStatus=JSON.parse(await readFile(

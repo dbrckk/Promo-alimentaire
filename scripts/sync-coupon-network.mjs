@@ -1,10 +1,12 @@
 import { readFile, writeFile, appendFile } from "node:fs/promises";
 import {
-  parseCouponNetworkHtml, assessCouponNetworkSnapshot
+  parseCouponNetworkHtml, parseCouponNetworkCards, assessCouponNetworkSnapshot
 } from "../src/adapters/coupon-network.js";
 import { validateImportBatch } from "../src/ingestion.js";
 
+const PUBLIC_CARDS_URL="https://prod-cn-offers.couponnetwork.fr/";
 const SOURCE_URLS=[
+  PUBLIC_CARDS_URL,
   "https://www.couponnetwork.fr/",
   "https://www.couponnetwork.fr/index.rss"
 ];
@@ -66,9 +68,17 @@ for(const sourceUrl of SOURCE_URLS){
       signal:AbortSignal.timeout(15000)
     });
     if(!response.ok) throw new Error("HTTP "+response.status);
+    if(sourceUrl===PUBLIC_CARDS_URL
+      && new URL(response.url || sourceUrl).hostname!=="prod-cn-offers.couponnetwork.fr"){
+      throw new Error("Redirection en dehors du catalogue public officiel.");
+    }
     const html=await response.text();
     if(html.length<5000) throw new Error("réponse anormalement courte");
-    const parsed=parseCouponNetworkHtml(html,{verifiedAt});
+    // The official public cards view puts the offer amount AFTER its
+    // purchase condition. Legacy pages use the opposite order.
+    const parsed=sourceUrl===PUBLIC_CARDS_URL
+      ? parseCouponNetworkCards(html,{verifiedAt,sourceUrl})
+      : parseCouponNetworkHtml(html,{verifiedAt});
     console.log("[coupon-network] "+sourceUrl+" -> "+parsed.length+" offre(s) via liste publique.");
     pages.push({sourceUrl,html,parsed});
   }catch(error){
@@ -77,13 +87,46 @@ for(const sourceUrl of SOURCE_URLS){
   }
 }
 if(!pages.length){
-  await sourceUnavailable("Aucune page publique exploitable ("+sourceFailures.join(" ; ").slice(0,145)+")");
-  process.exit();
+  console.warn("[coupon-network] HTML public indisponible : essai du catalogue dans le navigateur.");
 }
 
 pages.sort((a,b)=>b.parsed.length-a.parsed.length);
-let offers=pages[0].parsed;
-if(offers.length<minOffers){
+let offers=pages[0]?.parsed || [];
+// The public catalogue may render the real product cards only after its
+// own JavaScript has run. A headless Chromium view of the same public,
+// unauthenticated page is an alternative to treating HTML 200 as proof.
+// Never log in, call private APIs, bypass challenges or fabricate offers.
+if(!assessCouponNetworkSnapshot(offers,{previousCount,minimum:minOffers}).publish){
+  let browser=null;
+  try{
+    const {chromium}=await import("playwright");
+    browser=await chromium.launch({headless:true});
+    const page=await browser.newPage({locale:"fr-FR"});
+    await page.goto(PUBLIC_CARDS_URL,{
+      waitUntil:"domcontentloaded",timeout:25000
+    });
+    if(new URL(page.url()).hostname!=="prod-cn-offers.couponnetwork.fr"){
+      throw new Error("Redirection navigateur hors du domaine officiel.");
+    }
+    await page.waitForFunction(()=>{
+      const text=document.body?.innerText || "";
+      return /sur l['’]achat/i.test(text) && /rembours/i.test(text);
+    },null,{timeout:15000});
+    const publicHtml=await page.content();
+    const rendered=parseCouponNetworkCards(publicHtml,{
+      verifiedAt,sourceUrl:PUBLIC_CARDS_URL
+    });
+    console.log("[coupon-network] catalogue public rendu : "+
+      rendered.length+" carte(s) complètes.");
+    if(rendered.length>offers.length) offers=rendered;
+  }catch(error){
+    console.warn("[coupon-network] catalogue public rendu non exploitable : "+
+      String(error?.message||error).slice(0,180));
+  }finally{
+    if(browser) await browser.close();
+  }
+}
+if(!assessCouponNetworkSnapshot(offers,{previousCount,minimum:minOffers}).publish){
   const { extractCouponNetworkDetailUrls, parseCouponNetworkDetailHtml } = await import("../src/adapters/coupon-network.js");
   const urls=[...new Set(pages.flatMap((page)=>extractCouponNetworkDetailUrls(page.html)))];
   console.log("[coupon-network] listes directes insuffisantes ("+offers.length+"), bascule sur "+urls.length+" fiches publiques uniques.");
@@ -109,7 +152,7 @@ if(offers.length<minOffers){
     await new Promise((resolve)=>setTimeout(resolve,80));
   }
   const unique=new Map(details.map((offer)=>[offer.externalId,offer]));
-  offers=[...unique.values()];
+  if(unique.size>offers.length) offers=[...unique.values()];
 }
 const assessment=assessCouponNetworkSnapshot(offers,{
   previousCount,minimum:minOffers
@@ -120,7 +163,8 @@ if(!assessment.publish){
   // evidence of active offers; give an actionable diagnostic instead.
   const dynamicListing=assessment.count===0
     && pages.every((entry)=>entry.parsed.length===0)
-    && pages.some((entry)=>entry.sourceUrl==="https://www.couponnetwork.fr/");
+    && pages.some((entry)=>entry.sourceUrl==="https://www.couponnetwork.fr/"
+      || entry.sourceUrl===PUBLIC_CARDS_URL);
   const labels={
     "too-few-offers":"Extraction publique insuffisante",
     "suspiciously-large-drop":"Baisse brutale suspecte du nombre d'offres",
@@ -129,9 +173,11 @@ if(!assessment.publish){
     "invalid-result":"Réponse du fournisseur invalide"
   };
   await sourceUnavailable(
-    (dynamicListing
-      ? "Page publique accessible sans offres exploitables dans son HTML (rendu JavaScript possible ; flux public autorisé nécessaire)"
-      : labels[assessment.reason] || "Snapshot public non publiable")+
+    (!pages.length
+      ? "Aucune page publique HTML accessible ("+sourceFailures.join(" ; ").slice(0,95)+"), rendu navigateur insuffisant"
+      : dynamicListing
+        ? "Page publique accessible sans cartes suffisamment vérifiables, même après rendu navigateur"
+        : labels[assessment.reason] || "Snapshot public non publiable")+
       " ("+assessment.count+" détectées, "+previousCount+" anciennes conservées, seuil "+minOffers+")",
     assessment.count
   );
