@@ -43,10 +43,28 @@ export function filterDiscoveryProviders(providers,{scope="food",search=""}={}){
     });
 }
 
+function dateTodayParis(){
+  // Catalogue verification is a civil day in France, not UTC midnight.
+  const parts=new Intl.DateTimeFormat("en-GB",{
+    timeZone:"Europe/Paris",year:"numeric",month:"2-digit",day:"2-digit"
+  }).formatToParts(new Date());
+  const get=(type)=>parts.find((part)=>part.type===type)?.value;
+  return [get("year"),get("month"),get("day")].join("-");
+}
+
+function isActualPastOrTodayDate(value,today){
+  if(typeof value!=="string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed=new Date(value+"T00:00:00Z");
+  return Number.isFinite(parsed.getTime())
+    && parsed.toISOString().slice(0,10)===value
+    && value<=today;
+}
+
 export function validateDiscoveryProviders(providers){
   if(!Array.isArray(providers)) return ["Catalogue des sources invalide."];
   const errors=[];
   const ids=new Set();
+  const today=dateTodayParis();
   for(const [index,source] of providers.entries()){
     const id=String(source?.id ?? "");
     if(!id || ids.has(id)) errors.push("Identifiant manquant ou dupliqué à l'index "+index);
@@ -71,6 +89,10 @@ export function validateDiscoveryProviders(providers){
     }
     if(source.discoveryStatus==="unconfirmed" && source.discoveryVerifiedAt){
       errors.push(id+": source non confirmée ne doit pas afficher une vérification récente.");
+    }
+    if(source.discoveryVerifiedAt!==undefined
+      && !isActualPastOrTodayDate(source.discoveryVerifiedAt,today)){
+      errors.push(id+": discoveryVerifiedAt doit être une date civile valide, non future.");
     }
     if(source.segment && !["food","other"].includes(source.segment)){
       errors.push(id+": segment inconnu.");
