@@ -22,6 +22,14 @@ test("le résumé distingue meilleur garanti et meilleur potentiel prudent",()=>
   assert.equal(result.guaranteed.store,"carrefour");
   assert.equal(result.prudent.store,"leclerc");
   assert.equal(result.sameStore,false);
+  const incomplete=summarizeBasketStrategies([
+    scenario("carrefour",20,18),
+    scenario("leclerc",21,16)
+  ],{channel:"store",nearbyEnabled:true,coverageIncomplete:true});
+  assert.equal(incomplete.status,"indicative");
+  assert.equal(incomplete.guaranteed,undefined,
+    "une recherche HTTP partielle ne permet pas d'affirmer un gagnant");
+  assert.match(incomplete.reason,/incomplète/i);
 });
 
 test("le résumé refuse un gagnant en canal online",()=>{
