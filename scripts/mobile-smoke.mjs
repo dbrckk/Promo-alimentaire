@@ -1278,6 +1278,21 @@ try{
   assert.equal(swSupported,true,"Service worker unavailable in browser context");
   await page.evaluate(()=>navigator.serviceWorker.ready);
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller),{timeout:20000});
+  // Exercise the installed Android interface after an update control event:
+  // do not reload without a tap, and dismiss the notice only upon reload.
+  await page.reload({waitUntil:"domcontentloaded",timeout:25000});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller),{timeout:20000});
+  assert.equal(await page.locator("#appUpdateNotice").isVisible(),false);
+  await page.evaluate(()=>navigator.serviceWorker.dispatchEvent(new Event("controllerchange")));
+  await page.locator("#appUpdateNotice").waitFor({state:"visible",timeout:5000});
+  assert.match(await page.locator("#appUpdateNotice").innerText(),/Nouvelle version/);
+  assert.equal(await page.locator("#shoppingBudget").inputValue(),"6,00",
+    "L'avis de mise à jour ne doit pas effacer une saisie en cours");
+  await page.locator("#appUpdateNow").click();
+  await page.locator("#appUpdateNotice").waitFor({state:"hidden",timeout:10000});
+  await page.locator("#shoppingBudget").waitFor({state:"visible"});
+  assert.equal(await page.locator("#shoppingBudget").inputValue(),"6,00",
+    "Les données sauvegardées doivent survivre au rechargement choisi");
   // Real browser integration: a valid but undeclared same-origin file must
   // never fill the PWA cache, while the declared offline index remains saved.
   const boundedCache=await page.evaluate(async()=>{
