@@ -121,6 +121,27 @@ try{
     assert.match(await page.locator("#sourceHealth").textContent(),/échéance|révision/i);
     assert.match(await page.locator("#sourceHealth").textContent(),/Offres reconfirmées/i);
   }
+  // Real imported-source diagnostics must survive in the mobile PWA even
+  // when the merchants are unreachable. Their archived offer counts must
+  // never be described as newly confirmed savings.
+  for(const [source,filename,label] of [
+    ["carrefour","source-sync-carrefour.json","Carrefour"],
+    ["leclerc","source-sync-leclerc.json","E.Leclerc"]
+  ]){
+    const fixture=JSON.parse(await readFile(
+      new URL("../data/import/"+filename,import.meta.url),"utf8"
+    )).sources?.[source];
+    if(fixture && ["unavailable","partial"].includes(fixture.status)){
+      await page.waitForFunction((expected)=>
+        document.querySelector("#sourceHealth")?.textContent?.includes(expected),
+        label,{timeout:12000}
+      );
+      const text=await page.locator("#sourceHealth").innerText();
+      assert.match(text,/Source non actualisée|Obsolète/);
+      assert.ok(text.includes(fixture.extractedCount+"/"+fixture.previousSnapshotCount));
+      assert.match(text,/Les anciennes offres expirent normalement/);
+    }
+  }
   // Mixed Open Prices date formats must be ordered by actual timestamps.
   const latestReceipt=await page.evaluate(async()=>{
     const {priceCoverageSummary}=await import("./src/exact-sku-comparison.js");
