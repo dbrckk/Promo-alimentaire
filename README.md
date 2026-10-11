@@ -14,6 +14,12 @@ Le budget de courses rejette maintenant **tout coût de caisse absent** (`null`,
 
 Ces protections ont été vérifiées dans le parcours navigateur Android, en testant ensemble les vrais modules panier, budget et stratégie, y compris les totaux manquants et les relevés vieillissants.
 
+## Relevés Open Prices : date civile française et fraîcheur (11 octobre 2026)
+
+Les dates simples de l'API Open Prices représentent désormais le **début du jour civil en Europe/Paris**, y compris lors des changements d'heure d'été/hiver. Un relevé daté du jour n'est plus considéré comme futur à 00 h 30 à Paris lorsque l'UTC affiche encore la veille. Les étiquettes de fraîcheur (7, 30 et 120 jours) et l'avertissement « ancien prix » comparent la **durée exacte**, sans utiliser le nombre de jours révolus affiché pour franchir un seuil. La date du relevé reste une observation communautaire, non une garantie de tarif actuel.
+
+Le parcours fonctionnel sur navigateur Android vérifie le basculement de jour en France, les deux dates de changement d'heure, le rejet des dates impossibles et les frontières des catégories de fraîcheur.
+
 ## État
 
 Fonctionnalités actuelles :
