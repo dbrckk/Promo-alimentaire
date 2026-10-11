@@ -511,3 +511,9 @@ La CI s'exécute aussi une fois par jour à **08 h 33 UTC**, car les écritures 
 La PWA déployée sur GitHub Pages est disponible à [https://dbrckk.github.io/Promo-alimentaire/](https://dbrckk.github.io/Promo-alimentaire/). Depuis Android (Chrome), ouvrir l'URL puis, si proposé, utiliser **Installer l'application** dans le menu du navigateur.
 
 Chaque build Pages contient `deployment.json` avec le **SHA du commit réellement construit**. Après `actions/deploy-pages`, le script `scripts/check-public-pages.mjs` vérifie depuis le runner GitHub, via HTTPS et avec réessais pendant la propagation CDN, que l'URL publique sert **ce commit précis**, l'interface, le JavaScript, le CSS, le manifeste installable, le service worker et le manifeste des offres. Une diffusion de fichiers obsolètes ou manquants fait échouer le workflow de publication ; une simple réussite de l'envoi de l'artefact ne suffit plus. Ce contrôle ne constitue pas un test Android physique et ne garantit pas que chaque fournisseur d'offres soit actualisé.
+
+### Surveillance des offres expirées
+
+Le contrôle quotidien `Offer freshness` s'exécute à **08 h 17 UTC**, après les synchronisations planifiées des commerçants et des prestataires (vers 05 h–06 h UTC) et avant la CI de 08 h 33 UTC. Un fichier dont **toutes** les offres sont expirées reste un incident de couverture de données : le contrôle strict échoue volontairement, même si l'application reste fonctionnelle et masque correctement ces offres. Cet échec n'est pas un bug technique à cacher.
+
+Le journal et le résumé GitHub Actions indiquent désormais **la source concernée, les offres encore actives, les dates de révision et le motif enregistré lors de la dernière synchronisation** (par exemple refus d'accès Carrefour). La résolution nécessite des promotions de remplacement avec preuve officielle autorisée ; on ne prolonge ni `verifiedAt` ni `reviewAfter` artificiellement.
