@@ -21,11 +21,12 @@ self.addEventListener("install",(event)=>{
         && /^[a-z0-9][a-z0-9-]{0,99}\.json$/.test(file)
         && file!=="index.json" && !file.startsWith("source-sync-");
       // Invalid metadata must not turn an install into arbitrary URL fetches.
-      if(!Array.isArray(files) || files.length>60 || files.some((file)=>!safe(file))
-        || new Set(files).size!==files.length) return;
-      await Promise.allSettled(files.map((file)=>
-        cache.add("./data/import/"+file)
-      ));
+      if(Array.isArray(files) && files.length<=60
+        && files.every(safe) && new Set(files).size===files.length){
+        await Promise.allSettled(files.map((file)=>
+          cache.add("./data/import/"+file)
+        ));
+      }
     }catch{
       // L'application reste installable même si une source distante est temporairement indisponible.
     }
