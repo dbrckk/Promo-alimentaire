@@ -90,6 +90,49 @@ try{
     safe:true,traversal:false,duplicate:false,oversized:false,
     rejected:true,requests:1
   });
+  // Check source downloads use a bounded pool and remain deterministic
+  // on slow Android connections. One failed file must not discard the rest.
+  const importPoolSafety=await page.evaluate(async()=>{
+    const {loadImportedOffers}=await import("./src/import-loader.js");
+    const names=["a.json","b.json","c.json","d.json"];
+    const delay=(ms)=>new Promise((resolve)=>setTimeout(resolve,ms));
+    let inFlight=0,maxInFlight=0;
+    const downloaded=[];
+    const fetchImpl=async(url,options)=>{
+      const file=String(url).split("/").at(-1);
+      if(file==="index.json"){
+        return {ok:true,json:async()=>({files:names})};
+      }
+      if(file.startsWith("source-sync-")) return {ok:false,status:404};
+      inFlight+=1;
+      maxInFlight=Math.max(maxInFlight,inFlight);
+      downloaded.push(file);
+      await delay(file==="a.json"?45:10);
+      inFlight-=1;
+      if(file==="b.json") return {ok:false,status:503};
+      return {ok:true,json:async()=>[{
+        providerId:"shopmium",externalId:file,title:"Test "+file,
+        stores:["all"],savingPercent:25,
+        verifiedAt:"2026-10-11",reviewAfter:"2026-10-20",
+        sourceUrl:"https://offers.shopmium.com/fr/"
+      }]};
+    };
+    const result=await loadImportedOffers({
+      fetchImpl,now:new Date("2026-10-12T12:00:00Z")
+    });
+    return {
+      maxInFlight,
+      downloaded:downloaded.length,
+      ordered:result.sourceStats.map((x)=>x.file),
+      active:result.offers.map((x)=>x.externalId),
+      failed:result.errors.length
+    };
+  });
+  assert.deepEqual(importPoolSafety.ordered,["a.json","b.json","c.json","d.json"]);
+  assert.deepEqual(importPoolSafety.active,["a.json","c.json","d.json"]);
+  assert.equal(importPoolSafety.failed,1);
+  assert.equal(importPoolSafety.downloaded,4);
+  assert.ok(importPoolSafety.maxInFlight>=2 && importPoolSafety.maxInFlight<=3);
   const importedEvidence=await page.evaluate(async()=>{
     const {loadImportedOffers}=await import("./src/import-loader.js");
     const result=await loadImportedOffers();
