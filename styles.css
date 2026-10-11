@@ -19,7 +19,7 @@ h2{margin:0;font-size:1.2rem}
 .subtitle{max-width:680px;margin:12px 0 0;opacity:.88}
 main{width:min(1100px,100%);margin:auto;padding:18px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-.controls{padding:14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.15fr) minmax(0,1.3fr) minmax(0,1.5fr);gap:12px}
+.controls{padding:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .field{display:grid;gap:6px}
 label{font-size:.78rem;font-weight:700;color:var(--muted)}
 select,input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);outline:none}
@@ -411,3 +411,6 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .exact-sku-offer>a{font-size:.73rem;white-space:nowrap}
 .exact-sku-net{font-size:.75rem;line-height:1.5;margin:3px 0 0;background:#f4f9f6;padding:9px;border-radius:10px}
 @media(max-width:720px){.exact-sku-grid{grid-template-columns:1fr}}
+
+/* Give the disclosure of failed public source refreshes a readable place under filters. */
+.source-proof-summary{margin:0 4px 16px;line-height:1.45}
