@@ -303,3 +303,18 @@ Le champ public **« Au rayon … »** des fiches Shopmium est utilisé pour dis
 Les catégories source qui expriment explicitement un produit hors alimentaire (entretien, hygiène, maison, non-alimentaire, etc.) sont exclues du parcours courses lorsque `effectivePercent < 50`, ou lorsque le pourcentage est **inconnu** (ex. remboursement fixe de 2 € sans prix de référence vérifié). Les offres de panier s'appliquant à l'alimentaire restent admises. Une catégorie « autre » reste non classée : elle ne doit pas être présentée comme une preuve alimentaire, et les fiches ambiguës doivent faire l'objet de vérifications futures.
 
 Les 13 fiches déjà présentes et manifestement non alimentaires ont été étiquetées `category: "non-alimentaire"` afin de corriger immédiatement les résultats jusqu'à la prochaine synchronisation officielle, sans les supprimer de l'archive. Le filtrage est appliqué dans `src/domain.js` et `src/app.js`, et fait l'objet d'un contrôle navigateur Android sur le JSON de production.
+
+## Revue des rayons Shopmium — 11 octobre 2026
+
+Les fiches officielles utilisent plusieurs formulations de **rayon**, non équivalentes à un simple titre commercial :
+
+- [Cafés Legal](https://offers.shopmium.com/fr/n/cafes-legal-capsules-compatibles-nespresso) : « Au rayon cafés capsules compatibles Nespresso » → alimentaire.
+- [Régilait Yaourt Maison](https://offers.shopmium.com/fr/n/yaourt-maison-regilait) : « Au rayon Régilait ou Ferments lactiques » → alimentaire.
+- [Innocent smoothies gourmands](https://offers.shopmium.com/fr/n/innocent-smoothies-gourmands) : « A retrouver au rayon frais » → alimentaire.
+- [Kiri](https://offers.shopmium.com/fr/n/kiri-6) et [grands formats Bel](https://offers.shopmium.com/fr/n/grands-formats) : « Au rayon Fromage », parfois au milieu de la même ligne qu'une mention Drive → alimentaire (mais **Drive/livraison seulement**, règle inchangée).
+- [OH PURÉE!](https://offers.shopmium.com/fr/n/puree-de-pomme-de-terre-oh-puree-1) : « Au rayon féculents/plats cuisinés » → alimentaire.
+- [Ajax Power Mousse](https://offers.shopmium.com/fr/n/ajax-power-mousse) et [Ajax Power Clean](https://offers.shopmium.com/fr/n/ajax-power-clean-1) : « Au rayon Produits ménagers » → **non alimentaire**. Avec un remboursement maximal annoncé de 34 %, les exclure de la sélection principale (seuil de 50 % pour le non alimentaire).
+
+Correction : le parseur reconnaît les pluriels, « produits ménagers », les ferments lactiques et la mention « A retrouver au rayon ». Un rayon non identifié reste « autre » et ne se transforme jamais arbitrairement en alimentaire sur la base d'un nom de marque. Les **huit catégories déjà documentées dans le snapshot** ont été corrigées sans changer les montants, dates de vérification, échéances ni conditions. Chaque resynchronisation recalculera les catégories avec le même parseur. Les avantages restent potentiels et non automatiquement cumulables.
+
+Vérification : tests dans le fichier Shopmium existant et scénario Chromium Android sur les catégories du vrai JSON importé. Ce correctif n'établit pas à lui seul la disponibilité en magasin d'un produit.
