@@ -1,6 +1,6 @@
 import { findProductOffers, estimateOfferSaving } from "./matching.js";
 import {isOfferActive} from "./ingestion.js";
-import { observationAgeDays, selectBestRecentPrice } from "./open-data.js";
+import { observationAgeDays, parsePriceEvidenceDate, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { roundMoney } from "./domain.js";
 import { findBundleCandidates } from "./bundle.js";
@@ -195,6 +195,14 @@ export function evaluateBasketStore(items,{
   // priced basket indicative, not guaranteed at today's checkout.
   const ages=pricedLines.map((line)=>line.priceAgeDays).filter(Number.isFinite);
   const oldestPriceAgeDays=ages.length ? Math.max(...ages) : null;
+  // A receipt aged 7 days and 12 hours is older than the 7-day limit,
+  // even though its displayed (rounded-down) age is only 7 days.
+  const nowTime=new Date(now).getTime();
+  const exactAges=pricedLines.map((line)=>parsePriceEvidenceDate(line.bestPrice?.date))
+    .map((date)=>date ? (nowTime-date.getTime())/(24*60*60*1000) : NaN);
+  const oldestPriceAgeExactDays=exactAges.length===pricedLines.length
+    && exactAges.length>0 && exactAges.every((age)=>Number.isFinite(age)&&age>=0)
+    ? Math.max(...exactAges) : null;
   const basketOffers=resolvedOffers
     .filter((offer)=>offer.scope==="panier")
     .map((offer)=>manualPriceCount>0 ? {...offer,autoStack:false} : offer);
@@ -288,6 +296,7 @@ export function evaluateBasketStore(items,{
     missingCount:missingLines.length,
     manualPriceCount,
     oldestPriceAgeDays,
+    oldestPriceAgeExactDays,
     isComplete:lines.length>0 && missingLines.length===0,
     observedSubtotal,
     productAdjustedSubtotal,

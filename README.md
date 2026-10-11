@@ -10,7 +10,7 @@ La génération d'une offre contextualisée depuis Open Food Facts ne constitue 
 
 ## Correctif du budget et des prix historiques (11 octobre 2026)
 
-Le budget de courses rejette maintenant **tout coût de caisse absent** (`null`, vide ou booléen) : aucune donnée manquante ne peut être convertie artificiellement en **0 €**. Un panier signalé « complet » doit réellement avoir un prix pour **chaque** référence. Les relevés Open Prices datés de plus de **7 jours** restent consultables comme informations historiques, mais le respect du budget passe obligatoirement au statut **indicatif** ; un comparateur de stratégies ne peut plus annoncer le magasin gagnant si l'un des paniers reposait sur un relevé ancien. Un relevé frais n'est pas une promesse de prix ou de stock actuel.
+Le budget de courses rejette maintenant **tout coût de caisse absent** (`null`, vide ou booléen) : aucune donnée manquante ne peut être convertie artificiellement en **0 €**. Un panier signalé « complet » doit réellement avoir un prix pour **chaque** référence. Les relevés Open Prices datés de plus de **7 jours** restent consultables comme informations historiques, mais le respect du budget passe obligatoirement au statut **indicatif** ; un comparateur de stratégies ne peut plus annoncer le magasin gagnant si l'un des paniers reposait sur un relevé ancien. Un relevé âgé de 7 jours et 12 heures reste historique : la fenêtre de 7 jours est calculée sur la durée exacte et non sur l'âge arrondi à l'entier inférieur. Un relevé frais n'est pas une promesse de prix ou de stock actuel.
 
 Ces protections ont été vérifiées dans le parcours navigateur Android, en testant ensemble les vrais modules panier, budget et stratégie, y compris les totaux manquants et les relevés vieillissants.
 

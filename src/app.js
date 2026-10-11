@@ -2183,6 +2183,8 @@ function renderBasketComparison(scenarios){
     recommendation='<div class="basket-recommendation"><strong>Comparaison incomplète.</strong> Au moins une enseigne manque d’un prix récent pour un produit ; aucun gagnant n’est déclaré.</div>';
   }else if(!allLocationsReliable){
     recommendation='<div class="basket-recommendation"><strong>Point de vente insuffisamment identifié.</strong> Les prix sont affichés, mais aucun gagnant n’est déclaré tant que chaque panier ne correspond pas clairement à un magasin physique unique.</div>';
+  }else if(strategySummary.status!=="ready"){
+    recommendation=`<div class="basket-recommendation"><strong>Aucun magasin gagnant fiable.</strong> ${escapeHtml(strategySummary.reason || "Les relevés ne sont pas suffisamment comparables.")}</div>`;
   }else if(ranked.length>=2){
     const best=ranked[0];
     const second=ranked[1];

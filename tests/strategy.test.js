@@ -4,8 +4,9 @@ import { summarizeBasketStrategies } from "../src/strategy.js";
 
 function scenario(store,finalCost,bestCase){
   return {
-    store,distinctCount:2,isComplete:true,locationReliable:true,priceChannelReliable:true,
-    finalCost,guaranteedSaving:2,conservativeBestCaseCost:bestCase,
+    store,distinctCount:2,pricedCount:2,missingCount:0,isComplete:true,
+    locationReliable:true,priceChannelReliable:true,oldestPriceAgeDays:1,
+    manualPriceCount:0,oldestPriceAgeExactDays:1,finalCost,guaranteedSaving:2,conservativeBestCaseCost:bestCase,
     conservativePotentialExtraSaving:finalCost-bestCase,
     confidence:{score:90},lines:[{bestProductCandidate:{}},{bestProductCandidate:null}],
     basketOptimization:{selected:[]}

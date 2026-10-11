@@ -345,6 +345,7 @@ try{
     );
     const old=makeBasket("2026-09-20");
     const fresh=makeBasket("2026-10-10");
+    const boundary=makeBasket("2026-10-04"); // 7.5 days, not 7 days
     const oldReliable={...old,locationReliable:true,priceChannelReliable:true};
     const freshReliable={...fresh,locationReliable:true,priceChannelReliable:true};
     return {
@@ -354,18 +355,44 @@ try{
       incomplete:budget(stub(10,{distinctCount:2,pricedCount:1})),
       age:old.oldestPriceAgeDays,
       freshAge:fresh.oldestPriceAgeDays,
+      boundaryRoundedAge:boundary.oldestPriceAgeDays,
+      boundaryExactAge:boundary.oldestPriceAgeExactDays,
+      boundaryBudget:budget({...boundary,locationReliable:true,priceChannelReliable:true}),
       oldBudget:budget(oldReliable),
       freshBudget:budget(freshReliable),
-      strategy:summarizeBasketStrategies([freshReliable,oldReliable],{
+      strategy:summarizeBasketStrategies([
+        freshReliable,{...oldReliable,store:"leclerc"}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      singleRetailer:summarizeBasketStrategies([freshReliable],{
         channel:"store",nearbyEnabled:true
-      }).status
+      }).status,
+      duplicateRetailer:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,finalCost:9}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      missingPeer:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,store:"leclerc",isComplete:false}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      invalidPeer:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,store:"leclerc",finalCost:null}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      freshPair:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,store:"leclerc",finalCost:11}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      boundaryPair:summarizeBasketStrategies([
+        freshReliable,{...boundary,store:"leclerc",
+          locationReliable:true,priceChannelReliable:true}
+      ],{channel:"store",nearbyEnabled:true}).status
     };
   });
   assert.deepEqual(budgetTruthfulness,{
     nullTotal:"unavailable",emptyTotal:"unavailable",falseTotal:"unavailable",
     incomplete:"partial-unknown",
-    age:21,freshAge:1,oldBudget:"indicative-within",
-    freshBudget:"within",strategy:"indicative"
+    age:21,freshAge:1,boundaryRoundedAge:7,boundaryExactAge:7.5,
+    boundaryBudget:"indicative-within",oldBudget:"indicative-within",
+    freshBudget:"within",strategy:"indicative",
+    singleRetailer:"insufficient",duplicateRetailer:"insufficient",
+    missingPeer:"insufficient",invalidPeer:"insufficient",
+    freshPair:"ready",boundaryPair:"indicative"
   });
   // Corrupted barcode text must never become an "exact GTIN" by dropping
   // arbitrary characters. Bad checksums must not contact external APIs.
