@@ -6,7 +6,7 @@ const scenario=(checkoutCost,overrides={})=>({
   store:"carrefour",checkoutCost,
   pricedCount:2,distinctCount:2,missingCount:0,
   isComplete:true,locationReliable:true,priceChannelReliable:true,
-  manualPriceCount:0,...overrides
+  manualPriceCount:0,oldestPriceAgeDays:1,oldestPriceAgeExactDays:1,...overrides
 });
 
 test("le budget accepte les centimes français et refuse les limites invalides",()=>{
