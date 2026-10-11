@@ -276,3 +276,21 @@ Une dernière synchronisation `unavailable` ou `partial`, plus récente que la p
 ### Intégrité du manifeste des sources importées
 
 Un manifeste distant ne doit jamais pouvoir demander la lecture d'un autre chemin ou d'un autre domaine. La validation commune `src/import-manifest.js` impose un maximum de 60 noms `*.json` locaux, sans doublons, sans traversée de répertoires ni fichiers réservés aux diagnostics. CI, application et précache PWA appliquent cette restriction. Le refus bloque le lot non fiable, sans créer de fausses offres ni invalider les ressources statiques hors ligne.
+
+## Étendre les offres alimentaires via les campagnes Shopmium — 11 octobre 2026
+
+**Origine du défaut :** l'index officiel [offers.shopmium.com/fr](https://offers.shopmium.com/fr/) renvoie parfois à une **page marketing regroupant plusieurs offres**. Le parseur de détail refuse correctement ces pages puisqu'elles ne contiennent pas de conditions d'achat, mais l'ancien synchroniseur ne récupérait pas les liens des véritables offres enfants. Conséquence : aucune offre Bonduelle Carotte Citron / Taboulé, Barilla Al Bronzo ou certaines variantes n'entrait dans le catalogue malgré une preuve officielle publique.
+
+**Résolution :** exploration non récursive des pages campagne contenant « Découvrir ces offres », uniquement vers des URL Shopmium HTTPS `/fr/n/...` explicitement présentes dans les liens HTML, au plus 12 par campagne et 110 pages par exécution. Les pages individuelles doivent satisfaire le parseur des remboursements, références, dates, magasins, modalités et fermeture anticipée. Le nom de marque officiellement attribué par la page prévaut sur une supposition faite à partir du titre. Un refus 401/403/429 provoque l'arrêt sans contournement. Le rechargement est quotidien.
+
+Fiches consultées individuellement le **11/10/2026** et ajoutées au snapshot avec `verifiedAt=2026-10-11`, `reviewAfter=2026-10-15`, *sans aucun EAN fictif* :
+
+| Offre | Économie annoncée selon les quantités | Fin des achats annoncée | Preuve |
+| --- | --- | --- | --- |
+| Bonduelle carottes Citron de Sicile | 25% / 30% / 34% pour 1 / 2 / 3 articles | 30/12/2026 | https://offers.shopmium.com/fr/n/carotte-citron-de-sicile-bonduelle |
+| Bonduelle Taboulés | 25% / 30% / 34% pour 1 / 2 / 3 articles | 30/12/2026 | https://offers.shopmium.com/fr/n/taboule-bonduelle |
+| Barilla Al Bronzo Radiatori / Spaghetti ondulati | 30% sur 1 article | 31/10/2026 | https://offers.shopmium.com/fr/n/une-accroche-de-sauce-parfaite |
+| Barilla Al Bronzo autres références | 20% pour 1–2 articles, 30% pour 3 | 31/10/2026 | https://offers.shopmium.com/fr/n/barilla-al-bronzo-5 |
+| Daddy cassonades et sucres | 20% sur 1, 25% sur 2 | 31/10/2026 | https://offers.shopmium.com/fr/n/a-chacun-son-daddy |
+
+Les prix moyens affichés par Shopmium ne sont pas des prix garantis dans un Carrefour/E.Leclerc précis. Les remboursements restent soumis à l'achat des références admissibles, à la quantité, aux exclusions, à la preuve d'achat et à la disponibilité des demandes. Les offres non cumulables ne sont jamais automatiquement soustraites d'une réduction déjà appliquée. Une fiche conservée faute d'accès garde sa date de contrôle initiale ; après la date de révision elle n'est plus proposée.

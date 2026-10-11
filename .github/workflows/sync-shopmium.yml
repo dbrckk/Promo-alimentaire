@@ -2,8 +2,17 @@ name: Sync Shopmium
 
 on:
   schedule:
-    - cron: "41 5 * * 2,5"
+    # Shopmium's public snapshots expire after four days. Check daily so
+    # fresh offers are not lost for several days over a weekend.
+    - cron: "41 5 * * *"
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/sync-shopmium.mjs"
+      - "src/adapters/shopmium.js"
+      - "data/shopmium-watchlist.json"
+      - ".github/workflows/sync-shopmium.yml"
 
 permissions:
   contents: write
