@@ -163,6 +163,7 @@ export function evaluateBasketStore(items,{
       quantity,
       bestPrice:best,
       manualPrice,
+      priceAgeDays,
       baseCost,
       checkoutCost,
       loyaltyCredit,
@@ -190,6 +191,10 @@ export function evaluateBasketStore(items,{
   const observedSubtotal=roundMoney(pricedLines.reduce((sum,line)=>sum+line.baseCost,0));
   const productAdjustedSubtotal=roundMoney(pricedLines.reduce((sum,line)=>sum+line.finalCost,0));
   const manualPriceCount=pricedLines.filter((line)=>line.manualPrice).length;
+  // Surface the oldest actual observation: one old article makes a fully
+  // priced basket indicative, not guaranteed at today's checkout.
+  const ages=pricedLines.map((line)=>line.priceAgeDays).filter(Number.isFinite);
+  const oldestPriceAgeDays=ages.length ? Math.max(...ages) : null;
   const basketOffers=resolvedOffers
     .filter((offer)=>offer.scope==="panier")
     .map((offer)=>manualPriceCount>0 ? {...offer,autoStack:false} : offer);
@@ -282,6 +287,7 @@ export function evaluateBasketStore(items,{
     pricedCount:pricedLines.length,
     missingCount:missingLines.length,
     manualPriceCount,
+    oldestPriceAgeDays,
     isComplete:lines.length>0 && missingLines.length===0,
     observedSubtotal,
     productAdjustedSubtotal,
