@@ -634,6 +634,47 @@ try{
     unsafe:false,empty:0,otherDomain:0,publishEmpty:false
   });
 
+  // Coupon Network uses a generic source category for public cards.
+  // The live importer must retain food coupons while excluding known
+  // household/pet/alcohol products below the requested 50% threshold.
+  const foodScopeSafety=await page.evaluate(async()=>{
+    const {normalizeImportedOffer}=await import("./src/ingestion.js");
+    const {filterOffers}=await import("./src/domain.js");
+    const sample=(id,title,description,savingPercent=null)=>{
+      const normalized=normalizeImportedOffer({
+        providerId:"coupon-network",externalId:"scope-"+id,
+        title,conditions:description,category:"autre",
+        verifiedAt:"2026-10-11",reviewAfter:"2026-10-18",
+        sourceUrl:"https://prod-cn-offers.couponnetwork.fr/",
+        stores:["all"],scope:"produit",savingAmount:savingPercent===null?0.5:null,
+        savingPercent,mechanism:"manufacturer_refund",autoStack:false
+      });
+      if(!normalized.ok) throw new Error(normalized.errors.join(" | "));
+      return normalized.value;
+    };
+    const offers=[
+      sample("food","Bonduelle - Carottes râpées","Barquette de carottes"),
+      sample("clean","Maison Verte - Lessives","Sur l'achat d'une lessive"),
+      sample("pet","PURINA - Croquettes pour chat","Pour chat adulte"),
+      sample("beauty","Elmex - Dentifrices","Sur l'achat d'un dentifrice"),
+      sample("spirits","Altos - Tequila Blanco","Bouteille de tequila"),
+      sample("high","Schwarzkopf - Shampooings","Shampooing au choix",70),
+      sample("nonalc","Chouffe - Bières sans alcool","Pack sans alcool")
+    ];
+    return {
+      categories:offers.map((offer)=>offer.category),
+      visible:filterOffers(offers,{store:"carrefour",channel:"store"})
+        .map((offer)=>offer.externalId),
+      suspiciousGuaranteed:offers.some((offer)=>offer.autoStack===true)
+    };
+  });
+  assert.deepEqual(foodScopeSafety,{
+    categories:["autre","non-alimentaire","non-alimentaire",
+      "non-alimentaire","hors-alimentaire","non-alimentaire","autre"],
+    visible:["scope-food","scope-high","scope-nonalc"],
+    suspiciousGuaranteed:false
+  });
+
   // The published snapshot includes its own trusted Shopmium diagnostics,
   // independently from the legacy Coupon Network and retailer status files.
   const currentShopmiumStatus=JSON.parse(await readFile(
