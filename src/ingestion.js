@@ -179,7 +179,7 @@ function couponNetworkCategory(value,providerId){
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .toLocaleLowerCase("fr");
 
-  const nonFood=/\b(?:lessives?|adoucissants?|assouplissants?|nettoyants?|detergents?|liquides? vaisselle|shampooings?|shampoings?|apres[- ]shampooings?|dentifrices?|deodorants?|antitranspirants?|anti[- ]transpirants?|gels? douche|savons?|lingettes?|couches?|papiers? toilettes?|blocs? wc|sous[- ]vetements? absorbants?|croquettes?|litieres?|friandises? pour (?:chat|chien)s?|filtres? a eau|maquillage)\b/;
+  const nonFood=/\b(?:lessives?|adoucissants?|assouplissants?|nettoyants?|detergents?|liquides? vaisselle|lave[- ]vaisselle|absorbeurs?|anti[- ]humidite|shampooings?|shampoings?|apres[- ]shampooings?|dentifrices?|deodorants?|antitranspirants?|anti[- ]transpirants?|gels? douche|savons?|lingettes?|couches?|papiers? toilettes?|blocs? wc|sous[- ]vetements? absorbants?|croquettes?|litieres?|friandises? pour (?:chat|chien)s?|filtres? a eau|maquillage)\b/;
   if(nonFood.test(source)) return "non-alimentaire";
 
   const alcohol=/\b(?:vodka|whisky|whiskey|rhum|tequila|bieres?|vins?|champagne|cidre|liqueurs?|aperitifs?)\b/;
