@@ -445,7 +445,7 @@ function render(){
   const maxPercent=numericPercents.length?Math.max(...numericPercents):null;
   els.stats.innerHTML=[
     stat(ranked.length,"offres consultables"),
-    stat(nonReconfirmed,"sources non reconfirmées · offres"),
+    stat(nonReconfirmed,"offres de sources non reconfirmées"),
     stat(maxPercent===null?"—":formatPercent(maxPercent),"remise maximale annoncée")
   ].join("");
   renderListCount();
