@@ -214,16 +214,24 @@ export function parseReferenceNames(html){
  * Unknown departments remain "autre" until explicitly classified.
  */
 export function classifyShopmiumRayon(html){
-  const rayon=htmlToLines(html)
-    .find((line)=>/^Au rayon\s+/i.test(line))
-    ?.replace(/^Au rayon\s+/i,"").trim() || "";
-  if(!rayon) return "autre";
-  const label=rayon.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  // Shopmium sometimes says "A retrouver au rayon frais", or places
+  // "Au rayon Fromage" after another sentence in the same HTML element.
+  // Classify only an explicit shelf designation, never the title, marketing
+  // text or an unrelated mention of a grocery item in user comments.
+  const lines=htmlToLines(html);
+  const source=lines.map((line)=>
+    line.match(/\b(?:a\s+retrouver\s+au\s+rayon|au\s+rayon)\s+([^.!?]{2,120})/i)
+  ).find(Boolean);
+  if(!source) return "autre";
+  const label=source[1].normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .toLocaleLowerCase("fr");
-  if(/\b(hygiene|beaute|cosmetique|dentaire|dentifrice|brosses?|papier|mouchoirs?|parfumerie|entretien|menage|nettoyage|lessive|maison|sanitaire|toilette|sante|animalerie|chien|chat|douches?|adoucissants?|soins?|shampooings?|colorations?|savons?|textiles?|essuie.tout|linges?)\b/.test(label)){
+
+  // Nonfood exclusions win when a shelf label mixes both sets of words
+  // (for example "produits ménagers aux fruits").
+  if(/\b(hygiene|beaute|cosmetique|dentaire|dentifrices?|brosses?|papier|mouchoirs?|parfumerie|entretien|menage|menagers?|detergents?|nettoyants?|lessive|maison|sanitaire|toilette|sante|animalerie|animaux|chiens?|chats?|douches?|adoucissants?|soins?|shampooings?|colorations?|savons?|textiles?|essuie.tout|linges?)\b/.test(label)){
     return "non-alimentaire";
   }
-  if(/\b(epicerie|traiteur|cremerie|fromage|charcuterie|boucherie|poissonnerie|boulangerie|patisserie|confiserie|biscuit|boissons?|sodas?|eaux?|lait|surgeles?|frais|fruits?|legumes?|pates?|riz|cafe|the|sucre|petit.dejeuner|alimentaire)\b/.test(label)){
+  if(/\b(epicerie|traiteur|cremerie|fromages?|charcuterie|boucherie|poissonnerie|boulangerie|patisserie|confiserie|biscuits?|boissons?|sodas?|eaux?|lait|surgeles?|frais|fruits?|legumes?|pates?|riz|cafes?|thes?|sucre|petit.dejeuner|alimentaire|ferments?\s+lactiques?|regilait|feculents?|desserts?|compotes?|cereales?|glaces?)\b/.test(label)){
     return "alimentaire";
   }
   return "autre";

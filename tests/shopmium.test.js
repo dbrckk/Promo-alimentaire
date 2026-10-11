@@ -70,6 +70,17 @@ test("parseShopmiumDetailHtml produit une offre prudente active",()=>{
   assert.equal(classifyShopmiumRayon("<p>Au rayon Brosse à dents</p>"),"non-alimentaire");
   assert.equal(classifyShopmiumRayon("<p>Au rayon Boissons pour enfants</p>"),"alimentaire");
   assert.equal(classifyShopmiumRayon("<p>Au rayon Crèmerie</p>"),"alimentaire");
+  // Variants taken from official product pages consulted on 2026-10-11.
+  // Food must be discoverable; low-value household offers must be filtered.
+  assert.equal(classifyShopmiumRayon("<p>Au rayon cafés capsules compatibles Nespresso</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Régilait ou Ferments lactiques</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>A retrouver au rayon frais</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Valable en Drive & livraison. Au rayon Fromage.</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon féculents/plats cuisinés</p>"),"alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon Produits ménagers</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon détergents aux fruits</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Au rayon produits ménagers aux fruits</p>"),"non-alimentaire");
+  assert.equal(classifyShopmiumRayon("<p>Découvrez les cafés sans rayon officiel</p>"),"autre");
   assert.equal(classifyShopmiumRayon("<p>Au rayon inconnu</p>"),"autre");
   assert.equal(classifyShopmiumRayon("<p>Sans rayon explicite</p>"),"autre");
 

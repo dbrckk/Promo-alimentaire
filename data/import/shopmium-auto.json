@@ -5,7 +5,7 @@
     "externalId": "auto-cafes-legal-capsules-compatibles-nespresso",
     "title": "Cafés Legal",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -242,7 +242,7 @@
     "externalId": "auto-yaourt-maison-regilait",
     "title": "RÉGILAIT YAOURT MAISON",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "leclerc"
     ],
@@ -297,7 +297,7 @@
     "externalId": "auto-innocent-smoothies-gourmands",
     "title": "innocent - les smoothies gourmands",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -770,7 +770,7 @@
     "externalId": "auto-puree-de-pomme-de-terre-oh-puree-1",
     "title": "OH PURÉE!",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -971,7 +971,7 @@
     "externalId": "auto-kiri-6",
     "title": "Kiri",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -1089,7 +1089,7 @@
     "externalId": "auto-ajax-power-mousse",
     "title": "AJAX POWER MOUSSE",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
@@ -1465,7 +1465,7 @@
     "externalId": "auto-grands-formats",
     "title": "Les grands formats Bel",
     "type": "ODR",
-    "category": "autre",
+    "category": "alimentaire",
     "stores": [
       "all"
     ],
@@ -2809,7 +2809,7 @@
     "externalId": "auto-ajax-power-clean-1",
     "title": "AJAX POWER CLEAN",
     "type": "ODR",
-    "category": "autre",
+    "category": "non-alimentaire",
     "stores": [
       "all"
     ],
