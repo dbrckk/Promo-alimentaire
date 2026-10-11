@@ -54,6 +54,14 @@ Le validateur GS1 ne conserve plus silencieusement les seuls chiffres d'une réf
 
 Les API Open Food Facts / Open Prices ne sont pas appelées si le checksum du code-barres recherché est invalide. Le parcours Android vérifie le rejet et l'absence de requête dans cette situation.
 
+## Carte fidélité : protection contre les remises importées non prouvées (11 octobre 2026)
+
+Une propriété `autoStackWhenEligible: true` livrée par un catalogue externe ne suffit **pas** à autoriser une réduction automatique quand l'utilisateur sélectionne une carte Club/PASS ou E.Leclerc. Ce drapeau était susceptible de réactiver `autoStack` dans `resolveOffersForLoyalty`, alors que la normalisation de l'import l'avait refusé faute d'EAN, de preuve commerçant, de validation magasin ou d'autres conditions.
+
+L'import neutralise donc systématiquement `autoStackWhenEligible` pour les offres reçues de tiers. Une remise traçable par bon d'achat de paiement peut conserver le chemin `autoStack` déjà contrôlé par `trustedImportedGiftCard` ; les promotions de fidélité non prouvées demeurent candidates. Les règles intégrées et explicitement conçues par l'application, non issues du JSON fournisseur, ne sont pas changées.
+
+Le parcours navigateur Android valide un produit exact et une fausse remise de panier à 90 % : l'achat avec carte fidélité ne doit déduire **aucun** montant garanti. Il confirme également qu'un bon d'achat traçable de 4 % reste utilisable.
+
 ## Quand une source ne peut pas être reconfirmée
 
 Une tentative de synchronisation `unavailable` ou `partial` postérieure à `verifiedAt` ne constitue pas une preuve d'expiration immédiate, mais **annule toute garantie de cumul automatique dépendant de cette preuve**. Le chargeur garde l'offre datée comme candidate jusqu'à la révision/expiration déjà prévue. Il expose une alerte `sourceSyncWarning` et force `autoStack: false` et `autoStackWhenEligible: false` ; la fiche indique clairement « Source non reconfirmée ».
