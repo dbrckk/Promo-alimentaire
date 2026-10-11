@@ -17,7 +17,7 @@ const now=new Date();
 // step. The verifiedAt ISO day alone cannot distinguish yesterday's record
 // from an offer fetched earlier on the same day.
 function requiredCount(value,name){
-  if(typeof value!=="string" || !/^\\d+$/.test(value)){
+  if(typeof value!=="string" || !/^\d+$/.test(value)){
     throw new Error(name+" manquant ou non numérique après synchronisation réussie.");
   }
   const count=Number(value);
