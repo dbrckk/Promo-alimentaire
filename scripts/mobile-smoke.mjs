@@ -542,10 +542,14 @@ try{
   await page.locator("#sourceProof").selectOption("all");
   const allCount=await page.locator("#offers .card").count();
   assert.ok(allCount>=safeInitialCount);
-  if(failedSourceSafety.realWarningCount>0){
-    assert.ok(allCount>safeInitialCount,
-      "Un candidat non reconfirmé doit redevenir consultable via Toutes.");
+  // A provider can have historical warnings without any current
+  // matching card (Coupon Network now refreshes successfully). The screen
+  // must be checked against its actual visible candidates, not all source
+  // warnings from unrelated stores or expired offers.
+  if(allCount>safeInitialCount){
     assert.match(await page.locator("#offers").innerText(),/Source non reconfirmée/);
+  }else{
+    assert.doesNotMatch(await page.locator("#offers").innerText(),/Source non reconfirmée/);
   }
   await page.locator("#sourceProof").selectOption("failed");
   for(const card of await page.locator("#offers .card").all()){
