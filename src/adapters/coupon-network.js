@@ -45,6 +45,65 @@ export function parseCouponNetworkHtml(html,{verifiedAt=todayIso()}={}){
   return offers;
 }
 
+/**
+ * Coupon Network also exposes a public offers catalogue on its official
+ * prod-cn-offers subdomain. Its listing has the opposite text order from
+ * the legacy pages: product title, purchase condition, amount, "remboursé",
+ * then a call to activate. Never infer an offer from an isolated amount,
+ * a quiz badge or the site's total advertised savings.
+ *
+ * This parser accepts only full, individually actionable cards; a JS-only
+ * shell returning zero cards leaves the old snapshot untouched.
+ */
+export function parseCouponNetworkCards(html,{
+  verifiedAt=todayIso(),
+  sourceUrl="https://prod-cn-offers.couponnetwork.fr/"
+}={}){
+  const source=new URL(sourceUrl);
+  if(source.protocol!=="https:" || source.hostname!=="prod-cn-offers.couponnetwork.fr"){
+    return [];
+  }
+  const lines=htmlToTextLines(html);
+  const offers=[];
+  const seen=new Set();
+  const descriptionPattern=/^sur l['’]achat\b/i;
+  const amountPattern=/^(\d+(?:[,.]\d{1,2})?)\s*€(?:\s*rembours(?:é|és|ée|ées))?$/i;
+  const refunded=/^rembours(?:é|és|ée|ées)$/i;
+  const activate=/^activer(?: l['’]offre)?$/i;
+
+  for(let index=1;index<lines.length;index++){
+    const description=lines[index];
+    if(!descriptionPattern.test(description) || description.length>550) continue;
+    const title=lines[index-1];
+    if(!isTitleCandidate(title) || /^image\b/i.test(title)
+      || title.length<5 || title.length>180) continue;
+
+    // A card must end before the next product or another purchase condition.
+    const tail=lines.slice(index+1,index+8);
+    const amountIndex=tail.findIndex((line)=>amountPattern.test(line));
+    if(amountIndex<0 || amountIndex>3) continue;
+    const amountText=tail[amountIndex];
+    const amountMatch=amountPattern.exec(amountText);
+    const amount=Number(amountMatch[1].replace(",","."));
+    if(!Number.isFinite(amount) || amount<=0 || amount>100) continue;
+    const remainder=tail.slice(amountIndex+1);
+    const refundConfirmed=/rembours/i.test(amountText)
+      || remainder.slice(0,2).some((line)=>refunded.test(line));
+    const activated=remainder.slice(0,4).some((line)=>activate.test(line));
+    if(!refundConfirmed || !activated
+      || tail.slice(0,amountIndex).some((line)=>descriptionPattern.test(line))
+      || remainder.slice(0,4).some((line)=>descriptionPattern.test(line))) continue;
+
+    const fingerprint=stableHash(title+"|"+description+"|"+amount.toFixed(2));
+    if(seen.has(fingerprint)) continue;
+    seen.add(fingerprint);
+    offers.push(buildCouponNetworkCandidate({
+      title,description,amount,verifiedAt,fingerprint,sourceUrl:source.toString()
+    }));
+  }
+  return offers;
+}
+
 export function cleanOfferTitle(title){
   return cleanLine(title)
     .replace(/\s+\d+(?:[,.]\d{1,2})?\s*€\s*rembours(?:é|és|ée|ées)?\s*$/i,"")
