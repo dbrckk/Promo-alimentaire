@@ -18,7 +18,7 @@ self.addEventListener("install",(event)=>{
       const manifest=await response.json();
       const files=manifest?.files;
       const safe=(file)=>typeof file==="string"
-        && /^[a-z0-9][a-z0-9-]{0,99}\\.json$/.test(file)
+        && /^[a-z0-9][a-z0-9-]{0,99}\.json$/.test(file)
         && file!=="index.json" && !file.startsWith("source-sync-");
       // Invalid metadata must not turn an install into arbitrary URL fetches.
       if(!Array.isArray(files) || files.length>60 || files.some((file)=>!safe(file))
