@@ -473,6 +473,9 @@ function renderOffer(offer,scenario={}){
   const loyaltyBadge=offer.requiresLoyalty
     ? `<span class="badge ${offer.loyaltyEligibility==="eligible"?"good":"warn"}">${offer.loyaltyEligibility==="eligible"?"Carte renseignée":offer.loyaltyEligibility==="activation-unverified"?"Activation/éligibilité à vérifier":"Carte à confirmer"}</span>`
     : "";
+  const sourceWarning=offer.sourceSyncWarning
+    ? `<span class="badge warn">Source non reconfirmée le ${formatDate(offer.sourceSyncWarning.checkedAt)} · vérifier avant achat</span>`
+    : "";
   const deadline=offerDeadline(offer);
   const deadlineBadge=deadline
     ? `<span class="badge ${deadline.urgent||deadline.overdue?"warn":""}">${escapeHtml(deadline.label)}</span>`
@@ -495,6 +498,7 @@ function renderOffer(offer,scenario={}){
         ${capBadge}
         ${fullRefundBadge}
         ${loyaltyBadge}
+        ${sourceWarning}
         ${deadlineBadge}
       </div>
       <div class="meta">
@@ -502,6 +506,9 @@ function renderOffer(offer,scenario={}){
         <div><span>Vérifié</span>${formatDate(offer.verifiedAt)}</div>
       </div>
       ${simulated}
+      ${offer.sourceSyncWarning
+        ? `<p class="conditions">La dernière synchronisation de cette source n'a pas pu confirmer l'offre : ${escapeHtml(offer.sourceSyncWarning.reason)}. Ne pas anticiper cette économie avant vérification.</p>`
+        : ""}
       <p class="conditions">${escapeHtml(offer.conditions)}</p>
       <div class="actions">
         <span class="verified">${escapeHtml(offer.stacking)}</span>
@@ -1099,11 +1106,16 @@ function renderProductOffers(product,observations=[]){
         <div class="badges">
           ${index===0?'<span class="badge good">Meilleur candidat</span>':""}
           <span class="badge ${confidenceClass}">${confidenceLabel}</span>
+          ${offer.sourceSyncWarning
+            ? '<span class="badge warn">Source non reconfirmée</span>' : ""}
           <span class="badge">${escapeHtml(storeLabel(state.store))}</span>
           <span class="badge ${action.quantitySatisfied?"good":"warn"}">${escapeHtml(quantityLine)}</span>
           ${offerDeadline(offer)?`<span class="badge ${offerDeadline(offer).urgent?"warn":""}">${escapeHtml(offerDeadline(offer).label)}</span>`:""}
         </div>
         <p class="match-note">${escapeHtml(safetyNote)}</p>
+        ${offer.sourceSyncWarning
+          ? `<p class="match-note">Cette source n'a pas reconfirmé l'offre lors de la dernière synchronisation (${formatDate(offer.sourceSyncWarning.checkedAt)}). Économie à vérifier manuellement.</p>`
+          : ""}
         ${!match.exact && offer.eanSuggestion?.code===product.code
           ? `<p class="match-note">Ce GTIN apparaît comme candidat dans Open Food Facts, mais E.Leclerc n'a pas confirmé son éligibilité à cette promotion. <a href="${escapeHtml(offer.eanSuggestion.sourceUrl)}" target="_blank" rel="noopener noreferrer">Examiner la fiche candidate</a>.</p>`
           : ""}
