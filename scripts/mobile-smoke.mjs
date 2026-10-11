@@ -1278,8 +1278,43 @@ try{
   assert.equal(swSupported,true,"Service worker unavailable in browser context");
   await page.evaluate(()=>navigator.serviceWorker.ready);
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller),{timeout:20000});
+  // Real browser integration: a valid but undeclared same-origin file must
+  // never fill the PWA cache, while the declared offline index remains saved.
+  const boundedCache=await page.evaluate(async()=>{
+    const offRoot=new URL("./",location.href);
+    const extraUrl=new URL("./data/import/README.md",offRoot);
+    const response=await fetch(extraUrl);
+    // Let the worker's waitUntil cache decision finish before inspecting it.
+    await new Promise((resolve)=>setTimeout(resolve,400));
+    const names=(await caches.keys()).filter((name)=>
+      name.startsWith("promo-alimentaire-")
+    );
+    const cache=await caches.open(names.at(-1));
+    const extra=await cache.match(extraUrl.href);
+    const shell=await cache.match(new URL("./index.html",offRoot).href);
+    const badQuery=await cache.keys();
+    return {
+      extraHTTP:response.status,
+      extraCached:Boolean(extra),
+      shellCached:Boolean(shell),
+      queryVariants:badQuery.filter((request)=>new URL(request.url).search).length
+    };
+  });
+  assert.equal(boundedCache.extraHTTP,200,
+    "L'integration doit utiliser un document réel accessible en HTTP 200");
+  assert.equal(boundedCache.extraCached,false,
+    "Un document hors manifeste ne doit pas entrer dans le cache Android");
+  assert.equal(boundedCache.shellCached,true,
+    "La coquille essentielle doit rester disponible pour l'installation");
+  assert.equal(boundedCache.queryVariants,0,
+    "Aucune variante de query-string ne doit saturer le stockage hors ligne");
   await context.setOffline(true);
   await page.reload({waitUntil:"domcontentloaded",timeout:25000});
+  // Even an installed PWA opened from a shared link with harmless query
+  // parameters must resolve to its cached application shell when offline.
+  const offlineLink=new URL(BASE);
+  offlineLink.searchParams.set("offline","1");
+  await page.goto(offlineLink.href,{waitUntil:"domcontentloaded",timeout:25000});
   await page.locator("#stats .stat").first().waitFor({timeout:12000});
   assert.match(await page.locator("h1").innerText(),/Promo Alimentaire/);
   // Verify shared GS1 identity and official evidence modules remain usable offline.

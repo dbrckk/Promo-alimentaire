@@ -1,5 +1,5 @@
 const CACHE_PREFIX="promo-alimentaire-";
-const CACHE=CACHE_PREFIX+"v81";
+const CACHE=CACHE_PREFIX+"v82";
 const STATIC_ASSETS=[
   "./","./index.html","./styles.css","./src/app.js","./src/data.js","./src/source-discovery.js","./src/domain.js","./src/offer-simulator.js",
   "./src/open-data.js","./src/manual-prices.js","./src/promo-price-check.js","./src/stacking.js","./src/matching.js","./src/exact-sku-comparison.js","./src/retailer-promo.js","./src/bundle.js","./src/basket.js","./src/budget.js","./src/shopping-list-transfer.js",
@@ -7,6 +7,36 @@ const STATIC_ASSETS=[
   "./src/ingestion.js","./src/retailer-ean-evidence.js","./src/import-loader.js","./src/import-manifest.js","./data/import/index.json","./data/import/source-sync-status.json","./data/import/source-sync-carrefour.json","./data/import/source-sync-leclerc.json",
   "./data/import/payment-discounts-auto.json","./manifest.webmanifest","./icon.svg"
 ];
+
+
+// Do not allow arbitrary successful same-origin requests to fill the
+// device's offline storage. The install manifest is the only source of
+// additional offer JSON filenames; query variants are never persisted.
+const SCOPE_URL=new URL(self.registration.scope);
+const CORE_PATHS=new Set(STATIC_ASSETS.map((path)=>new URL(path,SCOPE_URL).pathname));
+const OFFER_DIRECTORY=new URL("./data/import/",SCOPE_URL).pathname;
+const IMPORT_MANIFEST_URL=new URL("./data/import/index.json",SCOPE_URL).href;
+function validOfferFiles(files){
+  const safe=(file)=>typeof file==="string"
+    && /^[a-z0-9][a-z0-9-]{0,99}\.json$/.test(file)
+    && file!=="index.json" && !file.startsWith("source-sync-");
+  return Array.isArray(files) && files.length<=60
+    && files.every(safe) && new Set(files).size===files.length;
+}
+async function isAllowedCacheRequest(url){
+  if(url.search || url.hash) return false;
+  if(CORE_PATHS.has(url.pathname)) return true;
+  if(!url.pathname.startsWith(OFFER_DIRECTORY)) return false;
+  const file=url.pathname.slice(OFFER_DIRECTORY.length);
+  // A file not explicitly listed in the cached manifest is not an
+  // application resource, even if the server returns HTTP 200.
+  const cached=await (await caches.open(CACHE)).match(IMPORT_MANIFEST_URL);
+  if(!cached) return false;
+  try{
+    const manifest=await cached.json();
+    return validOfferFiles(manifest?.files) && manifest.files.includes(file);
+  }catch{return false;}
+}
 
 self.addEventListener("install",(event)=>{
   event.waitUntil((async()=>{
@@ -17,12 +47,8 @@ self.addEventListener("install",(event)=>{
       if(!response.ok) return;
       const manifest=await response.json();
       const files=manifest?.files;
-      const safe=(file)=>typeof file==="string"
-        && /^[a-z0-9][a-z0-9-]{0,99}\.json$/.test(file)
-        && file!=="index.json" && !file.startsWith("source-sync-");
       // Invalid metadata must not turn an install into arbitrary URL fetches.
-      if(Array.isArray(files) && files.length<=60
-        && files.every(safe) && new Set(files).size===files.length){
+      if(validOfferFiles(files)){
         await Promise.allSettled(files.map((file)=>
           cache.add("./data/import/"+file)
         ));
@@ -54,18 +80,34 @@ self.addEventListener("fetch",(event)=>{
   event.respondWith((async()=>{
     try{
       const response=await fetch(event.request);
-      // Do not overwrite a valid offline asset with HTTP 404/500.
+      // Successful responses outside the explicit PWA asset list must
+      // never consume persistent device storage.
       if(response.ok){
-        const copy=response.clone();
-        event.waitUntil(
-          caches.open(CACHE)
-            .then((cache)=>cache.put(event.request,copy))
-            .catch(()=>{})
-        );
+        // Clone before awaiting async manifest lookup: the browser may start
+        // consuming the original body while the cache decision runs.
+        const offlineCopy=response.clone();
+        event.waitUntil((async()=>{
+          if(!await isAllowedCacheRequest(url)) return;
+          // An HTML error page returned with HTTP 200 must never replace a
+          // valid offline offer manifest.
+          if(url.href===IMPORT_MANIFEST_URL){
+            let manifest;
+            try{manifest=await offlineCopy.clone().json();}
+            catch{return;}
+            if(!validOfferFiles(manifest?.files)) return;
+          }
+          const cache=await caches.open(CACHE);
+          await cache.put(event.request,offlineCopy);
+        })().catch(()=>{}));
       }
       return response;
     }catch{
-      return (await caches.match(event.request)) || Response.error();
+      // A navigation with harmless query parameters should still open the
+      // saved application shell when the device is offline.
+      return (await caches.match(event.request))
+        || (event.request.mode==="navigate"
+          ? await caches.match(new URL("./index.html",SCOPE_URL)) : null)
+        || Response.error();
     }
   })());
 });
