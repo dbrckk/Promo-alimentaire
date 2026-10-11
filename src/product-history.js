@@ -1,4 +1,11 @@
 import { selectBestRecentPrice } from "./open-data.js";
+import {canonicalGtin} from "./gtin.js";
+
+/** Use GS1 identity when valid; preserve legacy/non-GTIN local records. */
+export function historyProductKey(code){
+  const raw=String(code??"").trim();
+  return canonicalGtin(raw) || raw;
+}
 
 export function priceLocationKey(observation){
   if(!observation) return null;
@@ -30,10 +37,11 @@ export function addPriceObservation(history,{
     || !locationKey || Number.isNaN(seenAt.getTime()) || Number.isNaN(observationAt.getTime())
     || observationAt>seenAt) return existing;
 
+  const productKey=historyProductKey(product.code);
   const entry={
-    id:priceEntryId(product.code,store,locationKey,observation.date,price),
+    id:priceEntryId(productKey,store,locationKey,observation.date,price),
     recordedAt:seenAt.toISOString(),
-    code:String(product.code),
+    code:productKey,
     name:product.name || "Produit",
     store,
     price,
@@ -46,10 +54,21 @@ export function addPriceObservation(history,{
     isDiscounted:Boolean(observation.isDiscounted)
   };
 
-  const merged=[entry,...existing.filter((item)=>item.id!==entry.id)];
+  // Keep historical entries readable without a destructive migration.
+  // A newly scanned EAN variant of the same exact receipt replaces the
+  // equivalent old UPC/EAN record instead of duplicating its history.
+  const merged=[entry,...existing.filter((item)=>
+    item.id!==entry.id && !(
+      historyProductKey(item?.code)===productKey
+      && item.store===store
+      && priceLocationKey(item)===locationKey
+      && String(item.date)===String(entry.date)
+      && Number(item.price)===price
+    )
+  )];
   const counts=new Map();
   return merged.filter((item)=>{
-    const key=String(item.code)+"|"+String(item.store);
+    const key=historyProductKey(item.code)+"|"+String(item.store);
     const count=counts.get(key)||0;
     if(count>=limitPerProduct) return false;
     counts.set(key,count+1);
@@ -87,7 +106,7 @@ function observationDate(item){
 
 function usableHistory(history,{code,store}={}){
   return (history || [])
-    .filter((item)=>String(item?.code)===String(code))
+    .filter((item)=>historyProductKey(item?.code)===historyProductKey(code))
     .filter((item)=>!store || item.store===store)
     .filter((item)=>Number.isFinite(item?.price) && item.price>0)
     .filter((item)=>observationDate(item)>-Infinity)
@@ -149,8 +168,9 @@ export function detectPriceDrops(history,{
   for(const item of history || []){
     const key=priceLocationKey(item);
     if(!key || !item.code || !item.store) continue;
-    groups.set(JSON.stringify([String(item.code),item.store,key]),{
-      code:String(item.code),store:item.store,locationKey:key
+    const productKey=historyProductKey(item.code);
+    groups.set(JSON.stringify([productKey,item.store,key]),{
+      code:productKey,store:item.store,locationKey:key
     });
   }
   const alerts=[];
@@ -185,7 +205,7 @@ export function detectPriceDrops(history,{
 
 export function productHistory(history,{code,store=null,limit=12}={}) {
   return (history || [])
-    .filter((item)=>String(item?.code)===String(code))
+    .filter((item)=>historyProductKey(item?.code)===historyProductKey(code))
     .filter((item)=>!store || item.store===store)
     .sort((a,b)=>observationDate(b)-observationDate(a))
     .slice(0,limit);
