@@ -8,7 +8,7 @@ const directory=new URL("../data/import/",import.meta.url);
 let files=[];
 try{
   files=(await readdir(directory))
-    .filter((name)=>name.endsWith(".json") && name!=="index.json" && !/^source-sync-(?:status|carrefour|leclerc)\.json$/.test(name))
+    .filter((name)=>name.endsWith(".json") && name!=="index.json" && !/^source-sync-(?:status|carrefour|leclerc|shopmium)\.json$/.test(name))
     .sort();
 }catch(error){
   if(error.code!=="ENOENT") throw error;
@@ -84,7 +84,8 @@ for(const file of files){
 for(const sourceFile of [
   "source-sync-status.json",
   "source-sync-carrefour.json",
-  "source-sync-leclerc.json"
+  "source-sync-leclerc.json",
+  "source-sync-shopmium.json"
 ]){
 try{
   const status=JSON.parse(await readFile(new URL(sourceFile,directory),"utf8"));
