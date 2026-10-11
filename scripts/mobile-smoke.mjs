@@ -450,6 +450,9 @@ try{
       freshPair:summarizeBasketStrategies([
         freshReliable,{...freshReliable,store:"leclerc",finalCost:11}
       ],{channel:"store",nearbyEnabled:true}).status,
+      partialSearchPair:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,store:"leclerc",finalCost:11}
+      ],{channel:"store",nearbyEnabled:true,coverageIncomplete:true}).status,
       boundaryPair:summarizeBasketStrategies([
         freshReliable,{...boundary,store:"leclerc",
           locationReliable:true,priceChannelReliable:true}
@@ -464,7 +467,7 @@ try{
     freshBudget:"within",strategy:"indicative",
     singleRetailer:"insufficient",duplicateRetailer:"insufficient",
     missingPeer:"insufficient",invalidPeer:"insufficient",
-    freshPair:"ready",boundaryPair:"indicative"
+    freshPair:"ready",partialSearchPair:"indicative",boundaryPair:"indicative"
   });
   // Corrupted barcode text must never become an "exact GTIN" by dropping
   // arbitrary characters. Bad checksums must not contact external APIs.
