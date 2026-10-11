@@ -54,6 +54,27 @@ export function mergeShopmiumOfferUrls(indexUrls=[],watchlistUrls=[],{maximum=30
 }
 
 /**
+ * Reserve room for individual offer terms discovered from campaign pages.
+ * The watchlist is curated and must never be starved by a large public index.
+ * No network access here: the caller still validates every official page.
+ */
+export function planShopmiumCrawl(indexUrls=[],watchlistUrls=[],{
+  maximumPages=110,reservedDetailPages=12
+}={}){
+  const max=Math.max(1,Math.min(110,Math.trunc(Number(maximumPages)||110)));
+  const reserve=Math.max(0,Math.min(max-1,Math.trunc(Number(reservedDetailPages)||0)));
+  // Validate watchlist URLs and limits using the existing strict helper.
+  mergeShopmiumOfferUrls([],watchlistUrls);
+  const selected=new Set();
+  for(const url of [...watchlistUrls,...indexUrls]){
+    if(!isOfficialShopmiumOfferUrl(url)) continue;
+    selected.add(new URL(url).toString());
+    if(selected.size>=max-reserve) break;
+  }
+  return {primaryUrls:[...selected],remainingPages:max-selected.size};
+}
+
+/**
  * Some publicly listed Shopmium links open a campaign landing page, not a
  * reimbursable offer. Such pages visibly say "Découvrir ces offres" and link
  * to individual official detail pages. Only follow those explicit links,
