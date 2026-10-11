@@ -590,6 +590,13 @@ try{
       assert.match(text,/Source non actualisée|Obsolète/);
       assert.ok(text.includes(fixture.extractedCount+"/"+fixture.previousSnapshotCount));
       assert.match(text,/Les anciennes offres expirent normalement/);
+      const officialUrl=source==="carrefour"
+        ? "https://www.carrefour.fr/catalogue"
+        : "https://www.e.leclerc/prospectus";
+      const manualLink=page.locator('#sourceHealth a.open[href="'+officialUrl+'"]');
+      assert.ok(await manualLink.count()>0,
+        "Une source magasin non confirmée doit donner accès au catalogue officiel");
+      assert.equal(await manualLink.first().getAttribute("target"),"_blank");
     }
   }
   // Real Coupon Network public catalogue cards place the amount after
