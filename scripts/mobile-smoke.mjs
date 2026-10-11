@@ -204,6 +204,39 @@ try{
     age:21,freshAge:1,oldBudget:"indicative-within",
     freshBudget:"within",strategy:"indicative"
   });
+  // Corrupted barcode text must never become an "exact GTIN" by dropping
+  // arbitrary characters. Bad checksums must not contact external APIs.
+  const strictSkuSafety=await page.evaluate(async()=>{
+    const {assertValidGtin,canonicalGtin}=await import("./src/gtin.js");
+    const {fetchProductByBarcode,fetchPricesByBarcode}=await import("./src/open-data.js");
+    const {serializeShoppingList}=await import("./src/shopping-list-transfer.js");
+    const valid=assertValidGtin("3017 6240 10701");
+    const corrupt="EAN:3017624010701";
+    let corruptRejected=false,backupRejected=false;
+    try{assertValidGtin(corrupt);}catch{corruptRejected=true;}
+    try{
+      serializeShoppingList([{product:{code:corrupt,name:"Produit test"},quantity:1}]);
+    }catch{backupRejected=true;}
+    let requests=0;
+    const badFetch=async()=>{requests++;throw new Error("unreachable");};
+    let productRejected=false,priceRejected=false;
+    try{await fetchProductByBarcode("3017624010702",badFetch);}
+    catch(error){productRejected=/Checksum GTIN invalide/.test(error.message);}
+    try{
+      await fetchPricesByBarcode("3017624010702",{
+        store:"carrefour",fetchImpl:badFetch
+      });
+    }catch(error){priceRejected=/Checksum GTIN invalide/.test(error.message);}
+    return {
+      valid,corruptRejected,backupRejected,
+      corruptCanonical:canonicalGtin(corrupt),
+      productRejected,priceRejected,requests
+    };
+  });
+  assert.deepEqual(strictSkuSafety,{
+    valid:"3017624010701",corruptRejected:true,backupRejected:true,
+    corruptCanonical:null,productRejected:true,priceRejected:true,requests:0
+  });
   const statusFixture=JSON.parse(await readFile(
     new URL("../data/import/source-sync-status.json",import.meta.url),"utf8"
   ));

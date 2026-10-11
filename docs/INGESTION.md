@@ -47,3 +47,9 @@ Privilégier :
 5. saisie manuelle avec URL de preuve.
 
 Ne pas utiliser d'endpoints privés d'applications mobiles ni contourner authentification ou protections anti-bot.
+
+## GTIN stricts — 11 octobre 2026
+
+Le validateur GS1 ne conserve plus silencieusement les seuls chiffres d'une référence corrompue. Seuls les séparateurs visuels (espaces et tirets) sont tolérés ; toute lettre ou autre ponctuation rend le GTIN invalide avant le contrôle de checksum. Cette contrainte protège les imports, les sauvegardes et les correspondances EAN exactes contre les fausses identités produit.
+
+Les API Open Food Facts / Open Prices ne sont pas appelées si le checksum du code-barres recherché est invalide. Le parcours Android vérifie le rejet et l'absence de requête dans cette situation.
