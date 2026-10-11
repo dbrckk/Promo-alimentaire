@@ -5,6 +5,7 @@ on:
     - cron: "7 6 * * *"
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - "scripts/sync-carrefour-promotions.mjs"
       - "scripts/source-sync-status.mjs"
