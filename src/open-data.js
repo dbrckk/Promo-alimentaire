@@ -43,7 +43,7 @@ export async function fetchProductByBarcode(value, fetchImpl=fetch, {signal=null
     "image_front_url","nutrition_grades","categories_tags"
   ].join(",");
   const url=`${OFF_PRODUCT_API}/${encodeURIComponent(code)}?fields=${encodeURIComponent(fields)}&cc=fr&lc=fr`;
-  const response=await fetchImpl(url,{headers:{Accept:"application/json"}});
+  const response=await fetchImpl(url,{headers:{Accept:"application/json"},signal});
   if(!response.ok) throw new Error(`Open Food Facts indisponible (${response.status}).`);
   const payload=await response.json();
   if(!payload?.product) throw new Error("Produit introuvable dans Open Food Facts.");
