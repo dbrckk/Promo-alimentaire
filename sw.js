@@ -83,18 +83,21 @@ self.addEventListener("fetch",(event)=>{
       // Successful responses outside the explicit PWA asset list must
       // never consume persistent device storage.
       if(response.ok){
+        // Clone before awaiting async manifest lookup: the browser may start
+        // consuming the original body while the cache decision runs.
+        const offlineCopy=response.clone();
         event.waitUntil((async()=>{
           if(!await isAllowedCacheRequest(url)) return;
           // An HTML error page returned with HTTP 200 must never replace a
           // valid offline offer manifest.
           if(url.href===IMPORT_MANIFEST_URL){
             let manifest;
-            try{manifest=await response.clone().json();}
+            try{manifest=await offlineCopy.clone().json();}
             catch{return;}
             if(!validOfferFiles(manifest?.files)) return;
           }
           const cache=await caches.open(CACHE);
-          await cache.put(event.request,response.clone());
+          await cache.put(event.request,offlineCopy);
         })().catch(()=>{}));
       }
       return response;
