@@ -44,12 +44,13 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
     throw new Error("Manifeste d'offres refusé : "+checkedManifest.issues.join(" "));
   }
   const syncSources={};
-  // Load shared legacy status first, then provider files. The latter win
+  // Load shared legacy status first, then provider-specific files. The latter win
   // when both contain the same supplier, avoiding concurrent Git writes.
   const syncFiles=[
     "source-sync-status.json",
     "source-sync-carrefour.json",
-    "source-sync-leclerc.json"
+    "source-sync-leclerc.json",
+    "source-sync-shopmium.json"
   ];
   const syncResults=await Promise.all(syncFiles.map(async(file)=>{
     try{
