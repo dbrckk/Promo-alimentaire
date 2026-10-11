@@ -657,6 +657,8 @@ try{
       sample("clean","Maison Verte - Lessives","Sur l'achat d'une lessive"),
       sample("pet","PURINA - Croquettes pour chat","Pour chat adulte"),
       sample("beauty","Elmex - Dentifrices","Sur l'achat d'un dentifrice"),
+      sample("dish","Sun - Capsules","Sur l'achat de capsules lave-vaisselle"),
+      sample("moisture","Rubson - Absorbeurs","Pack absorbeur Aero 360"),
       sample("spirits","Altos - Tequila Blanco","Bouteille de tequila"),
       sample("high","Schwarzkopf - Shampooings","Shampooing au choix",70),
       sample("nonalc","Chouffe - Bières sans alcool","Pack sans alcool")
@@ -670,7 +672,8 @@ try{
   });
   assert.deepEqual(foodScopeSafety,{
     categories:["autre","non-alimentaire","non-alimentaire",
-      "non-alimentaire","hors-alimentaire","non-alimentaire","autre"],
+      "non-alimentaire","non-alimentaire","non-alimentaire",
+      "hors-alimentaire","non-alimentaire","autre"],
     visible:["scope-food","scope-high","scope-nonalc"],
     suspiciousGuaranteed:false
   });
