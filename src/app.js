@@ -471,7 +471,7 @@ function renderOffer(offer,scenario={}){
     && offer.mechanism==="manufacturer_refund" && pct===100
     ? '<span class="badge warn">100 % annoncés · éligibilité à vérifier</span>' : "";
   const loyaltyBadge=offer.requiresLoyalty
-    ? `<span class="badge ${offer.loyaltyEligibility==="eligible"?"good":"warn"}">${offer.loyaltyEligibility==="eligible"?"Carte confirmée":"Carte à confirmer"}</span>`
+    ? `<span class="badge ${offer.loyaltyEligibility==="eligible"?"good":"warn"}">${offer.loyaltyEligibility==="eligible"?"Carte renseignée":offer.loyaltyEligibility==="activation-unverified"?"Activation/éligibilité à vérifier":"Carte à confirmer"}</span>`
     : "";
   const deadline=offerDeadline(offer);
   const deadlineBadge=deadline
@@ -1940,9 +1940,9 @@ function renderLoyaltySummary(){
   const c=state.loyaltyProfile.carrefour;
   const l=state.loyaltyProfile.leclerc;
   const carrefourText=c==="pass"
-    ? "Carte PASS + Club : 15% sur fruits/légumes et Carrefour Bio éligibles ; Journée PASS à vérifier selon le magasin."
+    ? "PASS + Club renseignés : jusqu’à 15% possibles sur produits éligibles après activation et paiement PASS. Avantage crédité en cagnotte, non garanti sans vérification du produit et des exclusions."
     : c==="club"
-      ? "Club Carrefour : 10% sur fruits/légumes et Carrefour Bio éligibles."
+      ? "Club Carrefour renseigné : jusqu’à 10% possibles en cagnotte après activation et confirmation du produit, du magasin et des exclusions. Non inclus automatiquement dans le gain garanti."
       : c==="none"
         ? "Carrefour : aucun avantage carte compté."
         : "Carrefour : profil non renseigné — les avantages Club restent potentiels.";

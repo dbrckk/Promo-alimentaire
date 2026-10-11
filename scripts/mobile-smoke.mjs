@@ -109,6 +109,53 @@ try{
     impossibleExpiry:false,legitimateOffset:true,
     currentActive:true,futureActive:false,tamperedActive:false
   });
+  // Full basket integration in the actual Android browser: having a
+  // loyalty card cannot prove benefit activation, eligibility or PASS payment.
+  // A historical offer must never become guaranteed even when the caller
+  // forgets to pre-filter its date.
+  const loyaltyBasketSafety=await page.evaluate(async()=>{
+    const {evaluateBasketStore}=await import("./src/basket.js");
+    const {buildProductLoyaltyOffers}=await import("./src/loyalty.js");
+    const product={code:"3017624010701",name:"Produit Carrefour Bio",
+      brands:"Carrefour Bio",categories:[]};
+    const items=[{product,quantity:1}];
+    const priceByCode={"3017624010701":[
+      {price:10,date:"2026-10-11",storeName:"Carrefour"}
+    ]};
+    const scenario=(carrefour,offers=[],now="2026-10-12T12:00:00Z")=>
+      evaluateBasketStore(items,{
+        store:"carrefour",channel:"store",priceByCode,offers,
+        loyaltyProfile:{carrefour},now:new Date(now)
+      });
+    const club=scenario("club");
+    const pass=scenario("pass");
+    const expired=scenario("none",[{
+      id:"expired-retailer",scope:"produit",stores:["carrefour"],
+      eans:[product.code],savingPercent:80,autoStack:true,
+      verifiedAt:"2026-10-07",reviewAfter:"2026-10-08"
+    }]);
+    const pastReview=scenario("club",[],"2026-10-26T12:00:00Z");
+    const contextual=buildProductLoyaltyOffers(product,{
+      store:"carrefour",profile:{carrefour:"pass"}
+    })[0];
+    return {
+      clubSaving:club.guaranteedSaving,
+      clubPotential:club.potentialProductSaving,
+      passSaving:pass.guaranteedSaving,
+      passPotential:pass.potentialProductSaving,
+      expiredSaving:expired.guaranteedSaving,
+      expiredMatches:expired.lines[0].matches.length,
+      afterReview:pastReview.lines[0].matches.length,
+      falseExact:(contextual.eans||[]).length,
+      wrongAutoStack:contextual.autoStack
+    };
+  });
+  assert.deepEqual(loyaltyBasketSafety,{
+    clubSaving:0,clubPotential:1,
+    passSaving:0,passPotential:1.5,
+    expiredSaving:0,expiredMatches:0,afterReview:0,
+    falseExact:0,wrongAutoStack:false
+  });
   const statusFixture=JSON.parse(await readFile(
     new URL("../data/import/source-sync-status.json",import.meta.url),"utf8"
   ));
