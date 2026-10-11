@@ -9,6 +9,10 @@ test("vérifie un Ticket E.Leclerc produit",()=>{
     productMatch:{brands:["Tables du Monde"],any:["mini nems","poulet"]}
   });
   assert.equal(result.ok,true);
+  assert.equal(verifyLeclercCatalogOffer(html,{
+    savingPercent:20,mechanism:"retailer_loyalty",
+    productMatch:{brands:["Tables du Monde"],any:["mini nems","poulet"]}
+  },{requireNearbyEvidence:true}).ok,true);
 });
 
 test("vérifie 2+1 offert",()=>{
@@ -37,6 +41,16 @@ test("refuse un taux voisin si le taux attendu manque",()=>{
   });
   assert.equal(result.ok,false);
   assert.ok(result.reasons.includes("remise sur le 2e absente"));
+  // A 68% discount elsewhere in the magazine cannot validate Gullón.
+  const unrelated="<div>GULLÓN BISCUITS PETIT DÉJEUNER</div>"+
+    " ".repeat(1200)+
+    "<div>68% SUR LE 2e PRODUIT ACHETÉ CHOCOLAT MARQUE DIFFÉRENTE</div>";
+  const crossPage=verifyLeclercCatalogOffer(unrelated,{
+    promoFormula:{type:"nth_percent",nth:2,cycle:2,percent:68},
+    productMatch:{brands:["Gullón"],any:["biscuits"]}
+  },{requireNearbyEvidence:true});
+  assert.equal(crossPage.ok,false);
+  assert.ok(crossPage.reasons.some((reason)=>reason.includes("non liés")));
 });
 
 
