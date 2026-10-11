@@ -157,8 +157,14 @@ export function priceCoverageSummary(observations,now=new Date(),lookup={}){
     recent30Days:recent.length,recent7Days:comparable.length,
     pagesFetched,lookupSkipped,lookupInterrupted,moreAvailable,
     searchIncomplete:!lookupSkipped && (lookupInterrupted || moreAvailable),
+    // API dates can contain ISO timestamps and calendar-only strings.
+    // Lexicographic ordering is wrong across equivalent timezones or mixed
+    // representations; compare actual instants and preserve source date.
     latestDate:valid.length
-      ? valid.map((record)=>record.date).sort().at(-1) : null,
+      ? valid.reduce((latest,record)=>
+          new Date(record.date).getTime()>new Date(latest.date).getTime()
+            ? record : latest
+        ).date : null,
     status:lookupSkipped?"not-queried"
       : records.length===0?"no-observation"
       : valid.length===0?"invalid-observations"
