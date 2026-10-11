@@ -2,7 +2,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108567",
+    "externalId": "auto-bonduelle-carottes-rapees-au-citron-de-sicile-9zzqir",
     "title": "Bonduelle - Carottes râpées au Citron de Sicile",
     "type": "ODR",
     "category": "autre",
@@ -12,9 +12,9 @@
     "savingAmount": 0.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bonduelle-coupon/108567",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Bonduelle - Carottes râpées au Citron de Sicile"
@@ -40,7 +40,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108006",
+    "externalId": "auto-cassegrain-innovation-traiteur-xnlbka",
     "title": "Cassegrain - Innovation Traiteur",
     "type": "ODR",
     "category": "autre",
@@ -50,9 +50,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/cassegrain-coupon/108006",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Cassegrain - Innovation Traiteur"
@@ -78,7 +78,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107715",
+    "externalId": "auto-zespri-kiwis-1azbsa0",
     "title": "Zespri™ - Kiwis",
     "type": "ODR",
     "category": "autre",
@@ -88,9 +88,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/zespri-coupon/107715",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Zespri™ - Kiwis"
@@ -115,7 +115,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108489",
+    "externalId": "auto-president-poche-30cl-c862ti",
     "title": "Président - Poche 30cl",
     "type": "ODR",
     "category": "autre",
@@ -125,9 +125,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/president-coupon/108489",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Président - Poche 30cl"
@@ -153,45 +153,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108434",
-    "title": "Bridélice - Poche 30cl",
-    "type": "ODR",
-    "category": "autre",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.3,
-    "savingAmountMode": "per-offer",
-    "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bridelice-coupon/108434",
-    "scope": "produit",
-    "referenceNames": [
-      "Bridélice - Poche 30cl"
-    ],
-    "productMatch": {
-      "brands": [
-        "Bridélice"
-      ],
-      "all": [
-        "Poche",
-        "30cl"
-      ],
-      "minScore": 75
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation et conditions Coupon Network à vérifier",
-    "conditions": "Sur l'achat d'une poche 30cl Bridélice légère et épaisse 12% MG. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "detail-108166",
+    "externalId": "auto-les-300-laitiers-bio-yaourts-desserts-fromages-blanc-r5m4cg",
     "title": "Les 300 Laitiers Bio - Yaourts, Desserts, Fromages Blancs ou Skyrs",
     "type": "ODR",
     "category": "autre",
@@ -201,9 +163,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/les-300-laitiers-bio-coupon/108166",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Les 300 Laitiers Bio - Yaourts, Desserts, Fromages Blancs ou Skyrs"
@@ -229,7 +191,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107934",
+    "externalId": "auto-alpro-brasses-vegetaux-ca975z",
     "title": "Alpro - brassés végétaux",
     "type": "ODR",
     "category": "autre",
@@ -239,9 +201,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/alpro-coupon/107934",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Alpro - brassés végétaux"
@@ -267,7 +229,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107694",
+    "externalId": "auto-perle-de-lait-8x125g-ykyjug",
     "title": "Perle de Lait - 8x125g",
     "type": "ODR",
     "category": "autre",
@@ -277,9 +239,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/perle-de-lait-coupon/107694",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Perle de Lait - 8x125g"
@@ -304,7 +266,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107722",
+    "externalId": "auto-danone-yaourt-0-m-g-1uhu9gh",
     "title": "Danone - Yaourt 0% M.G",
     "type": "ODR",
     "category": "autre",
@@ -314,9 +276,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/107722",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Danone - Yaourt 0% M.G"
@@ -341,7 +303,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108582",
+    "externalId": "auto-pasquier-tartines-et-pain-grille-1g5upxs",
     "title": "Pasquier - Tartines et Pain Grillé",
     "type": "ODR",
     "category": "autre",
@@ -351,9 +313,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pasquier-coupon/108582",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Pasquier - Tartines et Pain Grillé"
@@ -379,7 +341,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108496",
+    "externalId": "auto-carambar-atomic-1glelwj",
     "title": "Carambar - Atomic",
     "type": "ODR",
     "category": "autre",
@@ -389,9 +351,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/carambar-coupon/108496",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Carambar - Atomic"
@@ -416,7 +378,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108482",
+    "externalId": "auto-pasquier-brioche-tranchee-rchunf",
     "title": "Pasquier - Brioche Tranchée",
     "type": "ODR",
     "category": "autre",
@@ -426,9 +388,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pasquier-coupon/108482",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Pasquier - Brioche Tranchée"
@@ -454,7 +416,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108413",
+    "externalId": "auto-lesieur-lesieur-touche-d-olive-1cuqdo6",
     "title": "Lesieur - Lesieur touche d'olive",
     "type": "ODR",
     "category": "autre",
@@ -464,9 +426,9 @@
     "savingAmount": 0.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lesieur-coupon/108413",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lesieur - Lesieur touche d'olive"
@@ -492,7 +454,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108384",
+    "externalId": "auto-ricore-chicoree-nature-85g-1750xjy",
     "title": "Ricoré® - Chicorée Nature 85g.",
     "type": "ODR",
     "category": "autre",
@@ -502,9 +464,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ricore-coupon/108384",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Ricoré® - Chicorée Nature 85g."
@@ -530,7 +492,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108339",
+    "externalId": "auto-lutti-boite-de-bonbons-1eu5pb",
     "title": "Lutti - Boîte de bonbons",
     "type": "ODR",
     "category": "autre",
@@ -540,9 +502,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lutti-coupon/108339",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lutti - Boîte de bonbons"
@@ -567,7 +529,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107999",
+    "externalId": "auto-bjorg-sans-gluten-15giorv",
     "title": "Bjorg - Sans Gluten",
     "type": "ODR",
     "category": "autre",
@@ -577,9 +539,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bjorg-coupon/107999",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Bjorg - Sans Gluten"
@@ -604,7 +566,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108103",
+    "externalId": "auto-lesieur-lesieur-huile-d-olive-vierge-1j7kkyy",
     "title": "Lesieur - Lesieur huile d'olive vierge",
     "type": "ODR",
     "category": "autre",
@@ -614,9 +576,9 @@
     "savingAmount": 1.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lesieur-coupon/108103",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lesieur - Lesieur huile d'olive vierge"
@@ -642,7 +604,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107927",
+    "externalId": "auto-grand-mere-cafe-moulu-17439y4",
     "title": "Grand'Mère - Café moulu",
     "type": "ODR",
     "category": "autre",
@@ -652,9 +614,9 @@
     "savingAmount": 1.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 2,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/grand-mere-coupon/107927",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Grand'Mère - Café moulu"
@@ -680,44 +642,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107769",
-    "title": "Nesquik - Céréales",
-    "type": "ODR",
-    "category": "autre",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.7,
-    "savingAmountMode": "per-offer",
-    "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/nestle-coupon/107769",
-    "scope": "produit",
-    "referenceNames": [
-      "Nesquik - Céréales"
-    ],
-    "productMatch": {
-      "brands": [
-        "Nesquik"
-      ],
-      "all": [
-        "Cereales"
-      ],
-      "minScore": 65
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation et conditions Coupon Network à vérifier",
-    "conditions": "Sur l'achat d'un pack de céréales Nesquik® goût fraise. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "detail-107804",
+    "externalId": "auto-starbucks-x10-9pwaxj",
     "title": "STARBUCKS® x10",
     "type": "ODR",
     "category": "autre",
@@ -727,9 +652,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/starbucks-coupon/107804",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "STARBUCKS® x10"
@@ -754,7 +679,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107818",
+    "externalId": "auto-les-dieux-global-gamme-fmc3bj",
     "title": "Les Dieux - Global Gamme",
     "type": "ODR",
     "category": "autre",
@@ -764,9 +689,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 2,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/les-dieux-coupon/107818",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Les Dieux - Global Gamme"
@@ -791,7 +716,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107750",
+    "externalId": "auto-starbucks-x18-mkiecp",
     "title": "STARBUCKS® x18",
     "type": "ODR",
     "category": "autre",
@@ -801,9 +726,9 @@
     "savingAmount": 1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/starbucks-coupon/107750",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "STARBUCKS® x18"
@@ -828,45 +753,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107661",
-    "title": "Materne - Sans sucres ajoutés* x12",
-    "type": "ODR",
-    "category": "autre",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.5,
-    "savingAmountMode": "per-offer",
-    "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/materne-coupon/107661",
-    "scope": "produit",
-    "referenceNames": [
-      "Materne - Sans sucres ajoutés* x12"
-    ],
-    "productMatch": {
-      "brands": [
-        "Materne"
-      ],
-      "all": [
-        "sucres",
-        "ajoutes"
-      ],
-      "minScore": 75
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation et conditions Coupon Network à vérifier",
-    "conditions": "Sur l'achat d'un pack de 12 coupelles Materne® Sans Sucres Ajoutés* au choix dans la gamme**. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "detail-107598",
+    "externalId": "auto-pasquier-crousti-dej-nlm8co",
     "title": "Pasquier - Crousti'Déj",
     "type": "ODR",
     "category": "autre",
@@ -876,9 +763,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pasquier-coupon/107598",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Pasquier - Crousti'Déj"
@@ -903,7 +790,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-105420",
+    "externalId": "auto-william-saurin-cocotte-micro-ondable-1j61d6d",
     "title": "William Saurin - Cocotte micro-ondable",
     "type": "ODR",
     "category": "autre",
@@ -913,9 +800,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/william-saurin-coupon/105420",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "William Saurin - Cocotte micro-ondable"
@@ -941,7 +828,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108096",
+    "externalId": "auto-rozana-6x50cl-wg38b5",
     "title": "Rozana - 6x50cl",
     "type": "ODR",
     "category": "autre",
@@ -951,9 +838,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/rozana-coupon/108096",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Rozana - 6x50cl"
@@ -978,45 +865,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108089",
-    "title": "Lipton - Lipton pétillant",
-    "type": "ODR",
-    "category": "autre",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.3,
-    "savingAmountMode": "per-offer",
-    "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lipton-coupon/108089",
-    "scope": "produit",
-    "referenceNames": [
-      "Lipton - Lipton pétillant"
-    ],
-    "productMatch": {
-      "brands": [
-        "Lipton"
-      ],
-      "all": [
-        "Lipton",
-        "petillant"
-      ],
-      "minScore": 75
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation et conditions Coupon Network à vérifier",
-    "conditions": "Sur l'achat d'un produit de la gamme Lipton pétillant. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "detail-107811",
+    "externalId": "auto-sous-le-pommier-pur-jus-de-pomme-nature-ou-pomme-poi-r303rp",
     "title": "Sous le Pommier - Pur jus de Pomme Nature ou Pomme Poire 1L",
     "type": "ODR",
     "category": "autre",
@@ -1026,9 +875,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 2,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sous-le-pommier-coupon/107811",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Sous le Pommier - Pur jus de Pomme Nature ou Pomme Poire 1L"
@@ -1054,45 +903,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107736",
-    "title": "alpro - Boissons Végétales",
-    "type": "ODR",
-    "category": "autre",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.4,
-    "savingAmountMode": "per-offer",
-    "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/alpro-coupon/107736",
-    "scope": "produit",
-    "referenceNames": [
-      "alpro - Boissons Végétales"
-    ],
-    "productMatch": {
-      "brands": [
-        "alpro"
-      ],
-      "all": [
-        "Boissons",
-        "Vegetales"
-      ],
-      "minScore": 75
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation et conditions Coupon Network à vérifier",
-    "conditions": "Sur l'achat d'un produit alpro de la gamme boissons végétales. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "detail-107743",
+    "externalId": "auto-volvic-vitamin-qy1e3m",
     "title": "Volvic Vitamin +",
     "type": "ODR",
     "category": "autre",
@@ -1102,9 +913,9 @@
     "savingAmount": 0.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/volvic-coupon/107743",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Volvic Vitamin +"
@@ -1129,7 +940,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107453",
+    "externalId": "auto-maison-perrier-forever-oa9ekn",
     "title": "Maison Perrier Forever",
     "type": "ODR",
     "category": "autre",
@@ -1139,9 +950,9 @@
     "savingAmount": 0.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/maison-perrier-coupon/107453",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Maison Perrier Forever"
@@ -1167,7 +978,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107790",
+    "externalId": "auto-ajinomoto-gyoza-17r7pgf",
     "title": "Ajinomoto - Gyoza",
     "type": "ODR",
     "category": "autre",
@@ -1177,9 +988,9 @@
     "savingAmount": 0.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ajinomoto-coupon/107790",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Ajinomoto - Gyoza"
@@ -1204,7 +1015,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108441",
+    "externalId": "auto-bref-wc-blocs-wc-6o5k8m",
     "title": "Bref WC - Blocs WC",
     "type": "ODR",
     "category": "autre",
@@ -1214,9 +1025,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bref-wc-coupon/108441",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Bref WC - Blocs WC"
@@ -1241,7 +1052,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107446",
+    "externalId": "auto-maison-verte-lessives-19xyl0a",
     "title": "Maison Verte - Lessives",
     "type": "ODR",
     "category": "autre",
@@ -1251,9 +1062,9 @@
     "savingAmount": 1.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/maison-verte-coupon/107446",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Maison Verte - Lessives"
@@ -1278,7 +1089,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107909",
+    "externalId": "auto-colgate-max-white-22m4la",
     "title": "COLGATE® – Max White",
     "type": "ODR",
     "category": "autre",
@@ -1288,9 +1099,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/colgate-coupon/107909",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "COLGATE® – Max White"
@@ -1315,83 +1126,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107647",
-    "title": "Tena - Tena Pants +",
-    "type": "ODR",
-    "category": "autre",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.5,
-    "savingAmountMode": "per-offer",
-    "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/tena-coupon/107647",
-    "scope": "produit",
-    "referenceNames": [
-      "Tena - Tena Pants +"
-    ],
-    "productMatch": {
-      "brands": [
-        "Tena"
-      ],
-      "all": [
-        "Tena",
-        "Pants"
-      ],
-      "minScore": 75
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation et conditions Coupon Network à vérifier",
-    "conditions": "Sur l'achat d'un paquet de sous-vêtements absorbants TENA Pants Plus au choix dans la gamme. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "detail-107640",
-    "title": "Tena - Tena Silhouette",
-    "type": "ODR",
-    "category": "autre",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.4,
-    "savingAmountMode": "per-offer",
-    "minPurchaseQty": 2,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/tena-coupon/107640",
-    "scope": "produit",
-    "referenceNames": [
-      "Tena - Tena Silhouette"
-    ],
-    "productMatch": {
-      "brands": [
-        "Tena"
-      ],
-      "all": [
-        "Tena",
-        "Silhouette"
-      ],
-      "minScore": 75
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation et conditions Coupon Network à vérifier",
-    "conditions": "Sur l'achat de deux paquets de TENA® Silhouette au choix dans la gamme de sous-vêtements. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "detail-107226",
+    "externalId": "auto-renova-toucher-magique-1eut8il",
     "title": "Renova - Toucher Magique",
     "type": "ODR",
     "category": "autre",
@@ -1401,9 +1136,9 @@
     "savingAmount": 0.6,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/renova-coupon/107226",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Renova - Toucher Magique"
@@ -1429,7 +1164,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108406",
+    "externalId": "auto-guigoz-lait-infantile-17q2x4c",
     "title": "Guigoz - Lait infantile",
     "type": "ODR",
     "category": "autre",
@@ -1439,9 +1174,9 @@
     "savingAmount": 2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/nestle-coupon/108406",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Guigoz - Lait infantile"
@@ -1467,7 +1202,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108352",
+    "externalId": "auto-nidal-lait-infantile-2eme-ou-3eme-age-1jcy9jv",
     "title": "Nidal - Lait infantile 2ème ou 3ème âge",
     "type": "ODR",
     "category": "autre",
@@ -1477,9 +1212,9 @@
     "savingAmount": 2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/nestle-coupon/108352",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Nidal - Lait infantile 2ème ou 3ème âge"
@@ -1505,7 +1240,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108515",
+    "externalId": "auto-ballantine-s-finest-1im4zsf",
     "title": "Ballantine's - Finest",
     "type": "ODR",
     "category": "autre",
@@ -1515,9 +1250,9 @@
     "savingAmount": 1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ballantine-s-coupon/108515",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Ballantine's - Finest"
@@ -1542,7 +1277,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108367",
+    "externalId": "auto-jack-daniel-s-aromatisee-70cl-1bogdbr",
     "title": "Jack Daniel's - Aromatisée 70cl",
     "type": "ODR",
     "category": "autre",
@@ -1552,9 +1287,9 @@
     "savingAmount": 1.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/jack-daniel-s-coupon/108367",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Jack Daniel's - Aromatisée 70cl"
@@ -1580,7 +1315,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108124",
+    "externalId": "auto-revesco-les-bulles-d-aperitif-16klpxt",
     "title": "Revesco - Les bulles d'apéritif",
     "type": "ODR",
     "category": "autre",
@@ -1590,9 +1325,9 @@
     "savingAmount": 0.9,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/revesco-coupon/108124",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Revesco - Les bulles d'apéritif"
@@ -1618,7 +1353,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108047",
+    "externalId": "auto-altos-tequila-blanco-0-7l-vtiieh",
     "title": "Altos - Tequila Blanco 0.7L",
     "type": "ODR",
     "category": "autre",
@@ -1628,9 +1363,9 @@
     "savingAmount": 1.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/altos-coupon/108047",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Altos - Tequila Blanco 0.7L"
@@ -1656,7 +1391,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108036",
+    "externalId": "auto-jim-beam-jim-beam-1m7qqez",
     "title": "Jim Beam - Jim Beam",
     "type": "ODR",
     "category": "autre",
@@ -1666,9 +1401,9 @@
     "savingAmount": 1.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/jim-beam-coupon/108036",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Jim Beam - Jim Beam"
@@ -1693,7 +1428,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107986",
+    "externalId": "auto-sobieski-sobieski-vodka-70cl-1ucttjy",
     "title": "Sobieski - Sobieski vodka 70cl",
     "type": "ODR",
     "category": "autre",
@@ -1703,9 +1438,9 @@
     "savingAmount": 1.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sobieski-coupon/107986",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Sobieski - Sobieski vodka 70cl"
@@ -1731,7 +1466,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108020",
+    "externalId": "auto-ballantine-s-sweet-blend-zpafcc",
     "title": "Ballantine's - Sweet Blend",
     "type": "ODR",
     "category": "autre",
@@ -1741,9 +1476,9 @@
     "savingAmount": 1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ballantine-s-coupon/108020",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Ballantine's - Sweet Blend"
@@ -1769,7 +1504,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107668",
+    "externalId": "auto-les-calandieres-vin-blanc-rose-kf75eb",
     "title": "Les Calandières - vin blanc & rosé",
     "type": "ODR",
     "category": "autre",
@@ -1779,9 +1514,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/calandiere-coupon/107668",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Les Calandières - vin blanc & rosé"
@@ -1807,7 +1542,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-106975",
+    "externalId": "auto-pelican-blonde-et-rouge-tflhoy",
     "title": "Pelican - Blonde et Rouge",
     "type": "ODR",
     "category": "autre",
@@ -1817,9 +1552,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pelican-coupon/106975",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Pelican - Blonde et Rouge"
@@ -1845,7 +1580,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-106961",
+    "externalId": "auto-pelican-blonde-et-rouge-xzhpn",
     "title": "Pelican - Blonde et Rouge",
     "type": "ODR",
     "category": "autre",
@@ -1855,9 +1590,9 @@
     "savingAmount": 1.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pelican-coupon/106961",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Pelican - Blonde et Rouge"
@@ -1883,7 +1618,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108574",
+    "externalId": "auto-lily-s-kitchen-friandises-pour-chien-god1nk",
     "title": "Lily's Kitchen - Friandises pour chien",
     "type": "ODR",
     "category": "autre",
@@ -1893,9 +1628,9 @@
     "savingAmount": 0.6,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lily-s-kitchen-coupon/108574",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lily's Kitchen - Friandises pour chien"
@@ -1921,7 +1656,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107776",
+    "externalId": "auto-ultima-croquettes-pour-petit-chien-1q29jrt",
     "title": "Ultima - Croquettes pour petit chien",
     "type": "ODR",
     "category": "autre",
@@ -1931,9 +1666,9 @@
     "savingAmount": 1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ultima-coupon/107776",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Ultima - Croquettes pour petit chien"
@@ -1959,7 +1694,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107176",
+    "externalId": "auto-ultima-friandises-pour-chien-ezgpt6",
     "title": "Ultima - Friandises pour chien",
     "type": "ODR",
     "category": "autre",
@@ -1969,9 +1704,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ultima-coupon/107176",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Ultima - Friandises pour chien"
@@ -1997,7 +1732,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-107902",
+    "externalId": "auto-brita-filtres-a-eau-y4bixw",
     "title": "BRITA - Filtres à eau",
     "type": "ODR",
     "category": "autre",
@@ -2007,9 +1742,9 @@
     "savingAmount": 1.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/brita-coupon/107902",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "BRITA - Filtres à eau"
@@ -2034,7 +1769,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109394",
+    "externalId": "auto-le-gaulois-charcuterie-de-volaille-1rzh02r",
     "title": "Le Gaulois - Charcuterie de volaille",
     "type": "ODR",
     "category": "autre",
@@ -2044,9 +1779,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/le-gaulois-coupon/109394",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Le Gaulois - Charcuterie de volaille"
@@ -2072,7 +1807,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109289",
+    "externalId": "auto-le-gaulois-aide-culinaire-u9y1l6",
     "title": "Le Gaulois - Aide Culinaire",
     "type": "ODR",
     "category": "autre",
@@ -2082,9 +1817,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/le-gaulois-coupon/109289",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Le Gaulois - Aide Culinaire"
@@ -2110,7 +1845,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109107",
+    "externalId": "auto-madrange-le-jambon-blanc-et-le-jambon-superieur-1nwmh5e",
     "title": "Madrange - Le Jambon Blanc et Le Jambon Supérieur",
     "type": "ODR",
     "category": "autre",
@@ -2120,9 +1855,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/madrange-coupon/109107",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Madrange - Le Jambon Blanc et Le Jambon Supérieur"
@@ -2148,7 +1883,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108914",
+    "externalId": "auto-la-cuisine-d-oceane-plats-cuisines-1xnhkin",
     "title": "La Cuisine d'Océane - Plats cuisinés",
     "type": "ODR",
     "category": "autre",
@@ -2158,9 +1893,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/la-cuisine-doceane-coupon/108914",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "La Cuisine d'Océane - Plats cuisinés"
@@ -2186,7 +1921,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108668",
+    "externalId": "auto-maitre-coq-gamme-coqenbox-1i4zp1q",
     "title": "Maître CoQ - Gamme CoQenBox",
     "type": "ODR",
     "category": "autre",
@@ -2196,9 +1931,9 @@
     "savingAmount": 1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/maitre-coq-coupon/108668",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Maître CoQ - Gamme CoQenBox"
@@ -2223,7 +1958,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108610",
+    "externalId": "auto-bonduelle-protein-bowl-wf9rry",
     "title": "Bonduelle - Protein Bowl",
     "type": "ODR",
     "category": "autre",
@@ -2233,9 +1968,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bonduelle-coupon/108610",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Bonduelle - Protein Bowl"
@@ -2261,7 +1996,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109557",
+    "externalId": "auto-danone-le-petit-proteine-x12-1xwdkyz",
     "title": "Danone - Le petit protéiné x12",
     "type": "ODR",
     "category": "autre",
@@ -2271,9 +2006,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/109557",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Danone - Le petit protéiné x12"
@@ -2299,7 +2034,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109566",
+    "externalId": "auto-st-hubert-st-hubert-epaisse-2oyybw",
     "title": "St Hubert - St Hubert Épaisse®",
     "type": "ODR",
     "category": "autre",
@@ -2309,9 +2044,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/st-hubert-coupon/109566",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "St Hubert - St Hubert Épaisse®"
@@ -2337,7 +2072,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109481",
+    "externalId": "auto-lactel-gamme-lactel-proteines-qje8x4",
     "title": "Lactel - Gamme Lactel Protéines",
     "type": "ODR",
     "category": "autre",
@@ -2347,9 +2082,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lactel-coupon/109481",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lactel - Gamme Lactel Protéines"
@@ -2375,7 +2110,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109439",
+    "externalId": "auto-kiri-kiri-creme-obstas",
     "title": "Kiri® - Kiri® Crème",
     "type": "ODR",
     "category": "autre",
@@ -2385,9 +2120,9 @@
     "savingAmount": 0.9,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 2,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/kiri-coupon/109439",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Kiri® - Kiri® Crème"
@@ -2413,7 +2148,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109376",
+    "externalId": "auto-proactiv-margarine-1trfs92",
     "title": "ProActiv - Margarine",
     "type": "ODR",
     "category": "autre",
@@ -2423,9 +2158,9 @@
     "savingAmount": 0.6,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pro-activ-coupon/109376",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "ProActiv - Margarine"
@@ -2450,7 +2185,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109280",
+    "externalId": "auto-candia-le-lait-sans-lactose-4x50cl-1b1zubd",
     "title": "Candia + Le Lait sans Lactose - 4x50cl",
     "type": "ODR",
     "category": "autre",
@@ -2460,9 +2195,9 @@
     "savingAmount": 0.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/candia-coupon/109280",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Candia + Le Lait sans Lactose - 4x50cl"
@@ -2487,7 +2222,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109144",
+    "externalId": "auto-soignon-buche-de-chevre-tradition-ou-extra-fondante-qbgkek",
     "title": "Soignon - Bûche de chèvre Tradition ou Extra-Fondante",
     "type": "ODR",
     "category": "autre",
@@ -2497,9 +2232,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/soignon-coupon/109144",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Soignon - Bûche de chèvre Tradition ou Extra-Fondante"
@@ -2525,7 +2260,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109162",
+    "externalId": "auto-danone-danone-a-la-grecque-e82zax",
     "title": "Danone - Danone à la Grecque",
     "type": "ODR",
     "category": "autre",
@@ -2535,9 +2270,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/109162",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Danone - Danone à la Grecque"
@@ -2563,7 +2298,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109116",
+    "externalId": "auto-lactel-vitamine-d-6x50cl-1qq8xe4",
     "title": "Lactel - Vitamine D 6x50cL",
     "type": "ODR",
     "category": "autre",
@@ -2573,9 +2308,9 @@
     "savingAmount": 1.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lactel-coupon/109116",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lactel - Vitamine D 6x50cL"
@@ -2601,7 +2336,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109125",
+    "externalId": "auto-danette-creme-dessert-111tndm",
     "title": "Danette - Crème dessert",
     "type": "ODR",
     "category": "autre",
@@ -2611,9 +2346,9 @@
     "savingAmount": 0.6,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danette-coupon/109125",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Danette - Crème dessert"
@@ -2639,7 +2374,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109053",
+    "externalId": "auto-danone-yaourts-proteines-1cpr6mu",
     "title": "Danone - Yaourts protéinés",
     "type": "ODR",
     "category": "autre",
@@ -2649,9 +2384,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/109053",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Danone - Yaourts protéinés"
@@ -2677,7 +2412,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108887",
+    "externalId": "auto-lactel-lait-bio-1btcs1x",
     "title": "Lactel - Lait Bio",
     "type": "ODR",
     "category": "autre",
@@ -2687,9 +2422,9 @@
     "savingAmount": 1.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lactel-coupon/108887",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lactel - Lait Bio"
@@ -2714,7 +2449,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108896",
+    "externalId": "auto-chaussee-aux-moines-340g-1n0ju4e",
     "title": "Chaussée aux Moines - 340g",
     "type": "ODR",
     "category": "autre",
@@ -2724,9 +2459,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/chaussee-aux-moines-coupon/108896",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Chaussée aux Moines - 340g"
@@ -2751,7 +2486,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108878",
+    "externalId": "auto-danone-danone-skyr-znc03k",
     "title": "Danone - Danone Skyr",
     "type": "ODR",
     "category": "autre",
@@ -2761,9 +2496,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/danone-coupon/108878",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Danone - Danone Skyr"
@@ -2789,7 +2524,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108731",
+    "externalId": "auto-e-graindorge-camembert-de-normandie-aop-tix3on",
     "title": "E.Graindorge - Camembert de Normandie AOP",
     "type": "ODR",
     "category": "autre",
@@ -2799,9 +2534,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/graindorge-coupon/108731",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "E.Graindorge - Camembert de Normandie AOP"
@@ -2827,7 +2562,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108619",
+    "externalId": "auto-frutii-compotes-4x100g-c6259",
     "title": "Frutii' - Compotes 4x100g",
     "type": "ODR",
     "category": "autre",
@@ -2837,9 +2572,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/frutii-coupon/108619",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Frutii' - Compotes 4x100g"
@@ -2865,7 +2600,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109699",
+    "externalId": "auto-lay-s-lay-s-gourmet-c05qrp",
     "title": "Lay's - Lay's Gourmet",
     "type": "ODR",
     "category": "autre",
@@ -2875,9 +2610,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lays-aromatise-coupon/109699",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lay's - Lay's Gourmet"
@@ -2902,7 +2637,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109708",
+    "externalId": "auto-mutti-tetra-600g-et-500g-1v628qk",
     "title": "Mutti – Tetra 600g et 500g",
     "type": "ODR",
     "category": "autre",
@@ -2912,9 +2647,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/mutti-coupon/109708",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Mutti – Tetra 600g et 500g"
@@ -2940,7 +2675,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109593",
+    "externalId": "auto-samia-produits-orientaux-188hmaq",
     "title": "Samia - Produits Orientaux",
     "type": "ODR",
     "category": "autre",
@@ -2950,9 +2685,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/samia-coupon/109593",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Samia - Produits Orientaux"
@@ -2977,7 +2712,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109490",
+    "externalId": "auto-nescafe-dolce-gusto-dosettes-neo-184gdix",
     "title": "Nescafé® Dolce Gusto® - Dosettes NEO",
     "type": "ODR",
     "category": "autre",
@@ -2987,9 +2722,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/dolce-gusto-coupon/109490",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Nescafé® Dolce Gusto® - Dosettes NEO"
@@ -3014,7 +2749,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109528",
+    "externalId": "auto-le-savoureux-thon-a-l-huile-d-olive-dn4brz",
     "title": "Le Savoureux - Thon à l'huile d'olive",
     "type": "ODR",
     "category": "autre",
@@ -3024,9 +2759,9 @@
     "savingAmount": 0.6,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/le-savoureux-coupon/109528",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Le Savoureux - Thon à l'huile d'olive"
@@ -3052,7 +2787,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109519",
+    "externalId": "auto-regilait-sachet-175g-de-yaourt-maison-1d69fje",
     "title": "Régilait – Sachet 175g de Yaourt Maison",
     "type": "ODR",
     "category": "autre",
@@ -3062,9 +2797,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/regilait-coupon/109519",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Régilait – Sachet 175g de Yaourt Maison"
@@ -3090,7 +2825,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109463",
+    "externalId": "auto-harrys-100-mie-1gvvxyu",
     "title": "Harrys - 100% Mie",
     "type": "ODR",
     "category": "autre",
@@ -3100,9 +2835,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/harrys-coupon/109463",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Harrys - 100% Mie"
@@ -3124,7 +2859,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109430",
+    "externalId": "auto-l-or-espresso-concentrate-qjpsw2",
     "title": "L'Or - Espresso Concentrate",
     "type": "ODR",
     "category": "autre",
@@ -3134,9 +2869,9 @@
     "savingAmount": 0.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/l-or-coupon/109430",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "L'Or - Espresso Concentrate"
@@ -3162,7 +2897,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109421",
+    "externalId": "auto-lactel-caffe-latte-classico-et-caffe-latte-cappuccin-ggu4d5",
     "title": "Lactel - Caffè Latte Classico et Caffè Latte Cappuccino",
     "type": "ODR",
     "category": "autre",
@@ -3172,9 +2907,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/lactel-coupon/109421",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Lactel - Caffè Latte Classico et Caffè Latte Cappuccino"
@@ -3200,7 +2935,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109171",
+    "externalId": "auto-grand-mere-cafe-en-grains-1yu4ik1",
     "title": "Grand'Mère - Café en grains",
     "type": "ODR",
     "category": "autre",
@@ -3210,9 +2945,9 @@
     "savingAmount": 1.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 2,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/grand-mere-coupon/109171",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Grand'Mère - Café en grains"
@@ -3238,7 +2973,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109071",
+    "externalId": "auto-l-or-cafe-en-grains-12jmu3d",
     "title": "L'OR - Café en grains",
     "type": "ODR",
     "category": "autre",
@@ -3248,9 +2983,9 @@
     "savingAmount": 1.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 2,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/l-or-coupon/109071",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "L'OR - Café en grains"
@@ -3276,7 +3011,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109098",
+    "externalId": "auto-poulain-tablettes-de-chocolat-1848-1jiv99s",
     "title": "Poulain - Tablettes de chocolat 1848",
     "type": "ODR",
     "category": "autre",
@@ -3286,9 +3021,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/poulain-coupon/109098",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Poulain - Tablettes de chocolat 1848"
@@ -3314,7 +3049,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108800",
+    "externalId": "auto-pasquier-grilletine-mhzv1s",
     "title": "Pasquier - Grilletine",
     "type": "ODR",
     "category": "autre",
@@ -3324,9 +3059,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/pasquier-coupon/108800",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Pasquier - Grilletine"
@@ -3351,7 +3086,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108791",
+    "externalId": "auto-cerebos-sels-1ea8qin",
     "title": "Cérébos - Sels",
     "type": "ODR",
     "category": "autre",
@@ -3361,9 +3096,9 @@
     "savingAmount": 0.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/cerebos-coupon/108791",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Cérébos - Sels"
@@ -3388,7 +3123,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108722",
+    "externalId": "auto-nescafe-farmers-origins-capsules-pour-machine-nespre-14c4f6",
     "title": "NESCAFÉ® Farmers Origins - Capsules pour machine NESPRESSO®",
     "type": "ODR",
     "category": "autre",
@@ -3398,9 +3133,9 @@
     "savingAmount": 1.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/nescafe-coupon/108722",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "NESCAFÉ® Farmers Origins - Capsules pour machine NESPRESSO®"
@@ -3426,7 +3161,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108686",
+    "externalId": "auto-les-vergers-de-chateaubourg-asterix-compotes-en-gour-71fqvw",
     "title": "Les Vergers de Chateaubourg Astérix - Compotes en gourdes x4, x12 ou x20",
     "type": "ODR",
     "category": "autre",
@@ -3436,9 +3171,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/les-vergers-de-chateaubourg-coupon/108686",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Les Vergers de Chateaubourg Astérix - Compotes en gourdes x4, x12 ou x20"
@@ -3464,7 +3199,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108601",
+    "externalId": "auto-bonduelle-mais-sans-residu-de-pesticides-et-sans-suc-bsr4qt",
     "title": "Bonduelle – Maïs sans résidu de pesticides¹ et sans sucres ajoutés",
     "type": "ODR",
     "category": "autre",
@@ -3474,9 +3209,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bonduelle-coupon/108601",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Bonduelle – Maïs sans résidu de pesticides¹ et sans sucres ajoutés"
@@ -3502,7 +3237,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109638",
+    "externalId": "auto-innocent-jus-de-fruit-900ml-1wugu1a",
     "title": "innocent - jus de fruit 900ml",
     "type": "ODR",
     "category": "autre",
@@ -3512,9 +3247,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/innocent-coupon/109638",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "innocent - jus de fruit 900ml"
@@ -3540,7 +3275,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108637",
+    "externalId": "auto-volvic-volvic-tea-1-5l-1wzfhvh",
     "title": "Volvic - Volvic Tea 1,5L",
     "type": "ODR",
     "category": "autre",
@@ -3550,9 +3285,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/volvic-coupon/108637",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Volvic - Volvic Tea 1,5L"
@@ -3578,7 +3313,45 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109602",
+    "externalId": "auto-maitre-coq-sachet-surgele-600g-sysws8",
+    "title": "Maître Coq - Sachet Surgelé 600g",
+    "type": "ODR",
+    "category": "autre",
+    "stores": [
+      "all"
+    ],
+    "savingAmount": 1.3,
+    "savingAmountMode": "per-offer",
+    "minPurchaseQty": 1,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
+    "scope": "produit",
+    "referenceNames": [
+      "Maître Coq - Sachet Surgelé 600g"
+    ],
+    "productMatch": {
+      "brands": [
+        "Maître Coq"
+      ],
+      "all": [
+        "Sachet",
+        "Surgele"
+      ],
+      "minScore": 75
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "unknown",
+    "stacking": "activation et conditions Coupon Network à vérifier",
+    "conditions": "Sur l'achat d'un produit Maître Coq au choix dans la gamme Volaille Surgelée en sachet 600g. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
+  },
+  {
+    "providerId": "coupon-network",
+    "provider": "Coupon Network",
+    "externalId": "auto-sun-capsules-gamme-pro-expert-6cwsfq",
     "title": "Sun - Capsules gamme Pro-Expert",
     "type": "ODR",
     "category": "autre",
@@ -3588,9 +3361,9 @@
     "savingAmount": 1.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sun-coupon/109602",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Sun - Capsules gamme Pro-Expert"
@@ -3616,7 +3389,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109472",
+    "externalId": "auto-rubson-absorbeurs-et-recharges-w29ctd",
     "title": "Rubson - Absorbeurs et recharges",
     "type": "ODR",
     "category": "autre",
@@ -3626,9 +3399,9 @@
     "savingAmount": 2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/rubson-aero-coupon/109472",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Rubson - Absorbeurs et recharges"
@@ -3654,7 +3427,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108764",
+    "externalId": "auto-soupline-adoucissant-gamme-parfum-de-linge-ee0r1l",
     "title": "Soupline - Adoucissant gamme Parfum de Linge",
     "type": "ODR",
     "category": "autre",
@@ -3664,9 +3437,9 @@
     "savingAmount": 0.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/soupline-coupon/108764",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Soupline - Adoucissant gamme Parfum de Linge"
@@ -3692,7 +3465,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108713",
+    "externalId": "auto-soupline-adoucissant-gamme-fraicheur-infinie-11tswpf",
     "title": "Soupline - Adoucissant gamme Fraicheur Infinie",
     "type": "ODR",
     "category": "autre",
@@ -3702,9 +3475,9 @@
     "savingAmount": 1.1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/soupline-coupon/108713",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Soupline - Adoucissant gamme Fraicheur Infinie"
@@ -3730,7 +3503,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109153",
+    "externalId": "auto-schwarzkopf-gliss-shampooings-1xp0vq3",
     "title": "Schwarzkopf Gliss - Shampooings",
     "type": "ODR",
     "category": "autre",
@@ -3740,9 +3513,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/schwarzkopf-coupon/109153",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Schwarzkopf Gliss - Shampooings"
@@ -3767,7 +3540,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108923",
+    "externalId": "auto-sanex-deodorants-z3vgg8",
     "title": "Sanex - Déodorants",
     "type": "ODR",
     "category": "autre",
@@ -3777,9 +3550,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sanex-coupon/108923",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Sanex - Déodorants"
@@ -3804,7 +3577,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108869",
+    "externalId": "auto-schwarzkopf-gliss-apres-shampooings-et-laits-demelan-14l194i",
     "title": "Schwarzkopf Gliss - Après-shampooings et laits démêlants",
     "type": "ODR",
     "category": "autre",
@@ -3814,9 +3587,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/schwarzkopf-coupon/108869",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Schwarzkopf Gliss - Après-shampooings et laits démêlants"
@@ -3842,7 +3615,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108827",
+    "externalId": "auto-schwarzkopf-gliss-soins-pqxvsi",
     "title": "Schwarzkopf Gliss - Soins",
     "type": "ODR",
     "category": "autre",
@@ -3852,9 +3625,9 @@
     "savingAmount": 1.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/schwarzkopf-coupon/108827",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Schwarzkopf Gliss - Soins"
@@ -3879,7 +3652,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108818",
+    "externalId": "auto-sanex-gels-douche-1xzvm2m",
     "title": "Sanex - Gels Douche",
     "type": "ODR",
     "category": "autre",
@@ -3889,9 +3662,9 @@
     "savingAmount": 0.8,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/sanex-coupon/108818",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Sanex - Gels Douche"
@@ -3917,7 +3690,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108695",
+    "externalId": "auto-elmex-dentifrices-jdonfr",
     "title": "Elmex - Dentifrices",
     "type": "ODR",
     "category": "autre",
@@ -3927,9 +3700,9 @@
     "savingAmount": 0.9,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/elmex-coupon/108695",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Elmex - Dentifrices"
@@ -3954,45 +3727,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108740",
-    "title": "Blédina - Blédichef Midi et Soir",
-    "type": "ODR",
-    "category": "autre",
-    "stores": [
-      "all"
-    ],
-    "savingAmount": 0.5,
-    "savingAmountMode": "per-offer",
-    "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bledina-coupon/108740",
-    "scope": "produit",
-    "referenceNames": [
-      "Blédina - Blédichef Midi et Soir"
-    ],
-    "productMatch": {
-      "brands": [
-        "Blédina"
-      ],
-      "all": [
-        "Bledichef",
-        "Midi"
-      ],
-      "minScore": 75
-    },
-    "mechanism": "manufacturer_refund",
-    "stackGroup": "manufacturer-refund",
-    "savingBasis": "base",
-    "autoStack": false,
-    "stackingConfidence": "unknown",
-    "stacking": "activation et conditions Coupon Network à vérifier",
-    "conditions": "Sur l'achat d'un produit Blédina dans la gamme Assiettes Blédichef. Offre détectée automatiquement depuis la page publique Coupon Network ; référence exacte et cumul à vérifier avant achat."
-  },
-  {
-    "providerId": "coupon-network",
-    "provider": "Coupon Network",
-    "externalId": "detail-109584",
+    "externalId": "auto-bumbu-rhum-70cl-oen2ze",
     "title": "Bumbu - Rhum 70cl",
     "type": "ODR",
     "category": "autre",
@@ -4002,9 +3737,9 @@
     "savingAmount": 1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bumbu-coupon/109584",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Bumbu - Rhum 70cl"
@@ -4030,7 +3765,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109134",
+    "externalId": "auto-grain-d-envie-global-gamme-1qv5q1v",
     "title": "Grain d'Envie - Global Gamme",
     "type": "ODR",
     "category": "autre",
@@ -4040,9 +3775,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/grain-d-envie-coupon/109134",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Grain d'Envie - Global Gamme"
@@ -4067,7 +3802,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109089",
+    "externalId": "auto-roche-mazet-bouteille-75cl-8ssl6",
     "title": "Roche Mazet - Bouteille 75cl",
     "type": "ODR",
     "category": "autre",
@@ -4077,9 +3812,9 @@
     "savingAmount": 0.6,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/roche-mazet-coupon/109089",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Roche Mazet - Bouteille 75cl"
@@ -4104,7 +3839,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108860",
+    "externalId": "auto-mont-blanc-la-blonde-75cl-1hgwo0a",
     "title": "Mont Blanc - La Blonde 75cl",
     "type": "ODR",
     "category": "autre",
@@ -4114,9 +3849,9 @@
     "savingAmount": 0.7,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/brasserie-du-mont-blanc-coupon/108860",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Mont Blanc - La Blonde 75cl"
@@ -4142,7 +3877,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108905",
+    "externalId": "auto-la-chouffe-biere-blonde-33cl-hat8bu",
     "title": "La Chouffe - Bière blonde 33cl",
     "type": "ODR",
     "category": "autre",
@@ -4152,9 +3887,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/chouffe-coupon/108905",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "La Chouffe - Bière blonde 33cl"
@@ -4180,7 +3915,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108782",
+    "externalId": "auto-chouffe-bieres-sans-alcool-k68zb0",
     "title": "Chouffe - Bières sans alcool",
     "type": "ODR",
     "category": "autre",
@@ -4190,9 +3925,9 @@
     "savingAmount": 1.2,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/chouffe-coupon/108782",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Chouffe - Bières sans alcool"
@@ -4218,7 +3953,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108755",
+    "externalId": "auto-duvel-biere-blonde-33cl-1mccv7a",
     "title": "Duvel - Bière blonde 33cl",
     "type": "ODR",
     "category": "autre",
@@ -4228,9 +3963,9 @@
     "savingAmount": 0.3,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/duvel-coupon/108755",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Duvel - Bière blonde 33cl"
@@ -4256,7 +3991,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109620",
+    "externalId": "auto-purina-one-croquettes-pour-chat-3kg-7-5kg-3ie1w7",
     "title": "PURINA® ONE® - Croquettes pour chat 3kg + 7,5kg",
     "type": "ODR",
     "category": "autre",
@@ -4266,9 +4001,9 @@
     "savingAmount": 1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/purina-one-coupon/109620",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "PURINA® ONE® - Croquettes pour chat 3kg + 7,5kg"
@@ -4294,7 +4029,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109611",
+    "externalId": "auto-purina-one-croquettes-pour-chien-mini-1-5kg-6pbtm9",
     "title": "PURINA® ONE® - Croquettes pour chien mini 1,5kg",
     "type": "ODR",
     "category": "autre",
@@ -4304,9 +4039,9 @@
     "savingAmount": 0.5,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/purina-one-coupon/109611",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "PURINA® ONE® - Croquettes pour chien mini 1,5kg"
@@ -4332,7 +4067,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108773",
+    "externalId": "auto-ultima-delicious-et-expert-nutrition-hwwn2r",
     "title": "Ultima - Delicious et Expert Nutrition",
     "type": "ODR",
     "category": "autre",
@@ -4342,9 +4077,9 @@
     "savingAmount": 0.4,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/ultima-coupon/108773",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Ultima - Delicious et Expert Nutrition"
@@ -4370,7 +4105,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-108592",
+    "externalId": "auto-cesar-croquettes-1-4kg-1bwgb8m",
     "title": "Cesar® - Croquettes 1,4kg",
     "type": "ODR",
     "category": "autre",
@@ -4380,9 +4115,9 @@
     "savingAmount": 1,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/cesar-coupon/108592",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "Cesar® - Croquettes 1,4kg"
@@ -4408,7 +4143,7 @@
   {
     "providerId": "coupon-network",
     "provider": "Coupon Network",
-    "externalId": "detail-109403",
+    "externalId": "auto-bic-vibbies-8vblai",
     "title": "BIC - Vibbies",
     "type": "ODR",
     "category": "autre",
@@ -4418,9 +4153,9 @@
     "savingAmount": 0.6,
     "savingAmountMode": "per-offer",
     "minPurchaseQty": 1,
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
-    "sourceUrl": "https://www.couponnetwork.fr/autres-enseignes-cashback-coupons/bic-coupon/109403",
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-18",
+    "sourceUrl": "https://prod-cn-offers.couponnetwork.fr/",
     "scope": "produit",
     "referenceNames": [
       "BIC - Vibbies"

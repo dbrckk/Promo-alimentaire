@@ -1,10 +1,10 @@
 {
   "sources": {
     "coupon-network": {
-      "status": "unavailable",
-      "checkedAt": "2026-10-11T10:58:05.479Z",
-      "reason": "Page publique accessible sans offres exploitables dans son HTML (rendu JavaScript possible ; flux public autorisé nécessaire) (0 détectées, 118 anciennes conservées, seuil 20)",
-      "extractedCount": 0,
+      "status": "updated",
+      "checkedAt": "2026-10-11T20:50:57.906Z",
+      "reason": "Données publiques extraites et validées",
+      "extractedCount": 111,
       "previousSnapshotCount": 118
     }
   }
