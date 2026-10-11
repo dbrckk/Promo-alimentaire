@@ -264,6 +264,54 @@ test("les diagnostics par enseigne priment sur le fichier historique partagé",a
 });
 
 
+test("le statut Shopmium spécifique masque uniquement les offres non reconfirmées",async()=>{
+  const offer={
+    providerId:"shopmium",externalId:"food",title:"Promo alimentaire Shopmium",
+    stores:["all"],scope:"produit",savingPercent:30,
+    verifiedAt:"2026-10-09",reviewAfter:"2026-10-14",
+    sourceUrl:"https://offers.shopmium.com/fr/n/kiri-6",
+    autoStack:false
+  };
+  const now=new Date("2026-10-11T20:00:00Z");
+  const fetchImpl=async(url)=>{
+    const file=String(url);
+    if(file.endsWith("/index.json")){
+      return {ok:true,json:async()=>({files:["shopmium-auto.json"]})};
+    }
+    if(file.endsWith("/shopmium-auto.json")){
+      return {ok:true,json:async()=>[offer]};
+    }
+    if(file.endsWith("/source-sync-status.json")){
+      return {ok:true,json:async()=>({sources:{shopmium:{
+        status:"updated",checkedAt:"2026-10-10T11:00:00Z",
+        reason:"ancienne réussite"
+      }}})};
+    }
+    if(file.endsWith("/source-sync-shopmium.json")){
+      return {ok:true,json:async()=>({sources:{shopmium:{
+        status:"unavailable",checkedAt:"2026-10-11T18:30:00Z",
+        reason:"Accès public temporairement indisponible",
+        extractedCount:0,previousSnapshotCount:1
+      }}})};
+    }
+    return {ok:false,status:404};
+  };
+  const result=await loadImportedOffers({fetchImpl,now});
+  assert.equal(result.offers.length,1);
+  assert.equal(result.offers[0].verifiedAt,"2026-10-09");
+  assert.equal(result.offers[0].sourceSyncWarning.status,"unavailable");
+  assert.equal(result.sourceStats[0].status,"sync-warning");
+  assert.equal(result.sourceStats[0].syncState.confirmedCount,0);
+  assert.equal(result.sourceStats[0].syncState.previousSnapshotCount,1);
+  // After the original review window, even a source outage must not
+  // resurrect the old cashback or extend its public validity.
+  const expired=await loadImportedOffers({
+    fetchImpl,now:new Date("2026-10-16T12:00:00Z")
+  });
+  assert.equal(expired.offers.length,0);
+  assert.equal(expired.sourceStats[0].status,"stale");
+});
+
 test("une source indisponible conserve un indicateur indépendant de révision proche",async()=>{
   const today=new Date("2026-10-08T12:00:00Z");
   const sourceOffers=[{

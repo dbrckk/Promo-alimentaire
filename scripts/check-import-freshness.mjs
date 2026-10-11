@@ -18,7 +18,7 @@ const warningDays=Number(process.env.WARNING_DAYS || 3);
 // Distinguish an expired catalog from an unreachable provider. Both are
 // actionable, but neither is evidence that historical offers are live.
 const sourceSync={};
-for(const file of ["source-sync-status.json","source-sync-carrefour.json","source-sync-leclerc.json"]){
+for(const file of ["source-sync-status.json","source-sync-carrefour.json","source-sync-leclerc.json","source-sync-shopmium.json"]){
   try{
     const data=JSON.parse(await readFile(new URL(file,directory),"utf8"));
     if(data?.sources && typeof data.sources==="object" && !Array.isArray(data.sources)){

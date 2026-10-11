@@ -589,3 +589,12 @@ Le fournisseur affiche parfois « **A retrouver au rayon frais** », « **Au ray
 ### Dates et changement d'heure (stabilisation)
 
 Les offres datées `YYYY-MM-DD` sont actives sur **toute la journée française (Europe/Paris)**, y compris lorsque l'appareil Android ou GitHub Actions utilise un autre fuseau horaire. Les offres avec heure précise conservent leurs horaires exacts, notamment la clôture anticipée d'une ODR. La PWA et ses badges de date sont synchronisés sur cette logique, y compris lors du changement d'heure. Cette correction ne reconfirme pas les offres arrivées à expiration.
+
+
+### État réel des synchronisations Shopmium (11 octobre 2026)
+
+La vérification des offres Shopmium dispose désormais de son propre diagnostic dans `data/import/source-sync-shopmium.json`, distinct des fichiers Carrefour, E.Leclerc et Coupon Network. Le dernier contrôle public confirmé dans GitHub Actions (run `38164195398`) a récupéré **47 fiches officielles actives** le 11 octobre 2026.
+
+À chaque synchronisation, le workflow consigne le nombre de fiches effectivement reconfirmées **aujourd'hui**, la date de contrôle et l'état : `updated` (toutes confirmées), `partial` (seulement certaines), `unavailable` (aucune preuve exploitable ou erreur). Si l'extracteur échoue ou si Shopmium limite l'accès, **l'ancien snapshot n'est ni remplacé par zéro offre, ni artificiellement prolongé**. Le diagnostic est publié dans un fichier indépendant ; la PWA affiche alors « source non actualisée » et écarte les candidates non reconfirmées du filtre de fiabilité par défaut. Les fiches arrivent toujours à expiration selon **leur propre date de révision**.
+
+Le job d'actualisation sépare les erreurs d'accès aux données commerciales des erreurs techniques du dépôt : il conserve les avertissements dans GitHub Actions et valide le code ainsi que les données avant de publier le diagnostic. La copie de ce diagnostic est incluse dans les ressources essentielles pour l'utilisation hors ligne. La présence d'un statut `updated` n'est pas une garantie d'éligibilité produit, de stock ni de remboursement en caisse.

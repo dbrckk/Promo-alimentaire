@@ -31,20 +31,26 @@ jobs:
         with:
           node-version: 22
       - name: Fetch and build conservative Shopmium snapshot
+        id: source
+        continue-on-error: true
         run: npm run sync:shopmium -- --write
+      - name: Record factual Shopmium source availability
+        env:
+          SHOPMIUM_SYNC_OUTCOME: ${{ steps.source.outcome }}
+        run: node scripts/record-shopmium-sync-status.mjs --write
       - name: Validate generated data
         run: npm run verify
       - name: Commit snapshot when changed
         shell: bash
         run: |
-          if git diff --quiet -- data/import/shopmium-auto.json data/import/index.json; then
+          if git diff --quiet -- data/import/shopmium-auto.json data/import/index.json data/import/source-sync-shopmium.json; then
             echo "No Shopmium snapshot change to commit."
             exit 0
           fi
           git config user.name "promo-alimentaire-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/import/shopmium-auto.json data/import/index.json
-          git commit -m "data: refresh Shopmium public offers"
+          git add data/import/shopmium-auto.json data/import/index.json data/import/source-sync-shopmium.json
+          git commit -m "data: record Shopmium public refresh and source status"
           for attempt in 1 2 3; do
             git fetch origin main
             if git rebase origin/main; then

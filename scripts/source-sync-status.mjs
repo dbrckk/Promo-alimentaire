@@ -1,10 +1,10 @@
 import {readFile,writeFile,appendFile} from "node:fs/promises";
 
 // Per-provider state files prevent rebase conflicts between concurrent workflows.
-const RETAILER_STATUS_SOURCES=new Set(["carrefour","leclerc"]);
+const PROVIDER_STATUS_SOURCES=new Set(["carrefour","leclerc","shopmium"]);
 
 export function sourceSyncStatusFile(source){
-  if(!RETAILER_STATUS_SOURCES.has(source)){
+  if(!PROVIDER_STATUS_SOURCES.has(source)){
     throw new Error("Source non prise en charge.");
   }
   return new URL("../data/import/source-sync-"+source+".json",import.meta.url);
@@ -32,7 +32,7 @@ export function makeSourceSyncStatus({
 export async function writeSourceSyncStatus(source,args,{write=false}={}){
   const status=makeSourceSyncStatus(args);
   if(!write) return status;
-  // Each store owns its own diagnostics file, so concurrent sync commits
+  // Each provider owns its own diagnostics file, so concurrent sync commits
   // never need to merge unrelated supplier updates.
   const file=sourceSyncStatusFile(source);
   const payload=JSON.parse(await readFile(file,"utf8"));
