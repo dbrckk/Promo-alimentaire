@@ -95,6 +95,12 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
   const savingCapAmount=parseShopmiumSavingCap(text);
   const unlockRequirement=parseShopmiumUnlockRequirement(text);
   const productMatch=deriveShopmiumProductMatch(title,referenceNames);
+  // Explicit attribution on Shopmium takes precedence over guessing a
+  // brand from a campaign headline or the first product descriptor.
+  const officialBrand=extractShopmiumOfficialBrand(raw);
+  if(officialBrand){
+    if(productMatch) productMatch.brands=[officialBrand];
+  }
 
   return {
     providerId:"shopmium",
@@ -199,6 +205,16 @@ export function parseReferenceNames(html){
     result.push(cleaned);
   }
   return [...new Set(result)].slice(0,30);
+}
+
+function extractShopmiumOfficialBrand(html){
+  const lines=htmlToLines(html);
+  const line=lines.find((value)=>
+    /^Cette offre vous est proposée par\s*:/i.test(value)
+  );
+  const brand=line?.match(/^Cette offre vous est proposée par\s*:\s*([^|]{2,80})$/i)?.[1]?.trim();
+  return brand && /^[\p{L}0-9][\p{L}0-9 .&'-]{1,79}$/u.test(brand)
+    ? brand : null;
 }
 
 export function deriveShopmiumProductMatch(title,referenceNames=[]){
