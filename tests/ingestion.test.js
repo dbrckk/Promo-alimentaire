@@ -58,6 +58,42 @@ test("normalizeImportedOffer conserve productMatch et quantityTiers",()=>{
   assert.equal(result.value.quantityTiers[1].savingPercent,30);
 });
 
+test("date civile française : offre vérifiée, activée et expirée à minuit Paris",()=>{
+  const beforeSummerMidnight=new Date("2026-10-11T21:59:59Z"); // 23:59:59 Paris
+  const afterSummerMidnight=new Date("2026-10-11T22:00:00Z"); // 00:00 Paris, 12 October
+  const oneDay={
+    verifiedAt:"2026-10-11",startsAt:"2026-10-11",
+    expiresAt:"2026-10-11",reviewAfter:"2026-10-11"
+  };
+  assert.equal(isOfferActive(oneDay,beforeSummerMidnight),true);
+  assert.equal(isOfferActive(oneDay,afterSummerMidnight),false);
+  assert.equal(isOfferActive({...oneDay,verifiedAt:"2026-10-12",startsAt:"2026-10-12",
+    expiresAt:"2026-10-12",reviewAfter:"2026-10-12"},beforeSummerMidnight),false);
+  assert.equal(isOfferActive({...oneDay,verifiedAt:"2026-10-12",startsAt:"2026-10-12",
+    expiresAt:"2026-10-12",reviewAfter:"2026-10-12"},afterSummerMidnight),true);
+  // A supplier providing a clock and explicit timezone keeps the exact
+  // instant, including after Paris local midnight.
+  assert.equal(isOfferActive({
+    verifiedAt:"2026-10-11",expiresAt:"2026-10-11T22:30:00Z"
+  },new Date("2026-10-11T22:15:00Z")),true);
+  assert.equal(isOfferActive({
+    verifiedAt:"2026-10-11",expiresAt:"2026-10-11T22:30:00Z"
+  },new Date("2026-10-11T22:30:01Z")),false);
+});
+
+test("passage d'heure d'hiver : fin de journée française sans glissement UTC",()=>{
+  // The offset changes from UTC+2 to UTC+1 on 25 October 2026.
+  const fullDay={verifiedAt:"2026-10-25",reviewAfter:"2026-10-25"};
+  assert.equal(isOfferActive(fullDay,new Date("2026-10-25T22:59:59Z")),true);
+  assert.equal(isOfferActive(fullDay,new Date("2026-10-25T23:00:00Z")),false);
+  const staleShopmium={
+    providerId:"shopmium",verifiedAt:"2026-10-07",
+    expiresAt:"2026-12-31"
+  };
+  assert.equal(isOfferActive(staleShopmium,new Date("2026-10-12T21:59:59Z")),true);
+  assert.equal(isOfferActive(staleShopmium,new Date("2026-10-12T22:00:00Z")),false);
+});
+
 test("isOfferActive respecte reviewAfter",()=>{
   const offer={...valid,expiresAt:null,reviewAfter:"2026-10-20"};
   assert.equal(isOfferActive(offer,new Date("2026-10-19T12:00:00Z")),true);
