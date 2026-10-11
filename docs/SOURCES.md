@@ -2,6 +2,14 @@
 
 Dernière revue : 2026-10-07.
 
+## Sécurité des économies fidélité Carrefour — revue du 11 octobre 2026
+
+Source : [conditions PASS officielles](https://www.carrefour.fr/services/carte-pass), [FAQ Avantages Club](https://www.carrefour.fr/faq?question=est-ce-les-primes-fidelite), [activation dans l'application](https://www.carrefour.fr/faq?question=comment-puis-je-adherer-primes-fidelite).
+
+L'activation explicite des avantages Club est requise. La carte PASS doit être rattachée au Club et utilisée pour le paiement afin d'obtenir les 15 % concernés. La réduction est **créditée en cagnotte**, ne se cumule pas automatiquement avec d'autres promotions, et exclut plusieurs catégories ou références, dont certains produits à 0,99 € ou 1,29 €, lots, fruits/légumes secs, conserves et surgelés. Le simple champ « je possède une carte » ne justifie donc **jamais** un gain en euros garanti.
+
+Une catégorie/une marque Open Food Facts ne prouve pas un EAN éligible chez le commerçant : les avantages générés sont des **candidats heuristiques** sans `eans` fabriqués ni `autoStack`. Ils ne sont plus calculés après la date de révision tant que la source n'est pas reverifiée. Toute autre campagne expirée est également filtrée dans le moteur panier, même si l'appelant a oublié le filtrage de l'interface.
+
 ## Incident de synchronisation constaté le 10 octobre 2026
 
 La vérification des journaux GitHub Actions établit deux défaillances différentes :
