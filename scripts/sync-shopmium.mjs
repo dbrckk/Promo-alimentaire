@@ -1,5 +1,5 @@
 import { readFile,writeFile } from "node:fs/promises";
-import { extractShopmiumOfferUrls,mergeShopmiumOfferUrls,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
+import { extractShopmiumOfferUrls,extractShopmiumLandingDetailUrls,isOfficialShopmiumOfferUrl,mergeShopmiumOfferUrls,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
 import { isOfferActive,validateImportBatch } from "../src/ingestion.js";
 
 const INDEX_URL="https://offers.shopmium.com/fr/";
@@ -32,27 +32,73 @@ console.log("[shopmium] "+indexUrls.length+" fiches index + "+watchlist.urls.len
   " liens surveillés, soit "+urls.length+" fiches uniques à revalider.");
 
 const parsed=[];
-const batchSize=10;
-for(let start=0;start<urls.length;start+=batchSize){
-  const batch=urls.slice(start,start+batchSize);
-  const results=await Promise.all(batch.map(async(url)=>{
-    try{
-      const response=await fetch(url,{
-        headers:{Accept:"text/html,application/xhtml+xml","User-Agent":"PromoAlimentaire/0.1 public-offer-sync"},
-        redirect:"follow",signal:AbortSignal.timeout(12000)
-      });
-      if(!response.ok || !response.url.startsWith("https://offers.shopmium.com/fr/n/")){
+const discoveredDetails=new Set();
+const batchSize=8;
+// Bounded public-page crawl: official offers index -> campaign landing page
+// -> individual official terms, with no deeper traversal or guessed offers.
+// A 401/403/429 is an access limit; stop instead of retrying or bypassing it.
+const MAX_PAGES=110;
+const primaryUrls=urls.slice(0,MAX_PAGES);
+let accessDenied=false;
+let fetched=0;
+let unavailable=0;
+
+async function inspectPages(candidates,{allowLandingDiscovery=false}={}){
+  for(let start=0;start<candidates.length && !accessDenied;start+=batchSize){
+    const batch=candidates.slice(start,start+batchSize);
+    const results=await Promise.all(batch.map(async(url)=>{
+      if(!isOfficialShopmiumOfferUrl(url)) return null;
+      try{
+        const response=await fetch(url,{
+          headers:{Accept:"text/html,application/xhtml+xml",
+            "User-Agent":"PromoAlimentaire/0.1 public-offer-sync"},
+          redirect:"follow",signal:AbortSignal.timeout(12000)
+        });
+        if([401,403,429].includes(response.status)){
+          accessDenied=true;
+          return null;
+        }
+        if(!response.ok || !isOfficialShopmiumOfferUrl(response.url)){
+          unavailable+=1;
+          return null;
+        }
+        const html=await response.text();
+        fetched+=1;
+        const offer=parseShopmiumDetailHtml(html,url,{verifiedAt});
+        const children=allowLandingDiscovery && !offer
+          ? extractShopmiumLandingDetailUrls(html,url) : [];
+        return {offer,children};
+      }catch{
+        unavailable+=1;
         return null;
       }
-      return parseShopmiumDetailHtml(await response.text(),url,{verifiedAt});
-    }catch{return null;}
-  }));
-  parsed.push(...results.filter(Boolean));
-  await new Promise((resolve)=>setTimeout(resolve,80));
+    }));
+    for(const result of results){
+      if(!result) continue;
+      if(result.offer) parsed.push(result.offer);
+      for(const child of result.children) discoveredDetails.add(child);
+    }
+    // Keep requests modest even when the public index contains many cards.
+    if(start+batchSize<candidates.length){
+      await new Promise((resolve)=>setTimeout(resolve,150));
+    }
+  }
 }
+
+await inspectPages(primaryUrls,{allowLandingDiscovery:true});
+const knownUrls=new Set(primaryUrls);
+const childUrls=[...discoveredDetails].filter((url)=>!knownUrls.has(url))
+  .slice(0,Math.max(0,MAX_PAGES-primaryUrls.length));
+console.log("[shopmium] "+discoveredDetails.size+
+  " liens de détail officiels trouvés dans les pages campagne ; "+
+  childUrls.length+" fiche(s) supplémentaires à vérifier.");
+await inspectPages(childUrls);
+console.log("[shopmium] "+fetched+" page(s) officielles lues, "+
+  unavailable+" indisponible(s), accès limité="+accessDenied+".");
 
 const byId=new Map(parsed.map((offer)=>[offer.externalId,offer]));
 const active=[...byId.values()].filter((offer)=>isOfferActive(offer,now));
+if(accessDenied) throw new Error("Shopmium refuse ou limite les requêtes publiques (401/403/429) ; snapshot existant préservé sans prolonger les offres.");
 if(active.length<minOffers){
   throw new Error("Extraction Shopmium active insuffisante : "+active.length+" offre(s), minimum "+minOffers+".");
 }
