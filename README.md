@@ -344,7 +344,7 @@ Les états Carrefour, E.Leclerc et Coupon Network sont stockés indépendamment 
 
 Le panier privilégie le **relevé le plus récent**, même si un ancien prix promotionnel était inférieur. En cas de relevés contradictoires le même jour, le montant le plus élevé évite une estimation excessivement optimiste. Chaque ligne indique la date de la source ; les prix de plus de 30 jours sont signalés.
 
-L'historique conserve les relevés pour plusieurs magasins physiques identifiables, au lieu de retenir un seul prix pour toute l'enseigne. Les baisses ne sont jamais détectées à partir de magasins distincts ou de prix contradictoires d'un même jour. Les observations dont le magasin n'est pas identifiable ne déclenchent pas d'alerte.
+L'historique conserve les relevés pour plusieurs magasins physiques identifiables, au lieu de retenir un seul prix pour toute l'enseigne. Les baisses ne sont jamais détectées à partir de magasins distincts ou de prix contradictoires d'un même jour. Les observations dont le magasin n'est pas identifiable ne déclenchent pas d'alerte. Si le dernier magasin observé n'a qu'un seul relevé, l'onglet Produit recherche le **magasin identifié le plus récent avec deux dates comparables**, plutôt que d'afficher une fausse absence de tendance. Le calcul ne mélange jamais les magasins. Les dates de la tendance sont affichées, avec une mise en garde sur les anciens prix ou tickets remisés.
 
 Une promotion immédiate ne devient pas automatiquement une économie acquise lorsque le dernier prix normal observé date de **plus de sept jours** ; elle reste candidate, à vérifier.
 
