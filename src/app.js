@@ -2616,7 +2616,38 @@ els.installButton.addEventListener("click",async()=>{
 });
 
 if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+  const updateNotice=document.querySelector("#appUpdateNotice");
+  const updateNow=document.querySelector("#appUpdateNow");
+  let wasControlled=Boolean(navigator.serviceWorker.controller);
+  let registration=null;
+  let lastUpdateCheck=0;
+
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    // First installation has no previous active app; do not ask to reload.
+    // On subsequent updates, give the shopper control of when to reload
+    // instead of discarding an ongoing form or network request.
+    if(wasControlled) updateNotice.classList.remove("hidden");
+    wasControlled=true;
+  });
+  updateNow.addEventListener("click",()=>window.location.reload());
+
+  window.addEventListener("load",async()=>{
+    try{
+      registration=await navigator.serviceWorker.register("./sw.js");
+      lastUpdateCheck=Date.now();
+    }catch{
+      // Offline and private-mode settings must not prevent using the web app.
+    }
+  });
+  document.addEventListener("visibilitychange",()=>{
+    // Installed PWAs can stay open for days. Ask the browser for a new
+    // release on foreground return, but avoid constant background polling.
+    if(document.visibilityState!=="visible" || !navigator.onLine || !registration) return;
+    const now=Date.now();
+    if(now-lastUpdateCheck<30*60*1000) return;
+    lastUpdateCheck=now;
+    registration.update().catch(()=>{});
+  });
 }
 
 syncNearbyControls();
