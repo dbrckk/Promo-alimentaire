@@ -58,6 +58,27 @@ try{
   assert.equal(response.status(),200);
   await page.locator("#stats .stat").first().waitFor({timeout:10000});
   assert.match(await page.title(),/Promo Alimentaire/);
+  await page.waitForFunction(()=>
+    document.querySelector("#datasetDate")?.textContent?.includes("offre(s) importée(s) active(s)"),
+    null,{timeout:12000}
+  );
+  const importedEvidence=await page.evaluate(async()=>{
+    const {loadImportedOffers}=await import("./src/import-loader.js");
+    const result=await loadImportedOffers();
+    const latest=result.offers.map((offer)=>offer.verifiedAt).filter(Boolean)
+      .sort((a,b)=>new Date(a)-new Date(b)).at(-1) || null;
+    return {count:result.offers.length,latest};
+  });
+  const footer=await page.locator("#datasetDate").innerText();
+  assert.match(footer,/Catalogue de référence : 07\/10\/2026/);
+  assert.ok(footer.includes(importedEvidence.count+" offre(s) importée(s) active(s)"));
+  assert.doesNotMatch(footer,/Offres vérifiées :/);
+  if(importedEvidence.latest){
+    const expected=new Date(importedEvidence.latest).toLocaleDateString("fr-FR");
+    assert.ok(footer.includes("Dernière preuve d'offre active : "+expected));
+  }else{
+    assert.doesNotMatch(footer,/Dernière preuve d'offre active/);
+  }
   // Check the actual ingestion module inside Chrome Android rather than
   // accepting impossible or future source timestamps as savings evidence.
   const importDateSafety=await page.evaluate(async()=>{
