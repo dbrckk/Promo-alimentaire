@@ -45,7 +45,11 @@ test("le mode lecture n'écrit jamais dans le dépôt",async()=>{
 test("chaque synchroniseur écrit un fichier différent, sans conflit Git",()=>{
   const a=sourceSyncStatusFile("carrefour").pathname;
   const b=sourceSyncStatusFile("leclerc").pathname;
+  const c=sourceSyncStatusFile("shopmium").pathname;
   assert.ok(a.endsWith("/source-sync-carrefour.json"));
   assert.ok(b.endsWith("/source-sync-leclerc.json"));
+  assert.ok(c.endsWith("/source-sync-shopmium.json"));
   assert.notEqual(a,b);
+  assert.notEqual(a,c);
+  assert.notEqual(b,c);
 });
