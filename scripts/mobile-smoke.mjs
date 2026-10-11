@@ -459,6 +459,53 @@ try{
   }
   assert.equal(failedSourceSafety.older.autoStack,true);
   assert.equal(failedSourceSafety.future.autoStack,true);
+  // Shopmium has its own provider-owned sync status file. A source outage
+  // must be visible for active ODRs, with no fabricated verification date.
+  const shopmiumOutage=await page.evaluate(async()=>{
+    const {loadImportedOffers}=await import("./src/import-loader.js");
+    const raw={
+      providerId:"shopmium",externalId:"stock",title:"Promo alimentaire",
+      scope:"produit",stores:["all"],savingPercent:30,
+      verifiedAt:"2026-10-09",reviewAfter:"2026-10-14",
+      sourceUrl:"https://offers.shopmium.com/fr/n/kiri-6",
+      productMatch:{brands:["Kiri"]}
+    };
+    const fetchImpl=async(url)=>{
+      const file=String(url);
+      if(file.endsWith("/index.json")){
+        return {ok:true,json:async()=>({files:["shopmium-auto.json"]})};
+      }
+      if(file.endsWith("/shopmium-auto.json")){
+        return {ok:true,json:async()=>[raw]};
+      }
+      if(file.endsWith("/source-sync-shopmium.json")){
+        return {ok:true,json:async()=>({sources:{shopmium:{
+          status:"unavailable",checkedAt:"2026-10-11T18:35:00Z",
+          extractedCount:0,previousSnapshotCount:1,
+          reason:"Accès officiel non disponible"
+        }}})};
+      }
+      return {ok:false,status:404};
+    };
+    const before=await loadImportedOffers({
+      fetchImpl,now:new Date("2026-10-11T19:30:00Z")
+    });
+    const expired=await loadImportedOffers({
+      fetchImpl,now:new Date("2026-10-16T19:30:00Z")
+    });
+    return {
+      active:before.offers.length,
+      warning:before.offers[0]?.sourceSyncWarning?.status||null,
+      sourceStatus:before.sourceStats[0]?.status,
+      originalVerifiedAt:before.offers[0]?.verifiedAt,
+      confirmedCount:before.sourceStats[0]?.syncState?.confirmedCount,
+      expiredCount:expired.offers.length
+    };
+  });
+  assert.deepEqual(shopmiumOutage,{
+    active:1,warning:"unavailable",sourceStatus:"sync-warning",
+    originalVerifiedAt:"2026-10-09",confirmedCount:0,expiredCount:0
+  });
   // A failed source refresh must never dominate the default offers screen.
   assert.equal(await page.locator("#sourceProof").inputValue(),"without-failure");
   const safeInitialCount=await page.locator("#offers .card").count();
