@@ -1310,6 +1310,11 @@ try{
     "Aucune variante de query-string ne doit saturer le stockage hors ligne");
   await context.setOffline(true);
   await page.reload({waitUntil:"domcontentloaded",timeout:25000});
+  // Even an installed PWA opened from a shared link with harmless query
+  // parameters must resolve to its cached application shell when offline.
+  const offlineLink=new URL(BASE);
+  offlineLink.searchParams.set("offline","1");
+  await page.goto(offlineLink.href,{waitUntil:"domcontentloaded",timeout:25000});
   await page.locator("#stats .stat").first().waitFor({timeout:12000});
   assert.match(await page.locator("h1").innerText(),/Promo Alimentaire/);
   // Verify shared GS1 identity and official evidence modules remain usable offline.
