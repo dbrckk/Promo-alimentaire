@@ -356,7 +356,7 @@ try{
       age:old.oldestPriceAgeDays,
       freshAge:fresh.oldestPriceAgeDays,
       boundaryRoundedAge:boundary.oldestPriceAgeDays,
-      boundaryExactAge:boundary.oldestPriceAgeExactDays,
+      boundaryPastSevenDays:boundary.oldestPriceAgeExactDays>7,
       boundaryBudget:budget({...boundary,locationReliable:true,priceChannelReliable:true}),
       oldBudget:budget(oldReliable),
       freshBudget:budget(freshReliable),
@@ -387,7 +387,7 @@ try{
   assert.deepEqual(budgetTruthfulness,{
     nullTotal:"unavailable",emptyTotal:"unavailable",falseTotal:"unavailable",
     incomplete:"partial-unknown",
-    age:21,freshAge:1,boundaryRoundedAge:7,boundaryExactAge:7.5,
+    age:21,freshAge:1,boundaryRoundedAge:7,boundaryPastSevenDays:true,
     boundaryBudget:"indicative-within",oldBudget:"indicative-within",
     freshBudget:"within",strategy:"indicative",
     singleRetailer:"insufficient",duplicateRetailer:"insufficient",
@@ -655,6 +655,40 @@ try{
   assert.deepEqual(invalidPriceDateSafety,{
     impossibleFresh:false,impossibleCoverage:0,impossiblePair:false,
     validIsoCoverage:1
+  });
+
+  // Civil-day receipts must be usable after midnight in France, even
+  // while UTC still reports yesterday. Respect both DST transitions and
+  // never classify 7.5-day/30.5-day receipts as ≤7/≤30 days.
+  const parisReceiptDates=await page.evaluate(async()=>{
+    const {
+      isFreshObservation,parsePriceEvidenceDate,priceFreshness,observationAgeDays
+    }=await import("./src/open-data.js");
+    const october=new Date("2026-10-10T22:30:00Z");
+    const march=new Date("2026-03-28T23:30:00Z");
+    const autumnDst=new Date("2026-10-24T22:30:00Z");
+    const atNoon=new Date("2026-10-11T12:00:00Z");
+    return {
+      sameDay:isFreshObservation({date:"2026-10-11"},7,october),
+      sameDayAge:observationAgeDays({date:"2026-10-11"},october),
+      marchMidnight:isFreshObservation({date:"2026-03-29"},7,march),
+      octoberMidnight:isFreshObservation({date:"2026-10-25"},7,autumnDst),
+      marchUtc:parsePriceEvidenceDate("2026-03-29")?.toISOString(),
+      octoberUtc:parsePriceEvidenceDate("2026-10-25")?.toISOString(),
+      weekLevel:priceFreshness({date:"2026-10-04"},atNoon).level,
+      monthLevel:priceFreshness({date:"2026-09-11"},atNoon).level,
+      expiredLevel:priceFreshness({date:"2026-06-13"},atNoon).level,
+      weekDayCount:priceFreshness({date:"2026-10-04"},atNoon).ageDays,
+      impossible:isFreshObservation({date:"2026-02-30"},7,atNoon)
+    };
+  });
+  assert.deepEqual(parisReceiptDates,{
+    sameDay:true,sameDayAge:0,marchMidnight:true,octoberMidnight:true,
+    marchUtc:"2026-03-28T23:00:00.000Z",
+    octoberUtc:"2026-10-24T22:00:00.000Z",
+    weekLevel:"recent",monthLevel:"old",expiredLevel:"stale",
+    weekDayCount:7,
+    impossible:false
   });
 
   // Check the *real browser module* against inconsistent pagination metadata.

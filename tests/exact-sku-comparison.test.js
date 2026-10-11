@@ -298,7 +298,7 @@ test("parmi plusieurs paires valides la plus récente prime, pas la moins chère
   const leclerc=[observation("leclerc",5,CODE,{id:"leclerc",date:"2026-10-09"})];
   const result=selectComparablePricePair(carrefour,leclerc,now);
   assert.equal(result.carrefour.id,"recent");
-  assert.equal(result.oldestAt,Date.parse("2026-10-09"));
+  assert.equal(result.oldestAt,Date.parse("2026-10-08T22:00:00Z"),"minuit civil à Paris en octobre");
 });
 
 test("conflits entre relevés simultanés : ne pas retenir le prix le plus optimiste",()=>{
