@@ -202,6 +202,28 @@ try{
   assert.match(exactStoreCards,/E.Leclerc Lyon/);
   assert.match(exactStoreCards,/Relevé inférieur sur la paire comparable : Carrefour/);
   assert.match(exactStoreCards,/Relevés retenus pour la comparaison locale/);
+  // The displayed receipt AND the actual selected comparison pair must link
+  // to the Open Prices record itself, without trusting arbitrary provider URLs.
+  const priceSourceLinks=await page.locator(
+    '#exactSkuComparison a[href^="https://prices.openfoodfacts.org/prices/"]'
+  ).evaluateAll((items)=>items.map((item)=>item.getAttribute("href")));
+  assert.equal(priceSourceLinks.length,4);
+  assert.equal(priceSourceLinks.filter((url)=>url.endsWith("/1")).length,2);
+  assert.equal(priceSourceLinks.filter((url)=>url.endsWith("/2")).length,2);
+  const validatedPriceUrls=await page.evaluate(async()=>{
+    const {priceObservationPublicUrl}=await import("./src/open-data.js");
+    return [
+      priceObservationPublicUrl(120),
+      priceObservationPublicUrl("javascript:alert(1)"),
+      priceObservationPublicUrl("../fake"),
+      priceObservationPublicUrl(0),
+      priceObservationPublicUrl(Number.MAX_SAFE_INTEGER+1)
+    ];
+  });
+  assert.deepEqual(validatedPriceUrls,[
+    "https://prices.openfoodfacts.org/prices/120",null,null,null,null
+  ]);
+
   assert.equal(await page.locator('[data-action="expand-exact-sku"]').count(),0,
     "Un relevé complet ne nécessite pas de recherche approfondie");
   assert.match(exactStoreCards,/0,10/);
