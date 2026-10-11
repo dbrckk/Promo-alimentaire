@@ -55,11 +55,20 @@
           <option value="full-refund">100 % remboursé sur un produit (conditions)</option>
         </select>
       </div>
+      <div class="field">
+        <label for="sourceProof">Fiabilité de la synchronisation</label>
+        <select id="sourceProof">
+          <option value="without-failure">Sans échec récent connu</option>
+          <option value="all">Toutes, y compris non reconfirmées</option>
+          <option value="failed">Non reconfirmées uniquement</option>
+        </select>
+      </div>
       <div class="field search-field">
         <label for="search">Recherche</label>
         <input id="search" type="search" placeholder="Produit, marque ou source…" autocomplete="off" />
       </div>
     </section>
+    <p id="offerVerificationSummary" class="help source-proof-summary" aria-live="polite"></p>
 
     <section class="panel offer-simulator-panel" aria-label="Simulation des économies">
       <div class="offer-simulator-copy">
