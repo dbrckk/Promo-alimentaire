@@ -151,6 +151,27 @@ try{
 
   // Discovery: independent food/free services and 50%+ non-food sources are separated.
   await page.locator('[data-tab="providers"]').click();
+  // The production catalogue validator must reject calendar-impossible or
+  // future "verification" dates, not merely rely on test fixture whitelists.
+  const discoveryDateSafety=await page.evaluate(async()=>{
+    const {validateDiscoveryProviders}=await import("./src/source-discovery.js");
+    const {providers}=await import("./src/data.js");
+    const base={id:"date-fixture",name:"Fixture alimentaire",
+      segment:"food",url:"https://example.com"};
+    const check=(date)=>validateDiscoveryProviders([{
+      ...base,discoveryVerifiedAt:date
+    }]).filter((error)=>error.includes("discoveryVerifiedAt")).length;
+    return {
+      catalog:validateDiscoveryProviders(providers).length,
+      valid:check("2026-10-08"),
+      future:check("2099-01-01"),
+      impossible:check("2026-02-30"),
+      malformed:check("10/11/2026")
+    };
+  });
+  assert.deepEqual(discoveryDateSafety,{
+    catalog:0,valid:0,future:1,impossible:1,malformed:1
+  });
   await page.locator("#sourceScope").selectOption("food");
   assert.match(await page.locator("#providers").innerText(),/MonAvisLeRendGratuit/);
   assert.match(await page.locator("#providers").innerText(),/HopHopFood/);
