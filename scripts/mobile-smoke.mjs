@@ -58,6 +58,36 @@ try{
   assert.equal(response.status(),200);
   await page.locator("#stats .stat").first().waitFor({timeout:10000});
   assert.match(await page.title(),/Promo Alimentaire/);
+  // Check the actual ingestion module inside Chrome Android rather than
+  // accepting impossible or future source timestamps as savings evidence.
+  const importDateSafety=await page.evaluate(async()=>{
+    const {normalizeImportedOffer,isOfferActive}=await import("./src/ingestion.js");
+    const sample={providerId:"coupon-network",externalId:"food-date-proof",
+      title:"Offre alimentaire datée",stores:["all"],savingPercent:50,
+      sourceUrl:"https://www.couponnetwork.fr/"};
+    const valid=(fields)=>normalizeImportedOffer({...sample,...fields}).ok;
+    const current=normalizeImportedOffer({...sample,
+      verifiedAt:"2026-10-11",reviewAfter:"2026-10-15"}).value;
+    const future=normalizeImportedOffer({...sample,
+      verifiedAt:"2026-10-12",reviewAfter:"2026-10-15"}).value;
+    const onDay=new Date("2026-10-11T12:00:00Z");
+    return {
+      impossibleVerified:valid({verifiedAt:"2026-02-30"}),
+      malformedVerified:valid({verifiedAt:"2026-10-11x"}),
+      impossibleReview:valid({verifiedAt:"2026-10-11",reviewAfter:"2026-02-30"}),
+      impossibleExpiry:valid({verifiedAt:"2026-10-11",expiresAt:"2026-04-31"}),
+      legitimateOffset:valid({verifiedAt:"2026-10-11",
+        startsAt:"2026-10-11T08:00:00+02:00"}),
+      currentActive:isOfferActive(current,onDay),
+      futureActive:isOfferActive(future,onDay),
+      tamperedActive:isOfferActive({...current,verifiedAt:"2026-02-30"},onDay)
+    };
+  });
+  assert.deepEqual(importDateSafety,{
+    impossibleVerified:false,malformedVerified:false,impossibleReview:false,
+    impossibleExpiry:false,legitimateOffset:true,
+    currentActive:true,futureActive:false,tamperedActive:false
+  });
   const statusFixture=JSON.parse(await readFile(
     new URL("../data/import/source-sync-status.json",import.meta.url),"utf8"
   ));

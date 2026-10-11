@@ -256,8 +256,20 @@ export function shopmiumLegacyReviewCutoff(offer){
 
 export function isOfferActive(offer,now=new Date()) {
   const current=new Date(now);
-  if(Number.isNaN(current.getTime())) return false;
-  if(offer.startsAt && current<new Date(offer.startsAt)) return false;
+  if(Number.isNaN(current.getTime()) || !offer || typeof offer!=="object") return false;
+  // A timestamp from tomorrow must not turn an unverified cashback into an
+  // eligible offer today. Missing verification is tolerated for legacy
+  // static rules, but a supplied invalid/future date always fails closed.
+  if(offer.verifiedAt){
+    const stamp=String(offer.verifiedAt);
+    const verifiedTime=new Date(stamp.length===10 ? stamp+"T00:00:00Z" : stamp);
+    if(!validOfferDate(stamp) || !Number.isFinite(verifiedTime.getTime())
+      || verifiedTime>current) return false;
+  }
+  if(offer.startsAt && (!validOfferDate(String(offer.startsAt))
+    || current<new Date(offer.startsAt))) return false;
+  if(offer.reviewAfter && !validOfferDate(String(offer.reviewAfter))) return false;
+  if(offer.expiresAt && !validOfferDate(String(offer.expiresAt))) return false;
   if(offer.expiresAt){
     const end=new Date(String(offer.expiresAt).length===10 ? offer.expiresAt+"T23:59:59" : offer.expiresAt);
     if(current>end) return false;
@@ -292,14 +304,29 @@ function httpsUrl(value,field,errors){
   }
 }
 
+// Only unambiguous ISO dates or ISO timestamps with an explicit timezone.
+// Date.parse alone silently normalizes impossible dates such as February 30.
+function validOfferDate(value){
+  const text=String(value);
+  const match=/^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2}))?$/.exec(text);
+  if(!match) return false;
+  const civil=match[1]+"-"+match[2]+"-"+match[3];
+  const day=new Date(civil+"T12:00:00Z");
+  if(!Number.isFinite(day.getTime()) || day.toISOString().slice(0,10)!==civil) return false;
+  if(text.length===10) return true;
+  // A full timestamp can be valid while carrying the preceding/following
+  // UTC day due to its timezone offset; only its local civil day is checked.
+  const instant=new Date(text);
+  return Number.isFinite(instant.getTime());
+}
+
 function dateValue(value,field,errors,required){
   if(value===null || value===undefined || value===""){
     if(required) errors.push(`${field} est requis.`);
     return null;
   }
   const text=String(value);
-  const date=new Date(text.length===10 ? text+"T12:00:00Z" : text);
-  if(Number.isNaN(date.getTime())){
+  if(!validOfferDate(text)){
     errors.push(`${field} est invalide.`);
     return null;
   }
