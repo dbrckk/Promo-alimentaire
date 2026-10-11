@@ -220,7 +220,7 @@ export function classifyShopmiumRayon(html){
   if(!rayon) return "autre";
   const label=rayon.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .toLocaleLowerCase("fr");
-  if(/\b(hygiene|beaute|cosmetique|dentaire|brosse|papier|parfumerie|entretien|menage|nettoyage|lessive|maison|sanitaire|toilette|sante|animalerie|chien|chat)\b/.test(label)){
+  if(/\b(hygiene|beaute|cosmetique|dentaire|dentifrice|brosses?|papier|mouchoirs?|parfumerie|entretien|menage|nettoyage|lessive|maison|sanitaire|toilette|sante|animalerie|chien|chat|douches?|adoucissants?|soins?|shampooings?|colorations?|savons?|textiles?|essuie.tout|linges?)\b/.test(label)){
     return "non-alimentaire";
   }
   if(/\b(epicerie|traiteur|cremerie|fromage|charcuterie|boucherie|poissonnerie|boulangerie|patisserie|confiserie|biscuit|boisson|sodas?|eaux?|lait|surgeles?|frais|fruits?|legumes?|pates?|riz|cafe|the|sucre|petit.dejeuner|alimentaire)\b/.test(label)){
