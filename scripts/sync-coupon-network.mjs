@@ -83,12 +83,11 @@ for(const sourceUrl of SOURCE_URLS){
   }
 }
 if(!pages.length){
-  await sourceUnavailable("Aucune page publique exploitable ("+sourceFailures.join(" ; ").slice(0,145)+")");
-  process.exit();
+  console.warn("[coupon-network] HTML public indisponible : essai du catalogue dans le navigateur.");
 }
 
 pages.sort((a,b)=>b.parsed.length-a.parsed.length);
-let offers=pages[0].parsed;
+let offers=pages[0]?.parsed || [];
 // The public catalogue may render the real product cards only after its
 // own JavaScript has run. A headless Chromium view of the same public,
 // unauthenticated page is an alternative to treating HTML 200 as proof.
@@ -167,9 +166,11 @@ if(!assessment.publish){
     "invalid-result":"Réponse du fournisseur invalide"
   };
   await sourceUnavailable(
-    (dynamicListing
-      ? "Page publique accessible sans offres exploitables dans son HTML (rendu JavaScript possible ; flux public autorisé nécessaire)"
-      : labels[assessment.reason] || "Snapshot public non publiable")+
+    (!pages.length
+      ? "Aucune page publique HTML accessible ("+sourceFailures.join(" ; ").slice(0,95)+"), rendu navigateur insuffisant"
+      : dynamicListing
+        ? "Page publique accessible sans cartes suffisamment vérifiables, même après rendu navigateur"
+        : labels[assessment.reason] || "Snapshot public non publiable")+
       " ("+assessment.count+" détectées, "+previousCount+" anciennes conservées, seuil "+minOffers+")",
     assessment.count
   );
