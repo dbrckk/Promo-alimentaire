@@ -247,7 +247,7 @@ test("une ligne expose sa meilleure ODR candidate avec niveau de correspondance"
 });
 
 
-test("Club Carrefour applique 10% sur un produit Carrefour Bio",()=>{
+test("Club Carrefour reste potentiel sans preuve d'activation",()=>{
   const bio={
     code:"77777775",name:"Pâtes bio",brands:"Carrefour Bio",categories:[]
   };
@@ -256,14 +256,15 @@ test("Club Carrefour applique 10% sur un produit Carrefour Bio",()=>{
     loyaltyProfile:{carrefour:"club",leclerc:"unknown"},
     priceByCode:{"77777775":[{price:10,date:"2026-10-01"}]},
     offers:[],
-    now:new Date("2026-10-07T12:00:00Z")
+    now:new Date("2026-10-12T12:00:00Z")
   });
-  assert.equal(scenario.guaranteedSaving,1);
-  assert.equal(scenario.finalCost,9);
+  assert.equal(scenario.guaranteedSaving,0);
+  assert.equal(scenario.finalCost,10);
+  assert.equal(scenario.potentialProductSaving,1);
   assert.equal(scenario.lines[0].bestProductCandidate.offer.mechanism,"retailer_loyalty");
 });
 
-test("Carte PASS applique 15% au lieu de 10%",()=>{
+test("Carte PASS indique 15% potentiels sans paiement ni activation prouvés",()=>{
   const bio={
     code:"88888880",name:"Riz bio",brands:"Carrefour Bio",categories:[]
   };
@@ -272,10 +273,11 @@ test("Carte PASS applique 15% au lieu de 10%",()=>{
     loyaltyProfile:{carrefour:"pass"},
     priceByCode:{"88888880":[{price:20,date:"2026-10-01"}]},
     offers:[],
-    now:new Date("2026-10-07T12:00:00Z")
+    now:new Date("2026-10-12T12:00:00Z")
   });
-  assert.equal(scenario.guaranteedSaving,3);
-  assert.equal(scenario.finalCost,17);
+  assert.equal(scenario.guaranteedSaving,0);
+  assert.equal(scenario.finalCost,20);
+  assert.equal(scenario.potentialProductSaving,3);
 });
 
 test("profil Carrefour inconnu laisse l'avantage seulement potentiel",()=>{
@@ -287,7 +289,7 @@ test("profil Carrefour inconnu laisse l'avantage seulement potentiel",()=>{
     loyaltyProfile:{carrefour:"unknown"},
     priceByCode:{"99999995":[{price:10,date:"2026-10-01"}]},
     offers:[],
-    now:new Date("2026-10-07T12:00:00Z")
+    now:new Date("2026-10-12T12:00:00Z")
   });
   assert.equal(scenario.guaranteedSaving,0);
   assert.equal(scenario.potentialProductSaving,1);
@@ -320,7 +322,7 @@ test("Ticket E.Leclerc exige la carte si l'offre le demande",()=>{
 });
 
 
-test("PASS sépare prix caisse et cagnotte fidélité",()=>{
+test("PASS sans activation/paiement vérifiés ne retire aucun euro du coût garanti",()=>{
   const bio={
     code:"10101018",name:"Produit Bio",brands:"Carrefour Bio",categories:[]
   };
@@ -329,12 +331,13 @@ test("PASS sépare prix caisse et cagnotte fidélité",()=>{
     loyaltyProfile:{carrefour:"pass"},
     priceByCode:{"10101018":[{price:20,date:"2026-10-01"}]},
     offers:[],
-    now:new Date("2026-10-07T12:00:00Z")
+    now:new Date("2026-10-12T12:00:00Z")
   });
   assert.equal(scenario.checkoutCost,20);
-  assert.equal(scenario.loyaltyCredit,3);
-  assert.equal(scenario.finalCost,17);
-  assert.equal(scenario.savingsBreakdown.loyaltyGuaranteed,3);
+  assert.equal(scenario.loyaltyCredit,0);
+  assert.equal(scenario.finalCost,20);
+  assert.equal(scenario.savingsBreakdown.loyaltyGuaranteed,0);
+  assert.equal(scenario.potentialProductSaving,3);
 });
 
 test("une remise immédiate garantie baisse le prix caisse",()=>{
