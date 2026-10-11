@@ -22,12 +22,23 @@ function failedRefreshWarning(offer,syncSources,now){
 
 
 export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
+  // Use abortable requests so a stalled CDN cannot freeze Android startup.
+  // Keep a small connection pool to avoid saturating mobile networks.
+  const readJSON=async(url,timeoutMs)=>{
+    const response=await fetchImpl(url,{
+      headers:{Accept:"application/json"},
+      signal:AbortSignal.timeout(timeoutMs)
+    });
+    if(!response.ok) throw new Error("HTTP "+response.status);
+    return response.json();
+  };
   const manifestUrl=new URL("../data/import/index.json",import.meta.url);
-  const manifestResponse=await fetchImpl(manifestUrl,{headers:{Accept:"application/json"}});
-  if(!manifestResponse.ok) {
-    throw new Error(`Manifest d'offres indisponible (${manifestResponse.status}).`);
+  let manifest;
+  try{
+    manifest=await readJSON(manifestUrl,8000);
+  }catch(error){
+    throw new Error("Manifest d'offres indisponible : "+error.message);
   }
-  const manifest=await manifestResponse.json();
   const checkedManifest=inspectImportManifest(manifest);
   if(!checkedManifest.ok){
     throw new Error("Manifeste d'offres refusé : "+checkedManifest.issues.join(" "));
@@ -35,21 +46,24 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
   const syncSources={};
   // Load shared legacy status first, then provider files. The latter win
   // when both contain the same supplier, avoiding concurrent Git writes.
-  for(const file of [
+  const syncFiles=[
     "source-sync-status.json",
     "source-sync-carrefour.json",
     "source-sync-leclerc.json"
-  ]){
+  ];
+  const syncResults=await Promise.all(syncFiles.map(async(file)=>{
     try{
-      const url=new URL("../data/import/"+file,import.meta.url);
-      const response=await fetchImpl(url,{headers:{Accept:"application/json"}});
-      if(!response.ok) continue;
-      const data=await response.json();
-      if(data?.sources && typeof data.sources==="object" && !Array.isArray(data.sources)){
-        Object.assign(syncSources,data.sources);
-      }
+      return await readJSON(new URL("../data/import/"+file,import.meta.url),5000);
     }catch{
       // Diagnostics are optional; never make offer validity depend on them.
+      return null;
+    }
+  }));
+  // Apply statuses in a stable order: provider-specific files override the
+  // shared legacy status even if requests finish in another order.
+  for(const data of syncResults){
+    if(data?.sources && typeof data.sources==="object" && !Array.isArray(data.sources)){
+      Object.assign(syncSources,data.sources);
     }
   }
   const files=checkedManifest.files;
@@ -58,12 +72,27 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
   const sourceStats=[];
   const ids=new Set();
 
-  for(const file of files){
-    const url=new URL(`../data/import/${file}`,import.meta.url);
+  // Up to three simultaneous downloads; commit the validated results below
+  // in manifest order to preserve collision handling and source summaries.
+  const downloaded=new Array(files.length);
+  let cursor=0;
+  await Promise.all(Array.from({length:Math.min(3,files.length)},async()=>{
+    while(cursor<files.length){
+      const index=cursor++;
+      try{
+        downloaded[index]={
+          payload:await readJSON(new URL("../data/import/"+files[index],import.meta.url),9000)
+        };
+      }catch(error){
+        downloaded[index]={error};
+      }
+    }
+  }));
+
+  for(const [index,file] of files.entries()){
     try{
-      const response=await fetchImpl(url,{headers:{Accept:"application/json"}});
-      if(!response.ok) throw new Error(`HTTP ${response.status}`);
-      const payload=await response.json();
+      if(downloaded[index].error) throw downloaded[index].error;
+      const payload=downloaded[index].payload;
       const records=Array.isArray(payload) ? payload : payload?.offers;
       const result=validateImportBatch(records);
       if(!result.ok){
