@@ -356,16 +356,34 @@ try{
       freshAge:fresh.oldestPriceAgeDays,
       oldBudget:budget(oldReliable),
       freshBudget:budget(freshReliable),
-      strategy:summarizeBasketStrategies([freshReliable,oldReliable],{
+      strategy:summarizeBasketStrategies([
+        freshReliable,{...oldReliable,store:"leclerc"}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      singleRetailer:summarizeBasketStrategies([freshReliable],{
         channel:"store",nearbyEnabled:true
-      }).status
+      }).status,
+      duplicateRetailer:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,finalCost:9}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      missingPeer:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,store:"leclerc",isComplete:false}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      invalidPeer:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,store:"leclerc",finalCost:null}
+      ],{channel:"store",nearbyEnabled:true}).status,
+      freshPair:summarizeBasketStrategies([
+        freshReliable,{...freshReliable,store:"leclerc",finalCost:11}
+      ],{channel:"store",nearbyEnabled:true}).status
     };
   });
   assert.deepEqual(budgetTruthfulness,{
     nullTotal:"unavailable",emptyTotal:"unavailable",falseTotal:"unavailable",
     incomplete:"partial-unknown",
     age:21,freshAge:1,oldBudget:"indicative-within",
-    freshBudget:"within",strategy:"indicative"
+    freshBudget:"within",strategy:"indicative",
+    singleRetailer:"insufficient",duplicateRetailer:"insufficient",
+    missingPeer:"insufficient",invalidPeer:"insufficient",
+    freshPair:"ready"
   });
   // Corrupted barcode text must never become an "exact GTIN" by dropping
   // arbitrary characters. Bad checksums must not contact external APIs.
