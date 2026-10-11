@@ -1,10 +1,10 @@
 const CACHE_PREFIX="promo-alimentaire-";
-const CACHE=CACHE_PREFIX+"v79";
+const CACHE=CACHE_PREFIX+"v80";
 const STATIC_ASSETS=[
   "./","./index.html","./styles.css","./src/app.js","./src/data.js","./src/source-discovery.js","./src/domain.js","./src/offer-simulator.js",
   "./src/open-data.js","./src/manual-prices.js","./src/promo-price-check.js","./src/stacking.js","./src/matching.js","./src/exact-sku-comparison.js","./src/retailer-promo.js","./src/bundle.js","./src/basket.js","./src/budget.js","./src/shopping-list-transfer.js",
   "./src/confidence.js","./src/history.js","./src/action-plan.js","./src/verification-queue.js","./src/strategy.js","./src/loyalty.js","./src/evidence.js","./src/local-verification.js","./src/product-history.js","./src/gtin.js",
-  "./src/ingestion.js","./src/retailer-ean-evidence.js","./src/import-loader.js","./data/import/index.json","./data/import/source-sync-status.json","./data/import/source-sync-carrefour.json","./data/import/source-sync-leclerc.json",
+  "./src/ingestion.js","./src/retailer-ean-evidence.js","./src/import-loader.js","./src/import-manifest.js","./data/import/index.json","./data/import/source-sync-status.json","./data/import/source-sync-carrefour.json","./data/import/source-sync-leclerc.json",
   "./data/import/payment-discounts-auto.json","./manifest.webmanifest","./icon.svg"
 ];
 
@@ -16,10 +16,17 @@ self.addEventListener("install",(event)=>{
       const response=await fetch("./data/import/index.json",{cache:"no-store"});
       if(!response.ok) return;
       const manifest=await response.json();
-      const files=Array.isArray(manifest?.files) ? manifest.files : [];
-      await Promise.allSettled(files.map((file)=>
-        cache.add("./data/import/"+encodeURIComponent(file).replace(/%2F/gi,"/"))
-      ));
+      const files=manifest?.files;
+      const safe=(file)=>typeof file==="string"
+        && /^[a-z0-9][a-z0-9-]{0,99}\.json$/.test(file)
+        && file!=="index.json" && !file.startsWith("source-sync-");
+      // Invalid metadata must not turn an install into arbitrary URL fetches.
+      if(Array.isArray(files) && files.length<=60
+        && files.every(safe) && new Set(files).size===files.length){
+        await Promise.allSettled(files.map((file)=>
+          cache.add("./data/import/"+file)
+        ));
+      }
     }catch{
       // L'application reste installable même si une source distante est temporairement indisponible.
     }

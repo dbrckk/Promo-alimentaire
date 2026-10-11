@@ -272,3 +272,7 @@ Une source de promotion contenant des codes EAN explicites s'applique **uniqueme
 ### Présentation des offres avec échec de source — 11/10/2026
 
 Une dernière synchronisation `unavailable` ou `partial`, plus récente que la preuve `verifiedAt`, ajoute `sourceSyncWarning` à chaque offre active concernée et désactive son cumul automatique. Le filtre des offres masque **par défaut** ces candidates non reconfirmées, mais un réglage explicite permet de les consulter et de vérifier les liens officiels. La date `verifiedAt`, `reviewAfter` et le taux ne sont ni prolongés ni artificiellement revalidés. Les sources dont le diagnostic manque ne deviennent pas pour autant des réductions garanties. L'audit de fraîcheur strict continue à signaler les sources totalement expirées.
+
+### Intégrité du manifeste des sources importées
+
+Un manifeste distant ne doit jamais pouvoir demander la lecture d'un autre chemin ou d'un autre domaine. La validation commune `src/import-manifest.js` impose un maximum de 60 noms `*.json` locaux, sans doublons, sans traversée de répertoires ni fichiers réservés aux diagnostics. CI, application et précache PWA appliquent cette restriction. Le refus bloque le lot non fiable, sans créer de fausses offres ni invalider les ressources statiques hors ligne.

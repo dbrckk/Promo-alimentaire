@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { validateImportBatch } from "../src/ingestion.js";
 import { validatePaymentRateSafety } from "../src/adapters/payment-discounts.js";
+import {inspectImportManifest} from "../src/import-manifest.js";
 
 const directory=new URL("../data/import/",import.meta.url);
 let files=[];
@@ -15,6 +16,29 @@ try{
 
 let failed=false;
 let total=0;
+
+// The validator must check the files referenced by the live PWA, not merely
+// every JSON found in the repository directory.
+try{
+  const manifest=JSON.parse(await readFile(new URL("index.json",directory),"utf8"));
+  const checked=inspectImportManifest(manifest);
+  if(!checked.ok){
+    failed=true;
+    for(const issue of checked.issues) console.error("[import-manifest] "+issue);
+  }else{
+    const available=new Set(files);
+    for(const name of checked.files){
+      if(!available.has(name)){
+        failed=true;
+        console.error("[import-manifest] Fichier déclaré mais introuvable : "+name);
+      }
+    }
+    console.log("[import-manifest] "+checked.files.length+" fichiers locaux autorisés.");
+  }
+}catch(error){
+  failed=true;
+  console.error("[import-manifest] Lecture impossible : "+error.message);
+}
 
 for(const file of files){
   const path=join(directory.pathname,file);

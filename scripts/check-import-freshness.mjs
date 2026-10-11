@@ -1,12 +1,15 @@
 import { readFile,appendFile } from "node:fs/promises";
 import { join } from "node:path";
 import { isOfferActive, validateImportBatch } from "../src/ingestion.js";
+import {inspectImportManifest} from "../src/import-manifest.js";
 
 const directory=new URL("../data/import/",import.meta.url);
 const manifest=JSON.parse(await readFile(new URL("index.json",directory),"utf8"));
-const files=[...new Set(Array.isArray(manifest?.files) ? manifest.files : [])]
-  .filter((name)=>typeof name==="string" && name.endsWith(".json") && name!=="index.json")
-  .sort();
+const checkedManifest=inspectImportManifest(manifest);
+if(!checkedManifest.ok){
+  throw new Error("Manifeste invalide : "+checkedManifest.issues.join(" "));
+}
+const files=checkedManifest.files.sort();
 
 const now=new Date(process.env.CHECK_DATE || new Date().toISOString());
 const strict=process.argv.includes("--strict");
