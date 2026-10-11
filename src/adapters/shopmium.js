@@ -94,6 +94,7 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
   if(!stores.length || !channels.length) return null;
   const savingCapAmount=parseShopmiumSavingCap(text);
   const unlockRequirement=parseShopmiumUnlockRequirement(text);
+  const category=classifyShopmiumRayon(raw);
   const productMatch=deriveShopmiumProductMatch(title,referenceNames);
   // Explicit attribution on Shopmium takes precedence over guessing a
   // brand from a campaign headline or the first product descriptor.
@@ -108,7 +109,7 @@ export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={
     externalId:"auto-"+slugFromUrl(sourceUrl),
     title,
     type:"ODR",
-    category:"autre",
+    category,
     stores,
     channels,
     ...(Number.isFinite(savingPercent)?{savingPercent}:{}),
@@ -205,6 +206,27 @@ export function parseReferenceNames(html){
     result.push(cleaned);
   }
   return [...new Set(result)].slice(0,30);
+}
+
+/**
+ * Read the supplier's own "Au rayon ..." field. This avoids treating every
+ * Shopmium offer as groceries simply because it is sold in a supermarket.
+ * Unknown departments remain "autre" until explicitly classified.
+ */
+export function classifyShopmiumRayon(html){
+  const rayon=htmlToLines(html)
+    .find((line)=>/^Au rayon\s+/i.test(line))
+    ?.replace(/^Au rayon\s+/i,"").trim() || "";
+  if(!rayon) return "autre";
+  const label=rayon.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLocaleLowerCase("fr");
+  if(/\b(hygiene|beaute|cosmetique|dentaire|dentifrice|brosses?|papier|mouchoirs?|parfumerie|entretien|menage|nettoyage|lessive|maison|sanitaire|toilette|sante|animalerie|chien|chat|douches?|adoucissants?|soins?|shampooings?|colorations?|savons?|textiles?|essuie.tout|linges?)\b/.test(label)){
+    return "non-alimentaire";
+  }
+  if(/\b(epicerie|traiteur|cremerie|fromage|charcuterie|boucherie|poissonnerie|boulangerie|patisserie|confiserie|biscuit|boissons?|sodas?|eaux?|lait|surgeles?|frais|fruits?|legumes?|pates?|riz|cafe|the|sucre|petit.dejeuner|alimentaire)\b/.test(label)){
+    return "alimentaire";
+  }
+  return "autre";
 }
 
 function extractShopmiumOfficialBrand(html){

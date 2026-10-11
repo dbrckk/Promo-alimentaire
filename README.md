@@ -572,3 +572,12 @@ Les jobs Shopmium, Coupon Network, Carrefour, E.Leclerc, La Belle Adresse et rem
 - le SHA courant de `main` diffère du SHA dont est parti le synchroniseur, ce qui indique un nouveau commit à contrôler.
 
 Le code et les imports sont revérifiés par `npm run verify` sur le dernier `main`, puis le workflow Pages existant publie ce commit exact, contrôle les fichiers publics en HTTPS, et lance le parcours complet Chromium Android contre la PWA publiée. Si une source est simplement inaccessible et n'a pas écrit de nouveau commit, **aucun redéploiement inutile n'est lancé** par ce mécanisme. Un échec de CI interdit toujours la publication. L'exécution quotidienne de secours reste active à 08:33 UTC.
+
+
+### Périmètre alimentaire et règle des 50 % (11 octobre 2026)
+
+L'application est d'abord destinée aux **courses alimentaires**. Les offres d'entretien, hygiène, beauté et autres produits clairement **non alimentaires** n'apparaissent dans les résultats, calculs sur EAN ni panier que si la remise annoncée vérifiable représente **au moins 50 % du prix de référence**. Une remise fixe sans prix de base fiable ne peut pas prouver le seuil de 50 % : elle est donc masquée pour le non-alimentaire. Les bons d'achat/cashbacks qui s'appliquent à un panier de courses restent disponibles.
+
+Les pages [Shopmium](https://offers.shopmium.com/fr/) mentionnent le **rayon** de la fiche (« Boissons pour enfants », « Douche », « Adoucissants », « Hygiène », etc.). Le synchroniseur extrait ce rayon comme preuve du domaine du produit ; l'absence d'un rayon reconnaissable n'est pas une preuve d'alimentation. Les fiches déjà répertoriées et manifestement non alimentaires ont été étiquetées en conséquence (13 fiches). Les catégories historiques « autre » restent des **candidats non classés**, à revoir avant d'y appliquer une économie. Le filtre est appliqué à l'ensemble du moteur de recherche, du rapprochement produit et du panier, et pas seulement à la liste de bons plans. Un contrôle Chromium Android vérifie cette règle sur le catalogue importé.
+
+Le catalogue source complet demeure consultable dans `data/import/` à des fins d'audit, même lorsqu'une offre n'est pas proposée à l'achat. Un taux de 50 % indique une offre conditionnelle à vérifier ; il ne garantit ni prix en magasin ni remboursement du fournisseur.

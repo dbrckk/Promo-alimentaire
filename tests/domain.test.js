@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { computeSaving, effectivePercent, filterOffers, offerDeadline, rankOffers } from "../src/domain.js";
+import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "../src/domain.js";
 
 test("computeSaving calcule un pourcentage sur un prix",()=>{
   assert.equal(computeSaving({basePrice:12.5,savingPercent:40}),5);
@@ -20,8 +20,27 @@ test("rankOffers trie les valeurs inconnues après les valeurs connues",()=>{
 });
 
 test("filterOffers filtre magasin et recherche",()=>{
+  const offer=(category,savingPercent,savingAmount,basePrice)=>({
+    category,savingPercent,savingAmount,basePrice,
+    title:"Article",provider:"Exemple",type:"ODR",stores:["all"]
+  });
+  assert.equal(isOfferWithinShoppingScope(offer("entretien",40)),false);
+  assert.equal(isOfferWithinShoppingScope(offer("non-alimentaire",49.99)),false);
+  assert.equal(isOfferWithinShoppingScope(offer("non-alimentaire",50)),true);
+  assert.equal(isOfferWithinShoppingScope(offer("hygiène",70)),true);
+  assert.equal(isOfferWithinShoppingScope(offer("non-alimentaire",null,2,null)),false);
+  assert.equal(isOfferWithinShoppingScope(offer("non-alimentaire",null,5,10)),true);
+  assert.equal(isOfferWithinShoppingScope(offer("alimentaire",10)),true);
+  assert.equal(isOfferWithinShoppingScope(offer("épicerie",10)),true);
+  assert.equal(isOfferWithinShoppingScope(offer("panier",4)),true);
+  const inputs=[
+    offer("entretien",40),offer("alimentaire",10),offer("non-alimentaire",75)
+  ];
+  assert.deepEqual(filterOffers(inputs,{store:"carrefour"}).map(x=>x.category),
+    ["alimentaire","non-alimentaire"]);
+
   const list=[
-    {title:"Mir",provider:"A",type:"ODR",category:"entretien",stores:["carrefour","leclerc"]},
+    {title:"Mir",provider:"A",type:"ODR",category:"entretien",stores:["carrefour","leclerc"],savingPercent:60},
     {title:"Carte cadeau",provider:"B",type:"bon",category:"panier",stores:["carrefour"]}
   ];
   assert.equal(filterOffers(list,{store:"leclerc",search:"mir"}).length,1);

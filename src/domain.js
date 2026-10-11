@@ -17,6 +17,20 @@ export function effectivePercent(offer) {
   return null;
 }
 
+// Product-domain policy: food first; nonfood only at 50%+ confirmed
+// advertised rate. An unknown/fixed-amount saving cannot establish a 50%
+// rate without a verified base price. Unclassified legacy offers remain
+// candidates (never auto-stack solely because of this policy).
+export function isOfferWithinShoppingScope(offer){
+  const category=String(offer?.category || "").trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLocaleLowerCase("fr");
+  const nonfood=/^(non-alimentaire|hors-alimentaire|entretien|hygiene|beaute|cosmetique|maison|linge|sante|animalerie|parapharmacie)$/.test(category);
+  if(!nonfood) return true;
+  const percent=effectivePercent(offer);
+  return Number.isFinite(percent) && percent>=50;
+}
+
 export function rankOffers(offers, sort = "percent", now=new Date(),scenario={}) {
   return [...offers].sort((a, b) => {
     if(sort==="estimated"){
@@ -47,6 +61,7 @@ export function rankOffers(offers, sort = "percent", now=new Date(),scenario={})
 export function filterOffers(offers, { store, channel=null, search = "", savingsFocus="all" }) {
   const needle = search.trim().toLocaleLowerCase("fr");
   return offers.filter((offer) => {
+    if(!isOfferWithinShoppingScope(offer)) return false;
     const storeMatch = offer.stores.includes(store) || offer.stores.includes("all");
     if (!storeMatch) return false;
     const channels=Array.isArray(offer.channels) ? offer.channels : [];
