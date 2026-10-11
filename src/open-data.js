@@ -22,7 +22,7 @@ const STORE_MATCHERS = {
 };
 
 export function normalizeBarcode(value) {
-  const raw=String(value ?? "").trim();
+  const raw=String(value ?? "");
   // Spaces and simple visual separators are accepted when manually copying
   // a code. Letters, punctuation and control characters must not silently
   // disappear: stripping them could turn a corrupted scan into a valid SKU.
