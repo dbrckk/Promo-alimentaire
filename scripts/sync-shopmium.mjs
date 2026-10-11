@@ -39,7 +39,7 @@ const batchSize=8;
 // -> individual official terms, with no deeper traversal or guessed offers.
 // A 401/403/429 is an access limit; stop instead of retrying or bypassing it.
 const MAX_PAGES=110;
-const primaryUrls=urls.slice(0,MAX_PAGES);
+const primaryUrls=urls.slice(0,MAX_PAGES-24);
 let accessDenied=false;
 let fetched=0;
 let unavailable=0;
@@ -88,7 +88,7 @@ async function inspectPages(candidates,{allowLandingDiscovery=false}={}){
 }
 
 await inspectPages(primaryUrls,{allowLandingDiscovery:true});
-const knownUrls=new Set(primaryUrls);
+const knownUrls=new Set(urls);
 const childUrls=[...discoveredDetails].filter((url)=>!knownUrls.has(url))
   .slice(0,Math.max(0,MAX_PAGES-primaryUrls.length));
 console.log("[shopmium] "+discoveredDetails.size+
