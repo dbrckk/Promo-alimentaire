@@ -2,6 +2,10 @@ name: CI
 on:
   push:
   pull_request:
+  # GitHub Actions pushes made with GITHUB_TOKEN do not trigger push CI.
+  # A daily validation also republishes successfully refreshed catalog data.
+  schedule:
+    - cron: "33 8 * * *"
 permissions:
   contents: read
 
