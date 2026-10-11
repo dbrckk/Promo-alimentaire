@@ -273,7 +273,7 @@ Aucun EAN n'est écrit lorsqu'une ambiguïté subsiste.
 
 Une confirmation locale ne s'applique qu'à l'offre exacte et au même point de vente. Elle devient invalide si changent l'EAN, les canaux, les exclusions, les conditions de cumul, le montant, la formule ou la prochaine date de révision. Une confirmation expirée ne peut pas être prolongée localement sans nouvelle vérification. Vérifier le magasin ne valide **pas** à lui seul un prix Drive / livraison dont la source exige une confirmation spécifique.
 
-Les alertes de baisse comparent uniquement deux observations à des **dates différentes dans un même magasin physique identifié** (identifiant magasin, ou nom et code postal). Deux magasins distincts d'une même enseigne ne peuvent pas produire une fausse baisse. Un prix sans magasin suffisamment identifié n'alimente pas les alertes. Les contrôles sont locaux et ne tournent pas en arrière-plan.
+Les alertes de baisse comparent uniquement deux observations à des **dates différentes dans un même magasin physique identifié** (identifiant magasin, ou nom et code postal). Deux magasins distincts d'une même enseigne ne peuvent pas produire une fausse baisse. Un prix sans magasin suffisamment identifié n'alimente pas les alertes. Les contrôles sont locaux et ne tournent pas en arrière-plan. Les cartes d'alerte visibles dans l'application sont désormais limitées à un **dernier relevé daté de 14 jours au maximum**, avec sa date affichée. Si ce relevé correspond à un **ticket remisé**, la baisse est présentée comme potentiellement ponctuelle et non comme un prix de rayon durable. L'historique plus ancien demeure consultable mais ne déclenche pas une alerte d'achat actuelle.
 
 
 ### Garde-fous supplémentaires (octobre 2026)

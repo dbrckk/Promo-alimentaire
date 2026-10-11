@@ -721,6 +721,40 @@ try{
   await page.screenshot({path:OUT+"/04-hors-ligne.png",fullPage:true});
   await context.setOffline(false);
 
+  // Functional Android regression: older receipt changes must not appear
+  // as current shopping alerts. A recent discounted receipt is explicitly
+  // labelled as a potentially temporary price, not a guaranteed shelf drop.
+  await page.evaluate(()=>{
+    const day=(offset)=>{
+      const date=new Date();
+      date.setUTCDate(date.getUTCDate()+offset);
+      return date.toISOString().slice(0,10);
+    };
+    const code="3017624010701";
+    const entry=(shop,offset,price,discounted)=>({
+      id:code+"|carrefour|id:"+shop+"|"+day(offset)+"|"+price,
+      recordedAt:new Date().toISOString(),code,
+      name:"Pâte à tartiner témoin",store:"carrefour",
+      price,date:day(offset),
+      locationKey:"id:"+shop,locationId:shop,
+      storeName:"Carrefour Lyon",postcode:"69002",city:"Lyon",
+      isDiscounted:discounted
+    });
+    localStorage.setItem("promo-product-price-history-v1",JSON.stringify([
+      entry(701,-40,10,false),entry(701,-35,7,false),
+      entry(702,-3,10,false),entry(702,0,7,true)
+    ]));
+  });
+  await page.reload({waitUntil:"domcontentloaded"});
+  await page.locator('[data-tab="list"]').click();
+  await page.locator("#priceAlerts .price-alert-card").first().waitFor({timeout:10000});
+  assert.equal(await page.locator("#priceAlerts .price-alert-card").count(),1,
+    "Les baisses archivées depuis plus de 14 jours ne sont pas des alertes courantes");
+  assert.match(await page.locator("#priceAlerts").innerText(),/Baisses de prix observées récemment/);
+  assert.match(await page.locator("#priceAlerts").innerText(),/Dernier relevé/);
+  assert.match(await page.locator("#priceAlerts").innerText(),/Prix remisé sur le ticket/);
+  await assertNoHorizontalOverflow(page,"alertes de baisse datées sur Android");
+
   for(const width of [360,320]){
     await page.setViewportSize({width,height:750});
     await assertNoHorizontalOverflow(page,"largeur "+width+"px");

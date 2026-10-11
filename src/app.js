@@ -1911,8 +1911,10 @@ function renderProductPriceHistory(){
 function renderPriceAlerts(){
   if(!els.priceAlerts) return;
   const listCodes=new Set(state.shoppingList.map((item)=>String(item.product.code)));
+  // Do not present a months-old price movement as a current shopping alert.
   const alerts=detectPriceDrops(state.productPriceHistory,{
-    thresholdPercent:state.dropThreshold
+    thresholdPercent:state.dropThreshold,
+    now:new Date(),maxAgeDays:14
   }).filter((alert)=>listCodes.has(String(alert.code)));
 
   if(!alerts.length){
@@ -1921,16 +1923,19 @@ function renderPriceAlerts(){
   }
   els.priceAlerts.innerHTML=`
     <div class="product-offers-head">
-      <h3>Baisses de prix détectées</h3>
-      <p>Prix comparés seulement dans un même magasin identifié, sur deux dates différentes. Détection à l’actualisation, sans surveillance en arrière-plan.</p>
+      <h3>Baisses de prix observées récemment</h3>
+      <p>Relevés des 14 derniers jours uniquement, comparés dans le même magasin identifié à deux dates différentes. Il ne s'agit pas de prix garantis aujourd'hui : vérifier le magasin et les promotions. Détection à l'actualisation, sans surveillance en arrière-plan.</p>
     </div>
     ${alerts.slice(0,8).map((alert)=>`
       <article class="price-alert-card">
         <div>
           <strong>${escapeHtml(alert.name)}</strong>
           <div class="source">${storeLabel(alert.store)} · ${escapeHtml(alert.storeName || "Magasin identifié")} · ${money.format(alert.previousPrice)} → ${money.format(alert.latestPrice)}</div>
+          <p class="help">Dernier relevé : ${escapeHtml(formatDate(alert.date))}${alert.latestIsDiscounted
+            ? " · Prix remisé sur le ticket : baisse possiblement ponctuelle, non garantie."
+            : " · Baisse entre deux observations, non garantie en caisse."}</p>
         </div>
-        <span class="badge good">−${alert.dropPercent.toLocaleString("fr-FR",{maximumFractionDigits:1})} %</span>
+        <span class="badge ${alert.latestIsDiscounted?"":"good"}">−${alert.dropPercent.toLocaleString("fr-FR",{maximumFractionDigits:1})} %${alert.latestIsDiscounted?" (remise)":""}</span>
       </article>`).join("")}`;
 }
 
