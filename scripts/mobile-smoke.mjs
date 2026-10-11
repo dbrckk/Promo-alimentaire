@@ -62,6 +62,34 @@ try{
     document.querySelector("#datasetDate")?.textContent?.includes("offre(s) importée(s) active(s)"),
     null,{timeout:12000}
   );
+  // A manipulated public JSON manifest cannot make the installed
+  // application fetch data outside /data/import, including cross-origin URLs.
+  const manifestProtection=await page.evaluate(async()=>{
+    const {inspectImportManifest}=await import("./src/import-manifest.js");
+    const {loadImportedOffers}=await import("./src/import-loader.js");
+    let requests=0;
+    const fetchImpl=async()=>{
+      requests+=1;
+      return {ok:true,json:async()=>({files:["../private.json","safe.json"]})};
+    };
+    let rejected=false;
+    try{
+      await loadImportedOffers({fetchImpl});
+    }catch(error){
+      rejected=/Manifeste d'offres refusé/.test(error.message);
+    }
+    return {
+      safe:inspectImportManifest({files:["shopmium-auto.json"]}).ok,
+      traversal:inspectImportManifest({files:["../secret.json"]}).ok,
+      duplicate:inspectImportManifest({files:["a.json","a.json"]}).ok,
+      oversized:inspectImportManifest({files:Array.from({length:61},(_,i)=>"s-"+i+".json")}).ok,
+      rejected,requests
+    };
+  });
+  assert.deepEqual(manifestProtection,{
+    safe:true,traversal:false,duplicate:false,oversized:false,
+    rejected:true,requests:1
+  });
   const importedEvidence=await page.evaluate(async()=>{
     const {loadImportedOffers}=await import("./src/import-loader.js");
     const result=await loadImportedOffers();
