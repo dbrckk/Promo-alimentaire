@@ -82,6 +82,7 @@ const els = {
   installButton:document.querySelector("#installButton"),
   barcodeForm:document.querySelector("#barcodeForm"),
   barcode:document.querySelector("#barcode"),
+  cancelBarcodeLookup:document.querySelector("#cancelBarcodeLookup"),
   scanButton:document.querySelector("#scanButton"),
   compareExactSku:document.querySelector("#compareExactSku"),
   exactSkuQuantity:document.querySelector("#exactSkuQuantity"),
@@ -175,6 +176,9 @@ const state = {
 // obsolete network traffic instead of merely discarding its eventual reply.
 let skuComparisonController=null;
 const EXACT_SKU_TIMEOUT_MS=18000;
+let productLookupController=null;
+let productLookupTimeout=null;
+const PRODUCT_LOOKUP_TIMEOUT_MS=15000;
 // An obsolete basket lookup must not commit its old prices after UI changes.
 let basketRefreshController=null;
 let basketRefreshToken=0;
@@ -255,6 +259,16 @@ els.basketAmount.addEventListener("input",renderOptimizer);
 els.barcodeForm.addEventListener("submit",(event)=>{
   event.preventDefault();
   lookupBarcode(els.barcode.value);
+});
+els.cancelBarcodeLookup.addEventListener("click",()=>{
+  if(!productLookupController) return;
+  ++state.lookupToken;
+  abortProductLookup();
+  state.productCode=null;
+  invalidateExactSkuComparison();
+  clearProductLookupView();
+  els.compareExactSku.disabled=true;
+  setProductStatus("Recherche annulée. Aucun nouveau résultat retenu ; vous pouvez réessayer.");
 });
 els.scanButton.addEventListener("click",startScanner);
 els.compareExactSku.addEventListener("click",()=>compareCurrentExactSku());
@@ -597,29 +611,42 @@ function renderProvider(provider){
     </article>`;
 }
 
+function abortProductLookup(){
+  const controller=productLookupController;
+  productLookupController=null;
+  if(productLookupTimeout!==null) clearTimeout(productLookupTimeout);
+  productLookupTimeout=null;
+  els.cancelBarcodeLookup.classList.add("hidden");
+  controller?.abort();
+}
+
+function clearProductLookupView(){
+  state.product=null;
+  state.priceObservations=[];
+  els.productResult.innerHTML="";
+  els.productResult.classList.add("hidden");
+  els.productOffers.innerHTML="";
+  els.priceResults.innerHTML="";
+  els.productPriceHistory.innerHTML="";
+}
+
 async function lookupBarcode(rawValue){
+  abortProductLookup();
   let code;
   try{
     code=normalizeBarcode(rawValue);
   }catch(error){
-    // A bad new scan invalidates pending replies and all previous product UI.
-    // Never allow an old (valid) lookup to repopulate a rejected SKU.
     ++state.lookupToken;
     state.productCode=null;
-    state.product=null;
-    state.priceObservations=[];
     invalidateExactSkuComparison();
+    clearProductLookupView();
     els.compareExactSku.disabled=true;
-    els.productResult.innerHTML="";
-    els.productResult.classList.add("hidden");
-    els.productOffers.innerHTML="";
-    els.priceResults.innerHTML="";
-    els.productPriceHistory.innerHTML="";
     setProductStatus(error.message,true);
     return;
   }
   state.productCode=code;
   els.barcode.value=code;
+  clearProductLookupView();
   const token=++state.lookupToken;
   ++state.skuCompareToken;
   els.exactSkuComparison.innerHTML="";
@@ -630,11 +657,28 @@ async function lookupBarcode(rawValue){
   els.priceResults.innerHTML="";
   state.priceObservations=[];
 
+  const controller=new AbortController();
+  productLookupController=controller;
+  els.cancelBarcodeLookup.classList.remove("hidden");
+  let timedOut=false;
+  // Bound each provider independently: keep a successful product if its
+  // price source stalls, while cancelling both requests at the deadline.
+  const deadline=new Promise((_,reject)=>{
+    productLookupTimeout=setTimeout(()=>{
+      timedOut=true;
+      controller.abort();
+      reject(new DOMException("Délai de recherche dépassé.","TimeoutError"));
+    },PRODUCT_LOOKUP_TIMEOUT_MS);
+  });
   const [productResult,pricesResult]=await Promise.allSettled([
-    fetchProductByBarcode(code),
-    fetchPricesByBarcode(code,priceQueryOptions())
+    Promise.race([fetchProductByBarcode(code,fetch,{signal:controller.signal}),deadline]),
+    Promise.race([fetchPricesByBarcode(code,{...priceQueryOptions(),signal:controller.signal}),deadline])
   ]);
   if(token!==state.lookupToken) return;
+  clearTimeout(productLookupTimeout);
+  productLookupTimeout=null;
+  productLookupController=null;
+  els.cancelBarcodeLookup.classList.add("hidden");
   els.compareExactSku.disabled=!canonicalGtin(code);
 
   if(productResult.status==="fulfilled"){
@@ -660,7 +704,9 @@ async function lookupBarcode(rawValue){
     els.priceResults.innerHTML=`<div class="panel price-source">Impossible de récupérer Open Prices pour le moment.</div>`;
   }
 
-  if(productResult.status==="rejected" && pricesResult.status==="rejected"){
+  if(timedOut){
+    setProductStatus("Recherche limitée à 15 secondes. Certains résultats peuvent manquer : réessayez si nécessaire.",true);
+  }else if(productResult.status==="rejected" && pricesResult.status==="rejected"){
     setProductStatus("Les deux sources ouvertes sont momentanément indisponibles.",true);
   }else{
     setProductStatus("");
