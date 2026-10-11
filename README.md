@@ -63,6 +63,10 @@ Chaque fiche renvoie vers le service et, lorsqu'elle est distincte, la page sour
 
 Les sources dont l'activité actuelle est incertaine restent explicitement **non confirmées**, sans date de vérification fictive ni offre chiffrée. Un service n'est pas ajouté au panier du seul fait de sa présence dans l'annuaire.
 
+## Transparence de la date des économies affichées
+
+Le pied de page distingue maintenant **la date du catalogue de référence** (offres intégrées manuellement au code), **le nombre d'offres importées réellement actives** après contrôle de leurs échéances et **la date de preuve la plus récente parmi ces offres actives**. La date de rechargement d'une page, celle du manifeste JSON ou un contrôle GitHub Actions sans preuve marchande ne sont jamais présentés comme une nouvelle vérification des promotions. Si les fichiers d'import ne sont pas accessibles, l'application indique qu'elle utilise seulement le catalogue de référence, sans annoncer de revalidation inexistante.
+
 ## Contrôle des dates des offres importées
 
 Les snapshots de promotions et de cashback doivent contenir des dates ISO calendaires réelles (par exemple `2026-10-11`) ou des horodatages ISO complets avec fuseau explicite. Une date impossible (`2026-02-30`), un format ambigu ou un caractère parasite fait désormais rejeter le lot concerné par le validateur. Une preuve `verifiedAt` située **dans le futur** n'est jamais traitée comme une offre active, même si sa date de fin est encore éloignée. Les catalogues déjà publiés conservent leurs dates d'origine et ne sont **pas** artificiellement reconfirmés.
