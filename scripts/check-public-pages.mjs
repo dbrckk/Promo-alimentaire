@@ -24,7 +24,7 @@ async function fetchAsset(path){
     redirect:"follow",
     signal:AbortSignal.timeout(12000)
   });
-  assert.equal(response.url.startsWith(root.origin),true,"Asset redirect left the Pages origin.");
+  assert.equal(new URL(response.url).origin,root.origin,"Asset redirect left the Pages origin.");
   assert.equal(response.ok,true,path+" returned HTTP "+response.status);
   return response;
 }
