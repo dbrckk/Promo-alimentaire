@@ -336,3 +336,15 @@ Les champs `verifiedAt`, `startsAt`, `expiresAt` et `reviewAfter` acceptent des 
 Un horaire précis comme `2026-10-12T14:07:00+02:00` continue à expirer à l'instant annoncé, sans prolongation jusqu'au soir. Les échéances d'ancienne validation Shopmium (cinq jours à partir de la date `verifiedAt`) ont également leur fin en **journée française**, et les compteurs « aujourd'hui / demain » utilisent le même calendrier.
 
 Les contrôles préexistants de validité des dates civiles et fuseaux restent obligatoires. Le module de domaine et la PWA hors connexion ont été vérifiés à la transition entre les 11 et 12 octobre, ainsi qu'au passage à l'heure d'hiver du 25 octobre 2026. Aucun taux ni date de source n'a été prolongé.
+
+## Contournement fonctionnel **sans** contourner les protections des enseignes — 11 octobre 2026
+
+La collecte fiable est désormais répartie en trois voies distinctes :
+
+1. **Shopmium et Coupon Network** : leurs pages officielles accessibles fournissent des candidats de remboursement datés et soumis aux conditions du fournisseur. Aucune fiche ne devient un EAN confirmé ou un cumul de gains simplement parce qu'elle apparaît sur le site.
+2. **E.Leclerc** : pour les promotions déjà référencées et non expirées, la synchronisation commence par le HTML de la page officielle `nos-catalogues-promos-v2.e.leclerc`. Si elle n'y trouve pas *le produit et sa mécanique de remise dans le même passage*, elle peut lancer un navigateur Chromium sans compte sur **la même page publique** et réessayer sur le texte effectivement visible. Huit URL au maximum par exécution, arrêt sur 401/403/429 ; aucune requête privée ni extraction de CAPTCHA. Seules les promotions individuellement confirmées obtiennent une nouvelle date `verifiedAt`. Un échec ne prolonge jamais les campagnes.
+3. **Carrefour** : l'accès `HTTP 403` aux fiches depuis GitHub Actions reste un refus d'accès. Nous ne le contournons pas, et les onze fiches de l'ancien snapshot restent archivées et non réactivées. Les [catalogues officiels Carrefour](https://www.carrefour.fr/catalogue) permettent une **consultation manuelle** ; ils ne prouvent pas un prix Drive/EAN local sans correspondance précise.
+
+Pour vérifier manuellement une offre E.Leclerc, utiliser le [prospectus officiel E.Leclerc](https://www.e.leclerc/prospectus) ; rechercher l'article, les dates, les quantités et les conditions Tickets avant achat. Ne jamais déduire une économie automatique d'une simple présence dans le catalogue.
+
+**Limite de couverture :** ce dispositif améliore la reconfirmation des **campagnes déjà connues** ; il ne crée pas artificiellement de nouvelles promotions retailer à partir de bannières. Une véritable intégration exhaustive des prix et stocks nécessitera des données détaillées ouvertes et autorisées (accord/API officielle/partenariat) ou une saisie humaine documentée.
