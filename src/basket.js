@@ -1,4 +1,5 @@
 import { findProductOffers, estimateOfferSaving } from "./matching.js";
+import {isOfferActive} from "./ingestion.js";
 import { observationAgeDays, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { roundMoney } from "./domain.js";
@@ -30,8 +31,12 @@ export function evaluateBasketStore(items,{
   now=new Date(),
   maxPriceAgeDays=120
 }={}) {
+  // Functions importing this evaluator might pass unfiltered historical
+  // offers. Guard the basket calculation itself rather than relying on the
+  // UI to drop expired campaigns first.
+  const currentlyValidOffers=(offers || []).filter((offer)=>isOfferActive(offer,now));
   const resolvedOffers=applyLocalStoreConfirmations(
-    resolveOffersForLoyalty(offers,loyaltyProfile),
+    resolveOffersForLoyalty(currentlyValidOffers,loyaltyProfile),
     storeConfirmations,
     {store,locationKey:storeVerificationKey,channel:channel || "store",now}
   );
@@ -42,7 +47,7 @@ export function evaluateBasketStore(items,{
     const contextualOffers=buildProductLoyaltyOffers(item.product,{
       store,
       profile:loyaltyProfile
-    });
+    }).filter((offer)=>isOfferActive(offer,now));
     const matches=findProductOffers(
       item.product,
       [...resolvedOffers,...contextualOffers],
