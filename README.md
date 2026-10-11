@@ -543,3 +543,9 @@ Le sélecteur **Fiabilité de la synchronisation** propose « Sans échec récen
 ### Fiabilité du manifeste JSON de promotions — 11 octobre 2026
 
 Le fichier `data/import/index.json` ne peut plus demander le chargement de chemins arbitraires. Le lecteur, les contrôles GitHub Actions et le service worker limitent les entrées à **60 noms de fichiers JSON locaux**, basiques, uniques, sans `../`, sous-dossiers, paramètres d'URL ni URL distante. Les fichiers de statut et `index.json` ne sont pas des lots de promotions et sont interdits dans cette liste. Un manifeste invalide est rejeté avant tout chargement de promotions ; l'installation hors ligne reste utilisable avec ses ressources statiques existantes. Des scénarios de sécurité ont été ajoutés aux vérifications déjà présentes, y compris au parcours Android.
+
+### Chargement du catalogue sur réseaux mobiles lents — 11 octobre 2026
+
+La PWA utilise désormais des requêtes JSON interruptibles : 8 secondes maximum pour le manifeste, 5 secondes pour chaque diagnostic facultatif et 9 secondes par fichier de promotions. Les trois diagnostics sont demandés en parallèle, puis appliqués dans leur **ordre de priorité stable** ; les fichiers d'offres sont téléchargés par un pool de **trois connexions simultanées** au maximum. Une source indisponible est déclarée en erreur dans les diagnostics, sans bloquer les autres fichiers valides. La fusion finale continue à respecter l'ordre déclaré par le manifeste et les protections contre les identifiants dupliqués.
+
+Ce mécanisme réduit les blocages possibles sur Android et la durée de démarrage lorsque plusieurs sources publiques sont lentes. Il ne prouve pas que les offres sont fraîches, n'autorise aucun contournement des sites commerçants et n'ajoute pas de nouvelles promotions.
