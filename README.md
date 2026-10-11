@@ -63,6 +63,12 @@ Chaque fiche renvoie vers le service et, lorsqu'elle est distincte, la page sour
 
 Les sources dont l'activité actuelle est incertaine restent explicitement **non confirmées**, sans date de vérification fictive ni offre chiffrée. Un service n'est pas ajouté au panier du seul fait de sa présence dans l'annuaire.
 
+## Contrôle des dates des offres importées
+
+Les snapshots de promotions et de cashback doivent contenir des dates ISO calendaires réelles (par exemple `2026-10-11`) ou des horodatages ISO complets avec fuseau explicite. Une date impossible (`2026-02-30`), un format ambigu ou un caractère parasite fait désormais rejeter le lot concerné par le validateur. Une preuve `verifiedAt` située **dans le futur** n'est jamais traitée comme une offre active, même si sa date de fin est encore éloignée. Les catalogues déjà publiés conservent leurs dates d'origine et ne sont **pas** artificiellement reconfirmés.
+
+Le contrôle fonctionnel Android exerce directement le moteur d'ingestion : dates impossibles, date d'expiration incorrecte, preuve future et horodatage valide avec décalage horaire. Les tentatives de synchronisation Carrefour, E.Leclerc et Coupon Network peuvent être indisponibles sans que les anciennes offres soient prolongées pour autant.
+
 ## Remboursements complets et restrictions Shopmium
 
 Les offres 100 % sont affichées comme **possibilités conditionnelles**, jamais comme panier gratuit :
