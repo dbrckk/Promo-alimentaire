@@ -611,6 +611,14 @@ try{
   assert.equal(basketRequests.length,1,
     "L'actualisation d'un EAN doit télécharger une seule fois la page commune Carrefour/E.Leclerc");
   assert.match(await page.locator("#basketComparison").innerText(),/Relevé du/i);
+  const budgetPriceSources=await page.locator(
+    '#basketComparison .basket-price-source a[href^="https://prices.openfoodfacts.org/prices/"]'
+  ).evaluateAll((items)=>items.map((node)=>node.getAttribute("href")));
+  assert.ok(budgetPriceSources.includes("https://prices.openfoodfacts.org/prices/1"),
+    "Le prix Carrefour du budget doit être traçable au relevé original");
+  assert.ok(budgetPriceSources.includes("https://prices.openfoodfacts.org/prices/2"),
+    "Le prix E.Leclerc du budget doit être traçable au relevé original");
+
   assert.match(await page.locator("#budgetSummary").innerText(),/Plafond dépassé sur les données disponibles/);
   assert.match(await page.locator("#budgetSummary").innerText(),/3,49/);
   await page.locator("#shoppingBudget").fill("6,00");
