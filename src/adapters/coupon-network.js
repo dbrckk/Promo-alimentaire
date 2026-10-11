@@ -89,10 +89,10 @@ export function parseCouponNetworkCards(html,{
     const remainder=tail.slice(amountIndex+1);
     const refundConfirmed=/rembours/i.test(amountText)
       || remainder.slice(0,2).some((line)=>refunded.test(line));
-    const activated=remainder.slice(0,4).some((line)=>activate.test(line));
-    if(!refundConfirmed || !activated
+    const activateIndex=remainder.slice(0,4).findIndex((line)=>activate.test(line));
+    if(!refundConfirmed || activateIndex<0
       || tail.slice(0,amountIndex).some((line)=>descriptionPattern.test(line))
-      || remainder.slice(0,4).some((line)=>descriptionPattern.test(line))) continue;
+      || remainder.slice(0,activateIndex).some((line)=>descriptionPattern.test(line))) continue;
 
     const fingerprint=stableHash(title+"|"+description+"|"+amount.toFixed(2));
     if(seen.has(fingerprint)) continue;
