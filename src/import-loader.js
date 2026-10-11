@@ -1,5 +1,25 @@
 import { isOfferActive, shopmiumLegacyReviewCutoff, validateImportBatch } from "./ingestion.js";
 
+// A failed refresh is NOT a new expiry date or proof that an old offer is
+// false. Keep it visible as a candidate, but never silently count its
+// previous automatic discount as reconfirmed.
+function failedRefreshWarning(offer,syncSources,now){
+  const sync=syncSources?.[offer?.providerId];
+  if(!["unavailable","partial"].includes(sync?.status)) return null;
+  const checked=new Date(sync.checkedAt);
+  const current=new Date(now);
+  const stamp=String(offer?.verifiedAt||"");
+  const verified=new Date(stamp.length===10 ? stamp+"T00:00:00Z" : stamp);
+  if([checked,current,verified].some((date)=>!Number.isFinite(date.getTime()))
+    || checked>current || checked<=verified) return null;
+  return {
+    status:sync.status,
+    checkedAt:checked.toISOString(),
+    reason:String(sync.reason || "Offres non reconfirmées sur la source officielle").slice(0,220)
+  };
+}
+
+
 export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
   const manifestUrl=new URL("../data/import/index.json",import.meta.url);
   const manifestResponse=await fetchImpl(manifestUrl,{headers:{Accept:"application/json"}});
@@ -67,7 +87,9 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       const storeVerificationCount=activeOffers.filter((offer)=>
         offer.requiresStoreVerification===true
       ).length;
-      const verifiedDates=result.normalized.map((offer)=>offer.verifiedAt).filter(Boolean).sort();
+      // A newer date on an expired offer cannot be advertised as the
+      // latest proof among the active catalog.
+      const verifiedDates=activeOffers.map((offer)=>offer.verifiedAt).filter(Boolean).sort();
       const deadlines=result.normalized
         .map((offer)=>{
           // A supplier's earliest deadline wins: showing a distant advertised
@@ -107,7 +129,16 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
           continue;
         }
         ids.add(offer.id);
-        if(isOfferActive(offer,now)) imported.push(offer);
+        if(!isOfferActive(offer,now)) continue;
+        const failedRefresh=failedRefreshWarning(offer,syncSources,now);
+        imported.push(failedRefresh ? {
+          ...offer,
+          // Card presence must not re-enable an auto discount based on a
+          // supplier feed that failed its latest verification.
+          autoStack:false,
+          autoStackWhenEligible:false,
+          sourceSyncWarning:failedRefresh
+        } : offer);
       }
     }catch(error){
       errors.push({file,issues:[{errors:[error.message]}]});
