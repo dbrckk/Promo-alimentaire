@@ -26,7 +26,7 @@ export function normalizeBarcode(value) {
   // Spaces and simple visual separators are accepted when manually copying
   // a code. Letters, punctuation and control characters must not silently
   // disappear: stripping them could turn a corrupted scan into a valid SKU.
-  if(!/^[0-9 -]+$/.test(raw)){
+  if(/[^0-9 -]/.test(raw)){
     throw new Error("Code-barres invalide : seuls les chiffres, espaces et tirets sont acceptés.");
   }
   const digits=raw.replace(/[ -]/g,"");
