@@ -260,6 +260,16 @@ els.scanButton.addEventListener("click",startScanner);
 els.compareExactSku.addEventListener("click",()=>compareCurrentExactSku());
 els.exactSkuQuantity.addEventListener("input",invalidateExactSkuComparison);
 els.exactSkuComparison.addEventListener("click",(event)=>{
+  if(event.target.closest('[data-action="cancel-exact-sku"]')){
+    // Actively abort outstanding network calls and invalidate their token.
+    // An old result must not reappear after the user cancels the search.
+    if(skuComparisonController){
+      invalidateExactSkuComparison();
+      els.exactSkuComparison.innerHTML=
+        '<div class="panel price-source" role="status">Recherche annulée. Aucun nouveau prix n’a été retenu. Vous pouvez relancer la comparaison.</div>';
+    }
+    return;
+  }
   if(event.target.closest('[data-action="expand-exact-sku"]')){
     compareCurrentExactSku({deep:true});
   }
@@ -710,10 +720,13 @@ async function compareCurrentExactSku({deep=false}={}){
   }
   els.compareExactSku.disabled=true;
   els.exactSkuComparison.innerHTML=
-    `<div class="panel price-source" role="status">${deep
-      ? "Recherche approfondie des relevés Carrefour et E.Leclerc (jusqu’à 3 pages par requête)…"
-      : "Comparaison des relevés Carrefour et E.Leclerc pour ce même EAN…"
-    }</div>`;
+    `<div class="panel price-source" role="status">
+      <p>${deep
+        ? "Recherche approfondie des relevés Carrefour et E.Leclerc (jusqu’à 3 pages par requête)…"
+        : "Comparaison des relevés Carrefour et E.Leclerc pour ce même EAN…"
+      }</p>
+      <button type="button" class="secondary" data-action="cancel-exact-sku">Annuler la recherche</button>
+    </div>`;
   const options=priceQueryOptions();
   const stores=["carrefour","leclerc"];
   const controller=new AbortController();
