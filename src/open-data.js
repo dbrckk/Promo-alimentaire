@@ -22,7 +22,14 @@ const STORE_MATCHERS = {
 };
 
 export function normalizeBarcode(value) {
-  const digits=String(value ?? "").replace(/\D/g,"");
+  const raw=String(value ?? "");
+  // Spaces and simple visual separators are accepted when manually copying
+  // a code. Letters, punctuation and control characters must not silently
+  // disappear: stripping them could turn a corrupted scan into a valid SKU.
+  if(/[^0-9 -]/.test(raw)){
+    throw new Error("Code-barres invalide : seuls les chiffres, espaces et tirets sont acceptés.");
+  }
+  const digits=raw.replace(/[ -]/g,"");
   if(![8,12,13,14].includes(digits.length)) {
     throw new Error("Le code-barres doit contenir 8, 12, 13 ou 14 chiffres.");
   }

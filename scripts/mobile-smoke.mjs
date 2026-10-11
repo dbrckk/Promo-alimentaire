@@ -217,6 +217,39 @@ try{
   await page.locator("#carrefourLoyalty").selectOption("club");
   assert.match(await page.locator("#loyaltySummary").innerText(),/10%/);
   await page.locator('[data-tab="product"]').click();
+  // A malformed barcode must never be silently transformed into a different SKU.
+  await page.locator("#barcode").fill("EAN:3017624010701");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  assert.match(await page.locator("#productStatus").innerText(),/Code-barres invalide/);
+  assert.equal(await page.locator("#compareExactSku").isDisabled(),true);
+  // Check exact normalizer loaded by the browser: even a trailing newline,
+  // trimmed previously, must not be allowed to select another product.
+  const barcodeValidation=await page.evaluate(async()=>{
+    const {normalizeBarcode}=await import("./src/open-data.js");
+    const rejected=(value)=>{try{normalizeBarcode(value);return false;}catch{return true;}};
+    return {
+      prefix:rejected("EAN:3017624010701"),
+      newline:rejected("3017624010701\n"),
+      tab:rejected("\t3017624010701"),
+      unicode:rejected("3017624010701\u200b"),
+      valid:normalizeBarcode("3017-6240 10701")
+    };
+  });
+  assert.deepEqual(barcodeValidation,{
+    prefix:true,newline:true,tab:true,unicode:true,valid:"3017624010701"
+  });
+  await page.locator("#barcode").fill("3017-6240 10701");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  await page.locator("#productResult h2").waitFor({timeout:10000});
+  assert.equal(await page.locator("#barcode").inputValue(),"3017624010701");
+  // A rejected next scan must not leave a stale, actionable product visible.
+  await page.locator("#barcode").fill("3017624010701x");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  assert.match(await page.locator("#productStatus").innerText(),/Code-barres invalide/);
+  assert.equal(await page.locator("#productResult").isVisible(),false);
+  assert.equal(await page.locator("#compareExactSku").isDisabled(),true);
+  assert.equal(await page.locator("#priceResults").innerText(),"");
+  // Repeat a clean scan to verify normal lookup still works.
   await page.locator("#barcode").fill("3017624010701");
   await page.locator('#barcodeForm button[type="submit"]').click();
   await page.locator("#productResult h2").waitFor({timeout:10000});
