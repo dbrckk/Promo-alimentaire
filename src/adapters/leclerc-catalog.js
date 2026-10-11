@@ -1,4 +1,4 @@
-function textContent(html){
+function textContent(html,{includeEmbedded=true}={}){
   const raw=decodeUnicodeEscapes(String(html ?? ""));
   const visible=raw
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ")
@@ -7,7 +7,7 @@ function textContent(html){
   const embedded=raw
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
     .replace(/<[^>]+>/g," ");
-  return (visible+" "+embedded)
+  return (includeEmbedded ? visible+" "+embedded : visible)
     .replace(/&nbsp;|&#160;/gi," ")
     .replace(/&amp;/gi,"&")
     .replace(/&quot;|&#34;/gi,'"')
@@ -21,8 +21,8 @@ function decodeUnicodeEscapes(value){
   );
 }
 
-export function verifyLeclercCatalogOffer(html,offer){
-  const text=normalize(textContent(html));
+export function verifyLeclercCatalogOffer(html,offer,{requireNearbyEvidence=false}={}){
+  const text=normalize(textContent(html,{includeEmbedded:!requireNearbyEvidence}));
   if(!text) return {ok:false,reasons:["page vide"]};
 
   const reasons=[];
@@ -64,6 +64,30 @@ export function verifyLeclercCatalogOffer(html,offer){
     if(!new RegExp(pct+"\\s*%").test(text)){
       reasons.push("taux promo absent");
     }
+  }
+
+  // Generic catalogue pages can mention 20% for product A and a totally
+  // different brand B elsewhere. Require a bounded product/promotion window
+  // when reconfirming a real campaign from a large public brochure.
+  if(requireNearbyEvidence){
+    const anchors=brands;
+    let linked=false;
+    for(const brand of anchors){
+      let offset=0;
+      let checked=0;
+      while((offset=text.indexOf(brand,offset))!==-1 && checked++<24){
+        const window=text.slice(Math.max(0,offset-420),Math.min(text.length,offset+620));
+        if(verifyLeclercCatalogOffer(window,offer).ok){
+          linked=true;
+          break;
+        }
+        offset+=Math.max(1,brand.length);
+      }
+      if(linked) break;
+    }
+    if(!linked) reasons.push(
+      "produit et mécanisme promo non liés dans un même passage du catalogue"
+    );
   }
 
   return {
