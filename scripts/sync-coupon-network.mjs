@@ -1,10 +1,12 @@
 import { readFile, writeFile, appendFile } from "node:fs/promises";
 import {
-  parseCouponNetworkHtml, assessCouponNetworkSnapshot
+  parseCouponNetworkHtml, parseCouponNetworkCards, assessCouponNetworkSnapshot
 } from "../src/adapters/coupon-network.js";
 import { validateImportBatch } from "../src/ingestion.js";
 
+const PUBLIC_CARDS_URL="https://prod-cn-offers.couponnetwork.fr/";
 const SOURCE_URLS=[
+  PUBLIC_CARDS_URL,
   "https://www.couponnetwork.fr/",
   "https://www.couponnetwork.fr/index.rss"
 ];
@@ -68,7 +70,11 @@ for(const sourceUrl of SOURCE_URLS){
     if(!response.ok) throw new Error("HTTP "+response.status);
     const html=await response.text();
     if(html.length<5000) throw new Error("réponse anormalement courte");
-    const parsed=parseCouponNetworkHtml(html,{verifiedAt});
+    // The official public cards view puts the offer amount AFTER its
+    // purchase condition. Legacy pages use the opposite order.
+    const parsed=sourceUrl===PUBLIC_CARDS_URL
+      ? parseCouponNetworkCards(html,{verifiedAt,sourceUrl})
+      : parseCouponNetworkHtml(html,{verifiedAt});
     console.log("[coupon-network] "+sourceUrl+" -> "+parsed.length+" offre(s) via liste publique.");
     pages.push({sourceUrl,html,parsed});
   }catch(error){
@@ -120,7 +126,8 @@ if(!assessment.publish){
   // evidence of active offers; give an actionable diagnostic instead.
   const dynamicListing=assessment.count===0
     && pages.every((entry)=>entry.parsed.length===0)
-    && pages.some((entry)=>entry.sourceUrl==="https://www.couponnetwork.fr/");
+    && pages.some((entry)=>entry.sourceUrl==="https://www.couponnetwork.fr/"
+      || entry.sourceUrl===PUBLIC_CARDS_URL);
   const labels={
     "too-few-offers":"Extraction publique insuffisante",
     "suspiciously-large-drop":"Baisse brutale suspecte du nombre d'offres",
