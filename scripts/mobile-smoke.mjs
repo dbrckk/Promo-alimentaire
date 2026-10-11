@@ -107,6 +107,39 @@ try{
     savingPercent:34,tierCount:3,channels:["store","drive"],
     autoStack:false,importValid:true
   });
+  // Android browser: food-first rule applies to the actual published
+  // Shopmium import, not only to isolated fixture records.
+  const foodFirstScope=await page.evaluate(async()=>{
+    const {filterOffers,isOfferWithinShoppingScope,effectivePercent}
+      =await import("./src/domain.js");
+    const {classifyShopmiumRayon}=await import("./src/adapters/shopmium.js");
+    const response=await fetch("./data/import/shopmium-auto.json");
+    const source=await response.json();
+    const result=filterOffers(source,{store:"carrefour",channel:"store"});
+    const forbidden=source.filter((x)=>x.category==="non-alimentaire"
+      && (!Number.isFinite(effectivePercent(x)) || effectivePercent(x)<50));
+    const forbiddenIds=new Set(forbidden.map((x)=>x.externalId));
+    const sample={title:"Test",provider:"Test",stores:["all"]};
+    return {
+      rayonDouche:classifyShopmiumRayon("<p>Au rayon Douche</p>"),
+      rayonBoisson:classifyShopmiumRayon("<p>Au rayon Boissons pour enfants</p>"),
+      noLeak:result.every((x)=>!forbiddenIds.has(x.externalId)),
+      syntheticFood:isOfferWithinShoppingScope({
+        ...sample,category:"alimentaire",savingPercent:10
+      }),
+      syntheticLowNonFood:isOfferWithinShoppingScope({
+        ...sample,category:"non-alimentaire",savingPercent:40
+      }),
+      syntheticHighNonFood:isOfferWithinShoppingScope({
+        ...sample,category:"non-alimentaire",savingPercent:55
+      })
+    };
+  });
+  assert.deepEqual(foodFirstScope,{
+    rayonDouche:"non-alimentaire",rayonBoisson:"alimentaire",
+    noLeak:true,syntheticFood:true,
+    syntheticLowNonFood:false,syntheticHighNonFood:true
+  });
   // A manipulated public JSON manifest cannot make the installed
   // application fetch data outside /data/import, including cross-origin URLs.
   const manifestProtection=await page.evaluate(async()=>{
