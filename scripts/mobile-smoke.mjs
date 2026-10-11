@@ -123,6 +123,17 @@ try{
     return {
       rayonDouche:classifyShopmiumRayon("<p>Au rayon Douche</p>"),
       rayonBoisson:classifyShopmiumRayon("<p>Au rayon Boissons pour enfants</p>"),
+      rayonMenager:classifyShopmiumRayon("<p>Au rayon Produits ménagers</p>"),
+      rayonCafe:classifyShopmiumRayon("<p>Au rayon cafés capsules</p>"),
+      rayonFrais:classifyShopmiumRayon("<p>A retrouver au rayon frais</p>"),
+      rayonFromage:classifyShopmiumRayon(
+        "<p>Valable en Drive & livraison. Au rayon Fromage.</p>"
+      ),
+      officialCoffeeFood:source.find((x)=>x.sourceUrl?.endsWith(
+        "/cafes-legal-capsules-compatibles-nespresso"))?.category,
+      officialAjaxNonfood:source.find((x)=>x.sourceUrl?.endsWith(
+        "/ajax-power-mousse"))?.category,
+      noAjax:!result.some((x)=>x.sourceUrl?.endsWith("/ajax-power-mousse")),
       noLeak:result.every((x)=>!forbiddenIds.has(x.externalId)),
       syntheticFood:isOfferWithinShoppingScope({
         ...sample,category:"alimentaire",savingPercent:10
@@ -137,7 +148,10 @@ try{
   });
   assert.deepEqual(foodFirstScope,{
     rayonDouche:"non-alimentaire",rayonBoisson:"alimentaire",
-    noLeak:true,syntheticFood:true,
+    rayonMenager:"non-alimentaire",rayonCafe:"alimentaire",
+    rayonFrais:"alimentaire",rayonFromage:"alimentaire",
+    officialCoffeeFood:"alimentaire",officialAjaxNonfood:"non-alimentaire",
+    noAjax:true,noLeak:true,syntheticFood:true,
     syntheticLowNonFood:false,syntheticHighNonFood:true
   });
   // A manipulated public JSON manifest cannot make the installed
