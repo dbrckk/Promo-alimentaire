@@ -24,6 +24,10 @@ Le parcours fonctionnel sur navigateur Android vérifie le basculement de jour e
 
 Le collecteur consulte désormais également la [page officielle des offres publiques Coupon Network](https://prod-cn-offers.couponnetwork.fr/). Si le HTML initial ne contient pas de cartes complètes, le job GitHub Actions tente un rendu Chromium public et sans connexion, avec Playwright open source. Si le contenu effectivement lu révèle des cartes complètes (produit, conditions, montant et action d'activation), elles peuvent remplacer l'ancien snapshot **après validation du nombre, des identifiants et des conditions**. Un simple chargement dynamique affichant zéro offre, l'ancien RSS indisponible ou une réponse trop courte n'actualise aucune date et ne remplace jamais l'archive. Ces remboursements après achat restent des **candidats**, sans EAN exact ni réduction immédiate garantie. La réussite du synchroniseur sur le runner GitHub doit être vérifiée séparément de la présence de ce code.
 
+## Filtre alimentaire sur Coupon Network (11 octobre 2026)
+
+Le catalogue public Coupon Network peut mélanger remboursements alimentaires, lessives, hygiène, animaux et boissons alcoolisées sans catégorie fiable dans les données brutes. À l'import, les **libellés non alimentaires explicites** sont identifiés de manière conservatrice. Ces candidats sont soumis à la règle du projet : **hors alimentaire uniquement si une économie de 50 % ou plus est réellement calculable**. Une offre à montant fixe sans prix de référence ne prouve pas 50 % et reste masquée dans ce cas. Les offres alimentaires et catégories non concluantes restent candidates, sans confirmation automatique. Le parcours Android valide ces distinctions sur le moteur d'import et le filtrage réel.
+
 ## État
 
 Fonctionnalités actuelles :

@@ -542,10 +542,14 @@ try{
   await page.locator("#sourceProof").selectOption("all");
   const allCount=await page.locator("#offers .card").count();
   assert.ok(allCount>=safeInitialCount);
-  if(failedSourceSafety.realWarningCount>0){
-    assert.ok(allCount>safeInitialCount,
-      "Un candidat non reconfirmé doit redevenir consultable via Toutes.");
+  // A provider can have historical warnings without any current
+  // matching card (Coupon Network now refreshes successfully). The screen
+  // must be checked against its actual visible candidates, not all source
+  // warnings from unrelated stores or expired offers.
+  if(allCount>safeInitialCount){
     assert.match(await page.locator("#offers").innerText(),/Source non reconfirmée/);
+  }else{
+    assert.doesNotMatch(await page.locator("#offers").innerText(),/Source non reconfirmée/);
   }
   await page.locator("#sourceProof").selectOption("failed");
   for(const card of await page.locator("#offers .card").all()){
@@ -632,6 +636,50 @@ try{
     amounts:[0.2,1.2],minimum:[1,2],
     source:"https://prod-cn-offers.couponnetwork.fr/",
     unsafe:false,empty:0,otherDomain:0,publishEmpty:false
+  });
+
+  // Coupon Network uses a generic source category for public cards.
+  // The live importer must retain food coupons while excluding known
+  // household/pet/alcohol products below the requested 50% threshold.
+  const foodScopeSafety=await page.evaluate(async()=>{
+    const {normalizeImportedOffer}=await import("./src/ingestion.js");
+    const {filterOffers}=await import("./src/domain.js");
+    const sample=(id,title,description,savingPercent=null)=>{
+      const normalized=normalizeImportedOffer({
+        providerId:"coupon-network",externalId:"scope-"+id,
+        title,conditions:description,category:"autre",
+        verifiedAt:"2026-10-11",reviewAfter:"2026-10-18",
+        sourceUrl:"https://prod-cn-offers.couponnetwork.fr/",
+        stores:["all"],scope:"produit",savingAmount:savingPercent===null?0.5:null,
+        savingPercent,mechanism:"manufacturer_refund",autoStack:false
+      });
+      if(!normalized.ok) throw new Error(normalized.errors.join(" | "));
+      return normalized.value;
+    };
+    const offers=[
+      sample("food","Bonduelle - Carottes râpées","Barquette de carottes"),
+      sample("clean","Maison Verte - Lessives","Sur l'achat d'une lessive"),
+      sample("pet","PURINA - Croquettes pour chat","Pour chat adulte"),
+      sample("beauty","Elmex - Dentifrices","Sur l'achat d'un dentifrice"),
+      sample("dish","Sun - Capsules","Sur l'achat de capsules lave-vaisselle"),
+      sample("moisture","Rubson - Absorbeurs","Pack absorbeur Aero 360"),
+      sample("spirits","Altos - Tequila Blanco","Bouteille de tequila"),
+      sample("high","Schwarzkopf - Shampooings","Shampooing au choix",70),
+      sample("nonalc","Chouffe - Bières sans alcool","Pack sans alcool")
+    ];
+    return {
+      categories:offers.map((offer)=>offer.category),
+      visible:filterOffers(offers,{store:"carrefour",channel:"store"})
+        .map((offer)=>offer.externalId),
+      suspiciousGuaranteed:offers.some((offer)=>offer.autoStack===true)
+    };
+  });
+  assert.deepEqual(foodScopeSafety,{
+    categories:["autre","non-alimentaire","non-alimentaire",
+      "non-alimentaire","non-alimentaire","non-alimentaire",
+      "hors-alimentaire","non-alimentaire","autre"],
+    visible:["scope-food","scope-high","scope-nonalc"],
+    suspiciousGuaranteed:false
   });
 
   // The published snapshot includes its own trusted Shopmium diagnostics,
