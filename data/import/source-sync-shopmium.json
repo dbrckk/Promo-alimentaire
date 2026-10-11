@@ -2,8 +2,8 @@
   "sources": {
     "shopmium": {
       "status": "updated",
-      "checkedAt": "2026-10-11T18:32:01.744Z",
-      "reason": "47 offres actives vérifiées sur les pages Shopmium officielles lors du workflow GitHub Actions 38164195398.",
+      "checkedAt": "2026-10-11T19:55:39.258Z",
+      "reason": "Toutes les 47 offres Shopmium actives ont été reconfirmées sur les pages officielles.",
       "extractedCount": 47,
       "previousSnapshotCount": 47
     }
