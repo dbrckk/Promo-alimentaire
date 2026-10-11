@@ -50,7 +50,7 @@ test("un fruit frais catégorisé est reconnu",()=>{
   assert.equal(result.kind,"fruit-veg");
 });
 
-test("Club Carrefour crée 10% et PASS 15%",()=>{
+test("Club Carrefour propose 10% et PASS 15% sans crédit automatique",()=>{
   const product={code:"12345678",brands:"Carrefour Bio",categories:[]};
   const club=buildProductLoyaltyOffers(product,{
     store:"carrefour",profile:{carrefour:"club"}
@@ -60,8 +60,10 @@ test("Club Carrefour crée 10% et PASS 15%",()=>{
   });
   assert.equal(club[0].savingPercent,10);
   assert.equal(pass[0].savingPercent,15);
-  assert.equal(club[0].autoStack,true);
-  assert.equal(pass[0].autoStack,true);
+  assert.equal(club[0].autoStack,false);
+  assert.equal(pass[0].autoStack,false);
+  assert.deepEqual(pass[0].eans,[]);
+  assert.equal(pass[0].loyaltyEligibility,"activation-unverified");
 });
 
 test("profil Carrefour inconnu n'entre pas dans le total garanti",()=>{
