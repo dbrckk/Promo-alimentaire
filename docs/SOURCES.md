@@ -318,3 +318,11 @@ Les fiches officielles utilisent plusieurs formulations de **rayon**, non équiv
 Correction : le parseur reconnaît les pluriels, « produits ménagers », les ferments lactiques et la mention « A retrouver au rayon ». Un rayon non identifié reste « autre » et ne se transforme jamais arbitrairement en alimentaire sur la base d'un nom de marque. Les **huit catégories déjà documentées dans le snapshot** ont été corrigées sans changer les montants, dates de vérification, échéances ni conditions. Chaque resynchronisation recalculera les catégories avec le même parseur. Les avantages restent potentiels et non automatiquement cumulables.
 
 Vérification : tests dans le fichier Shopmium existant et scénario Chromium Android sur les catégories du vrai JSON importé. Ce correctif n'établit pas à lui seul la disponibilité en magasin d'un produit.
+
+## Jour civil et heures des promotions françaises — 11 octobre 2026
+
+Les champs `verifiedAt`, `startsAt`, `expiresAt` et `reviewAfter` acceptent des **jours civils** (`YYYY-MM-DD`) et des horodatages ISO avec fuseau explicite. Une échéance au jour près concerne désormais toute la **journée Europe/Paris**, indépendamment du fuseau du navigateur Android ou du runner GitHub Actions en UTC. Exemple : `expiresAt: "2026-10-11"` n'est plus actif le 12 octobre à 00:00, heure de Paris (11 octobre à 22:00 UTC en octobre, avant le changement d'heure). Inversement, la vérification datée du 12 octobre ne devient pas anormalement future dans cette plage.
+
+Un horaire précis comme `2026-10-12T14:07:00+02:00` continue à expirer à l'instant annoncé, sans prolongation jusqu'au soir. Les échéances d'ancienne validation Shopmium (cinq jours à partir de la date `verifiedAt`) ont également leur fin en **journée française**, et les compteurs « aujourd'hui / demain » utilisent le même calendrier.
+
+Les contrôles préexistants de validité des dates civiles et fuseaux restent obligatoires. Le module de domaine et la PWA hors connexion ont été vérifiés à la transition entre les 11 et 12 octobre, ainsi qu'au passage à l'heure d'hiver du 25 octobre 2026. Aucun taux ni date de source n'a été prolongé.
