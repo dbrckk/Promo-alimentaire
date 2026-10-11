@@ -36,7 +36,7 @@ export function normalizeBarcode(value) {
   return digits;
 }
 
-export async function fetchProductByBarcode(value, fetchImpl=fetch) {
+export async function fetchProductByBarcode(value, fetchImpl=fetch, {signal=null}={}) {
   const code=normalizeBarcode(value);
   const fields=[
     "code","product_name","generic_name","brands","quantity",
