@@ -1,7 +1,14 @@
 const GTIN_LENGTHS=new Set([8,12,13,14]);
 
 export function normalizeGtin(value) {
-  const digits=String(value ?? "").replace(/\D/g,"");
+  const raw=String(value ?? "").trim();
+  // Removing *all* non-digits could turn a corrupted provider SKU or
+  // tampered shopping-list backup into an apparently valid product GTIN.
+  // Only visual separators (spaces and hyphens) may be discarded.
+  if(!raw || /[^0-9 -]/.test(raw)){
+    throw new Error("GTIN invalide : seuls chiffres, espaces et tirets sont autorisés.");
+  }
+  const digits=raw.replace(/[ -]/g,"");
   if(!GTIN_LENGTHS.has(digits.length)) {
     throw new Error("GTIN invalide : 8, 12, 13 ou 14 chiffres requis.");
   }
