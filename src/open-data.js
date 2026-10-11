@@ -300,10 +300,19 @@ export function normalizePriceObservation(item,originCoords=null) {
   };
 }
 
+// Open Prices dates are civil days, not arbitrary JavaScript timestamps.
+// Date.parse rolls impossible days (e.g. 2026-02-30) into another month.
+function parseObservationDay(value){
+  if(typeof value!=="string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date=new Date(value+"T00:00:00Z");
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0,10)===value
+    ? date : null;
+}
+
 export function isFreshObservation(observation,maxAgeDays=120,now=new Date()) {
   if(!observation?.date) return false;
-  const date=new Date(observation.date);
-  if(Number.isNaN(date.getTime())) return false;
+  const date=parseObservationDay(observation.date);
+  if(!date) return false;
   const ageMs=now-date;
   return ageMs >= 0 && ageMs <= maxAgeDays*24*60*60*1000;
 }
@@ -328,8 +337,8 @@ export function haversineKm(lat1,lon1,lat2,lon2) {
 
 export function observationAgeDays(observation,now=new Date()) {
   if(!observation?.date) return null;
-  const date=new Date(observation.date);
-  if(Number.isNaN(date.getTime())) return null;
+  const date=parseObservationDay(observation.date);
+  if(!date) return null;
   const ageMs=now-date;
   if(ageMs<0) return null;
   return Math.floor(ageMs/(24*60*60*1000));
@@ -355,8 +364,8 @@ export function selectBestRecentPrice(observations,maxAgeDays=120,now=new Date()
   // If reports conflict on the same date, use the higher observed price:
   // an advertised discount must not depend on the most optimistic receipt.
   const ordered=[...candidates].sort((a,b)=>{
-    const dayA=new Date(a.date).toISOString().slice(0,10);
-    const dayB=new Date(b.date).toISOString().slice(0,10);
+    const dayA=a.date;
+    const dayB=b.date;
     if(dayA!==dayB) return dayA<dayB ? 1 : -1;
     const priceDiff=Number(b.price)-Number(a.price);
     if(priceDiff!==0) return priceDiff;
