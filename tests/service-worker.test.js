@@ -13,7 +13,10 @@ test("le nettoyage des caches ne touche qu'à Promo-alimentaire",()=>{
 
 test("seules les réponses HTTP réussies remplacent un asset hors ligne",()=>{
   assert.match(source,/if\(response\.ok\)\s*\{/);
-  assert.match(source,/event\.waitUntil\(\s*caches\.open\(CACHE\)/);
+  assert.match(source,/event\.waitUntil\(\(async\(\)=>\{/);
+  assert.match(source,/const cache=await caches\.open\(CACHE\)/);
+  assert.match(source,/await isAllowedCacheRequest\(url\)/);
+  assert.match(source,/await cache\.put\(event\.request,offlineCopy\)/);
   assert.match(source,/caches\.match\(event\.request\)/);
 });
 
