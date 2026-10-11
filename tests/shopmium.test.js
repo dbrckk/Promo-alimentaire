@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   deriveShopmiumProductMatch,
   extractShopmiumOfferUrls,
+  extractShopmiumLandingDetailUrls,
   isOfficialShopmiumOfferUrl,
   isShopmiumPubliclyClosed,
   mergeShopmiumOfferUrls,
@@ -22,6 +23,18 @@ test("extractShopmiumOfferUrls déduplique les fiches /fr/n",()=>{
   const html='<a href="/fr/n/a-chacun-son-daddy">A</a><a href="https://offers.shopmium.com/fr/n/a-chacun-son-daddy">B</a><a href="/fr/autre">X</a>';
   const urls=extractShopmiumOfferUrls(html);
   assert.deepEqual(urls,["https://offers.shopmium.com/fr/n/a-chacun-son-daddy"]);
+  const hub=`<title>Shopmium | Salades traiteur Bonduelle</title>
+    <a href="/fr/n/carotte-citron-de-sicile-bonduelle">Carottes</a>
+    <a href="/fr/n/taboule-bonduelle">Taboulé</a>
+    <a href="https://example.com/fr/n/not-official">Ne pas suivre</a>
+    <p>Découvrir ces offres</p>`;
+  const landing="https://offers.shopmium.com/fr/n/salades-traiteur-a-domicile-bonduelle";
+  assert.deepEqual(extractShopmiumLandingDetailUrls(hub,landing),[
+    "https://offers.shopmium.com/fr/n/carotte-citron-de-sicile-bonduelle",
+    "https://offers.shopmium.com/fr/n/taboule-bonduelle"
+  ]);
+  assert.deepEqual(extractShopmiumLandingDetailUrls(hub.replace("Découvrir ces offres","Voir"),landing),[]);
+  assert.deepEqual(extractShopmiumLandingDetailUrls(hub,"https://example.com/fr/n/evil"),[]);
 });
 
 test("parseValidityDates convertit les dates françaises",()=>{
@@ -57,6 +70,7 @@ test("parseShopmiumDetailHtml produit une offre prudente active",()=>{
     <p>- Cassonade pure canne 750g (2,25€)</p>
     <p>- Muscovado Brun 500g (2,49€)</p>
     <p>Remboursement maximum calculé par article</p>
+    <p>Cette offre vous est proposée par : Daddy</p>
     <p>Offre non cumulable avec toute autre promotion.</p>
   `;
   const offer=parseShopmiumDetailHtml(html,"https://offers.shopmium.com/fr/n/a-chacun-son-daddy",{verifiedAt:"2026-10-07"});
@@ -66,6 +80,7 @@ test("parseShopmiumDetailHtml produit une offre prudente active",()=>{
   assert.equal(offer.referenceNames.length,2);
   assert.equal(offer.stores[0],"all");
   assert.equal(offer.autoStack,false);
+  assert.equal(offer.productMatch.brands[0],"Daddy");
 });
 
 
