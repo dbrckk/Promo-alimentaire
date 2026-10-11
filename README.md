@@ -348,6 +348,8 @@ L'historique conserve les relevés pour plusieurs magasins physiques identifiabl
 
 L'identité du produit dans l'historique local et les alertes est maintenant harmonisée en **GTIN-14 canonique** lorsque la clé de contrôle GS1 est valide. Les variantes UPC-A, EAN-13 et GTIN-14 du même produit correspondent à une seule référence ; les données existantes sur le téléphone restent lisibles sans migration destructive. Les relevés répétés de même prix, date et magasin sont dédoublonnés. Les codes locaux non-GTIN déjà enregistrés restent compatibles, sans être interprétés comme des EAN fiables.
 
+La **liste de courses** reconnaît également les codes UPC-A/EAN-13/GTIN-14 ayant la même clé GS1 : rescanner le même produit augmente sa quantité dans la ligne existante tout en conservant le code initial pour les liens et les recherches de prix. Une ancienne liste locale contenant des représentations dupliquées est consolidée tant que la quantité totale reste dans la limite de 99 ; aucune quantité supérieure à cette limite n'est effacée silencieusement. Les sauvegardes JSON rejettent les produits dupliqués sous des représentations équivalentes, plutôt que de créer des doublons artificiels.
+
 Une promotion immédiate ne devient pas automatiquement une économie acquise lorsque le dernier prix normal observé date de **plus de sept jours** ; elle reste candidate, à vérifier.
 
 La santé des sources montre séparément :
