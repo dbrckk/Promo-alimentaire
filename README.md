@@ -28,6 +28,10 @@ Le collecteur consulte désormais également la [page officielle des offres publ
 
 Le catalogue public Coupon Network peut mélanger remboursements alimentaires, lessives, hygiène, animaux et boissons alcoolisées sans catégorie fiable dans les données brutes. À l'import, les **libellés non alimentaires explicites** sont identifiés de manière conservatrice. Ces candidats sont soumis à la règle du projet : **hors alimentaire uniquement si une économie de 50 % ou plus est réellement calculable**. Une offre à montant fixe sans prix de référence ne prouve pas 50 % et reste masquée dans ce cas. Les offres alimentaires et catégories non concluantes restent candidates, sans confirmation automatique. Le parcours Android valide ces distinctions sur le moteur d'import et le filtrage réel.
 
+## Garde-fou des promotions liées à une carte fidélité (11 octobre 2026)
+
+L'import d'un catalogue marchand ne peut plus fournir seul le drapeau `autoStackWhenEligible` pour faire passer une remise sans preuve dans les gains garantis après sélection d'une carte fidélité. Le moteur neutralise ce droit pour les fichiers importés, tout en préservant les bons d'achat de paiement soumis à leurs contrôles spécifiques. Le test fonctionnel Android vérifie ensemble une remise produit et une remise panier fictives à 90 %, ainsi qu'un bon d'achat valide.
+
 ## État
 
 Fonctionnalités actuelles :
