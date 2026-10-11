@@ -1,4 +1,5 @@
 import { isOfferActive, shopmiumLegacyReviewCutoff, validateImportBatch } from "./ingestion.js";
+import {inspectImportManifest} from "./import-manifest.js";
 
 // A failed refresh is NOT a new expiry date or proof that an old offer is
 // false. Keep it visible as a candidate, but never silently count its
@@ -27,6 +28,10 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
     throw new Error(`Manifest d'offres indisponible (${manifestResponse.status}).`);
   }
   const manifest=await manifestResponse.json();
+  const checkedManifest=inspectImportManifest(manifest);
+  if(!checkedManifest.ok){
+    throw new Error("Manifeste d'offres refusé : "+checkedManifest.issues.join(" "));
+  }
   const syncSources={};
   // Load shared legacy status first, then provider files. The latter win
   // when both contain the same supplier, avoiding concurrent Git writes.
@@ -47,7 +52,7 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       // Diagnostics are optional; never make offer validity depend on them.
     }
   }
-  const files=Array.isArray(manifest?.files) ? manifest.files : [];
+  const files=checkedManifest.files;
   const imported=[];
   const errors=[];
   const sourceStats=[];
