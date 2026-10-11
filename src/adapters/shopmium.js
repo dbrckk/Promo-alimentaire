@@ -53,6 +53,23 @@ export function mergeShopmiumOfferUrls(indexUrls=[],watchlistUrls=[],{maximum=30
   return [...urls];
 }
 
+/**
+ * Some publicly listed Shopmium links open a campaign landing page, not a
+ * reimbursable offer. Such pages visibly say "Découvrir ces offres" and link
+ * to individual official detail pages. Only follow those explicit links,
+ * never guess EANs, terms or percentages from a marketing landing page.
+ * This is a single-level discovery step, not a recursive web crawler.
+ */
+export function extractShopmiumLandingDetailUrls(html,landingUrl,{maximum=12}={}){
+  if(!isOfficialShopmiumOfferUrl(landingUrl)) return [];
+  const lines=htmlToLines(html);
+  if(!lines.some((line)=>/d[eé]couvrir\s+ces\s+offres/i.test(line))) return [];
+  const cap=Math.min(12,Math.max(1,Math.trunc(Number(maximum)||12)));
+  return extractShopmiumOfferUrls(html)
+    .filter((url)=>isOfficialShopmiumOfferUrl(url) && url!==landingUrl)
+    .slice(0,cap);
+}
+
 export function parseShopmiumDetailHtml(html,sourceUrl,{verifiedAt=todayIso()}={}){
   if(!isOfficialShopmiumOfferUrl(sourceUrl)) return null;
   const raw=String(html??"");
