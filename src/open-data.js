@@ -3,6 +3,19 @@ import {canonicalGtin} from "./gtin.js";
 const OFF_PRODUCT_API = "https://world.openfoodfacts.org/api/v3/product";
 const OPEN_PRICES_API = "https://prices.openfoodfacts.org/api/v1/prices";
 
+/**
+ * Only a real positive Open Prices record ID may produce a public source link.
+ * Never trust a provider-supplied full URL or render arbitrary string IDs as hrefs.
+ */
+export function priceObservationPublicUrl(id) {
+  const digits=String(id??"");
+  if(!/^[1-9]\d{0,15}$/.test(digits) || !Number.isSafeInteger(Number(digits))){
+    return null;
+  }
+  return `https://prices.openfoodfacts.org/prices/${digits}`;
+}
+
+
 const STORE_MATCHERS = {
   carrefour: /carrefour/i,
   leclerc: /(?:e\.?\s*)?leclerc/i

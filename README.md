@@ -404,7 +404,9 @@ Les dates Open Prices sont comparées selon leur **instant réel** (formats YYYY
 
 ### Recherche approfondie des prix pour un EAN
 
-Si la comparaison Carrefour / E.Leclerc indique une recherche partielle ou interrompue, le bouton **« Approfondir la recherche »** permet, sur demande, de refaire les deux recherches Open Prices jusqu'à **3 pages** avec un seuil de **20 relevés** exploitables par enseigne, au lieu du parcours rapide initial de 2 pages et 4 relevés. Il s'agit d'une action réseau volontaire, pas d'une surveillance en arrière-plan. Le résultat peut rester incomplet si les données sont paginées davantage ou si une source échoue. Les cartes restent spécifiques à l'EAN, aux enseignes et au canal choisi ; aucun prix Drive n'est déduit d'un relevé en magasin.
+Si la comparaison Carrefour / E.Leclerc indique une recherche partielle ou interrompue, le bouton **« Approfondir la recherche »** permet, sur demande, de refaire les deux recherches Open Prices jusqu'à **3 pages** avec un seuil de **20 relevés** exploitables par enseigne, au lieu du parcours rapide initial de 2 pages et 4 relevés. Il s'agit d'une action réseau volontaire, pas d'une surveillance en arrière-plan. Le résultat peut rester incomplet si les données sont paginées davantage ou si une source échoue. Les prix ayant un identifiant numérique Open Prices valide disposent maintenant d'un lien **« Consulter ce relevé sur Open Prices »**. Le détail de la paire de magasins comparés propose également les liens des deux relevés retenus, qui peuvent différer des derniers prix affichés dans les cartes. Les identifiants absents ou incorrects ne produisent jamais de lien. Ces liens améliorent la traçabilité, mais ne transforment pas une observation communautaire en prix garanti.
+
+Les cartes restent spécifiques à l'EAN, aux enseignes et au canal choisi ; aucun prix Drive n'est déduit d'un relevé en magasin.
 
 La recherche approfondie ne garantit ni stock ni prix en caisse. Lorsque des pages restent inconnues, le texte précise que la comparaison porte uniquement sur les relevés consultés. Les observations datées dans le futur ne sont plus comptabilisées comme une couverture valide.
 

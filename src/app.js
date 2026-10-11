@@ -2,7 +2,7 @@ import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import { computeSaving, effectivePercent, filterOffers, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
-import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, selectBestRecentPrice } from "./open-data.js";
+import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
@@ -785,6 +785,13 @@ async function compareCurrentExactSku({deep=false}={}){
   els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors,{deep});
 }
 
+function openPricesReceiptLink(observation,label){
+  const url=priceObservationPublicUrl(observation?.id);
+  return url
+    ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`
+    : "";
+}
+
 function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
   if(result.status!=="ok"){
     return '<div class="panel price-source">Impossible de comparer : code GTIN ou quantité invalide.</div>';
@@ -798,6 +805,8 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
       : observed
         ? `<strong>${money.format(row.price)}</strong><small>Relevé du ${escapeHtml(formatDate(observed.date))} · ${escapeHtml(observed.storeName)}${observed.city?" · "+escapeHtml(observed.city):""}${observed.isDiscounted===true?" · prix remisé ponctuel":""}</small>`
         : '<strong>Prix récent non disponible</strong>';
+    const sourceLink=unresolved ? ""
+      : openPricesReceiptLink(observed,"Consulter ce relevé sur Open Prices");
     const coverage=row.coverage||{};
     const coverageLabel=unresolved
       ? "Couverture inconnue : service de prix indisponible"
@@ -851,6 +860,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
     return `<article class="exact-sku-store">
       <h4>${storeLabel(row.store)}</h4>
       <div class="exact-sku-observation">${priceMarkup}</div>
+      ${sourceLink ? `<p class="help exact-sku-source">${sourceLink}</p>` : ""}
       ${row.initialCost!==null
         ? `<p class="help exact-sku-initial-cost">Débours estimé avant remboursements pour ${escapeHtml(quantityLabel)} : <strong>${money.format(row.initialCost)}</strong> (prix communautaire indicatif).</p>`
         : ""}
@@ -908,13 +918,18 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
       ? `Les deux relevés comparables indiquent le même prix ; aucune enseigne n'est moins chère.${quantityProjection}`
       : comparabilityReasons[confidence.status]
         || "Aucune comparaison de prix fiable possible avec les relevés disponibles.";
+  const comparedSourceLinks=paired ? [
+    openPricesReceiptLink(paired.carrefour,"Carrefour (source)"),
+    openPricesReceiptLink(paired.leclerc,"E.Leclerc (source)")
+  ].filter(Boolean).join(" · ") : "";
   const pairedDetails=paired ? `<p>Relevés retenus pour la comparaison locale :
       Carrefour ${money.format(Number(paired.carrefour.price))} (${escapeHtml(formatDate(paired.carrefour.date))}, ${escapeHtml(paired.carrefour.storeName || "magasin non précisé")})
       · E.Leclerc ${money.format(Number(paired.leclerc.price))} (${escapeHtml(formatDate(paired.leclerc.date))}, ${escapeHtml(paired.leclerc.storeName || "magasin non précisé")}).
       ${result.quantity>1 && result.observedQuantityTotals
         ? `Projection pour ${escapeHtml(quantityLabel)} : Carrefour ${money.format(result.observedQuantityTotals.carrefour)} · E.Leclerc ${money.format(result.observedQuantityTotals.leclerc)} (hors remises, prix et stocks non garantis).`
         : ""}
-      Les cartes ci-dessous montrent séparément le dernier prix observé de chaque enseigne : il peut être issu d'un autre magasin.</p>` : "";
+      Les cartes ci-dessous montrent séparément le dernier prix observé de chaque enseigne : il peut être issu d'un autre magasin.
+      ${comparedSourceLinks ? `Relevés comparés : ${comparedSourceLinks}.` : ""}</p>` : "";
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
     <p>Identité GTIN ${escapeHtml(result.gtin)} · Quantité : ${escapeHtml(quantityLabel)} · ${escapeHtml(best)}</p>
