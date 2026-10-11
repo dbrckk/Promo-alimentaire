@@ -53,10 +53,10 @@ export function evaluateShoppingBudget(scenarios,{
     }
     // The cheapest receipt from 3 months ago cannot prove that the budget
     // is respected in a store today, even if every SKU has a price.
-    const oldest=Number(scenario.oldestPriceAgeDays);
-    if(scenario.oldestPriceAgeDays!==null
-      && scenario.oldestPriceAgeDays!==undefined
-      && Number.isFinite(oldest) && oldest>7){
+    const oldest=scenario.oldestPriceAgeExactDays;
+    if(!Number.isFinite(oldest) || oldest<0){
+      reasons.push("Date de relevé non confirmée pour au moins un produit.");
+    }else if(oldest>7){
       reasons.push("Au moins un prix a été relevé il y a plus de 7 jours.");
     }
     if(Number(scenario.manualPriceCount)>0){
