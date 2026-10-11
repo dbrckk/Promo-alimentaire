@@ -89,6 +89,37 @@ if(!pages.length){
 
 pages.sort((a,b)=>b.parsed.length-a.parsed.length);
 let offers=pages[0].parsed;
+// The public catalogue may render the real product cards only after its
+// own JavaScript has run. A headless Chromium view of the same public,
+// unauthenticated page is an alternative to treating HTML 200 as proof.
+// Never log in, call private APIs, bypass challenges or fabricate offers.
+if(offers.length<minOffers){
+  let browser=null;
+  try{
+    const {chromium}=await import("playwright");
+    browser=await chromium.launch({headless:true});
+    const page=await browser.newPage({locale:"fr-FR"});
+    await page.goto(PUBLIC_CARDS_URL,{
+      waitUntil:"domcontentloaded",timeout:25000
+    });
+    await page.waitForFunction(()=>{
+      const text=document.body?.innerText || "";
+      return /sur l['’]achat/i.test(text) && /rembours/i.test(text);
+    },null,{timeout:15000});
+    const publicHtml=await page.content();
+    const rendered=parseCouponNetworkCards(publicHtml,{
+      verifiedAt,sourceUrl:PUBLIC_CARDS_URL
+    });
+    console.log("[coupon-network] catalogue public rendu : "+
+      rendered.length+" carte(s) complètes.");
+    if(rendered.length>offers.length) offers=rendered;
+  }catch(error){
+    console.warn("[coupon-network] catalogue public rendu non exploitable : "+
+      String(error?.message||error).slice(0,180));
+  }finally{
+    if(browser) await browser.close();
+  }
+}
 if(offers.length<minOffers){
   const { extractCouponNetworkDetailUrls, parseCouponNetworkDetailHtml } = await import("../src/adapters/coupon-network.js");
   const urls=[...new Set(pages.flatMap((page)=>extractCouponNetworkDetailUrls(page.html)))];
