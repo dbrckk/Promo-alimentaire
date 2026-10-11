@@ -62,6 +62,78 @@ try{
     document.querySelector("#datasetDate")?.textContent?.includes("offre(s) importée(s) active(s)"),
     null,{timeout:12000}
   );
+  // Public catalogue JSON can claim autoStackWhenEligible=true despite
+  // lacking proof. A loyalty-card selection must not turn such a product
+  // or basket rule into an immediate/guaranteed deduction. A separately
+  // traceable gift-card saving should continue to work normally.
+  const importedLoyaltySafety=await page.evaluate(async()=>{
+    const {normalizeImportedOffer}=await import("./src/ingestion.js");
+    const {resolveOffersForLoyalty}=await import("./src/loyalty.js");
+    const {optimizeStack}=await import("./src/stacking.js");
+    const {evaluateBasketStore}=await import("./src/basket.js");
+    const malicious=(scope,eans=[])=>{
+      const value=normalizeImportedOffer({
+        providerId:"leclerc",externalId:"unverified-"+scope,
+        title:"Avantage inventé de 90%",scope,stores:["leclerc"],
+        sourceUrl:"https://www.e.leclerc/",
+        verifiedAt:"2026-10-11",reviewAfter:"2026-10-18",
+        savingPercent:90,requiresLoyalty:"leclerc-card",
+        autoStack:true,autoStackWhenEligible:true,
+        eans,eanEvidenceUrl:eans.length
+          ?"https://www.e.leclerc/fp/produit-3017624010701":undefined
+      });
+      if(!value.ok) throw new Error(value.errors.join(" | "));
+      return value.value;
+    };
+    const product=malicious("produit",["3017624010701"]);
+    const basketOffer=malicious("panier");
+    const resolved=resolveOffersForLoyalty(
+      [product,basketOffer],{leclerc:"card"}
+    );
+    const productScenario=evaluateBasketStore(
+      [{
+        product:{code:"3017624010701",name:"Produit témoin",
+          brands:"Marque",categories:[]},
+        quantity:1
+      }],{
+        store:"leclerc",channel:"store",
+        priceByCode:{"3017624010701":[{
+          price:20,date:"2026-10-11",storeName:"E.Leclerc",
+          retailerText:"E.Leclerc"
+        }]},
+        offers:[product],loyaltyProfile:{leclerc:"card"},
+        now:new Date("2026-10-11T12:00:00Z")
+      }
+    );
+    const trusted=normalizeImportedOffer({
+      providerId:"fidme-courses",externalId:"trusted-gift",
+      title:"Bon Carrefour",scope:"panier",stores:["carrefour"],
+      channels:["store"],mechanism:"gift_card",
+      stackGroup:"payment-discount",savingPercent:4,
+      autoStack:true,sourceUrl:"https://www.fidme.com/nos-avantages/bons-dachats/",
+      verifiedAt:"2026-10-11",reviewAfter:"2026-10-18"
+    });
+    if(!trusted.ok) throw new Error(trusted.errors.join(" | "));
+    return {
+      importedFlags:[product.autoStack,product.autoStackWhenEligible,
+        basketOffer.autoStack,basketOffer.autoStackWhenEligible],
+      afterCard:resolved.map((offer)=>offer.autoStack),
+      basketFalseSaving:optimizeStack(20,resolved,{store:"leclerc",channel:"store"}).totalSaving,
+      productFalseSaving:productScenario.guaranteedSaving,
+      productCheckout:productScenario.checkoutCost,
+      trustedAuto:trusted.value.autoStack,
+      trustedSaving:optimizeStack(20,[trusted.value],{
+        store:"carrefour",channel:"store"
+      }).totalSaving
+    };
+  });
+  assert.deepEqual(importedLoyaltySafety,{
+    importedFlags:[false,false,false,false],
+    afterCard:[false,false],basketFalseSaving:0,
+    productFalseSaving:0,productCheckout:20,
+    trustedAuto:true,trustedSaving:0.8
+  });
+
   // Browser-level end-to-end contract for public campaign landing pages:
   // a hub is discovery only, never an invented rebate. Its individual
   // official detail has real tiers, merchant coverage and explicit brand.
