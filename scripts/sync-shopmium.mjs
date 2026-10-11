@@ -1,5 +1,5 @@
 import { readFile,writeFile,appendFile } from "node:fs/promises";
-import { extractShopmiumOfferUrls,extractShopmiumLandingDetailUrls,isOfficialShopmiumOfferUrl,isShopmiumPubliclyClosed,mergeShopmiumOfferUrls,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
+import { extractShopmiumOfferUrls,extractShopmiumLandingDetailUrls,isOfficialShopmiumOfferUrl,isShopmiumPubliclyClosed,mergeShopmiumOfferUrls,planShopmiumCrawl,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
 import { isOfferActive,validateImportBatch } from "../src/ingestion.js";
 
 const INDEX_URL="https://offers.shopmium.com/fr/";
@@ -39,7 +39,11 @@ const batchSize=8;
 // -> individual official terms, with no deeper traversal or guessed offers.
 // A 401/403/429 is an access limit; stop instead of retrying or bypassing it.
 const MAX_PAGES=110;
-const primaryUrls=urls.slice(0,MAX_PAGES);
+const {primaryUrls,remainingPages}=planShopmiumCrawl(indexUrls,watchlist.urls,{
+  maximumPages:MAX_PAGES,reservedDetailPages:12
+});
+console.log("[shopmium] budget : "+primaryUrls.length+" fiches prioritaires, "+
+  remainingPages+" places disponibles pour les détails de campagne.");
 let accessDenied=false;
 let fetched=0;
 let unavailable=0;
@@ -90,7 +94,7 @@ async function inspectPages(candidates,{allowLandingDiscovery=false}={}){
 await inspectPages(primaryUrls,{allowLandingDiscovery:true});
 const knownUrls=new Set(primaryUrls);
 const childUrls=[...discoveredDetails].filter((url)=>!knownUrls.has(url))
-  .slice(0,Math.max(0,MAX_PAGES-primaryUrls.length));
+  .slice(0,remainingPages);
 console.log("[shopmium] "+discoveredDetails.size+
   " liens de détail officiels trouvés dans les pages campagne ; "+
   childUrls.length+" fiche(s) supplémentaires à vérifier.");
