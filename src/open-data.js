@@ -9,7 +9,7 @@ const OPEN_PRICES_API = "https://prices.openfoodfacts.org/api/v1/prices";
  */
 export function priceObservationPublicUrl(id) {
   const digits=String(id??"");
-  if(!/^[1-9]\\d{0,15}$/.test(digits) || !Number.isSafeInteger(Number(digits))){
+  if(!/^[1-9]\d{0,15}$/.test(digits) || !Number.isSafeInteger(Number(digits))){
     return null;
   }
   return `https://prices.openfoodfacts.org/prices/${digits}`;
