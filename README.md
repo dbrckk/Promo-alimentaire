@@ -32,6 +32,12 @@ Le catalogue public Coupon Network peut mélanger remboursements alimentaires, l
 
 L'import d'un catalogue marchand ne peut plus fournir seul le drapeau `autoStackWhenEligible` pour faire passer une remise sans preuve dans les gains garantis après sélection d'une carte fidélité. Le moteur neutralise ce droit pour les fichiers importés, tout en préservant les bons d'achat de paiement soumis à leurs contrôles spécifiques. Le test fonctionnel Android vérifie ensemble une remise produit et une remise panier fictives à 90 %, ainsi qu'un bon d'achat valide.
 
+## Comparaison des magasins : recherches Open Prices partielles (11 octobre 2026)
+
+Un panier peut contenir un prix récent pour chaque produit alors que la recherche Open Prices n'a pas fini toutes les pages nécessaires, ou qu'une requête réseau a échoué. Jusqu'ici, le bandeau de comparaison annonçait « aucun gagnant » dans cette situation, mais le bloc **Meilleure stratégie garantie** pouvait simultanément afficher Carrefour ou E.Leclerc gagnant. Le moteur de stratégie et l'interface appliquent désormais le **même indicateur de couverture incomplète** déjà utilisé pour le budget. Le résultat passe en **indicatif** et aucun magasin gagnant ni stratégie chiffrée dite garantie n'est désigné avant une recherche suffisamment complète. Un relevé complet reste une observation, non une promesse de tarif.
+
+Le contrôle de régression est intégré aux vérifications existantes du moteur et au parcours navigateur Android ; aucun nouveau fichier de tests unitaires n'a été créé.
+
 ## État
 
 Fonctionnalités actuelles :

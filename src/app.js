@@ -2185,7 +2185,8 @@ function renderBasketComparison(scenarios){
   const ranked=compareBasketStores(scenarios);
   const strategySummary=summarizeBasketStrategies(scenarios,{
     channel:state.channel,
-    nearbyEnabled:state.nearbyEnabled
+    nearbyEnabled:state.nearbyEnabled,
+    coverageIncomplete:state.basketPriceCoverageIncomplete
   });
   const strategyHtml=renderStrategySummary(strategySummary);
   const allComplete=scenarios.length>0 && scenarios.every((scenario)=>scenario.isComplete);

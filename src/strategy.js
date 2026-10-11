@@ -1,6 +1,7 @@
 export function summarizeBasketStrategies(scenarios,{
   channel="store",
-  nearbyEnabled=false
+  nearbyEnabled=false,
+  coverageIncomplete=false
 }={}){
   const values=(scenarios || []).filter((scenario)=>scenario?.distinctCount>0);
 
@@ -14,6 +15,17 @@ export function summarizeBasketStrategies(scenarios,{
     return {
       status:"needs-location",
       reason:"Active la proximité pour comparer des points de vente du même secteur."
+    };
+  }
+
+  // A partial Open Prices search can omit a newer receipt or an entire
+  // eligible point of sale. Complete *basket lines* are not sufficient
+  // evidence of exhaustive retailer coverage. Budget and strategy must
+  // agree that such results are only indicative.
+  if(coverageIncomplete){
+    return {
+      status:"indicative",
+      reason:"Recherche de prix incomplète (pages supplémentaires ou échec réseau) : aucune stratégie gagnante fiable ne peut être déclarée."
     };
   }
 
