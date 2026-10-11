@@ -98,7 +98,7 @@ export function normalizeImportedOffer(raw) {
       provider:value.provider || providerId,
       title,
       type:value.type || "ODR",
-      category:value.category || "autre",
+      category:couponNetworkCategory(value,providerId),
       stores,
       savingPercent:Number.isFinite(savingPercent) ? savingPercent : null,
       savingAmount:Number.isFinite(savingAmount) ? savingAmount : null,
@@ -165,6 +165,30 @@ export function normalizeImportedOffer(raw) {
 
 // The JSON flag autoStack cannot grant arbitrary imported basket discounts.
 // Only dated, traceable, first-party gift-card listings are eligible.
+// Public Coupon Network cards do not expose a structured product category.
+// An unclassified coupon stays a conditional candidate, but clearly nonfood
+// items must not bypass the product rule requiring >=50% on other domains.
+// Match only distinctive words in the actual product/conditions: broad brand
+// names and generic words (e.g. "bio" or "maison") are not sufficient.
+function couponNetworkCategory(value,providerId){
+  if(providerId!=="coupon-network") return value.category || "autre";
+  const source=[
+    value.title,value.conditions,
+    ...(Array.isArray(value.referenceNames)?value.referenceNames:[])
+  ].filter(Boolean).join(" ")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLocaleLowerCase("fr");
+
+  const nonFood=/\b(?:lessives?|adoucissants?|assouplissants?|nettoyants?|detergents?|liquides? vaisselle|shampooings?|shampoings?|apres[- ]shampooings?|dentifrices?|deodorants?|antitranspirants?|anti[- ]transpirants?|gels? douche|savons?|lingettes?|couches?|papiers? toilettes?|blocs? wc|sous[- ]vetements? absorbants?|croquettes?|litieres?|friandises? pour (?:chat|chien)s?|filtres? a eau|maquillage)\b/;
+  if(nonFood.test(source)) return "non-alimentaire";
+
+  const alcohol=/\b(?:vodka|whisky|whiskey|rhum|tequila|bieres?|vins?|champagne|cidre|liqueurs?|aperitifs?)\b/;
+  if(alcohol.test(source) && !/\bsans alcool\b/.test(source)){
+    return "hors-alimentaire";
+  }
+  return value.category || "autre";
+}
+
 export function trustedImportedGiftCard({
   value,
   stores=[],
