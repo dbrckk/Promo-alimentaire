@@ -1,4 +1,4 @@
-import { readFile,writeFile } from "node:fs/promises";
+import { readFile,writeFile,appendFile } from "node:fs/promises";
 import { extractShopmiumOfferUrls,extractShopmiumLandingDetailUrls,isOfficialShopmiumOfferUrl,isShopmiumPubliclyClosed,mergeShopmiumOfferUrls,parseShopmiumDetailHtml } from "../src/adapters/shopmium.js";
 import { isOfferActive,validateImportBatch } from "../src/ingestion.js";
 
@@ -135,4 +135,16 @@ if(write){
   console.log("[shopmium] snapshot et manifeste mis à jour.");
 }else{
   console.log("[shopmium] dry-run : aucun fichier modifié.");
+}
+
+// Emit what THIS run individually revalidated. Dates in the JSON file are
+// day-granular, so a previously validated offer retained from an earlier
+// run today must not masquerade as a fresh successful fetch.
+if(write && process.env.GITHUB_OUTPUT){
+  await appendFile(process.env.GITHUB_OUTPUT,
+    "confirmed_count="+fresh.length+"\n"+
+    "retained_count="+retained.length+"\n"+
+    "snapshot_count="+active.length+"\n",
+    "utf8"
+  );
 }
