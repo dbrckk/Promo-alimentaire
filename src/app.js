@@ -1,6 +1,6 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
-import { computeSaving, effectivePercent, filterOffers, offerDeadline, rankOffers } from "./domain.js";
+import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
@@ -55,7 +55,7 @@ let offers=[...baseOffers];
 function activeOffers(){
   // Recheck deadlines at each interaction: long-running installed PWAs must
   // not continue counting an offer whose review date passed overnight.
-  return filterActiveOffers(offers,new Date());
+  return filterActiveOffers(offers,new Date()).filter(isOfferWithinShoppingScope);
 }
 const els = {
   store:document.querySelector("#store"),
