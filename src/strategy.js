@@ -18,24 +18,38 @@ export function summarizeBasketStrategies(scenarios,{
   }
 
   const reliable=values.filter((scenario)=>
-    scenario.isComplete
-    && scenario.locationReliable
-    && scenario.priceChannelReliable!==false
+    scenario.isComplete===true
+    && scenario.locationReliable===true
+    && scenario.priceChannelReliable===true
+    && Number.isInteger(scenario.pricedCount)
+    && scenario.pricedCount===scenario.distinctCount
+    && Number(scenario.missingCount)===0
+    && Number.isFinite(scenario.finalCost) && scenario.finalCost>=0
+    && Number.isFinite(scenario.guaranteedSaving) && scenario.guaranteedSaving>=0
+    && (scenario.conservativeBestCaseCost==null
+      || (Number.isFinite(scenario.conservativeBestCaseCost)
+        && scenario.conservativeBestCaseCost>=0))
   );
-  if(!reliable.length){
+  // A single priced store is not a comparison. In particular, filtering out
+  // an incomplete retailer must not make the remaining retailer a "winner".
+  if(reliable.length!==2
+    || !reliable.some((scenario)=>scenario.store==="carrefour")
+    || !reliable.some((scenario)=>scenario.store==="leclerc")){
     return {
       status:"insufficient",
-      reason:"Aucun scénario complet et suffisamment identifié n’est disponible."
+      reason:"Il faut deux paniers complets, avec prix valides et magasin identifié, pour comparer Carrefour et E.Leclerc."
     };
   }
-  // Both stores must have recent comparable receipt coverage before
-  // declaring a winner; a price from weeks ago is merely an indication.
+  // Prices without an actual age, old observations and personal receipts
+  // are useful for budgeting but do not establish a current store winner.
   if(reliable.some((scenario)=>
-    Number.isFinite(scenario.oldestPriceAgeDays) && scenario.oldestPriceAgeDays>7
+    !Number.isFinite(scenario.oldestPriceAgeDays)
+    || scenario.oldestPriceAgeDays<0 || scenario.oldestPriceAgeDays>7
+    || Number(scenario.manualPriceCount)>0
   )){
     return {
       status:"indicative",
-      reason:"Au moins un panier utilise un prix relevé il y a plus de 7 jours. Impossible d'affirmer quel magasin est le moins cher aujourd'hui."
+      reason:"Prix trop ancien, date inconnue ou relevé personnel : impossible d'affirmer quel magasin est le moins cher aujourd'hui."
     };
   }
 
