@@ -237,6 +237,68 @@ try{
     valid:"3017624010701",corruptRejected:true,backupRejected:true,
     corruptCanonical:null,productRejected:true,priceRejected:true,requests:0
   });
+  // When a merchant failed to reconfirm its public offer snapshot, the
+  // browser may keep the candidate but must never silently auto-stack it.
+  const failedSourceSafety=await page.evaluate(async()=>{
+    const {loadImportedOffers}=await import("./src/import-loader.js");
+    const offer={
+      providerId:"leclerc",externalId:"outage-exact",title:"Offre témoin",
+      scope:"produit",stores:["leclerc"],savingPercent:20,
+      verifiedAt:"2026-10-10",reviewAfter:"2026-10-15",
+      sourceUrl:"https://www.e.leclerc/",
+      eans:["3017624010701"],
+      eanEvidenceUrl:"https://www.e.leclerc/fp/produit-3017624010701",
+      autoStack:true,autoStackWhenEligible:true
+    };
+    const now=new Date("2026-10-12T12:00:00Z");
+    const run=async(checkedAt,status)=>{
+      const fetchImpl=async(url)=>{
+        const file=String(url);
+        if(file.endsWith("/index.json")){
+          return {ok:true,json:async()=>({files:["outage.json"]})};
+        }
+        if(file.endsWith("/outage.json")){
+          return {ok:true,json:async()=>[offer]};
+        }
+        if(file.endsWith("/source-sync-status.json") && checkedAt){
+          return {ok:true,json:async()=>({sources:{leclerc:{
+            status,checkedAt,reason:"Catalogue non reconfirmé",
+            extractedCount:0,previousSnapshotCount:1
+          }}})};
+        }
+        return {ok:false,status:404};
+      };
+      const result=await loadImportedOffers({fetchImpl,now});
+      const x=result.offers[0];
+      return {autoStack:x?.autoStack,autoStackWhenEligible:x?.autoStackWhenEligible,
+        warning:x?.sourceSyncWarning?.status||null,
+        verifiedAt:x?.verifiedAt};
+    };
+    const real=await loadImportedOffers();
+    return {
+      confirmed:await run(null,null),
+      failed:await run("2026-10-11T09:00:00Z","unavailable"),
+      partial:await run("2026-10-11T09:00:00Z","partial"),
+      older:await run("2026-10-09T09:00:00Z","unavailable"),
+      future:await run("2026-10-13T09:00:00Z","unavailable"),
+      realWarningCount:real.offers.filter((x)=>x.sourceSyncWarning).length
+    };
+  });
+  assert.deepEqual(failedSourceSafety.confirmed,{
+    autoStack:true,autoStackWhenEligible:true,warning:null,
+    verifiedAt:"2026-10-10"
+  });
+  for(const state of [failedSourceSafety.failed,failedSourceSafety.partial]){
+    assert.equal(state.autoStack,false);
+    assert.equal(state.autoStackWhenEligible,false);
+    assert.equal(state.verifiedAt,"2026-10-10");
+    assert.ok(["unavailable","partial"].includes(state.warning));
+  }
+  assert.equal(failedSourceSafety.older.autoStack,true);
+  assert.equal(failedSourceSafety.future.autoStack,true);
+  if(failedSourceSafety.realWarningCount>0){
+    assert.match(await page.locator("#offers").innerText(),/Source non reconfirmée/);
+  }
   const statusFixture=JSON.parse(await readFile(
     new URL("../data/import/source-sync-status.json",import.meta.url),"utf8"
   ));
