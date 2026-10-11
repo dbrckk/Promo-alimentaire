@@ -1264,5 +1264,309 @@
     "stackingConfidence": "restricted",
     "stacking": "non cumulable avec toute autre promotion",
     "conditions": "1 article(s): 25% ; 2-3 article(s): 34% 2 référence(s) publique(s) détectée(s) Non cumulable avec toute autre promotion. Offre détectée automatiquement depuis la fiche publique Shopmium ; disponibilité et conditions à revérifier avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-carotte-citron-de-sicile-bonduelle",
+    "title": "Bonduelle — Carottes râpées au citron de Sicile",
+    "type": "ODR",
+    "category": "alimentation",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-08-31T08:00:00+02:00",
+    "expiresAt": "2026-12-30",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/carotte-citron-de-sicile-bonduelle",
+    "scope": "produit",
+    "referenceNames": [
+      "Carotte Citron de Sicile 320g",
+      "Carotte Citron de Sicile 500g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Bonduelle"
+      ],
+      "any": [
+        "carotte",
+        "citron"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "Jusqu'à 34 % remboursés sur 1 à 3 articles achetés sur un même ticket. Campagne annoncée du 31/08 au 30/12/2026. Maximum 9 articles sur la durée ; non cumulable. Remboursement soumis à présentation du ticket, éligibilité de la référence et disponibilité des quotas. Aucun EAN ou prix de caisse confirmé. Vérifier la fiche officielle avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-taboule-bonduelle",
+    "title": "Bonduelle — Taboulés Oriental et Poulet rôti",
+    "type": "ODR",
+    "category": "alimentation",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 34,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-08-31T08:00:00+02:00",
+    "expiresAt": "2026-12-30",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/taboule-bonduelle",
+    "scope": "produit",
+    "referenceNames": [
+      "Taboulé Oriental 300g",
+      "Taboulé Oriental 500g",
+      "Taboulé Poulet Rôti 300g",
+      "Taboulé Poulet Rôti 500g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 25
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 30
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 34
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Bonduelle"
+      ],
+      "any": [
+        "taboule",
+        "oriental",
+        "poulet"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "Jusqu'à 34 % remboursés sur 1 à 3 articles achetés sur un même ticket. Campagne annoncée du 31/08 au 30/12/2026. Maximum 9 articles sur la durée ; non cumulable. Remboursement soumis à présentation du ticket, éligibilité de la référence et disponibilité des quotas. Aucun EAN ou prix de caisse confirmé. Vérifier la fiche officielle avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-une-accroche-de-sauce-parfaite",
+    "title": "Barilla Al Bronzo — Radiatori ou Spaghetti ondulati",
+    "type": "ODR",
+    "category": "alimentation",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-01T08:00:00+02:00",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/une-accroche-de-sauce-parfaite",
+    "scope": "produit",
+    "referenceNames": [
+      "Radiatori 500g",
+      "Spaghetti Ondulati 500g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Barilla"
+      ],
+      "any": [
+        "radiatori",
+        "spaghetti"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "30 % remboursés sur un article éligible. Campagne officielle du 01/10 au 31/10/2026, une participation. Non cumulable avec toute autre promotion. Remboursement soumis à présentation du ticket, éligibilité de la référence et disponibilité des quotas. Aucun EAN ou prix de caisse confirmé. Vérifier la fiche officielle avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-barilla-al-bronzo-5",
+    "title": "Barilla Al Bronzo — pâtes en plusieurs formats",
+    "type": "ODR",
+    "category": "alimentation",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 30,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-01T08:00:00+02:00",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/barilla-al-bronzo-5",
+    "scope": "produit",
+    "referenceNames": [
+      "Fusilli 500g",
+      "Fusilloni 500g",
+      "Linguine 500g",
+      "Mezzi Rigatoni 500g",
+      "Penne 500g",
+      "Spaghetti Quadrati 500g",
+      "Spaghettoni 500g",
+      "Tortiglioni 500g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 2,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 3,
+        "maxQty": 3,
+        "savingPercent": 30
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Barilla"
+      ],
+      "any": [
+        "fusilli",
+        "linguine",
+        "penne",
+        "rigatoni",
+        "spaghetti",
+        "tortiglioni"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "20 % remboursés sur 1 à 2 articles ou 30 % sur 3 articles du même achat. Valable du 01/10 au 31/10/2026, participation unique. Non cumulable. Remboursement soumis à présentation du ticket, éligibilité de la référence et disponibilité des quotas. Aucun EAN ou prix de caisse confirmé. Vérifier la fiche officielle avant achat."
+  },
+  {
+    "providerId": "shopmium",
+    "provider": "Shopmium",
+    "externalId": "auto-a-chacun-son-daddy",
+    "title": "Daddy — Cassonades, Muscovado et Stévia",
+    "type": "ODR",
+    "category": "alimentation",
+    "stores": [
+      "all"
+    ],
+    "channels": [
+      "store",
+      "drive"
+    ],
+    "savingPercent": 25,
+    "verifiedAt": "2026-10-11",
+    "reviewAfter": "2026-10-15",
+    "startsAt": "2026-10-01T08:00:00+02:00",
+    "expiresAt": "2026-10-31",
+    "sourceUrl": "https://offers.shopmium.com/fr/n/a-chacun-son-daddy",
+    "scope": "produit",
+    "referenceNames": [
+      "Cassonade pure canne 750g",
+      "Cassonade pure canne BIO 750g",
+      "Sucre complet Muscovado Blond 500g",
+      "Sucre complet Muscovado Brun 500g",
+      "Cassonade Brune Dark Demerara 500g",
+      "Mordu de Stévia Blanc 300g"
+    ],
+    "quantityTiers": [
+      {
+        "minQty": 1,
+        "maxQty": 1,
+        "savingPercent": 20
+      },
+      {
+        "minQty": 2,
+        "maxQty": 2,
+        "savingPercent": 25
+      }
+    ],
+    "minPurchaseQty": 1,
+    "productMatch": {
+      "brands": [
+        "Daddy"
+      ],
+      "any": [
+        "cassonade",
+        "sucre",
+        "muscovado",
+        "stevia"
+      ],
+      "minScore": 60
+    },
+    "mechanism": "manufacturer_refund",
+    "stackGroup": "manufacturer-refund",
+    "savingBasis": "base",
+    "autoStack": false,
+    "stackingConfidence": "restricted",
+    "stacking": "non cumulable avec toute autre promotion",
+    "conditions": "20 % remboursés sur 1 article, 25 % sur 2 articles du même ticket. Campagne annoncée du 01/10 au 31/10/2026, participation unique. Non cumulable. Remboursement soumis à présentation du ticket, éligibilité de la référence et disponibilité des quotas. Aucun EAN ou prix de caisse confirmé. Vérifier la fiche officielle avant achat."
   }
 ]
