@@ -156,6 +156,54 @@ try{
     expiredSaving:0,expiredMatches:0,afterReview:0,
     falseExact:0,wrongAutoStack:false
   });
+  // Actual basket, budget and strategy modules exercised together in
+  // Pixel 7: neither a missing checkout cost nor a weeks-old receipt may
+  // produce an apparently reliable under-budget / store-winner result.
+  const budgetTruthfulness=await page.evaluate(async()=>{
+    const {evaluateShoppingBudget}=await import("./src/budget.js");
+    const {evaluateBasketStore}=await import("./src/basket.js");
+    const {summarizeBasketStrategies}=await import("./src/strategy.js");
+    const budget=(scenario)=>evaluateShoppingBudget([scenario],{
+      budget:20,channel:"store",nearbyEnabled:true
+    }).results[0].status;
+    const stub=(checkoutCost,patch={})=>({
+      store:"carrefour",checkoutCost,distinctCount:1,pricedCount:1,
+      missingCount:0,isComplete:true,
+      locationReliable:true,priceChannelReliable:true,...patch
+    });
+    const product={code:"3017624010701",name:"Produit témoin",
+      brands:"Marque témoin",categories:[]};
+    const makeBasket=(date)=>evaluateBasketStore(
+      [{product,quantity:1}],{
+        store:"carrefour",channel:"store",loyaltyProfile:{carrefour:"none"},
+        priceByCode:{"3017624010701":[{price:10,date,storeName:"Carrefour"}]},
+        now:new Date("2026-10-11T12:00:00Z")
+      }
+    );
+    const old=makeBasket("2026-09-20");
+    const fresh=makeBasket("2026-10-10");
+    const oldReliable={...old,locationReliable:true,priceChannelReliable:true};
+    const freshReliable={...fresh,locationReliable:true,priceChannelReliable:true};
+    return {
+      nullTotal:budget(stub(null)),
+      emptyTotal:budget(stub("")),
+      falseTotal:budget(stub(false)),
+      incomplete:budget(stub(10,{distinctCount:2,pricedCount:1})),
+      age:old.oldestPriceAgeDays,
+      freshAge:fresh.oldestPriceAgeDays,
+      oldBudget:budget(oldReliable),
+      freshBudget:budget(freshReliable),
+      strategy:summarizeBasketStrategies([freshReliable,oldReliable],{
+        channel:"store",nearbyEnabled:true
+      }).status
+    };
+  });
+  assert.deepEqual(budgetTruthfulness,{
+    nullTotal:"unavailable",emptyTotal:"unavailable",falseTotal:"unavailable",
+    incomplete:"partial-unknown",
+    age:21,freshAge:1,oldBudget:"indicative-within",
+    freshBudget:"within",strategy:"indicative"
+  });
   const statusFixture=JSON.parse(await readFile(
     new URL("../data/import/source-sync-status.json",import.meta.url),"utf8"
   ));
