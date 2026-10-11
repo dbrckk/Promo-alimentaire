@@ -2,8 +2,8 @@
   "sources": {
     "carrefour": {
       "status": "unavailable",
-      "checkedAt": "2026-10-10T12:24:05.058Z",
-      "reason": "Aucune page Carrefour accessible, dernière vérification impossible.",
+      "checkedAt": "2026-10-11T10:58:02.750Z",
+      "reason": "Aucune promotion Carrefour à revalider : 11 ancienne(s) fiche(s) expirée(s). Découvrir de nouvelles offres nécessite une source publique accessible.",
       "extractedCount": 0,
       "previousSnapshotCount": 11
     }
