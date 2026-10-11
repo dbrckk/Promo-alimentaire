@@ -20,6 +20,38 @@ const observation=(store,price,code=CODE,extras={})=>({
   city:"Chalon-sur-Saône",postcode:"71100",currency:"EUR",pricePer:"UNIT",...extras
 });
 
+test("des dates impossibles ne donnent ni couverture récente ni enseigne gagnante",()=>{
+  const now=new Date("2026-03-02T12:00:00Z");
+  const wrong=observation("carrefour",1,CODE,{
+    date:"2026-02-30",id:"impossible"
+  });
+  const valid=observation("leclerc",4,CODE,{
+    date:"2026-03-02",id:"legitimate"
+  });
+  assert.equal(priceCoverageSummary([wrong],now).status,"invalid-observations");
+  assert.equal(comparePriceObservationEvidence(wrong,valid,now).status,"invalid-date");
+  assert.equal(selectComparablePricePair([wrong],[valid],now),null);
+  const sku=compareExactSku({code:CODE},[],{
+    carrefour:[wrong],leclerc:[valid]
+  },{now});
+  assert.equal(sku.lowerObservedStore,null);
+  assert.equal(sku.stores[0].price,null);
+  assert.equal(sku.stores[0].coverage.recent7Days,0);
+  assert.equal(sku.stores[1].price,4);
+
+  const badTimestamp=observation("carrefour",1,CODE,{
+    date:"2026-02-30T12:00:00Z"
+  });
+  assert.equal(priceCoverageSummary([badTimestamp],now).recent30Days,0);
+  assert.equal(comparePriceObservationEvidence(badTimestamp,valid,now).status,"invalid-date");
+
+  const validTimestamp=observation("carrefour",2,CODE,{
+    date:"2026-03-02T00:30:00+01:00"
+  });
+  assert.equal(priceCoverageSummary([validTimestamp],now).recent7Days,1);
+  assert.equal(comparePriceObservationEvidence(validTimestamp,valid,now).comparable,true);
+});
+
 test("comparateur sépare précisément prix et offres pour un EAN commun",()=>{
   const offers=[
     valid("carrefour-exact","carrefour",{savingPercent:30}),
