@@ -217,6 +217,16 @@ try{
   await page.locator("#carrefourLoyalty").selectOption("club");
   assert.match(await page.locator("#loyaltySummary").innerText(),/10%/);
   await page.locator('[data-tab="product"]').click();
+  // A malformed barcode must never be silently transformed into a different SKU.
+  await page.locator("#barcode").fill("EAN:3017624010701");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  assert.match(await page.locator("#productStatus").innerText(),/Code-barres invalide/);
+  assert.equal(await page.locator("#compareExactSku").isDisabled(),true);
+  await page.locator("#barcode").fill("3017 6240 10701");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  await page.locator("#productResult h2").waitFor({timeout:10000});
+  assert.equal(await page.locator("#barcode").inputValue(),"3017624010701");
+  // Repeat a clean scan to verify normal lookup still works.
   await page.locator("#barcode").fill("3017624010701");
   await page.locator('#barcodeForm button[type="submit"]').click();
   await page.locator("#productResult h2").waitFor({timeout:10000});
