@@ -97,7 +97,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Verify public HTTPS release and offline assets
+      - name: Verify public HTTPS release and required PWA assets
         env:
           DEPLOY_URL: ${{ steps.deployment.outputs.page_url }}
           EXPECTED_DEPLOY_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
