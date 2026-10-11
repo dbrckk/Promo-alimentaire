@@ -2262,9 +2262,10 @@ function renderBasketScenario(scenario){
     const priceAge=priceFreshness(line.bestPrice);
     const receiptLink=line.manualPrice ? ""
       : openPricesReceiptLink(line.bestPrice,"Vérifier ce relevé Open Prices");
-    const priceObservationNote=`<div class="price-age-note ${priceAge.ageDays!==null && priceAge.ageDays>30?"outdated":""}">
-      Relevé du ${formatDate(line.bestPrice?.date)} · ${priceAge.ageDays===null?"âge inconnu":priceAge.ageDays+" jour(s)"}
-      ${priceAge.ageDays!==null && priceAge.ageDays>30?" · Ancien prix : reconfirmer avant achat":""}
+    const oldPrice=["old","stale"].includes(priceAge.level);
+    const priceObservationNote=`<div class="price-age-note ${oldPrice?"outdated":""}">
+      Relevé du ${formatDate(line.bestPrice?.date)} · ${priceAge.ageDays===null?"âge inconnu":priceAge.ageDays+" jour(s) révolu(s)"}
+      ${oldPrice?" · Ancien prix : reconfirmer avant achat":""}
     </div>`;
     const candidate=line.bestProductCandidate;
     const maxCandidate=line.bestSavingCandidate;
