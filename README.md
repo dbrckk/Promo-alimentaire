@@ -1,3 +1,17 @@
+## Catalogue du jour — recommandations sans prix inventés (12 octobre 2026)
+
+L'onglet **Promos du jour** analyse à chaque ouverture ou changement de magasin/canal les derniers snapshots **encore actifs**, validés par l'ingestion existante (sources publiques mises à jour par les tâches planifiées Shopmium, Coupon Network, E.Leclerc et Carrefour). Les résultats sont séparés en :
+
+1. **Promotions de l'enseigne** : Carrefour ou E.Leclerc, fiches produit et EAN exact indiqué uniquement si une URL de preuve existe ; prix, taux et économies en euros calculés lorsqu'il existe une base chiffrée vérifiée.
+2. **Coupons et remboursements** : opportunités complémentaires non assimilées à des prix catalogue ; activation, limites et cumul à confirmer.
+3. **Campagnes officielles** : avis publicitaires datés venant des liens officiels Carrefour et E.Leclerc, conservés dans `data/daily-campaigns.json`. Ces annonces n'entrent jamais dans les économies du panier et sont masquées à la fin de leur période en jour civil français.
+
+Les campagnes enregistrées à ce jour restent un **relevé daté du 12/10/2026**, pas un robot capable de confirmer le prix et le stock de tous les magasins chaque matin. Chaque visite filtre automatiquement les offres selon leur échéance ; les synchronisations existantes alimentent régulièrement les fiches source. Si un catalogue est inaccessible, l'onglet propose le lien officiel, **sans promouvoir de remise fictive**. Un pourcentage de réduction sur le deuxième produit est calculé au taux effectif du lot uniquement lorsqu'un prix unitaire est documenté.
+
+### Contrôles
+
+Les tests existants couvrent la séparation enseigne/ODR, la priorité aux EAN prouvés, le filtrage magasin/canal et hors-alimentaire inférieur à 50 %, l'expiration Paris après minuit, les URLs officiellement autorisées et les réductions sur deuxième article. Le parcours Android vérifie la vue du jour et l'absence d'économies inventées.
+
 ## Relevés de prix à minuit en France (12 octobre 2026)
 
 L'historique local et les alertes de baisse utilisent maintenant **la même date de preuve Open Prices en Europe/Paris** que la recherche des prix : les reçus du jour deviennent enregistrables dès 00 h 00 en France, sans attendre minuit UTC. Les relevés impossibles ou malformés sont refusés, les comparaisons restent limitées à un même magasin identifié et les seuils temporels ne sont pas prolongés artificiellement.

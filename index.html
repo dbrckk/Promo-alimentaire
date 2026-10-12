@@ -121,6 +121,7 @@
 
     <nav class="tabs" aria-label="Sections">
       <button class="tab active" data-tab="offers" type="button">Offres</button>
+      <button class="tab" data-tab="daily" type="button">Promos du jour</button>
       <button class="tab" data-tab="product" type="button">Produit</button>
       <button class="tab" data-tab="list" type="button">Liste <span id="listCount" class="tab-count">0</span></button>
       <button class="tab" data-tab="optimizer" type="button">Optimiseur</button>
@@ -130,6 +131,33 @@
     <section id="offersView">
       <div id="offers" class="grid"></div>
       <p id="empty" class="empty hidden">Aucune offre ne correspond aux filtres.</p>
+    </section>
+
+    <section id="dailyView" class="hidden">
+      <div class="panel daily-intro">
+        <p class="eyebrow dark">Sélection du jour en France</p>
+        <h2>Analyse du catalogue et des économies intéressantes</h2>
+        <p>Les offres réellement présentes dans les données importées sont classées séparément des catalogues publicitaires. Un pourcentage « sur le 2e » n'est jamais présenté comme une remise globale. Le prix et la disponibilité restent à vérifier dans ton magasin.</p>
+        <p id="dailyStatus" class="help" aria-live="polite"></p>
+        <div class="daily-links">
+          <a id="dailyOfficialLink" class="open" href="https://www.carrefour.fr/offres-du-moment" rel="noopener noreferrer" target="_blank">Voir le catalogue officiel</a>
+        </div>
+      </div>
+      <section class="daily-group">
+        <h3>Promotions relevées dans le catalogue de l'enseigne</h3>
+        <p class="help">Références et preuves connues, mais prix et carte locale à confirmer avant achat.</p>
+        <div id="dailyRetailer" class="grid" aria-live="polite"></div>
+      </section>
+      <section class="daily-group">
+        <h3>Remboursements et coupons complémentaires</h3>
+        <p class="help">Opportunités classées séparément : activation, référence exacte, ticket et conditions de cumul à vérifier.</p>
+        <div id="dailyExtras" class="grid" aria-live="polite"></div>
+      </section>
+      <section class="daily-group">
+        <h3>Opérations publicitaires à consulter</h3>
+        <p class="help">Dates et plafonds annoncés par le distributeur, sans tarif produit ou économie panier prouvés.</p>
+        <div id="dailyCampaigns" class="grid" aria-live="polite"></div>
+      </section>
     </section>
 
     <section id="productView" class="hidden">

@@ -1,5 +1,6 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
+import {selectDailyCatalogue} from "./daily-catalogue.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, selectBestRecentPrice } from "./open-data.js";
@@ -72,6 +73,11 @@ const els = {
   simulatorSummary:document.querySelector("#simulatorSummary"),
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
+  dailyStatus:document.querySelector("#dailyStatus"),
+  dailyRetailer:document.querySelector("#dailyRetailer"),
+  dailyExtras:document.querySelector("#dailyExtras"),
+  dailyCampaigns:document.querySelector("#dailyCampaigns"),
+  dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   providers:document.querySelector("#providers"),
   sourceScope:document.querySelector("#sourceScope"),
   sourceSearch:document.querySelector("#sourceSearch"),
@@ -133,6 +139,7 @@ const els = {
 
 const views = {
   offers:document.querySelector("#offersView"),
+  daily:document.querySelector("#dailyView"),
   product:document.querySelector("#productView"),
   list:document.querySelector("#listView"),
   optimizer:document.querySelector("#optimizerView"),
@@ -172,6 +179,8 @@ const state = {
   dropThreshold:Number(localStorage.getItem("promo-drop-threshold") || 10),
   basketRefreshing:false,
   sourceHealth:[],
+  dailyCampaigns:[],
+  dailyFeedCheckedAt:null,
   lookupToken:0,
   skuCompareToken:0
 };
@@ -389,6 +398,7 @@ function setTab(tab){
   els.tabs.forEach((button)=>button.classList.toggle("active",button.dataset.tab===tab));
   for(const [name,view] of Object.entries(views)) view.classList.toggle("hidden",name!==tab);
   if(tab==="list") renderShoppingList();
+  if(tab==="daily") renderDailyCatalogue();
 }
 
 function render(){
@@ -455,6 +465,96 @@ function render(){
     stat(maxPercent===null?"—":formatPercent(maxPercent),"remise maximale annoncée")
   ].join("");
   renderListCount();
+  renderDailyCatalogue();
+}
+
+function renderDailyCatalogue(){
+  if(!els.dailyStatus) return;
+  // Recompute at every render/tab change; an installed PWA opened overnight
+  // must never keep showing yesterday's expired catalogue as today's.
+  const today=new Date();
+  const digest=selectDailyCatalogue({
+    offers:resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile),
+    campaigns:state.dailyCampaigns,store:state.store,
+    channel:state.channel,now:today,limit:8
+  });
+  const source=state.store==="carrefour"
+    ? state.channel==="store" ? "https://www.carrefour.fr/catalogue/carrefour"
+      : "https://www.carrefour.fr/offres-du-moment"
+    : state.channel==="store" ? "https://www.e.leclerc/prospectus"
+      : "https://www.leclercdrive.fr/";
+  els.dailyOfficialLink.href=source;
+  const count=digest.retailer.length+digest.extra.length;
+  els.dailyStatus.textContent="Sélection au "+formatDate(digest.today)+
+    " · "+storeLabel(state.store)+" · "+
+    (state.channel==="store"?"magasin":state.channel==="drive"?"Drive":"en ligne")+
+    " · "+digest.retailer.length+" offre(s) enseigne, "+
+    digest.extra.length+" remboursement(s)/coupon(s) et "+
+    digest.campaigns.length+" campagne(s) officielle(s). "+
+    "Données contrôlées à leurs dates propres, pas de remise panier garantie.";
+  const renderPick=(item)=>{
+    const hasPercent=Number.isFinite(item.savingPercent);
+    const quantity=item.minQuantity>1
+      ? "Pour "+item.minQuantity+" articles éligibles (minimum)" : "Sur l'article éligible";
+    const price=Number.isFinite(item.savingAmount)
+      ? money.format(item.savingAmount)+" d'économie potentielle"+
+        (item.minQuantity>1?" pour le lot":"") : "Économie en euros inconnue";
+    const rate=hasPercent?formatPercent(item.savingPercent):"Taux inconnu";
+    const exact=item.hasExactEan
+      ? "EAN documenté (disponibilité locale non confirmée)"
+      : "Référence exacte à confirmer";
+    const benefit=item.rewardType==="loyalty_credit"
+      ? "Cagnotte fidélité après achat, pas remise de caisse" : null;
+    return `<article class="card daily-offer">
+      <div class="card-head"><div>
+        <h4>${escapeHtml(item.title)}</h4>
+        <div class="source">${escapeHtml(item.provider)}</div>
+      </div><span class="badge">${rate}</span></div>
+      <p><strong>${escapeHtml(price)}</strong></p>
+      <p class="help">${escapeHtml(quantity)} · ${escapeHtml(exact)}</p>
+      ${benefit ? `<p class="help">${escapeHtml(benefit)}</p>` : ""}
+      <p class="help">Source datée du ${formatDate(item.verifiedAt)}
+        ${item.expiresAt?" · limite "+formatDate(item.expiresAt):""}.
+        ${item.needsActivation?"Activation et remboursement à confirmer.":"Prix et magasin à reconfirmer."}
+      </p>
+      <a class="open" href="${escapeHtml(item.sourceUrl)}"
+        target="_blank" rel="noopener noreferrer">Contrôler la source</a>
+    </article>`;
+  };
+  const fallback=(title)=>`<p class="panel help">${escapeHtml(title)}</p>`;
+  els.dailyRetailer.innerHTML=digest.retailer.length
+    ?digest.retailer.map(renderPick).join("")
+    :fallback("Aucune promotion produit de cette enseigne n'a de preuve active exploitable pour ce canal. Consulte le catalogue officiel pour les offres locales.");
+  els.dailyExtras.innerHTML=digest.extra.length
+    ?digest.extra.map(renderPick).join("")
+    :fallback("Aucun remboursement public suffisamment récent à proposer pour ce canal.");
+  els.dailyCampaigns.innerHTML=digest.campaigns.length
+    ?digest.campaigns.map((item)=>`<article class="card daily-offer">
+        <h4>${escapeHtml(item.title)}</h4>
+        <p>${escapeHtml(item.claim)}</p>
+        <p class="help">Annonce consultée le ${formatDate(item.verifiedAt)}
+          · fin annoncée le ${formatDate(item.expiresAt)}.
+          <strong>Aucun gain panier calculé.</strong></p>
+        <a class="open" href="${escapeHtml(item.sourceUrl)}"
+           target="_blank" rel="noopener noreferrer">Vérifier la campagne officielle</a>
+      </article>`).join("")
+    :fallback("Aucune campagne datée et toujours valable dans le dernier relevé. Le catalogue officiel reste accessible.");
+}
+
+async function hydrateDailyCampaigns(){
+  try{
+    const response=await fetch("./data/daily-campaigns.json",{
+      cache:"no-store",signal:AbortSignal.timeout(8000)
+    });
+    if(!response.ok) throw new Error("HTTP "+response.status);
+    const data=await response.json();
+    state.dailyCampaigns=Array.isArray(data?.campaigns)?data.campaigns:[];
+    state.dailyFeedCheckedAt=data?.checkedAt || null;
+  }catch{
+    state.dailyCampaigns=[];
+    state.dailyFeedCheckedAt=null;
+  }
+  renderDailyCatalogue();
 }
 
 function renderOffer(offer,scenario={}){
@@ -2674,3 +2774,4 @@ renderSourceHealth();
 renderProductPriceHistory();
 renderPriceAlerts();
 hydrateImportedOffers();
+hydrateDailyCampaigns();

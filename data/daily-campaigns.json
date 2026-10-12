@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-12T12:00:00Z",
+  "kind": "public-campaign-discovery",
+  "warning": "Campagnes officielles signalées, sans preuve de prix final ni cumul automatique. Nouvelle vérification du magasin requise.",
+  "campaigns": [
+    {
+      "id": "carrefour-bio-2eme-20261019",
+      "store": "carrefour",
+      "channels": [
+        "store",
+        "drive"
+      ],
+      "category": "alimentaire",
+      "title": "Bio & bien plus : jusqu'à −60 % sur le 2e",
+      "claim": "Jusqu'à 60 % sur le deuxième produit d'une sélection Bio. Ce n'est pas 60 % sur l'ensemble du panier ; produits et quantités à vérifier.",
+      "advertisedMaxPercent": 60,
+      "startsAt": "2026-10-12",
+      "expiresAt": "2026-10-19",
+      "verifiedAt": "2026-10-12",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+    },
+    {
+      "id": "carrefour-courses-en-ligne-20261108",
+      "store": "carrefour",
+      "channels": [
+        "drive",
+        "online"
+      ],
+      "category": "alimentaire",
+      "title": "Le Mois Online : jusqu'à −50 % sur le 2e",
+      "claim": "Sélection Drive et livraison ; gain annoncé sur le deuxième article concerné, non sur l'ensemble des courses.",
+      "advertisedMaxPercent": 50,
+      "startsAt": "2026-10-12",
+      "expiresAt": "2026-11-08",
+      "verifiedAt": "2026-10-12",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+    },
+    {
+      "id": "carrefour-promos-semaine-20261012",
+      "store": "carrefour",
+      "channels": [
+        "store",
+        "drive"
+      ],
+      "category": "alimentaire",
+      "title": "Promos de la semaine : opérations 2+1",
+      "claim": "Certaines références proposées avec un produit offert pour deux achetés ; disponibilité et gamme précise à vérifier.",
+      "startsAt": "2026-10-12",
+      "expiresAt": "2026-10-12",
+      "verifiedAt": "2026-10-12",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+    },
+    {
+      "id": "leclerc-quotidien-20261017",
+      "store": "leclerc",
+      "channels": [
+        "store"
+      ],
+      "category": "alimentaire",
+      "title": "Catalogue E.Leclerc « Nos promos du moment »",
+      "claim": "Épicerie, fromages et produits du quotidien ; des remises sur le 2e article et des Tickets E.Leclerc sous conditions. Magasin participant à sélectionner.",
+      "startsAt": "2026-10-06",
+      "expiresAt": "2026-10-17",
+      "verifiedAt": "2026-10-12",
+      "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637"
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
 import { loadImportedOffers, mergeOffers, offerIdentity, sourceDeadlineSummary, failedRefreshWarning, sourceRefreshImpact } from "../src/import-loader.js";
+import {selectDailyCatalogue} from "../src/daily-catalogue.js";
 
 const manifest={verifiedAt:"2026-10-07",files:["one.json"]};
 const payload=[{
@@ -636,4 +637,75 @@ test("la vérification planifiée stricte accepte les archives Carrefour sans ca
   assert.match(output,/coupon-network-auto\.json: ok · 111\/111 actives/);
   assert.match(output,/1 fichier\(s\) en archive historique explicite/);
   assert.match(output,/0 fichier\(s\) périmé\(s\)\/invalide\(s\)/);
+});
+
+test("analyse du catalogue : vrais relevés enseigne séparés des remboursements et campagnes",()=>{
+  const now=new Date("2026-10-12T17:00:00Z");
+  const leclerc={id:"leclerc-live",providerId:"leclerc",provider:"E.Leclerc",
+    title:"Mini-nems du catalogue",scope:"produit",category:"traiteur",
+    stores:["leclerc"],channels:["store"],verifiedAt:"2026-10-12",
+    expiresAt:"2026-10-17",basePrice:2.99,savingPercent:20,
+    eans:["3564700602706"],eanEvidenceUrl:"https://www.e.leclerc/fp/nems",
+    sourceUrl:"https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1006",
+    requiresStoreVerification:true,rewardType:"loyalty_credit"};
+  const coupon={id:"coupon-live",providerId:"coupon-network",
+    title:"Carottes Bonduelle",scope:"produit",category:"alimentaire",
+    stores:["all"],verifiedAt:"2026-10-12",reviewAfter:"2026-10-19",
+    savingAmount:.2,sourceUrl:"https://www.couponnetwork.fr/"};
+  const stale={...leclerc,id:"leclerc-stale",sourceSyncWarning:{status:"unavailable"}};
+  const expired={...leclerc,id:"leclerc-expired",reviewAfter:"2026-10-11"};
+  const forbidden={...leclerc,id:"nonfood-low",category:"hygiene",savingPercent:35};
+  const campaigns=[{id:"fresh-ecatalogue",store:"leclerc",channels:["store"],
+    title:"Campagne alimentaire",claim:"Sélection épicerie",verifiedAt:"2026-10-12",
+    expiresAt:"2026-10-17",sourceUrl:
+      "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637",
+    category:"alimentaire"}];
+  const result=selectDailyCatalogue({offers:[
+    leclerc,coupon,stale,expired,forbidden],campaigns,store:"leclerc",
+    channel:"store",now});
+  assert.deepEqual(result.retailer.map(x=>x.id),["leclerc-live"]);
+  assert.equal(result.retailer[0].savingAmount,.60);
+  assert.equal(result.retailer[0].rewardType,"loyalty_credit");
+  assert.equal(result.retailer[0].candidate,true);
+  assert.deepEqual(result.extra.map(x=>x.id),["coupon-live"]);
+  assert.equal(result.campaigns.length,1);
+  assert.equal(result.campaigns[0].status,"campaign-only");
+  assert.equal("savingAmount" in result.campaigns[0],false);
+  const channelMismatch=selectDailyCatalogue({offers:[leclerc],
+    campaigns,store:"leclerc",channel:"drive",now});
+  assert.equal(channelMismatch.retailer.length,0);
+  assert.equal(channelMismatch.campaigns.length,0);
+});
+test("campagnes du jour : échéance Paris, URL officielle, future proof et 50 % hors alimentaire",()=>{
+  const eligible={id:"carrefour-bio",store:"carrefour",channels:["store"],
+    title:"Bio",claim:"Jusqu'à 60% sur le second",verifiedAt:"2026-10-12",
+    startsAt:"2026-10-12",expiresAt:"2026-10-12",
+    sourceUrl:"https://www.carrefour.fr/offres-du-moment",category:"alimentaire"};
+  const invalid=[
+    {...eligible,id:"future",verifiedAt:"2026-10-13"},
+    {...eligible,id:"past",expiresAt:"2026-10-11"},
+    {...eligible,id:"fake",sourceUrl:"https://www.carrefour.fr.evil.example/offers"},
+    {...eligible,id:"javascript",sourceUrl:"javascript:alert(1)"},
+    {...eligible,id:"nonfood-49",category:"non-alimentaire",advertisedMaxPercent:49},
+    {...eligible,id:"nonfood-60-only-advertised",category:"non-alimentaire",advertisedMaxPercent:60},
+    {...eligible,id:"bad-date",expiresAt:"2026-02-30"}
+  ];
+  const before=selectDailyCatalogue({offers:[],campaigns:[eligible,...invalid],
+    store:"carrefour",channel:"store",now:new Date("2026-10-12T21:59:59Z")});
+  assert.deepEqual(before.campaigns.map(c=>c.id),["carrefour-bio"]);
+  const after=selectDailyCatalogue({offers:[],campaigns:[eligible,...invalid],
+    store:"carrefour",channel:"store",now:new Date("2026-10-12T22:00:00Z")});
+  assert.equal(after.campaigns.length,0);
+});
+test("promo sur le 2e : taux effectif et coût d'un lot, sans attribuer la remise au panier entier",()=>{
+  const result=selectDailyCatalogue({offers:[{
+    id:"deal-two",providerId:"leclerc",title:"Réduction second article",
+    stores:["leclerc"],channels:["store"],scope:"produit",
+    verifiedAt:"2026-10-12",reviewAfter:"2026-10-15",
+    basePrice:4,savingPercent:60,promoFormula:{type:"nth_percent",nth:2,percent:60},
+    sourceUrl:"https://www.e.leclerc/"}],now:new Date("2026-10-12T12:00:00Z"),
+    store:"leclerc",channel:"store"});
+  assert.equal(result.retailer[0].minQuantity,2);
+  assert.equal(result.retailer[0].savingPercent,30);
+  assert.equal(result.retailer[0].savingAmount,2.4);
 });
