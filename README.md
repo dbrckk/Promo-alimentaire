@@ -1,3 +1,15 @@
+### Huit nouvelles promotions alimentaires issues du catalogue public E.Leclerc (12 octobre 2026)
+
+Le lot `data/import/leclerc-catalog-2026-10-07.json` comprend désormais **8 promotions supplémentaires** relevées dans le [catalogue officiel « Nos promos du moment » du 6 au 17 octobre](https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893), notamment :
+
+- **Demae Ramen Nissin** : −68 % sur le 2e, **0,99 € + 0,32 €**, deux articles à payer initialement **1,98 €** avant une économie théorique de **0,67 €**.
+- **Cassoulet Côté Table** : −40 % sur le 2e, **1,15 € + 0,69 €**, montant initial de deux articles **2,30 €**, économie théorique **0,46 €**.
+- **Effilochés de thon Petit Navire** : **2+1 offert** à **2,50 €** l'unité, 3 articles nécessaires, coût de référence de **7,50 €** avant une économie théorique de **2,50 €**.
+- **Olives noires Tramier**, mélange Menguy's et capsules L'OR Espresso Capri : −68 % sur le deuxième article ; taux effectif **34 % du lot de deux**, pas 68 % des courses.
+- **Vinaigre balsamique Maille** : 4,79 € barrés, 3,35 € annoncés (−30 %) ; **plat cuisiné La Belle Chaurienne** : 11,49 € barrés, 7,58 € annoncés (−34 %).
+
+Ces prix sont **indicatifs de l'annonce E.Leclerc au moment du relevé**, pas des prix en temps réel pour tous les magasins. Les nouvelles cartes sont des **candidats** qui ne se cumulent pas automatiquement. **Aucun code EAN n'est attribué sans fiche officielle univoque** : les articles de gamme sont marqués « référence/magasin à confirmer ». Les offres s'éteignent automatiquement à leur date indiquée (17 octobre maximum dans ce lot) si elles ne sont pas renouvelées par une preuve officielle récente.
+
 ## Promos du jour : meilleures offres et vérification quotidienne des campagnes (12 octobre 2026)
 
 L'onglet **Promos du jour** propose désormais les **trois opportunités réelles à regarder en premier** à partir des lots produits actifs (Carrefour, E.Leclerc, Shopmium, Coupon Network). Il permet de trier par **pourcentage applicable à la quantité minimum**, **euros réellement estimables** ou **coût initial du lot** et de filtrer les lots dont le montant d'achat initial documenté dépasse **3, 5, 10 ou 20 €**. Lorsque le budget est activé, les offres sans prix ne sont jamais inventées ou considérées comme abordables. Le classement n'additionne pas des remboursements dont le cumul reste à vérifier.
