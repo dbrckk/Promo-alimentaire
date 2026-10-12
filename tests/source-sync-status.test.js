@@ -53,3 +53,24 @@ test("chaque synchroniseur écrit un fichier différent, sans conflit Git",()=>{
   assert.notEqual(a,c);
   assert.notEqual(b,c);
 });
+
+test("une source partielle identifie uniquement les références reconfirmées",()=>{
+  const status=makeSourceSyncStatus({
+    status:"partial",extractedCount:2,previousSnapshotCount:4,
+    checkedAt:"2026-10-12T20:00:00Z",
+    confirmedExternalIds:["product-b","product-a"]
+  });
+  assert.deepEqual(status.confirmedExternalIds,["product-a","product-b"]);
+  assert.throws(()=>makeSourceSyncStatus({
+    status:"partial",extractedCount:1,previousSnapshotCount:5,
+    confirmedExternalIds:["a","b"]
+  }),/invalides/);
+  assert.throws(()=>makeSourceSyncStatus({
+    status:"unavailable",extractedCount:0,previousSnapshotCount:5,
+    confirmedExternalIds:["a"]
+  }),/invalides/);
+  assert.throws(()=>makeSourceSyncStatus({
+    status:"partial",extractedCount:2,previousSnapshotCount:5,
+    confirmedExternalIds:["a","a"]
+  }),/invalides/);
+});

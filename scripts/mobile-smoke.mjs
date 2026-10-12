@@ -1325,8 +1325,24 @@ try{
   const filteredTitles=await page.locator("#dailyRetailer").innerText();
   assert.match(filteredTitles,/mini nems/i,
     "Un article à 2,99 € doit rester possible sous un plafond de 3 €");
-  assert.match(filteredTitles,/Ramen Nissin/i,
-    "Deux nouilles Demae Ramen à 0,99 € doivent être recommandables dans 3 €");
+  const leclercSync=JSON.parse(await readFile(
+    new URL("../data/import/source-sync-leclerc.json",import.meta.url),
+    "utf8"
+  )).sources.leclerc;
+  const nissinId="26G133G-nissin-demae-ramen-68-second";
+  const nissinReconfirmed=leclercSync.status==="updated"
+    || leclercSync.confirmedExternalIds?.includes(nissinId);
+  if(nissinReconfirmed){
+    assert.ok(await page.locator(
+      '#dailyRetailer a.open[href="https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1457"]'
+    ).count()>0,
+      "Le lecteur Android doit ouvrir la page publique exacte Nissin");
+    assert.match(filteredTitles,/Ramen Nissin/i,
+      "Deux nouilles Demae Ramen à 0,99 € doivent rester éligibles dans 3 €");
+  }else{
+    assert.doesNotMatch(filteredTitles,/Ramen Nissin/i,
+      "Une référence spécifiquement non reconfirmée ne devient pas une promotion sûre");
+  }
   assert.match(filteredTitles,/cassoulet Côté Table/i,
     "Deux cassoulets à 1,15 € doivent être recommandables dans 3 €");
   assert.doesNotMatch(filteredTitles,/Petit Navire/i,

@@ -98,7 +98,17 @@ try{
       || !Number.isFinite(new Date(source?.checkedAt).getTime())
       || !Number.isInteger(source?.extractedCount) || source.extractedCount<0
       || !Number.isInteger(source?.previousSnapshotCount) || source.previousSnapshotCount<0
-      || typeof source?.reason!=="string"){
+      || typeof source?.reason!=="string"
+      || (source.confirmedExternalIds!==undefined && (
+        !Array.isArray(source.confirmedExternalIds)
+        || source.confirmedExternalIds.length>2000
+        || source.confirmedExternalIds.length>source.extractedCount
+        || source.confirmedExternalIds.some((id)=>typeof id!=="string"
+          || id.length===0 || id.length>200
+          || !/^[A-Za-z0-9._:-]+$/.test(id))
+        || new Set(source.confirmedExternalIds).size!==source.confirmedExternalIds.length
+        || source.status==="unavailable" && source.confirmedExternalIds.length>0
+      ))){
       throw new Error("statut de synchronisation invalide : "+provider);
     }
   }

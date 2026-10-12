@@ -796,3 +796,28 @@ test("sources du catalogue du jour : une vraie campagne prouvée, jamais une pag
   assert.equal(confirmPublicDailyCampaign(
     leclercHtml.replace("17/10/2026","18/10/2026"),leclerc,today),false);
 });
+
+test("source partiellement vérifiée : 9 bonnes offres restent visibles, la 10e seule est signalée",()=>{
+  const at=new Date("2026-10-12T21:00:00Z");
+  const snapshot=Array.from({length:10},(_,i)=>({
+    id:"leclerc-product-"+i,externalId:"product-"+i,
+    providerId:"leclerc",scope:"produit",
+    verifiedAt:"2026-10-11",expiresAt:"2026-10-17"
+  }));
+  const source={leclerc:{status:"partial",
+    checkedAt:"2026-10-12T20:00:00Z",
+    confirmedExternalIds:snapshot.slice(0,9).map(x=>x.externalId),
+    extractedCount:9,previousSnapshotCount:10,
+    reason:"9/10 encore valides reconfirmées"}};
+  const impacted=sourceRefreshImpact(snapshot,source,at);
+  assert.equal(impacted.affectedCount,1);
+  assert.equal(impacted.unaffectedCount,9);
+  assert.equal(failedRefreshWarning(snapshot[8],source,at),null);
+  assert.equal(failedRefreshWarning(snapshot[9],source,at)?.status,"partial");
+  const unavailable={leclerc:{...source.leclerc,status:"unavailable"}};
+  assert.equal(sourceRefreshImpact(snapshot,unavailable,at).affectedCount,10,
+    "Une panne totale ne peut pas s'appuyer sur une ancienne liste partielle");
+  const legacy={leclerc:{status:"partial",checkedAt:"2026-10-12T20:00:00Z"}};
+  assert.equal(sourceRefreshImpact(snapshot,legacy,at).affectedCount,10,
+    "Une ancienne source sans IDs reste traitée prudemment");
+});
