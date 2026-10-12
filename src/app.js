@@ -6,7 +6,7 @@ import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, is
 import { optimizeStack } from "./stacking.js";
 import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
-import { filterActiveOffers } from "./ingestion.js";
+import { filterActiveOffers, parisCivilDay } from "./ingestion.js";
 import {
   compareBasketStores,
   evaluateBasketLocations,
@@ -201,9 +201,13 @@ els.listRadiusSelect.value=String(state.radiusKm);
 els.dropThreshold.value=String(state.dropThreshold);
 els.manualPriceStore.value=state.store;
 els.shoppingBudget.value=state.shoppingBudget===null?"":state.shoppingBudget.toFixed(2).replace(".",",");
-els.manualPriceDate.value=new Date(Date.now()-new Date().getTimezoneOffset()*60000)
-  .toISOString().slice(0,10);
+els.manualPriceDate.value=parisCivilDay(new Date());
 els.manualPriceDate.max=els.manualPriceDate.value;
+// Installed PWAs can remain open overnight: refresh the date ceiling before
+// opening the Android picker, without overwriting a date the shopper chose.
+els.manualPriceDate.addEventListener("focus",()=>{
+  els.manualPriceDate.max=parisCivilDay(new Date());
+});
 els.datasetDate.textContent=`Catalogue de référence : ${formatDate(DATASET_DATE)} · chargement des offres publiques…`;
 
 els.store.addEventListener("change",async()=>{
@@ -1422,6 +1426,7 @@ function renderManualPriceControls(){
 
 function handleManualPriceSubmit(event){
   event.preventDefault();
+  els.manualPriceDate.max=parisCivilDay(new Date());
   try{
     const code=els.manualPriceProduct.value;
     if(!state.shoppingList.some((item)=>String(item.product.code)===code)){
@@ -1465,8 +1470,7 @@ function downloadShoppingListBackup(){
     const blob=new Blob([data],{type:"application/json;charset=utf-8"});
     const url=URL.createObjectURL(blob);
     const anchor=document.createElement("a");
-    const today=new Date(Date.now()-new Date().getTimezoneOffset()*60000)
-      .toISOString().slice(0,10);
+    const today=parisCivilDay(new Date());
     anchor.href=url;
     anchor.download="promo-alimentaire-liste-"+today+".json";
     document.body.append(anchor);

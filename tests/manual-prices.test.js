@@ -69,9 +69,38 @@ test("fusionner des observations conserve les prix Open Prices existants",()=>{
   assert.equal(data[input.code].length,1);
 });
 
-test("demain est rejeté même quand il est à moins de 24 heures",()=>{
-  const tomorrow={...input,date:"2026-10-09"};
-  assert.throws(()=>normalizeManualPrice(tomorrow,{
-    now:new Date("2026-10-08T23:00:00Z")
+test("les relevés utilisent les jours civils Paris même à minuit et au changement d'heure",()=>{
+  // 23:00 UTC on 8 October is already 01:00 on 9 October in France.
+  const afterParisMidnight=new Date("2026-10-08T23:00:00Z");
+  assert.equal(normalizeManualPrice({...input,date:"2026-10-09"},{
+    now:afterParisMidnight
+  }).date,"2026-10-09");
+  assert.throws(()=>normalizeManualPrice({...input,date:"2026-10-10"},{
+    now:afterParisMidnight
   }),/future/);
+  // Just before French midnight, the next day remains future even if the
+  // device timezone would render a different date.
+  assert.throws(()=>normalizeManualPrice({...input,date:"2026-10-09"},{
+    now:new Date("2026-10-08T21:59:59Z")
+  }),/future/);
+
+  // DST ends on 25 October 2026 (25h day): 30 calendar days ago is
+  // accepted throughout the French deadline day, not rejected at UTC noon.
+  const winterNow=new Date("2026-10-25T23:40:00Z");
+  assert.equal(normalizeManualPrice({...input,date:"2026-09-26"},{
+    now:winterNow
+  }).date,"2026-09-26");
+  assert.throws(()=>normalizeManualPrice({...input,date:"2026-09-25"},{
+    now:winterNow
+  }),/30 jours/);
+
+  // DST begins on 29 March 2026 (23h day); calendar boundaries must
+  // remain 30 days, regardless of the duration in milliseconds.
+  const summerNow=new Date("2026-03-29T22:15:00Z");
+  assert.equal(normalizeManualPrice({...input,date:"2026-02-28"},{
+    now:summerNow
+  }).date,"2026-02-28");
+  assert.throws(()=>normalizeManualPrice({...input,date:"2026-02-27"},{
+    now:summerNow
+  }),/30 jours/);
 });
