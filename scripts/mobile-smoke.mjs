@@ -715,7 +715,7 @@ try{
         ...offer,sourceRegularPrice:null
       }).ok,
       noH1:verifyCarrefourPromotionPage(
-        html.replace(/<h1[^>]*>([\\s\\S]*?)<\\/h1>/i,"<p>$1</p>"),offer
+        html.replace(/<h1[^>]*>([\s\S]*?)<\/h1>/i,"<p>$1</p>"),offer
       ).ok,
       unrelatedTitle:verifyCarrefourPromotionPage(
         html.replace("Pâtes Fusilli PANZANI","Promotion du moment")
