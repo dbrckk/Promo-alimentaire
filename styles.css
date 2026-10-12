@@ -414,3 +414,22 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 
 /* Give the disclosure of failed public source refreshes a readable place under filters. */
 .source-proof-summary{margin:0 4px 16px;line-height:1.45}
+
+/* Daily catalogue: intentionally distinguishes retailer prices from editorial
+   campaign discovery. Cards stay readable at 320px Android widths. */
+.daily-intro{display:grid;gap:8px;margin-bottom:16px}
+.daily-intro h2{margin:0;font-size:1.25rem}
+.daily-intro p{margin:0;line-height:1.5}
+.daily-group{margin:18px 0 24px}
+.daily-group>h3{font-size:1.06rem;margin:0 0 6px}
+.daily-group>.help{margin:0 0 12px}
+.daily-offer{min-width:0;overflow-wrap:anywhere;align-content:start}
+.daily-offer h4{font-size:.98rem;line-height:1.4;margin:0}
+.daily-offer p{margin:0;line-height:1.45}
+.daily-offer .badge{flex:none}
+.daily-offer .open{justify-self:start}
+.daily-links{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:620px){
+  .daily-group>.grid{grid-template-columns:minmax(0,1fr)}
+  .daily-offer{padding:14px}
+}
