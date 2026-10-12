@@ -1325,6 +1325,13 @@ try{
   const filteredTitles=await page.locator("#dailyRetailer").innerText();
   assert.match(filteredTitles,/mini nems/i,
     "Un article à 2,99 € doit rester possible sous un plafond de 3 €");
+  assert.match(filteredTitles,/Ramen Nissin/i,
+    "Deux nouilles Demae Ramen à 0,99 € doivent être recommandables dans 3 €");
+  assert.match(filteredTitles,/cassoulet Côté Table/i,
+    "Deux cassoulets à 1,15 € doivent être recommandables dans 3 €");
+  assert.doesNotMatch(filteredTitles,/Petit Navire/i,
+    "Le lot Petit Navire 2+1 à 7,50 € ne doit pas passer un budget de 3 €");
+
   assert.doesNotMatch(filteredTitles,/Gullón/i,
     "Les 2 biscuits à 2,39 € ne tiennent pas dans un budget total de 3 €");
   assert.match(await page.locator("#dailyHighlights").innerText(),
