@@ -1,6 +1,6 @@
 # Sources et stratégie d'intégration
 
-Dernière revue : 2026-10-07.
+Dernière revue : 2026-10-12.
 
 ## Sécurité des économies fidélité Carrefour — revue du 11 octobre 2026
 
