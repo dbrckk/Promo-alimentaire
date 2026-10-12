@@ -176,6 +176,10 @@ export function normalizeImportedOffer(raw) {
 // names and generic words (e.g. "bio" or "maison") are not sufficient.
 function couponNetworkCategory(value,providerId){
   if(providerId!=="coupon-network") return value.category || "autre";
+  // Public offer cards frequently use "autre" for all 100+ products.
+  // Classify only when the purchase conditions/title offer clear product
+  // evidence. This is a display/domain inference, never merchant proof of
+  // SKU eligibility, store coverage, activation or refund availability.
   const source=[
     value.title,value.conditions,
     ...(Array.isArray(value.referenceNames)?value.referenceNames:[])
@@ -183,13 +187,26 @@ function couponNetworkCategory(value,providerId){
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .toLocaleLowerCase("fr");
 
-  const nonFood=/\b(?:lessives?|adoucissants?|assouplissants?|nettoyants?|detergents?|liquides? vaisselle|lave[- ]vaisselle|absorbeurs?|anti[- ]humidite|shampooings?|shampoings?|apres[- ]shampooings?|dentifrices?|deodorants?|antitranspirants?|anti[- ]transpirants?|gels? douche|savons?|lingettes?|couches?|papiers? toilettes?|blocs? wc|sous[- ]vetements? absorbants?|croquettes?|litieres?|friandises? pour (?:chat|chien)s?|filtres? a eau|maquillage)\b/;
-  if(nonFood.test(source)) return "non-alimentaire";
+  // Exclusions must precede positive food keywords. For example, a
+  // shampooing "au lait" or a detergent "au citron" is not a grocery deal.
+  const nonFood=/\b(?:lessives?|adoucissants?|assouplissants?|nettoyants?|detergents?|liquides? vaisselle|lave[- ]vaisselle|absorbeurs?|anti[- ]humidite|shampooings?|shampoings?|apres[- ]shampooings?|dentifrices?|deodorants?|antitranspirants?|anti[- ]transpirants?|gels? douche|savons?|lingettes?|couches?|papiers? toilettes?|blocs? wc|sous[- ]vetements? absorbants?|croquettes?|litieres?|friandises? pour (?:chat|chien)s?|filtres? a eau|maquillage|soins? capillaires?|gamme gliss)\b/;
+  if(nonFood.test(source)
+    || /\b(?:renova\s*[-–—]\s*toucher magique|bic\s*[-–—]\s*vibbies)\b/.test(source)){
+    return "non-alimentaire";
+  }
 
-  const alcohol=/\b(?:vodka|whisky|whiskey|rhum|tequila|bieres?|vins?|champagne|cidre|liqueurs?|aperitifs?)\b/;
-  if(alcohol.test(source) && !/\bsans alcool\b/.test(source)){
+  // Some public cards identify spirits only by a brand ("Bottle of ..."),
+  // rather than the words whisky/vodka/etc. These names are unambiguous
+  // in this specific supplier catalogue, not a generic brand classifier.
+  const alcohol=/\b(?:vodka|whisky|whiskey|rhum|tequila|bieres?|vins?|champagne|cidre|liqueurs?|aperitifs?|ballantine['’]?s?|jack daniel['’]?s?|jim beam|sobieski|bumbu|roche mazet|grain d['’]?envie|revesco|les calandieres|pelican\s*[-–—]\s*blonde)\b/;
+  if(alcohol.test(source) && !/\b(?:sans alcool|0[,.]0\s*%)\b/.test(source)){
     return "hors-alimentaire";
   }
+
+  // The positive lexicon is intentionally product-specific, not a list
+  // of broad brands or generic terms such as "nature", "bio" or "maison".
+  const food=/\b(?:carottes?|kiwis?|yaourts?|skyrs?|fromages?(?: blancs?)?|camemberts?|chevres?|brioche|tartines?|pains? grill[ée]s?|bonbons?|chicoree|huile d['’ ]?olive|cafe(?:s)?|capsules? (?:de )?(?:cafe|nespresso)|dosettes?|sardines?|thon|jambons?|charcuterie|gyoza|taboules?|salades? traiteur|plats? cuisines?|boissons? lactees?|lait(?:s)? infantiles?|lait(?:s)? (?:bio|sans lactose)|laitiers?|compotes?|chips|tomates?|ma[iï]s|chocolats?|jus de fruits?|jus de pomme|pur jus|margarine|cremes? desserts?|poulet|volaille|purees? de pommes? de terre|smoothies?|proteine bowl|miel|beurre|steaks?|lentilles?|fromage frais|cereales? petit dejeuner)\b/;
+  if(food.test(source)) return "alimentaire";
   return value.category || "autre";
 }
 
