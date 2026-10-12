@@ -1,0 +1,52 @@
+name: Sync public daily catalogue
+on:
+  schedule:
+    # After retailer source tasks; a failed public read must not extend proof.
+    - cron: "47 7 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/sync-daily-campaigns.mjs"
+      - "scripts/daily-campaign-evidence.mjs"
+      - "data/daily-campaigns.json"
+      - ".github/workflows/sync-daily-campaigns.yml"
+permissions:
+  contents: write
+concurrency:
+  group: daily-public-catalogue-sync
+  cancel-in-progress: true
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check public daily campaign evidence
+        run: node scripts/sync-daily-campaigns.mjs --write
+      - name: Verify full repository after updates
+        run: npm run verify
+      - name: Commit confirmed public campaign dates
+        shell: bash
+        run: |
+          if git diff --quiet -- data/daily-campaigns.json; then
+            echo "No authenticated campaign proof changed."
+            exit 0
+          fi
+          git config user.name "promo-alimentaire-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/daily-campaigns.json
+          git commit -m "data: reconfirm official daily catalog campaign dates"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if git rebase origin/main; then
+              if git push origin HEAD:main; then exit 0; fi
+            else
+              git rebase --abort || true
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
