@@ -78,3 +78,9 @@ Le manifeste validé a un timeout natif de 8 s, les trois diagnostics facultatif
 `src/local-verification.js` s'aligne sur `isOfferActive()` pour les règles de validité des imports : `startsAt`, `verifiedAt`, `reviewAfter`, `expiresAt` et la fenêtre prudente Shopmium. Un `YYYY-MM-DD` désigne le **jour civil Europe/Paris entier** ; `validUntil` est borné à sa dernière milliseconde, y compris les 23/25 heures des jours de changement d'heure. Une échéance explicitement horodatée conserve sa valeur exacte. La durée maximale reste sept jours après confirmation.
 
 Une ancienne preuve sauvegardée avec une échéance à minuit UTC ne suffit pas à réactiver une remise : le filtre `isOfferActive()` est appliqué à chaque utilisation et toute offre expirée est rejetée. Aucune preuve locale ne s'applique aux canaux Drive/livraison. Les assertions sont intégrées au parcours fonctionnel Android, sans ajouter de fichier de tests unitaires.
+
+## Tableau de fraîcheur des sources : échéances civiles Paris (12 octobre 2026)
+
+Le panneau « État des données importées » prend désormais ses échéances parmi **les offres réellement actives**, puis retient l'échéance la plus proche entre `reviewAfter`, `expiresAt` et la limite prudente Shopmium. Pour une date `YYYY-MM-DD`, la fin correspond à **23:59:59.999 Europe/Paris**, y compris les journées de 23 ou 25 heures. Pour une date horodatée, l'instant reste strictement inchangé mais le jour affiché est le **jour français** de cet instant.
+
+Le champ `daysUntil` compare les **dates civiles en France**, sans diviser une durée par 24 heures. Les dates et alertes ne prolongent aucun rabais : `isOfferActive` reste l'autorité de validité et exclut les offres déjà expirées de la liste des échéances futures. Le même convertisseur `endOfOffer` est utilisé par la confirmation en magasin et le panneau de fraîcheur.
