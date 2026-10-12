@@ -9,6 +9,12 @@ Une confirmation locale d'une promotion exacte chez Carrefour/E.Leclerc ne doit 
 
 Une preuve `verifiedAt` future ou invalide empêche également la confirmation ; pour Shopmium, la date de revue conservatrice de 5 jours borne la durée de preuve locale. Les anciennes confirmations locales conservées sur le téléphone ne peuvent pas réactiver une remise après la vraie date de fin : la validité de l'offre est revérifiée lors du calcul. Les confirmations restent strictement liées à un magasin physique identifié, à un EAN exact et à leur empreinte d'offre. Les vérifications couvrent le passage de minuit Paris et les changements d'heure été/hiver dans le navigateur Android.
 
+## Fiabilité de l'état des sources après nouvelles preuves (12 octobre 2026)
+
+Le panneau « État des données importées » ne signale plus une source active comme « non actualisée » au seul motif qu'un **ancien** contrôle avait échoué. L'alerte globale n'apparaît sur un fichier actif que si au moins une offre actuelle a reçu un avertissement `sourceSyncWarning` valide. Les échecs de synchronisation datés du futur ne sont pas traités comme des incidents déjà survenus. Les lots entièrement expirés conservent leurs diagnostics, sans aucune prolongation d'offre.
+
+Les contrôles contre les remises non vérifiées restent stricts : lorsqu'un échec plus récent atteint la preuve d'une offre, celle-ci est conservée comme candidate et son cumul automatique est désactivé.
+
 ## État des promotions commerçants : lien magasin ou Drive (12 octobre 2026)
 
 **Une promotion en magasin ne prouve pas le prix ou l'éligibilité en Drive/livraison.** Lorsqu'un fichier Carrefour ou E.Leclerc ne peut être reconfirmé, la PWA propose maintenant le lien public correspondant au canal choisi :

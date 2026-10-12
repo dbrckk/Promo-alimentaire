@@ -326,6 +326,55 @@ try{
   assert.equal(importPoolSafety.failed,1);
   assert.equal(importPoolSafety.downloaded,4);
   assert.ok(importPoolSafety.maxInFlight>=2 && importPoolSafety.maxInFlight<=3);
+  // Android integration: an old or future error status cannot make a
+  // newly confirmed source appear broken. Later failures still downgrade
+  // the affected offer conservatively.
+  const refreshStatusChronology=await page.evaluate(async()=>{
+    const {loadImportedOffers}=await import("./src/import-loader.js");
+    const check=async(verifiedAt,checkedAt)=>{
+      const fetchImpl=async(url)=>{
+        const file=String(url).split("/").at(-1);
+        if(file==="index.json") return {
+          ok:true,json:async()=>({files:["source-auto.json"]})
+        };
+        if(file==="source-auto.json") return {
+          ok:true,json:async()=>[{
+            providerId:"coupon-network",externalId:"chronology-mobile",
+            title:"Produit alimentaire",stores:["all"],savingPercent:25,
+            verifiedAt,reviewAfter:"2026-10-25",
+            sourceUrl:"https://www.couponnetwork.fr/"
+          }]
+        };
+        if(file==="source-sync-status.json") return {
+          ok:true,json:async()=>({sources:{"coupon-network":{
+            status:"unavailable",checkedAt,
+            reason:"Accès de la source non disponible"
+          }}})
+        };
+        return {ok:false,status:404};
+      };
+      const result=await loadImportedOffers({
+        fetchImpl,now:new Date("2026-10-12T15:00:00Z")
+      });
+      return {
+        status:result.sourceStats[0].status,
+        warned:Boolean(result.offers[0].sourceSyncWarning),
+        panelWarning:Boolean(result.sourceStats[0].syncState),
+        proofUnchanged:result.offers[0].verifiedAt===verifiedAt
+          && result.offers[0].reviewAfter==="2026-10-25"
+      };
+    };
+    return {
+      earlier:await check("2026-10-12","2026-10-11T13:00:00Z"),
+      later:await check("2026-10-10","2026-10-12T13:00:00Z"),
+      future:await check("2026-10-12","2026-10-13T13:00:00Z")
+    };
+  });
+  assert.deepEqual(refreshStatusChronology,{
+    earlier:{status:"ok",warned:false,panelWarning:false,proofUnchanged:true},
+    later:{status:"sync-warning",warned:true,panelWarning:true,proofUnchanged:true},
+    future:{status:"ok",warned:false,panelWarning:false,proofUnchanged:true}
+  });
   // Android browser integration: source-health review labels must use
   // France's civil day, not UTC midnight, even around DST transitions.
   const importParisFreshness=await page.evaluate(async()=>{
