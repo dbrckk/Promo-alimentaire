@@ -52,7 +52,7 @@ const patterns={
   },
   "leclerc-quotidien-20261017":{
     title:"catalogue nos promos du moment",
-    before:"du 06 10 2026 au 17 10 2026",after:"epicerie"
+    before:"votre catalogue digital",after:"du 06 10 2026 au 17 10 2026"
   }
 };
 function validDay(date){
