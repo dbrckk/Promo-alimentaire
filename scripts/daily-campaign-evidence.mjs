@@ -14,7 +14,7 @@ function pageText(html){
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ")
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
     // Public campaign wording sometimes appears solely as an image alt.
-    .replace(/<img\b[^>]*\balt\s*=\s*["']([^"']*)["'][^>]*>/gi," $1 ")
+    .replace(/<img\b[^>]*\balt\s*=\s*(["'])(.*?)\1[^>]*>/gi," $2 ")
     .replace(/<[^>]+>/g," ")
     .replace(/&(?:nbsp|amp|quot|eacute|egrave|rsquo|ndash|minus);/gi,(item)=>{
       const entities={"&nbsp;":" ","&amp;":"&","&quot;":'"',
