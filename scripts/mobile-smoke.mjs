@@ -876,6 +876,28 @@ try{
   assert.equal(await officialCarrefourCampaign.first().getAttribute("target"),"_blank");
   assert.match(await page.locator("#sourceHealth").textContent(),
     /ces annonces ne prouvent pas un prix final/i);
+  // The same client-side refresh guard drives the CI count. It must
+  // distinguish an affected active discount from a newer proof or archive.
+  const syncImpactMobile=await page.evaluate(async()=>{
+    const {sourceRefreshImpact}=await import("./src/import-loader.js");
+    const now=new Date("2026-10-12T12:00:00Z");
+    const offers=[
+      {providerId:"coupon-network",verifiedAt:"2026-10-10",
+        reviewAfter:"2026-10-20",expiresAt:"2026-10-30"},
+      {providerId:"coupon-network",verifiedAt:"2026-10-12",
+        reviewAfter:"2026-10-20",expiresAt:"2026-10-30"},
+      {providerId:"coupon-network",verifiedAt:"2026-10-01",
+        reviewAfter:"2026-10-09",expiresAt:"2026-10-30"}
+    ];
+    return sourceRefreshImpact(offers,{
+      "coupon-network":{status:"unavailable",
+        checkedAt:"2026-10-11T10:00:00Z"}
+    },now);
+  });
+  assert.deepEqual(syncImpactMobile,{
+    affectedCount:1,unaffectedCount:1,
+    affectedProviderIds:["coupon-network"]
+  });
   // Fallback links are channel-aware: physical Carrefour/Leclerc
   // catalogues are not proof of Drive checkout promotions. The links
   // must update instantly on Android and never create basket savings.
