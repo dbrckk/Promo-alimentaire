@@ -359,7 +359,9 @@ try{
       return {
         status:result.sourceStats[0].status,
         warned:Boolean(result.offers[0].sourceSyncWarning),
-        panelWarning:Boolean(result.sourceStats[0].syncState)
+        panelWarning:Boolean(result.sourceStats[0].syncState),
+        proofUnchanged:result.offers[0].verifiedAt===verifiedAt
+          && result.offers[0].reviewAfter==="2026-10-25"
       };
     };
     return {
@@ -369,9 +371,9 @@ try{
     };
   });
   assert.deepEqual(refreshStatusChronology,{
-    earlier:{status:"ok",warned:false,panelWarning:false},
-    later:{status:"sync-warning",warned:true,panelWarning:true},
-    future:{status:"ok",warned:false,panelWarning:false}
+    earlier:{status:"ok",warned:false,panelWarning:false,proofUnchanged:true},
+    later:{status:"sync-warning",warned:true,panelWarning:true,proofUnchanged:true},
+    future:{status:"ok",warned:false,panelWarning:false,proofUnchanged:true}
   });
   // Android browser integration: source-health review labels must use
   // France's civil day, not UTC midnight, even around DST transitions.
