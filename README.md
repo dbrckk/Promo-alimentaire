@@ -720,3 +720,10 @@ La récupération publique des coupons ne fournit pas de rayon fiable : le snaps
 Le contrôle strict de fraîcheur ne peut pas être utilisé si un ancien catalogue explicitement conservé pour audit fait échouer GitHub Actions tous les jours, sans lien avec les autres fournisseurs. Le manifeste `data/import/index.json` désigne maintenant par `archivedOnly` les **archives volontairement expirées**, avec justification obligatoire. Seul le snapshot des onze anciennes campagnes Carrefour est concerné. Il garde son statut visible `archived` et un avertissement ; ses promotions restent désactivées.
 
 Un catalogue actif qui devient vide sans être déclaré archivé, un fichier d'archive manquant ou invalide, ou la réapparition d'offres actives dans une archive désignée restent des erreurs en contrôle strict. La CI vérifie aussi le scénario daté du 12 octobre qui faisait échouer l'automatisation `Offer freshness`. Les chiffres d'offres actives par enseigne ne sont pas modifiés par ce changement de supervision.
+
+
+### Catalogue du jour : taux selon la quantité réellement éligible (12 octobre 2026)
+
+Les suggestions affichent le **taux du premier palier applicable à la quantité minimale**, et non le meilleur pourcentage publicitaire indépendamment du nombre d'articles. Par exemple, une offre Shopmium « 20 % pour 1 article ; jusqu'à 30 % pour 3 » affiche **20 % sur 1** puis indique séparément **jusqu'à 30 % à partir de 3**. Une ODR fixe de 1 € nécessitant 2 articles à 2 € ne s'affiche plus comme une remise de 50 %, mais comme **25 % du lot à 4 €**. Sans prix de référence vérifiable, le pourcentage d'une ODR fixe reste inconnu.
+
+Les simulations et les prix présentés dans le catalogue restent des **candidats conditionnels**, jamais des gains garantis en caisse. Vérifier la référence, la quantité, les modalités et la source officielle avant l'achat.
