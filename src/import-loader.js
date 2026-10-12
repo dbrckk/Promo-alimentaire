@@ -5,7 +5,7 @@ import {endOfOffer} from "./local-verification.js";
 // A failed refresh is NOT a new expiry date or proof that an old offer is
 // false. Keep it visible as a candidate, but never silently count its
 // previous automatic discount as reconfirmed.
-function failedRefreshWarning(offer,syncSources,now){
+export function failedRefreshWarning(offer,syncSources,now){
   const sync=syncSources?.[offer?.providerId];
   if(!["unavailable","partial"].includes(sync?.status)) return null;
   const checked=new Date(sync.checkedAt);
@@ -19,6 +19,35 @@ function failedRefreshWarning(offer,syncSources,now){
     checkedAt:checked.toISOString(),
     reason:String(sync.reason || "Offres non reconfirmées sur la source officielle").slice(0,220)
   };
+}
+
+// The PWA and CI diagnostics must use identical offer deadlines. Date-only
+// cutoffs are inclusive until 23:59:59.999 in France (including DST days),
+// while explicit timestamps retain their exact instant. Expired offers cannot
+// advertise future review dates as if they were still available.
+export function sourceDeadlineSummary(activeOffers,now=new Date()){
+  const current=new Date(now);
+  const deadlines=(activeOffers || [])
+    .filter((offer)=>isOfferActive(offer,current))
+    .map((offer)=>{
+      const legacyReview=shopmiumLegacyReviewCutoff(offer);
+      const candidates=[
+        endOfOffer(offer.reviewAfter),
+        endOfOffer(offer.expiresAt),
+        legacyReview ? endOfOffer(legacyReview.toISOString().slice(0,10)) : null
+      ].filter((date)=>date && Number.isFinite(date.getTime()));
+      return candidates.sort((a,b)=>a-b)[0] || null;
+    })
+    .filter((date)=>date && date>=current)
+    .sort((a,b)=>a-b);
+  const nextDeadline=deadlines[0] || null;
+  const nextDeadlineDay=nextDeadline ? parisCivilDay(nextDeadline) : null;
+  const todayParis=parisCivilDay(current);
+  const daysUntil=nextDeadlineDay && todayParis
+    ? Math.round((Date.parse(nextDeadlineDay+"T12:00:00Z")
+      -Date.parse(todayParis+"T12:00:00Z"))/(24*60*60*1000))
+    : null;
+  return {nextDeadline:nextDeadlineDay,daysUntil};
 }
 
 
@@ -135,30 +164,8 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       // A newer date on an expired offer cannot be advertised as the
       // latest proof among the active catalog.
       const verifiedDates=activeOffers.map((offer)=>offer.verifiedAt).filter(Boolean).sort();
-      // Count only offers still active, using the very same inclusive
-      // Europe/Paris civil deadlines as store confirmations and offer validity.
-      // A source review on 12/10 ends at 23:59:59.999 Paris, not UTC.
-      const deadlines=activeOffers
-        .map((offer)=>{
-          const legacyReview=shopmiumLegacyReviewCutoff(offer);
-          const candidates=[
-            endOfOffer(offer.reviewAfter),
-            endOfOffer(offer.expiresAt),
-            legacyReview ? endOfOffer(legacyReview.toISOString().slice(0,10)) : null
-          ].filter((date)=>date && Number.isFinite(date.getTime()));
-          return candidates.sort((a,b)=>a-b)[0] || null;
-        })
-        .filter((date)=>date && date>=now)
-        .sort((a,b)=>a-b);
-      const nextDeadline=deadlines[0] || null;
-      const nextDeadlineDay=nextDeadline ? parisCivilDay(nextDeadline) : null;
-      const todayParis=parisCivilDay(now);
-      // "jours restants" is a difference between French *calendar days*,
-      // not a 24-hour duration (DST makes some civil days 23/25 hours).
-      const daysUntil=nextDeadlineDay && todayParis
-        ? Math.round((Date.parse(nextDeadlineDay+"T12:00:00Z")
-          -Date.parse(todayParis+"T12:00:00Z"))/(24*60*60*1000))
-        : null;
+      const {nextDeadline:nextDeadlineDay,daysUntil}=
+        sourceDeadlineSummary(activeOffers,now);
       const validityStatus=activeOffers.length===0
         ? "stale" : daysUntil!==null && daysUntil<=3 ? "review-soon" : "ok";
       sourceStats.push({
