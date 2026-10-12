@@ -1,3 +1,4 @@
+import {confirmPublicDailyCampaign} from "../scripts/daily-campaign-evidence.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
@@ -758,4 +759,40 @@ test("catalogue quotidien : vraies meilleures économies et budget payé avant r
   assert.equal(constrained.campaigns.length,1);
   assert.equal(constrained.highlights.some(x=>x.id==="official"),false,
     "Ne jamais classer une publicité non chiffrée comme gain réel");
+});
+
+test("sources du catalogue du jour : une vraie campagne prouvée, jamais une page générique",()=>{
+  const campaign={id:"carrefour-bio-2eme-20261019",store:"carrefour",
+    channels:["store","drive"],title:"Bio & bien plus",
+    verifiedAt:"2026-10-12",startsAt:"2026-10-12",
+    expiresAt:"2026-10-19",
+    sourceUrl:"https://www.carrefour.fr/offres-du-moment"};
+  const evidence='<html><body><article><img alt="Jusqu\'à -60% sur le 2eme sur le Bio">'+
+    '<h2>Bio & bien plus</h2><p>Jusqu\'au 19 octobre 2026</p></article>'+
+    '<p>'+("Offres du quotidien ".repeat(8))+'</p></body></html>';
+  const today=new Date("2026-10-13T12:00:00Z");
+  assert.equal(confirmPublicDailyCampaign(evidence,campaign,today),true);
+  assert.equal(confirmPublicDailyCampaign(evidence,
+    {...campaign,expiresAt:"2026-10-21"},today),false);
+  assert.equal(confirmPublicDailyCampaign(evidence,
+    {...campaign,sourceUrl:"https://www.carrefour.fr.evil.example/"},today),false);
+  assert.equal(confirmPublicDailyCampaign(evidence,campaign,
+    new Date("2026-10-20T12:00:00Z")),false);
+  assert.equal(confirmPublicDailyCampaign(
+    "<script>"+evidence+"</script>",campaign,today),false,
+    "Les données internes masquées du site ne remplacent pas une annonce publique");
+  const farApart="<html><body><p>Jusqu'à -60% sur le 2e</p>"+
+    ("Autres promotions diverses ".repeat(55))+
+    "<h2>Bio & bien plus</h2><p>Jusqu'au 19 octobre 2026</p></body></html>";
+  assert.equal(confirmPublicDailyCampaign(farApart,campaign,today),false,
+    "Le taux d'un autre prospectus ne confirme pas celui du Bio");
+  const leclerc={id:"leclerc-quotidien-20261017",store:"leclerc",
+    sourceUrl:"https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637",
+    verifiedAt:"2026-10-12",startsAt:"2026-10-06",
+    expiresAt:"2026-10-17"};
+  const leclercHtml="<html>Votre catalogue digital ! CATALOGUE: Nos promos du moment "+
+    "Du 06/10/2026 au 17/10/2026. Rayons alimentaires et promotions en vigueur</html>";
+  assert.equal(confirmPublicDailyCampaign(leclercHtml,leclerc,today),true);
+  assert.equal(confirmPublicDailyCampaign(
+    leclercHtml.replace("17/10/2026","18/10/2026"),leclerc,today),false);
 });
