@@ -242,7 +242,7 @@ test("le panneau de fraîcheur n'annonce pas une panne antérieure à la preuve 
   const affected=await check("2026-10-12T12:00:00Z");
   assert.equal(affected.offers[0].sourceSyncWarning.status,"unavailable");
   assert.equal(affected.sourceStats[0].status,"sync-warning");
-  assert.equal(affected.sourceStats[0].syncState.checkedAt,"2026-10-12T12:00:00.000Z");
+  assert.equal(affected.sourceStats[0].syncState.checkedAt,"2026-10-12T12:00:00Z");
   assert.equal(affected.offers[0].autoStack,false);
 });
 
@@ -361,7 +361,9 @@ test("le statut Shopmium spécifique masque uniquement les offres non reconfirm�
 });
 
 test("une source indisponible conserve un indicateur indépendant de révision proche",async()=>{
-  const today=new Date("2026-10-08T12:00:00Z");
+  // The sync actually ran before the check: future-dated failures cannot
+  // be treated as already observed outages.
+  const today=new Date("2026-10-08T16:00:00Z");
   const sourceOffers=[{
     providerId:"leclerc",externalId:"candidate",title:"Ticket test",
     stores:["leclerc"],scope:"produit",savingPercent:20,
