@@ -356,3 +356,9 @@ La collecte fiable est désormais répartie en trois voies distinctes :
 Pour vérifier manuellement une offre E.Leclerc, utiliser le [prospectus officiel E.Leclerc](https://www.e.leclerc/prospectus) ; rechercher l'article, les dates, les quantités et les conditions Tickets avant achat. Ne jamais déduire une économie automatique d'une simple présence dans le catalogue.
 
 **Limite de couverture :** ce dispositif améliore la reconfirmation des **campagnes déjà connues** ; il ne crée pas artificiellement de nouvelles promotions retailer à partir de bannières. Une véritable intégration exhaustive des prix et stocks nécessitera des données détaillées ouvertes et autorisées (accord/API officielle/partenariat) ou une saisie humaine documentée.
+
+## Validation des calendriers Shopmium — 12 octobre 2026
+
+Le parseur des campagnes Shopmium refuse les jours impossibles (par exemple `31/02/2026`), les plages chronologiquement inversées et les heures qui n'existent pas au passage à l'heure d'été à Paris. Il calcule le décalage CET/CEST **à l'heure exacte annoncée** et non à midi. Lors de la répétition de 02:00–03:00 au changement d'heure d'automne, une heure ambiguë est interprétée prudemment : dernier instant possible pour un début, premier instant possible pour une fin. Une campagne dont la plage ne reste pas cohérente est ignorée, sans qu'une nouvelle date soit inventée.
+
+La forme « jusqu'à 23:59 » reste une date de fin inclusive au niveau du jour civil, conformément à la règle d'expiration déjà utilisée par l'application. Cela évite qu'une fiche isolée avec une date erronée fasse échouer la validation de tout le catalogue après synchronisation. La CI et le parcours Android vérifient ces limites dans les contrôles existants.
