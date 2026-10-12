@@ -5,7 +5,18 @@
       "checkedAt": "2026-10-12T20:00:26.711Z",
       "reason": "Seulement 9/10 campagne(s) encore valides reconfirmée(s).",
       "extractedCount": 9,
-      "previousSnapshotCount": 13
+      "previousSnapshotCount": 13,
+      "confirmedExternalIds": [
+        "26G133G-belle-chaurienne-plat-cuisine-34",
+        "26G133G-cote-table-cassoulet-40-second",
+        "26G133G-gullon-biscuits-68-second",
+        "26G133G-lor-espresso-capri-68-second",
+        "26G133G-maille-vinaigre-balsamique-modene-30",
+        "26G133G-menguys-melange-68-second",
+        "26G133G-mini-nems-tables-du-monde-20-ticket",
+        "26G133G-petit-navire-effiloches-thon-2plus1",
+        "26G133G-tramier-olives-noires-68-second"
+      ]
     }
   }
 }
