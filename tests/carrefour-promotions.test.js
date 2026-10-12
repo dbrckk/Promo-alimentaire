@@ -32,7 +32,7 @@ test("vérifie une promo Carrefour exacte",()=>{
   assert.ok(missingPrices.reasons.includes("prix normal chiffré manquant"));
   assert.ok(missingPrices.reasons.includes("taux promotionnel chiffré manquant"));
   const noProductHeading=verifyCarrefourPromotionPage(
-    html.replace(/<h1>([\\s\\S]*?)<\\/h1>/,"<div>$1</div>"),offer
+    html.replace(/<h1>([\s\S]*?)<\/h1>/,"<div>$1</div>"),offer
   );
   assert.equal(noProductHeading.ok,false);
   assert.ok(noProductHeading.reasons.includes("titre de la fiche produit absent"));
