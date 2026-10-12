@@ -27,5 +27,32 @@ export function inspectImportManifest(manifest){
     seen.add(file);
     files.push(file);
   }
-  return {ok:issues.length===0,files:issues.length===0?files:[],issues};
+  // Archival exceptions only affect the monitoring alert level; they do
+  // not re-activate dated offers, grant a price, or suppress missing files.
+  // Each exception must refer to a declared file and explain why that
+  // historical snapshot remains in the PWA for audit.
+  const archivedOnly={};
+  if(manifest.archivedOnly!==undefined){
+    if(!manifest.archivedOnly || typeof manifest.archivedOnly!=="object"
+      || Array.isArray(manifest.archivedOnly)){
+      issues.push("archivedOnly doit associer des fichiers déclarés à une justification.");
+    }else{
+      for(const [file,reason] of Object.entries(manifest.archivedOnly)){
+        if(!seen.has(file)){
+          issues.push("Archive non déclarée dans files : "+file+".");
+        }else if(typeof reason!=="string" || !reason.trim()
+          || reason.length>240){
+          issues.push("Justification d'archive absente ou trop longue : "+file+".");
+        }else{
+          archivedOnly[file]=reason.trim();
+        }
+      }
+    }
+  }
+  return {
+    ok:issues.length===0,
+    files:issues.length===0?files:[],
+    archivedOnly:issues.length===0?archivedOnly:{},
+    issues
+  };
 }
