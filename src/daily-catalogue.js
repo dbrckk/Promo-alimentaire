@@ -14,10 +14,18 @@ function safeCampaign(raw,today,store,channel){
     || typeof raw.claim!=="string" || !raw.claim.trim()
     || !validDate(raw.verifiedAt) || !validDate(raw.expiresAt)
     || raw.verifiedAt>today || raw.expiresAt<today
+    // The end of a month-long advertising campaign is not evidence that
+    // its selection and conditions have been checked TODAY. A campaign
+    // disappears from the daily recommendations after one unchecked week.
+    || (Date.parse(today+"T12:00:00Z")-
+      Date.parse(raw.verifiedAt+"T12:00:00Z"))>7*24*60*60*1000
     || (raw.startsAt && (!validDate(raw.startsAt) || raw.startsAt>today))
     // Without an exact product and actual basket price, a large "up to"
     // advert for nonfood is not verified >=50% savings.
     || !["alimentaire","épicerie","traiteur","bio","fruits et légumes"].includes(raw.category)
+    || (raw.advertisedMaxPercent!==undefined
+      && (!Number.isFinite(raw.advertisedMaxPercent)
+        || raw.advertisedMaxPercent<0 || raw.advertisedMaxPercent>100))
   ) return null;
   try {
     const target=new URL(raw.sourceUrl);
