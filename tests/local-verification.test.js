@@ -224,8 +224,6 @@ test("une confirmation expire aussi au prochain contrôle de source",()=>{
   assert.equal(shopmiumProof.validUntil,"2026-10-12T21:59:59.999Z",
     "la limite de contrôle Shopmium doit s'appliquer même sans reviewAfter");
 });
-});
-
 
 test("la confirmation en magasin n'est pas transférable au Drive ou à la livraison",()=>{
   const mixed={...offer,channels:["store","drive","online"]};
