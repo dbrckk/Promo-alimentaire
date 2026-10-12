@@ -865,6 +865,17 @@ try{
       assert.equal(await manualLink.first().getAttribute("target"),"_blank");
     }
   }
+  // When Carrefour product snapshots are exhausted, the user can still
+  // discover the merchant's published food campaigns on the phone without
+  // making them automatically stackable priced product records.
+  const officialCarrefourCampaign=page.locator(
+    '#sourceHealth a.open[href="https://www.carrefour.fr/offres-du-moment"]'
+  );
+  assert.ok(await officialCarrefourCampaign.count()>0,
+    "Le diagnostic Carrefour doit mener aux promotions officielles en cours");
+  assert.equal(await officialCarrefourCampaign.first().getAttribute("target"),"_blank");
+  assert.match(await page.locator("#sourceHealth").textContent(),
+    /ces annonces ne prouvent pas un prix final/i);
   // Fallback links are channel-aware: physical Carrefour/Leclerc
   // catalogues are not proof of Drive checkout promotions. The links
   // must update instantly on Android and never create basket savings.
@@ -1202,6 +1213,11 @@ try{
     catalog:0,valid:0,future:1,impossible:1,malformed:1
   });
   await page.locator("#sourceScope").selectOption("food");
+  const officialCarrefourSource=page.locator(
+    '#providers .provider-card a.open[href="https://www.carrefour.fr/offres-du-moment"]'
+  );
+  assert.ok(await officialCarrefourSource.count()>0);
+  assert.match(await page.locator("#providers").innerText(),/Carrefour — offres du moment/);
   assert.match(await page.locator("#providers").innerText(),/MonAvisLeRendGratuit/);
   assert.match(await page.locator("#providers").innerText(),/HopHopFood/);
   assert.match(await page.locator("#providers").innerText(),/Bene Bono/);
