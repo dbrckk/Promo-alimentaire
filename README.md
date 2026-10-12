@@ -1,3 +1,11 @@
+## Promos du jour : meilleures offres et vérification quotidienne des campagnes (12 octobre 2026)
+
+L'onglet **Promos du jour** propose désormais les **trois opportunités réelles à regarder en premier** à partir des lots produits actifs (Carrefour, E.Leclerc, Shopmium, Coupon Network). Il permet de trier par **pourcentage applicable à la quantité minimum**, **euros réellement estimables** ou **coût initial du lot** et de filtrer les lots dont le montant d'achat initial documenté dépasse **3, 5, 10 ou 20 €**. Lorsque le budget est activé, les offres sans prix ne sont jamais inventées ou considérées comme abordables. Le classement n'additionne pas des remboursements dont le cumul reste à vérifier.
+
+Les cartes indiquent le nombre minimal d'articles, le coût initial indicatif **avant** remboursement ou cagnotte fidélité, la remise conditionnelle chiffrée et les liens de preuve. Les annonces publicitaires de « jusqu'à 60 % sur le deuxième » demeurent séparées et ne deviennent pas 60 % sur le panier entier.
+
+Le programme `npm run sync:daily-catalogue -- --write`, exécuté chaque matin par `.github/workflows/sync-daily-campaigns.yml`, tente maintenant de **reconfirmer les campagnes publiques déjà connues** dans les pages officielles accessibles Carrefour/E.Leclerc. La reconfirmation exige **titre, mécanisme et date originale de fin proches dans le même passage public**. Elle ne prolonge jamais les dates de fin et ne crée **aucune** nouvelle remise sans fiche produit chiffrée. Si un marchand refuse l'accès ou si une preuve manque, la vérification reste datée et la PWA masque l'annonce après sept jours. Cette tâche ne permet pas encore d'extraire exhaustivement de nouveaux produits et prix catalogue sans source publique structurée.
+
 ## Catalogue du jour — recommandations sans prix inventés (12 octobre 2026)
 
 L'onglet **Promos du jour** analyse à chaque ouverture ou changement de magasin/canal les derniers snapshots **encore actifs**, validés par l'ingestion existante (sources publiques mises à jour par les tâches planifiées Shopmium, Coupon Network, E.Leclerc et Carrefour). Les résultats sont séparés en :
