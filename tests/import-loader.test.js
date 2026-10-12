@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {execFileSync} from "node:child_process";
 import { loadImportedOffers, mergeOffers, offerIdentity, sourceDeadlineSummary, failedRefreshWarning, sourceRefreshImpact } from "../src/import-loader.js";
 
 const manifest={verifiedAt:"2026-10-07",files:["one.json"]};
@@ -597,4 +598,42 @@ test("l'impact d'une synchronisation échouée exclut preuves nouvelles et campa
     unaffectedCount:3,
     affectedProviderIds:[]
   });
+});
+
+test("le manifeste distingue archives documentées et sources actives",async()=>{
+  const {inspectImportManifest}=await import("../src/import-manifest.js");
+  const valid=inspectImportManifest({
+    files:["carrefour-promotions-auto.json","shopmium-auto.json"],
+    archivedOnly:{"carrefour-promotions-auto.json":
+      "Onze campagnes historiques expirées, gardées comme preuve."}
+  });
+  assert.equal(valid.ok,true);
+  assert.deepEqual(valid.files,["carrefour-promotions-auto.json","shopmium-auto.json"]);
+  assert.equal(valid.archivedOnly["carrefour-promotions-auto.json"].startsWith("Onze"),true);
+
+  for(const invalid of [
+    {files:["live.json"],archivedOnly:{"other.json":"Missing in manifest"}},
+    {files:["live.json"],archivedOnly:{"live.json":""}},
+    {files:["live.json"],archivedOnly:{"live.json":"x".repeat(241)}},
+    {files:["live.json"],archivedOnly:["live.json"]},
+    {files:["live.json"],archivedOnly:"live.json"}
+  ]){
+    assert.equal(inspectImportManifest(invalid).ok,false,
+      "Une exception archive erronée ne doit pas neutraliser le contrôle strict");
+  }
+});
+
+test("la vérification planifiée stricte accepte les archives Carrefour sans cacher leur absence d'offres",()=>{
+  // Reproduce the actual Oct-12 strict GitHub Actions failure: the 11 legacy
+  // Carrefour campaigns are expired while other merchants still have offers.
+  const output=execFileSync(process.execPath,
+    ["scripts/check-import-freshness.mjs","--strict"],{
+      cwd:new URL("../",import.meta.url),
+      env:{...process.env,CHECK_DATE:"2026-10-12T17:53:14.000Z"},
+      encoding:"utf8"
+    });
+  assert.match(output,/carrefour-promotions-auto\.json: archived · 0\/11 actives/);
+  assert.match(output,/coupon-network-auto\.json: ok · 111\/111 actives/);
+  assert.match(output,/1 fichier\(s\) en archive historique explicite/);
+  assert.match(output,/0 fichier\(s\) périmé\(s\)\/invalide\(s\)/);
 });
