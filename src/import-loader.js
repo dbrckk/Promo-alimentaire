@@ -21,6 +21,23 @@ export function failedRefreshWarning(offer,syncSources,now){
   };
 }
 
+// A refresh failure affects only live offers with older proof than the
+// failure. Count those records separately: they are still browseable
+// candidates, but their previous automatic savings cannot be guaranteed.
+export function sourceRefreshImpact(offers,syncSources,now=new Date()){
+  const current=new Date(now);
+  const active=(Array.isArray(offers)?offers:[])
+    .filter((offer)=>isOfferActive(offer,current));
+  const affected=active.filter((offer)=>
+    failedRefreshWarning(offer,syncSources,current)
+  );
+  return {
+    affectedCount:affected.length,
+    unaffectedCount:active.length-affected.length,
+    affectedProviderIds:[...new Set(affected.map((offer)=>offer.providerId))]
+  };
+}
+
 // The PWA and CI diagnostics must use identical offer deadlines. Date-only
 // cutoffs are inclusive until 23:59:59.999 in France (including DST days),
 // while explicit timestamps retain their exact instant. Expired offers cannot
@@ -143,11 +160,8 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       }
       const activeOffers=result.normalized.filter((offer)=>isOfferActive(offer,now));
       const providerIds=[...new Set(result.normalized.map((offer)=>offer.providerId).filter(Boolean))];
-      affectedRefreshByFile.set(file,new Set(
-        activeOffers
-          .filter((offer)=>failedRefreshWarning(offer,syncSources,now))
-          .map((offer)=>offer.providerId)
-      ));
+      const refreshImpact=sourceRefreshImpact(activeOffers,syncSources,now);
+      affectedRefreshByFile.set(file,new Set(refreshImpact.affectedProviderIds));
       const exactEanCount=activeOffers.filter((offer)=>
         Array.isArray(offer.eans) && offer.eans.length>0
       ).length;
@@ -175,6 +189,7 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
         validityStatus,
         daysUntil,
         activeCount:activeOffers.length,
+        syncAffectedCount:refreshImpact.affectedCount,
         totalCount:result.normalized.length,
         providerIds,
         exactEanCount,
