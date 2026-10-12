@@ -76,26 +76,25 @@ function pickRate(offer,quantity){
 function normalizePick(offer){
   const quantity=requiredQuantity(offer);
   const tiers=Array.isArray(offer.quantityTiers)?offer.quantityTiers:[];
-  const maxAdvertisedRate=tiers.length && Number.isFinite(offer.savingPercent)
-    ? offer.savingPercent : null;
+  const bestTier=tiers.length
+    ? [...tiers].filter((tier)=>Number.isFinite(tier.savingPercent))
+      .sort((a,b)=>b.savingPercent-a.savingPercent || a.minQty-b.minQty)[0]
+    : null;
+  const maxAdvertisedRate=bestTier?.savingPercent ?? null;
+  const minimumRate=pickRate(offer,quantity);
   return {
     id:offer.id,title:offer.title,providerId:offer.providerId,
     provider:offer.provider || offer.providerId,sourceUrl:offer.sourceUrl,
     category:offer.category || "alimentaire",verifiedAt:offer.verifiedAt,
     expiresAt:[offer.reviewAfter,offer.expiresAt].filter(Boolean).sort()[0] || null,
     savingAmount:pickSaving(offer,quantity),
-    savingPercent:pickRate(offer,quantity),
+    savingPercent:minimumRate,
     basePrice:Number.isFinite(offer.basePrice)?offer.basePrice:null,
     minQuantity:quantity,
     higherTierPercent:Number.isFinite(maxAdvertisedRate)
-      && maxAdvertisedRate>pickRate(offer,quantity)
+      && (!Number.isFinite(minimumRate) || maxAdvertisedRate>minimumRate)
       ? maxAdvertisedRate : null,
-    higherTierMinQuantity:tiers.length
-      ? Math.min(...tiers.filter((tier)=>
-        Number.isFinite(maxAdvertisedRate)
-        && tier.savingPercent===maxAdvertisedRate
-      ).map((tier)=>tier.minQty))
-      : null,
+    higherTierMinQuantity:bestTier?.minQty ?? null,
     hasExactEan:Boolean(offer.eans?.length && offer.eanEvidenceUrl),
     requiresStoreVerification:Boolean(offer.requiresStoreVerification),
     rewardType:offer.rewardType || null,
