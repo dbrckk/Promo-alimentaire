@@ -133,6 +133,12 @@ La page publique [Carrefour — offres du moment](https://www.carrefour.fr/offre
 
 **Distinction essentielle :** une campagne publicitaire (« jusqu'à -60 % sur le 2e », « 2+1 » ou « moins de 1 € ») n'est ni un SKU prouvé ni une économie garantie : elle ne crée aucun EAN, aucun panier remisé et aucun cumul automatique dans l'application. L'échec du flux de fiches Carrefour reste visible et les anciennes offres restent expirées.
 
+### Offres réellement concernées par un échec de synchronisation (12 octobre 2026)
+
+Le panneau **Santé des sources** compte maintenant les **offres encore actives sous alerte de synchronisation** (prix/remises à vérifier ; gain non garanti). Une offre dont la preuve a été renouvelée **après** l'échec de synchronisation n'est pas dégradée ; une fiche expirée ne compte pas comme une alerte active.
+
+Le rapport quotidien `npm run check:freshness` présente distinctement le statut `sync-warning`, le nombre d'offres affectées et une annotation `warning` dans GitHub Actions. Le total « offres actives » reste un total de **fiches consultables**, pas de réductions garanties. Un échec de synchronisation ne prolonge jamais artificiellement une offre, et le contrôle strict de péremption conserve son fonctionnement existant.
+
 ### Fiabilité identique pour le diagnostic GitHub et la PWA
 
 `npm run check:freshness` réutilise la même fonction de calcul d'échéances que le chargeur des sources publiques : uniquement **offres encore actives**, première date entre revue, expiration et plafond prudent Shopmium, dernière milliseconde du jour civil **Europe/Paris** pour `YYYY-MM-DD`, et jours calendaires pour l'alerte (y compris les changements d'heure). Les échecs de synchronisation obsolètes ou datés du futur ne masquent plus les promotions vérifiées après l'incident. Un rapport CI n'annonce donc plus une date de revue lointaine provenant d'une ancienne campagne expirée.
