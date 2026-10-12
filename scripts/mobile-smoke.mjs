@@ -1316,7 +1316,25 @@ try{
     "https://www.e.leclerc/prospectus");
   assert.ok(await page.locator("#dailyRetailer .daily-offer").count()>0,
     "Des offres du catalogue Leclerc encore valables doivent apparaître");
-  await assertNoHorizontalOverflow(page,"analyse du catalogue du jour");
+  assert.ok(await page.locator("#dailyHighlights .daily-offer").count()>0,
+    "Les meilleures opportunités actives doivent apparaître en haut");
+  await page.locator("#dailyMaxSpend").selectOption("3");
+  assert.match(await page.locator("#dailyStatus").innerText(),/budget initial de 3,00/);
+  const filteredTitles=await page.locator("#dailyRetailer").innerText();
+  assert.match(filteredTitles,/mini nems/i,
+    "Un article à 2,99 € doit rester possible sous un plafond de 3 €");
+  assert.doesNotMatch(filteredTitles,/Gullón/i,
+    "Les 2 biscuits à 2,39 € ne tiennent pas dans un budget total de 3 €");
+  assert.match(await page.locator("#dailyHighlights").innerText(),
+    /Prix initial indicatif du lot/);
+  await page.locator("#dailySort").selectOption("euros");
+  assert.match(await page.locator("#dailyStatus").innerText(),
+    /euros économisés/);
+  await page.locator("#dailyMaxSpend").selectOption("all");
+  assert.ok(await page.locator("#dailyRetailer .daily-offer").count()>=2,
+    "Lever le budget doit restaurer les promotions disponibles");
+  await page.locator("#dailySort").selectOption("percent");
+    await assertNoHorizontalOverflow(page,"analyse du catalogue du jour");
   await page.screenshot({path:OUT+"/00-catalogue-du-jour.png",fullPage:true});
   await page.locator("#store").selectOption("carrefour");
   await page.locator('[data-tab="offers"]').click();
