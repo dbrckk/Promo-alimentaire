@@ -473,6 +473,12 @@ Chaque enseigne dispose de son propre statut :
 
 Le ticket de caisse réel reste prioritaire. Le comparateur ne réserve pas les prix, ne confirme pas les stocks et n'encaisse aucun paiement.
 
+### Fiabilité des dates pour les relevés personnels (12 octobre 2026)
+
+La saisie d'un prix Carrefour ou E.Leclerc conserve le **jour d'achat français (Europe/Paris)**, quelle que soit la configuration horaire du smartphone. Le calendrier accepte aujourd'hui et les **30 jours civils précédents au maximum** (jour de relevé = jour 0), mais jamais un jour futur. Les transitions entre heure d'été et heure d'hiver n'avancent ni ne reculent l'expiration d'un relevé, et le champ de date de la PWA s'actualise si l'onglet reste ouvert après minuit. Les sauvegardes au nom daté utilisent la même journée française.
+
+Ces prix restent **personnels et indicatifs**, sans preuve d'une remise publique, sans partage ni promesse de cumul automatique. Les anciens relevés devenus trop vieux sont exclus au chargement. Les vérifications de non-régression couvrent minuit à Paris, les deux changements d'heure et le parcours Chrome Android simulé.
+
 ### Couverture des prix par EAN exact
 
 Les cartes Carrefour et E.Leclerc indiquent maintenant, séparément, si les relevés Open Prices sont absents, non exploitables, anciens (plus de 30 jours), récents (30 jours) ou suffisamment récents (7 jours). Elles indiquent le nombre de relevés exploitables et la date du dernier relevé. **Aucune observation** ne signifie pas **aucun stock** : une absence de prix communautaire n'est jamais une preuve que le produit n'est pas vendu. Une panne de la source est présentée comme une couverture inconnue, non comme une absence de produit.
