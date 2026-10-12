@@ -995,8 +995,8 @@ try{
     unsafe:false,empty:0,otherDomain:0,publishEmpty:false
   });
 
-  // Coupon Network uses a generic source category for public cards.
-  // The live importer must retain food coupons while excluding known
+  // Coupon Network publishes all cards with a generic source category.
+  // The live importer infers only clear food labels and excludes known
   // household/pet/alcohol products below the requested 50% threshold.
   const foodScopeSafety=await page.evaluate(async()=>{
     const {normalizeImportedOffer}=await import("./src/ingestion.js");
@@ -1021,8 +1021,13 @@ try{
       sample("dish","Sun - Capsules","Sur l'achat de capsules lave-vaisselle"),
       sample("moisture","Rubson - Absorbeurs","Pack absorbeur Aero 360"),
       sample("spirits","Altos - Tequila Blanco","Bouteille de tequila"),
+      sample("spirits-brand","Jack Daniel's - Aromatisée","Bouteille 70cl"),
+      sample("beer-brand","Pelican - Blonde et Rouge","Bouteille 66cl"),
+      sample("shampoo-milk","Schwarzkopf - Shampooings au lait","Shampooing au lait"),
       sample("high","Schwarzkopf - Shampooings","Shampooing au choix",70),
-      sample("nonalc","Chouffe - Bières sans alcool","Pack sans alcool")
+      sample("nonalc","Chouffe - Bières sans alcool","Pack sans alcool"),
+      sample("yogurt","Danone - Yaourt à la grecque","Yaourt au choix"),
+      sample("food-with-nonfood-words","Sun - Capsules lave-vaisselle citron","Capsules au citron")
     ];
     return {
       categories:offers.map((offer)=>offer.category),
@@ -1032,10 +1037,12 @@ try{
     };
   });
   assert.deepEqual(foodScopeSafety,{
-    categories:["autre","non-alimentaire","non-alimentaire",
+    categories:["alimentaire","non-alimentaire","non-alimentaire",
       "non-alimentaire","non-alimentaire","non-alimentaire",
-      "hors-alimentaire","non-alimentaire","autre"],
-    visible:["scope-food","scope-high","scope-nonalc"],
+      "hors-alimentaire","hors-alimentaire","hors-alimentaire",
+      "non-alimentaire","non-alimentaire","autre",
+      "alimentaire","non-alimentaire"],
+    visible:["scope-food","scope-high","scope-nonalc","scope-yogurt"],
     suspiciousGuaranteed:false
   });
 
