@@ -500,6 +500,11 @@ function renderDailyCatalogue(){
       ? money.format(item.savingAmount)+" d'économie potentielle"+
         (item.minQuantity>1?" pour le lot":"") : "Économie en euros inconnue";
     const rate=hasPercent?formatPercent(item.savingPercent):"Taux inconnu";
+    const higherTier=Number.isFinite(item.higherTierPercent)
+      && Number.isInteger(item.higherTierMinQuantity)
+      ? "Jusqu'à "+formatPercent(item.higherTierPercent)+
+        " seulement dès "+item.higherTierMinQuantity+" articles éligibles."
+      : null;
     const exact=item.hasExactEan
       ? "EAN documenté (disponibilité locale non confirmée)"
       : "Référence exacte à confirmer";
@@ -512,6 +517,7 @@ function renderDailyCatalogue(){
       </div><span class="badge">${rate}</span></div>
       <p><strong>${escapeHtml(price)}</strong></p>
       <p class="help">${escapeHtml(quantity)} · ${escapeHtml(exact)}</p>
+      ${higherTier ? `<p class="help">${escapeHtml(higherTier)}</p>` : ""}
       ${benefit ? `<p class="help">${escapeHtml(benefit)}</p>` : ""}
       <p class="help">Source datée du ${formatDate(item.verifiedAt)}
         ${item.expiresAt?" · limite "+formatDate(item.expiresAt):""}.
