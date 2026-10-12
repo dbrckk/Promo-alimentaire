@@ -727,3 +727,12 @@ Un catalogue actif qui devient vide sans être déclaré archivé, un fichier d'
 Les suggestions affichent le **taux du premier palier applicable à la quantité minimale**, et non le meilleur pourcentage publicitaire indépendamment du nombre d'articles. Par exemple, une offre Shopmium « 20 % pour 1 article ; jusqu'à 30 % pour 3 » affiche **20 % sur 1** puis indique séparément **jusqu'à 30 % à partir de 3**. Une ODR fixe de 1 € nécessitant 2 articles à 2 € ne s'affiche plus comme une remise de 50 %, mais comme **25 % du lot à 4 €**. Sans prix de référence vérifiable, le pourcentage d'une ODR fixe reste inconnu.
 
 Les simulations et les prix présentés dans le catalogue restent des **candidats conditionnels**, jamais des gains garantis en caisse. Vérifier la référence, la quantité, les modalités et la source officielle avant l'achat.
+
+
+### Campagnes « Catalogue du jour » : preuves récentes (12 octobre 2026)
+
+Une page de campagne indiquant une fin au mois prochain **ne prouve pas** que ses produits et modalités sont encore inchangés aujourd'hui. La vue quotidienne n'affiche plus une campagne éditoriale dont le dernier relevé officiel remonte à **plus de 7 jours civils en France**, même si sa date de fin annoncée est future. Les taux publicitaires hors de 0–100 % sont refusés. Une campagne non reconfirmée reste accessible via le lien général du catalogue officiel, mais ne redevient pas une promotion vérifiée sans nouvelle observation authentique. Les vrais remboursements provenant d'autres imports gardent leurs propres dates et règles de contrôle.
+
+Ce filtre agit uniquement sur les **campagnes de découverte**, jamais en étendant artificiellement la validité des promotions produit. Des vérifications ajoutées au parcours Chromium Android attestent de la disparition d'une annonce après 7 jours sans contrôle.
+
+Les offres dont le palier maximal s'applique **uniquement à 3 articles** sont désormais signalées « pour exactement 3 articles ». Quand la source fournit une plage (par exemple de 3 à 4), la plage entière est affichée ; « à partir de 3 » n'est utilisé que si aucun maximum n'est fixé.

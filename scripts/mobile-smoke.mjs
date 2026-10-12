@@ -1255,10 +1255,25 @@ try{
       new Date("2026-10-12T21:59:59Z"),store:"carrefour",channel:"store"});
     const after=selectDailyCatalogue({campaigns:[sample],now:
       new Date("2026-10-12T22:00:00Z"),store:"carrefour",channel:"store"});
+    const longCampaign={...sample,expiresAt:"2026-11-08"};
+    const recent=selectDailyCatalogue({campaigns:[longCampaign],
+      now:new Date("2026-10-19T12:00:00Z"),store:"carrefour",channel:"store"});
+    const stale=selectDailyCatalogue({campaigns:[longCampaign],
+      now:new Date("2026-10-20T12:00:00Z"),store:"carrefour",channel:"store"});
+    const impossibleRate=selectDailyCatalogue({campaigns:[{
+      ...longCampaign,advertisedMaxPercent:999
+    }],now:new Date("2026-10-12T12:00:00Z"),
+    store:"carrefour",channel:"store"});
     return {advertised:before.campaigns.length,expired:after.campaigns.length,
-      fictitiousSaving:"savingAmount" in before.campaigns[0]};
+      fictitiousSaving:"savingAmount" in before.campaigns[0],
+      checkedWithinWeek:recent.campaigns.length,
+      uncheckedMoreThanWeek:stale.campaigns.length,
+      invalidAdvertisedRate:impossibleRate.campaigns.length};
   });
-  assert.deepEqual(dailyCampaignProof,{advertised:1,expired:0,fictitiousSaving:false});
+  assert.deepEqual(dailyCampaignProof,{
+    advertised:1,expired:0,fictitiousSaving:false,
+    checkedWithinWeek:1,uncheckedMoreThanWeek:0,invalidAdvertisedRate:0
+  });
   // Integrated Android browser audit: tier rates and fixed refunds must be
   // expressed for the minimum eligible LOT, not the maximum advertised tier.
   const dailyRateProof=await page.evaluate(async()=>{
@@ -1286,12 +1301,13 @@ try{
     return {tierRate:t?.savingPercent,tierSaving:t?.savingAmount,
       tierMinimum:t?.minQuantity,
       tierHigherRate:t?.higherTierPercent,tierHigherMinimum:t?.higherTierMinQuantity,
+      tierHigherMaximum:t?.higherTierMaxQuantity,
       fixedRate:f?.savingPercent,fixedSaving:f?.savingAmount,
       fixedMinimum:f?.minQuantity};
   });
   assert.deepEqual(dailyRateProof,{
     tierRate:20,tierSaving:0.4,tierMinimum:1,
-    tierHigherRate:30,tierHigherMinimum:3,
+    tierHigherRate:30,tierHigherMinimum:3,tierHigherMaximum:3,
     fixedRate:25,fixedSaving:1,fixedMinimum:2
   });
   await page.locator("#store").selectOption("leclerc");

@@ -491,7 +491,7 @@ function renderDailyCatalogue(){
     " · "+digest.retailer.length+" offre(s) enseigne, "+
     digest.extra.length+" remboursement(s)/coupon(s) et "+
     digest.campaigns.length+" campagne(s) officielle(s). "+
-    "Données contrôlées à leurs dates propres, pas de remise panier garantie.";
+    "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat.";
   const renderPick=(item)=>{
     const hasPercent=Number.isFinite(item.savingPercent);
     const quantity=item.minQuantity>1
@@ -500,10 +500,16 @@ function renderDailyCatalogue(){
       ? money.format(item.savingAmount)+" d'économie potentielle"+
         (item.minQuantity>1?" pour le lot":"") : "Économie en euros inconnue";
     const rate=hasPercent?formatPercent(item.savingPercent):"Taux inconnu";
+    const upperLimit=Number.isInteger(item.higherTierMaxQuantity)
+      ? item.higherTierMaxQuantity : null;
+    const upperQty=upperLimit===item.higherTierMinQuantity
+      ? "pour exactement "+item.higherTierMinQuantity+" articles éligibles"
+      : upperLimit!==null
+        ? "pour "+item.higherTierMinQuantity+" à "+upperLimit+" articles éligibles"
+        : "à partir de "+item.higherTierMinQuantity+" articles éligibles";
     const higherTier=Number.isFinite(item.higherTierPercent)
       && Number.isInteger(item.higherTierMinQuantity)
-      ? "Jusqu'à "+formatPercent(item.higherTierPercent)+
-        " seulement dès "+item.higherTierMinQuantity+" articles éligibles."
+      ? "Jusqu'à "+formatPercent(item.higherTierPercent)+" "+upperQty+"."
       : null;
     const exact=item.hasExactEan
       ? "EAN documenté (disponibilité locale non confirmée)"
@@ -544,7 +550,7 @@ function renderDailyCatalogue(){
         <a class="open" href="${escapeHtml(item.sourceUrl)}"
            target="_blank" rel="noopener noreferrer">Vérifier la campagne officielle</a>
       </article>`).join("")
-    :fallback("Aucune campagne datée et toujours valable dans le dernier relevé. Le catalogue officiel reste accessible.");
+    :fallback("Aucune campagne datée et contrôlée depuis 7 jours pour ce canal. Les annonces trop anciennes sont masquées : consulte le catalogue officiel pour les promotions du jour.");
 }
 
 async function hydrateDailyCampaigns(){
