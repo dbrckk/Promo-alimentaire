@@ -1259,6 +1259,41 @@ try{
       fictitiousSaving:"savingAmount" in before.campaigns[0]};
   });
   assert.deepEqual(dailyCampaignProof,{advertised:1,expired:0,fictitiousSaving:false});
+  // Integrated Android browser audit: tier rates and fixed refunds must be
+  // expressed for the minimum eligible LOT, not the maximum advertised tier.
+  const dailyRateProof=await page.evaluate(async()=>{
+    const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
+    const sample=(id)=>({
+      id,title:id,providerId:"shopmium",provider:"Shopmium",
+      category:"alimentaire",scope:"produit",stores:["all"],
+      channels:["store"],sourceUrl:"https://offers.shopmium.com/fr/n/example",
+      verifiedAt:"2026-10-12",reviewAfter:"2026-10-16",expiresAt:"2026-10-20",
+      basePrice:2
+    });
+    const tier={...sample("tier"),savingPercent:30,minPurchaseQty:1,
+      quantityTiers:[
+        {minQty:1,maxQty:1,savingPercent:20},
+        {minQty:2,maxQty:2,savingPercent:25},
+        {minQty:3,maxQty:3,savingPercent:30}
+      ]};
+    const flat={...sample("flat"),savingAmount:1,
+      savingAmountMode:"per-offer",minPurchaseQty:2};
+    const picks=selectDailyCatalogue({offers:[tier,flat],
+      store:"carrefour",channel:"store",
+      now:new Date("2026-10-12T12:00:00Z")}).extra;
+    const t=picks.find((entry)=>entry.id==="tier");
+    const f=picks.find((entry)=>entry.id==="flat");
+    return {tierRate:t?.savingPercent,tierSaving:t?.savingAmount,
+      tierMinimum:t?.minQuantity,
+      tierHigherRate:t?.higherTierPercent,tierHigherMinimum:t?.higherTierMinQuantity,
+      fixedRate:f?.savingPercent,fixedSaving:f?.savingAmount,
+      fixedMinimum:f?.minQuantity};
+  });
+  assert.deepEqual(dailyRateProof,{
+    tierRate:20,tierSaving:0.4,tierMinimum:1,
+    tierHigherRate:30,tierHigherMinimum:3,
+    fixedRate:25,fixedSaving:1,fixedMinimum:2
+  });
   await page.locator("#store").selectOption("leclerc");
   assert.match(await page.locator("#dailyStatus").innerText(),/E.Leclerc/);
   assert.equal(await page.locator("#dailyOfficialLink").getAttribute("href"),

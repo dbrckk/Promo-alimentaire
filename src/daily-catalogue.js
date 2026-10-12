@@ -1,6 +1,7 @@
 import {filterActiveOffers,parisCivilDay} from "./ingestion.js";
-import {filterOffers,isOfferWithinShoppingScope,effectivePercent,computeSaving} from "./domain.js";
-import {effectiveRetailerPromoPercent,minimumQuantityForRetailerPromo,estimateRetailerPromoSaving} from "./retailer-promo.js";
+import {filterOffers,isOfferWithinShoppingScope,effectivePercent} from "./domain.js";
+import {effectiveRetailerPromoPercent} from "./retailer-promo.js";
+import {effectiveOfferPercent,estimateOfferSaving,requiredQuantity} from "./matching.js";
 
 // Daily suggestions are NOT an additional price database. The imported
 // retailer/manufacturer offers have already passed the ingestion validators.
@@ -39,34 +40,65 @@ function validDate(value){
   const d=new Date(value+"T12:00:00Z");
   return Number.isFinite(d.getTime()) && d.toISOString().slice(0,10)===value;
 }
-function itemSaving(offer){
-  // An advertised 60% ON THE SECOND ITEM must never become 60% of the
-  // first article. Compute the entire minimum lot before a generic rate.
-  const qty=minimumQuantityForRetailerPromo(offer);
+// A retailer's multi-buy percentage and a manufacturer's quantity tiers
+// describe different purchase quantities. Use the same minimum-quantity
+// simulation as the product and basket tools, never a supplier's maximum
+// advertised percentage applied to one article.
+function pickSaving(offer,quantity){
   const price=offer.basePrice;
-  if(qty && Number.isFinite(price) && price>0){
-    const saving=estimateRetailerPromoSaving(price,qty,offer);
-    if(Number.isFinite(saving)) return saving;
+  if(Number.isFinite(price) && price>0){
+    const saving=estimateOfferSaving(price,offer,quantity);
+    return Number.isFinite(saving) && saving>0 ? saving : null;
   }
-  const value=computeSaving(offer);
-  return Number.isFinite(value) && value>0 ? value : null;
+  // A flat verified voucher can specify its amount without listing a shelf
+  // price, but percentage refunds cannot yield invented euro savings.
+  if(Number.isFinite(offer.savingAmount) && offer.savingAmount>0
+    && offer.savingAmountMode!=="per-unit"){
+    const cap=Number.isFinite(offer.savingCapAmount)
+      ? Math.max(0,offer.savingCapAmount) : Infinity;
+    return Math.round(Math.min(cap,offer.savingAmount)*100)/100;
+  }
+  return null;
 }
-function rate(offer){
-  const explicit=effectiveRetailerPromoPercent(offer);
-  if(Number.isFinite(explicit)) return explicit;
-  const other=effectivePercent(offer);
-  return Number.isFinite(other)?other:null;
+function pickRate(offer,quantity){
+  if(offer.promoFormula) return effectiveRetailerPromoPercent(offer);
+  // A fixed refund of 1 € on TWO 2 € products is 25% of the lot,
+  // not 50% of the individual shelf price.
+  if(Number.isFinite(offer.savingAmount)){
+    const price=offer.basePrice;
+    if(!Number.isFinite(price) || price<=0) return null;
+    const saving=pickSaving(offer,quantity);
+    return Number.isFinite(saving)
+      ? Math.round(saving/(price*quantity)*10000)/100 : null;
+  }
+  const rate=effectiveOfferPercent(offer,quantity);
+  if(Number.isFinite(rate)) return rate;
+  // A quantity tier with no rate for the chosen quantity is not eligible.
+  if(Array.isArray(offer.quantityTiers) && offer.quantityTiers.length) return null;
+  return effectivePercent(offer);
 }
 function normalizePick(offer){
+  const quantity=requiredQuantity(offer);
+  const tiers=Array.isArray(offer.quantityTiers)?offer.quantityTiers:[];
+  const bestTier=tiers.length
+    ? [...tiers].filter((tier)=>Number.isFinite(tier.savingPercent))
+      .sort((a,b)=>b.savingPercent-a.savingPercent || a.minQty-b.minQty)[0]
+    : null;
+  const maxAdvertisedRate=bestTier?.savingPercent ?? null;
+  const minimumRate=pickRate(offer,quantity);
   return {
     id:offer.id,title:offer.title,providerId:offer.providerId,
     provider:offer.provider || offer.providerId,sourceUrl:offer.sourceUrl,
     category:offer.category || "alimentaire",verifiedAt:offer.verifiedAt,
     expiresAt:[offer.reviewAfter,offer.expiresAt].filter(Boolean).sort()[0] || null,
-    savingAmount:itemSaving(offer),savingPercent:rate(offer),
+    savingAmount:pickSaving(offer,quantity),
+    savingPercent:minimumRate,
     basePrice:Number.isFinite(offer.basePrice)?offer.basePrice:null,
-    minQuantity:minimumQuantityForRetailerPromo(offer)
-      || (Number.isInteger(offer.minPurchaseQty)?offer.minPurchaseQty:1),
+    minQuantity:quantity,
+    higherTierPercent:Number.isFinite(maxAdvertisedRate)
+      && (!Number.isFinite(minimumRate) || maxAdvertisedRate>minimumRate)
+      ? maxAdvertisedRate : null,
+    higherTierMinQuantity:bestTier?.minQty ?? null,
     hasExactEan:Boolean(offer.eans?.length && offer.eanEvidenceUrl),
     requiresStoreVerification:Boolean(offer.requiresStoreVerification),
     rewardType:offer.rewardType || null,
