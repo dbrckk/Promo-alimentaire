@@ -699,3 +699,10 @@ La date « révision » et l'alerte « à revoir bientôt » dans **État des do
 ### Précision alimentaire des coupons Coupon Network (12 octobre 2026)
 
 La récupération publique des coupons ne fournit pas de rayon fiable : le snapshot utilise souvent `autre` comme catégorie. L'application attribue désormais le rayon **alimentaire** aux produits identifiables par un vocabulaire précis ; les indices explicites d'entretien, de soin, d'animalerie ou de boissons alcoolisées sont traités en premier et restent soumis à la règle **autres domaines : au moins 50 %**. Les coupons à montant fixe, sans prix d'achat vérifié, ne deviennent pas des réductions de 50 % par hypothèse. Les fiches ambiguës gardent `autre`, sans EAN inventé ni preuve d'éligibilité supplémentaire. Cette classification locale ne modifie aucune offre ni sa date et reste vérifiée dans le parcours navigateur Android.
+
+
+### Contrôle quotidien : archives historiques distinctes des vraies pannes
+
+Le contrôle strict de fraîcheur ne peut pas être utilisé si un ancien catalogue explicitement conservé pour audit fait échouer GitHub Actions tous les jours, sans lien avec les autres fournisseurs. Le manifeste `data/import/index.json` désigne maintenant par `archivedOnly` les **archives volontairement expirées**, avec justification obligatoire. Seul le snapshot des onze anciennes campagnes Carrefour est concerné. Il garde son statut visible `archived` et un avertissement ; ses promotions restent désactivées.
+
+Un catalogue actif qui devient vide sans être déclaré archivé, un fichier d'archive manquant ou invalide, ou la réapparition d'offres actives dans une archive désignée restent des erreurs en contrôle strict. La CI vérifie aussi le scénario daté du 12 octobre qui faisait échouer l'automatisation `Offer freshness`. Les chiffres d'offres actives par enseigne ne sont pas modifiés par ce changement de supervision.
