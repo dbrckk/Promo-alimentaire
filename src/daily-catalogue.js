@@ -61,17 +61,21 @@ function pickSaving(offer,quantity){
   return null;
 }
 function pickRate(offer,quantity){
-  if(offer.promoFormula){
-    return effectiveRetailerPromoPercent(offer);
+  if(offer.promoFormula) return effectiveRetailerPromoPercent(offer);
+  // A fixed refund of 1 € on TWO 2 € products is 25% of the lot,
+  // not 50% of the individual shelf price.
+  if(Number.isFinite(offer.savingAmount)){
+    const price=offer.basePrice;
+    if(!Number.isFinite(price) || price<=0) return null;
+    const saving=pickSaving(offer,quantity);
+    return Number.isFinite(saving)
+      ? Math.round(saving/(price*quantity)*10000)/100 : null;
   }
   const rate=effectiveOfferPercent(offer,quantity);
   if(Number.isFinite(rate)) return rate;
-  // Fixed ODR: a percentage can only be inferred with an observed
-  // reference price. Otherwise preserve "unknown".
-  if(!Array.isArray(offer.quantityTiers) || !offer.quantityTiers.length){
-    return effectivePercent(offer);
-  }
-  return null;
+  // A quantity tier with no rate for the chosen quantity is not eligible.
+  if(Array.isArray(offer.quantityTiers) && offer.quantityTiers.length) return null;
+  return effectivePercent(offer);
 }
 function normalizePick(offer){
   const quantity=requiredQuantity(offer);
