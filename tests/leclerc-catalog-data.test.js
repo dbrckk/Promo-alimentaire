@@ -72,6 +72,11 @@ test("huit nouveaux produits alimentaires gardent le prix réel, le lot et le li
     assert.equal(offer.verifiedAt,"2026-10-12");
     assert.equal(offer.expiresAt,"2026-10-17");
     assert.match(offer.sourceUrl,/^https:\/\/nos-catalogues-promos-v2\.e\.leclerc\/catalog\/26G133G\//);
+    if(id==="26G133G-nissin-demae-ramen-68-second"){
+      assert.equal(offer.sourceUrl,
+        "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1457",
+        "Le prospectus Nissin doit pointer vers sa propre page produit publique");
+    }
     assert.equal(offer.autoStack,false);
     assert.equal(offer.requiresStoreVerification,true);
     assert.equal(offer.eanResolutionBlocked,true);
