@@ -500,10 +500,16 @@ function renderDailyCatalogue(){
       ? money.format(item.savingAmount)+" d'économie potentielle"+
         (item.minQuantity>1?" pour le lot":"") : "Économie en euros inconnue";
     const rate=hasPercent?formatPercent(item.savingPercent):"Taux inconnu";
+    const upperLimit=Number.isInteger(item.higherTierMaxQuantity)
+      ? item.higherTierMaxQuantity : null;
+    const upperQty=upperLimit===item.higherTierMinQuantity
+      ? "pour exactement "+item.higherTierMinQuantity+" articles éligibles"
+      : upperLimit!==null
+        ? "pour "+item.higherTierMinQuantity+" à "+upperLimit+" articles éligibles"
+        : "à partir de "+item.higherTierMinQuantity+" articles éligibles";
     const higherTier=Number.isFinite(item.higherTierPercent)
       && Number.isInteger(item.higherTierMinQuantity)
-      ? "Jusqu'à "+formatPercent(item.higherTierPercent)+
-        " seulement dès "+item.higherTierMinQuantity+" articles éligibles."
+      ? "Jusqu'à "+formatPercent(item.higherTierPercent)+" "+upperQty+"."
       : null;
     const exact=item.hasExactEan
       ? "EAN documenté (disponibilité locale non confirmée)"
