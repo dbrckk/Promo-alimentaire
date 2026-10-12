@@ -689,3 +689,7 @@ Si ces trois nombres manquent ou sont incohérents avec le snapshot enregistré,
 ### Échéances des fichiers d'offres : même calendrier que les achats en France (12 octobre 2026)
 
 La date « révision » et l'alerte « à revoir bientôt » dans **État des données importées** sont désormais calculées sur les seules offres actives, avec la fin de journée **Europe/Paris** pour les dates sans heure, et le jour civil français pour les échéances avec heure précise. Le nombre de jours restants correspond aux jours de calendrier français, notamment pendant les changements d'heure. Cette correction d'affichage ne renouvelle aucune campagne, ne modifie pas les montants et ne présente aucune promotion Carrefour non reconfirmée comme une économie.
+
+### Précision alimentaire des coupons Coupon Network (12 octobre 2026)
+
+La récupération publique des coupons ne fournit pas de rayon fiable : le snapshot utilise souvent `autre` comme catégorie. L'application attribue désormais le rayon **alimentaire** aux produits identifiables par un vocabulaire précis ; les indices explicites d'entretien, de soin, d'animalerie ou de boissons alcoolisées sont traités en premier et restent soumis à la règle **autres domaines : au moins 50 %**. Les coupons à montant fixe, sans prix d'achat vérifié, ne deviennent pas des réductions de 50 % par hypothèse. Les fiches ambiguës gardent `autre`, sans EAN inventé ni preuve d'éligibilité supplémentaire. Cette classification locale ne modifie aucune offre ni sa date et reste vérifiée dans le parcours navigateur Android.
