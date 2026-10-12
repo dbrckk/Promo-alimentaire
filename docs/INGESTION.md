@@ -118,3 +118,16 @@ Les appels externes et conditions propres à chaque service ne sont **pas vérif
 ## Historique Open Prices : jours calendaires français
 
 Dans `src/product-history.js`, la validation des dates utilise `parsePriceEvidenceDate` partagé avec `src/open-data.js`. Une date de ticket `YYYY-MM-DD` correspond au **minuit de ce jour en Europe/Paris**, pas au minuit UTC. L'historique accepte donc correctement une observation du jour entre 00 h 00 et 01/02 h 00 en France, indépendamment du passage heure d'été/hiver. `productPriceTrend` regroupe les observations du même jour civil et d'un même magasin identifié avant de calculer une baisse ; `detectPriceDrops` applique le seuil de fraîcheur sur le même instant validé. Les jours impossibles et les timestamps invalides ne deviennent pas des observations locales utilisables.
+
+
+## Archives historiques explicites dans la supervision quotidienne (12 octobre 2026)
+
+Le manifeste `data/import/index.json` peut désormais déclarer `archivedOnly`, un objet associant des noms de fichiers d'import **déjà déclarés** à une justification rédigée (1–240 caractères). Le validateur refuse les exceptions hors manifeste, les justifications vides et les types invalides. Cette métadonnée sert uniquement à la **supervision** : elle ne réactive aucune fiche, ne modifie pas une échéance et ne crée aucune réduction.
+
+La commande `npm run check:freshness -- --strict` distingue :
+- `archived` : **aucune offre active** dans une archive volontairement conservée, et un avertissement reste affiché, sans bloquer la surveillance des autres fournisseurs ;
+- `stale` : absence inattendue d'offres dans un fichier normal, **erreur bloquante** en mode strict ;
+- `archive-active` : un fichier marqué historique contient de nouvelles offres actives ; retrait explicite de l'exception requis, **erreur bloquante** en mode strict ;
+- `missing-or-invalid` / `invalid` : un fichier absent ou illisible reste **bloquant**, y compris s'il est déclaré historique.
+
+Actuellement, seul `carrefour-promotions-auto.json` est archivé explicitement : ses **11 campagnes périmées** subsistent pour audit, sans promotion Carrefour reconfirmée. Le dernier échec du contrôle strict du 12 octobre venait uniquement de ces campagnes anciennes. Les sources Coupon Network, Shopmium et Leclerc continuent à être contrôlées normalement. Le suivi doit toujours retrouver une source Carrefour exploitable ; une archive n'en remplace pas une.

@@ -8,5 +8,8 @@
     "coupon-network-auto.json",
     "payment-discounts-auto.json",
     "shopmium-auto.json"
-  ]
+  ],
+  "archivedOnly": {
+    "carrefour-promotions-auto.json": "11 campagnes Carrefour expirées conservées pour audit ; la lecture automatisée de nouvelles promotions officielles n'est pas disponible."
+  }
 }

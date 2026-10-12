@@ -31,6 +31,7 @@ for(const file of ["source-sync-status.json","source-sync-carrefour.json","sourc
 }
 
 let staleFiles=0;
+let archivedFiles=0;
 let activeTotal=0;
 let affectedTotal=0;
 let warningFiles=0;
@@ -73,8 +74,17 @@ for(const file of files){
   const {nextDeadline,daysUntil}=sourceDeadlineSummary(active,now);
 
   let status="ok";
-  if(active.length===0){
+  const archivalReason=checkedManifest.archivedOnly[file] || null;
+  if(active.length===0 && archivalReason){
+    status="archived";
+    archivedFiles+=1;
+  }else if(active.length===0){
     status="stale";
+    staleFiles+=1;
+  }else if(archivalReason){
+    // A formerly historical-only file regained active campaigns. Its explicit
+    // archive exception must be removed before the strict report can pass.
+    status="archive-active";
     staleFiles+=1;
   }else if(refreshImpact.affectedCount>0){
     status="sync-warning";
@@ -89,6 +99,7 @@ for(const file of files){
     active:active.length,
     affected:refreshImpact.affectedCount,
     total:validation.normalized.length,
+    archivalReason,
     nextDeadline,
     daysUntil,
     syncWarning:syncWarning ? {
@@ -105,13 +116,16 @@ for(const item of report){
   const sourceNote=item.syncWarning
     ? " · synchro "+item.syncWarning.status+": "+item.syncWarning.reason
     : "";
+  const archiveNote=item.archivalReason
+    ? " · exception historique documentée : "+item.archivalReason
+    : "";
   const affectedNote=item.affected>0
     ? " · "+item.affected+" offre(s) sous alerte de synchronisation"
     : "";
-  console.log(`[freshness] ${item.file}: ${item.status} · ${item.active}/${item.total} actives${affectedNote}${deadline}${error}${sourceNote}`);
-  const severity=["stale","missing-or-invalid","invalid"].includes(item.status)
+  console.log(`[freshness] ${item.file}: ${item.status} · ${item.active}/${item.total} actives${affectedNote}${deadline}${error}${sourceNote}${archiveNote}`);
+  const severity=["stale","missing-or-invalid","invalid","archive-active"].includes(item.status)
     ? strict ? "error" : "warning"
-    : ["review-soon","sync-warning"].includes(item.status) ? "warning" : null;
+    : ["review-soon","sync-warning","archived"].includes(item.status) ? "warning" : null;
   if(severity){
     const context=item.syncWarning ? " ; source "+item.syncWarning.status+" : "+item.syncWarning.reason : "";
     const message=("Offres actives "+item.active+"/"+item.total
@@ -120,7 +134,7 @@ for(const item of report){
     console.log(`::${severity} file=data/import/${item.file},title=Fraîcheur ${item.status}::${message}`);
   }
 }
-console.log(`[freshness] Manifeste: ${files.length} fichier(s) · ${activeTotal} offres actives · ${affectedTotal} sous alerte de synchronisation · ${staleFiles} fichier(s) périmé(s)/invalide(s) · ${warningFiles} fichier(s) dont la synchronisation a échoué`);
+console.log(`[freshness] Manifeste: ${files.length} fichier(s) · ${activeTotal} offres actives · ${affectedTotal} sous alerte de synchronisation · ${staleFiles} fichier(s) périmé(s)/invalide(s) · ${archivedFiles} fichier(s) en archive historique explicite · ${warningFiles} fichier(s) dont la synchronisation a échoué`);
 
 if(process.env.GITHUB_STEP_SUMMARY){
   const clean=(value)=>String(value??"").replace(/[|\r\n]/g," ").slice(0,220);
@@ -142,7 +156,8 @@ if(process.env.GITHUB_STEP_SUMMARY){
     "",
     "**Total : "+activeTotal+" offres actives dont "+affectedTotal+
       " sous alerte de synchronisation ; "+staleFiles+
-      " fichier(s) sans offre utilisable ou invalide(s) ; "+warningFiles+
+      " fichier(s) sans offre utilisable hors archives ou invalide(s) ; "+archivedFiles+
+      " archive(s) historiques documentée(s) ; "+warningFiles+
       " fichier(s) actif(s) en échec de synchronisation.**",
     strict && staleFiles>0
       ? "Contrôle strict en échec : restaurer une source vérifiable, sans réactiver les anciennes offres."

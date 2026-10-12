@@ -865,6 +865,24 @@ try{
       assert.equal(await manualLink.first().getAttribute("target"),"_blank");
     }
   }
+  // The published manifest must explicitly label archived-only Carrefour
+  // snapshots. They remain visible to users, but no old campaign is revived
+  // by accepting a monitor exception.
+  const archiveManifest=await page.evaluate(async()=>{
+    const data=await fetch("./data/import/index.json",{cache:"no-store"})
+      .then((response)=>response.json());
+    const {inspectImportManifest}=await import("./src/import-manifest.js");
+    const validation=inspectImportManifest(data);
+    return {
+      safe:validation.ok,
+      explicit:Object.hasOwn(validation.archivedOnly,"carrefour-promotions-auto.json"),
+      fileLoaded:validation.files.includes("carrefour-promotions-auto.json"),
+      arbitraryActiveExempt:!!validation.archivedOnly["shopmium-auto.json"]
+    };
+  });
+  assert.deepEqual(archiveManifest,{
+    safe:true,explicit:true,fileLoaded:true,arbitraryActiveExempt:false
+  });
   // When Carrefour product snapshots are exhausted, the user can still
   // discover the merchant's published food campaigns on the phone without
   // making them automatically stackable priced product records.
