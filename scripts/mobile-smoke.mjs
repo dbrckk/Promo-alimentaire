@@ -1318,6 +1318,8 @@ try{
     "Des offres du catalogue Leclerc encore valables doivent apparaître");
   assert.ok(await page.locator("#dailyHighlights .daily-offer").count()>0,
     "Les meilleures opportunités actives doivent apparaître en haut");
+  assert.ok(await page.locator("#dailyHighlights .daily-offer").count()<=3,
+    "Les recommandations prioritaires restent volontairement limitées à trois");
   await page.locator("#dailyMaxSpend").selectOption("3");
   assert.match(await page.locator("#dailyStatus").innerText(),/budget initial de 3,00/);
   const filteredTitles=await page.locator("#dailyRetailer").innerText();
