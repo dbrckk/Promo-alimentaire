@@ -264,7 +264,7 @@
     "verifiedAt": "2026-10-12",
     "startsAt": "2026-10-06",
     "expiresAt": "2026-10-17",
-    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1457",
     "scope": "produit",
     "mechanism": "retailer_promo",
     "autoStack": false,
@@ -289,7 +289,7 @@
       "cycle": 2,
       "percent": 68
     },
-    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, 1er ramen 0,99 € ; 2e 0,32 € ; prix et disponibilité locaux à confirmer.",
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, page officielle 1457 (nouilles Nissin Demae Ramen) : premier ramen 0,99 € ; deuxième 0,32 € ; prix et disponibilité locaux à confirmer.",
     "productMatch": {
       "brands": [
         "Nissin"
