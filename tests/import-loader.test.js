@@ -687,6 +687,7 @@ test("campagnes du jour : échéance Paris, URL officielle, future proof et 50 %
     {...eligible,id:"fake",sourceUrl:"https://www.carrefour.fr.evil.example/offers"},
     {...eligible,id:"javascript",sourceUrl:"javascript:alert(1)"},
     {...eligible,id:"nonfood-49",category:"non-alimentaire",advertisedMaxPercent:49},
+    {...eligible,id:"nonfood-60-only-advertised",category:"non-alimentaire",advertisedMaxPercent:60},
     {...eligible,id:"bad-date",expiresAt:"2026-02-30"}
   ];
   const before=selectDailyCatalogue({offers:[],campaigns:[eligible,...invalid],
@@ -701,7 +702,7 @@ test("promo sur le 2e : taux effectif et coût d'un lot, sans attribuer la remis
     id:"deal-two",providerId:"leclerc",title:"Réduction second article",
     stores:["leclerc"],channels:["store"],scope:"produit",
     verifiedAt:"2026-10-12",reviewAfter:"2026-10-15",
-    basePrice:4,promoFormula:{type:"nth_percent",nth:2,percent:60},
+    basePrice:4,savingPercent:60,promoFormula:{type:"nth_percent",nth:2,percent:60},
     sourceUrl:"https://www.e.leclerc/"}],now:new Date("2026-10-12T12:00:00Z"),
     store:"leclerc",channel:"store"});
   assert.equal(result.retailer[0].minQuantity,2);
