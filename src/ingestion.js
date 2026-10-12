@@ -191,7 +191,7 @@ function couponNetworkCategory(value,providerId){
   // shampooing "au lait" or a detergent "au citron" is not a grocery deal.
   const nonFood=/\b(?:lessives?|adoucissants?|assouplissants?|nettoyants?|detergents?|liquides? vaisselle|lave[- ]vaisselle|absorbeurs?|anti[- ]humidite|shampooings?|shampoings?|apres[- ]shampooings?|dentifrices?|deodorants?|antitranspirants?|anti[- ]transpirants?|gels? douche|savons?|lingettes?|couches?|papiers? toilettes?|blocs? wc|sous[- ]vetements? absorbants?|croquettes?|litieres?|friandises? pour (?:chat|chien)s?|filtres? a eau|maquillage|soins? capillaires?|gamme gliss)\b/;
   if(nonFood.test(source)
-    || /\b(?:renova\s*[-–—]\s*toucher magique|bic\s*[-–—]\s*vibbies)\b/.test(source)){
+    || /\b(?:renova\s*[-–—]\s*toucher magique|bic\s*[-–—]\s*vibbies|schwarzkopf gliss)\b/.test(source)){
     return "non-alimentaire";
   }
 
