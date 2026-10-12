@@ -249,5 +249,400 @@
     "multiReference": true,
     "eanResolutionBlocked": true,
     "eanResolutionReason": "Le libellé Espresso Concentrate ne précise pas la variante ; Classic, Caramel et Vanille ont des GTIN distincts."
+  },
+  {
+    "providerId": "leclerc",
+    "provider": "E.Leclerc",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "verifiedAt": "2026-10-12",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "À vérifier en magasin : référence, montant, quantité éligible et cumul non confirmés.",
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue prospectus sans GTIN officiel unique vérifié : variantes possibles, EAN non attribué.",
+    "externalId": "26G133G-nissin-demae-ramen-68-second",
+    "title": "−68 % sur le 2e · nouilles Demae Ramen Nissin",
+    "savingPercent": 34,
+    "basePrice": 0.99,
+    "minPurchaseQty": 2,
+    "promoFormula": {
+      "type": "nth_percent",
+      "nth": 2,
+      "cycle": 2,
+      "percent": 68
+    },
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, 1er ramen 0,99 € ; 2e 0,32 € ; prix et disponibilité locaux à confirmer.",
+    "productMatch": {
+      "brands": [
+        "Nissin"
+      ],
+      "all": [
+        "demae",
+        "ramen"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "provider": "E.Leclerc",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "verifiedAt": "2026-10-12",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "À vérifier en magasin : référence, montant, quantité éligible et cumul non confirmés.",
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue prospectus sans GTIN officiel unique vérifié : variantes possibles, EAN non attribué.",
+    "externalId": "26G133G-cote-table-cassoulet-40-second",
+    "title": "−40 % sur le 2e · cassoulet Côté Table",
+    "savingPercent": 20,
+    "basePrice": 1.15,
+    "minPurchaseQty": 2,
+    "promoFormula": {
+      "type": "nth_percent",
+      "nth": 2,
+      "cycle": 2,
+      "percent": 40
+    },
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, 1er cassoulet 1,15 € ; 2e 0,69 € ; prix et disponibilité locaux à confirmer.",
+    "productMatch": {
+      "brands": [
+        "Côté Table"
+      ],
+      "all": [
+        "cassoulet"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "provider": "E.Leclerc",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "verifiedAt": "2026-10-12",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "À vérifier en magasin : référence, montant, quantité éligible et cumul non confirmés.",
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue prospectus sans GTIN officiel unique vérifié : variantes possibles, EAN non attribué.",
+    "externalId": "26G133G-petit-navire-effiloches-thon-2plus1",
+    "title": "2+1 offert · effilochés de thon Petit Navire",
+    "basePrice": 2.5,
+    "savingPercent": 33.33,
+    "minPurchaseQty": 3,
+    "promoFormula": {
+      "type": "buy_x_get_y_free",
+      "buy": 2,
+      "free": 1
+    },
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026 : 2+1 offert sur Effilochés de thon Et Hop ! Petit Navire, unité annoncée à 2,50 €. Lot de trois références admissibles, disponibilité magasin et éventuelles exclusions à confirmer.",
+    "productMatch": {
+      "brands": [
+        "Petit Navire"
+      ],
+      "all": [
+        "effilochés",
+        "thon"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "provider": "E.Leclerc",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "verifiedAt": "2026-10-12",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "À vérifier en magasin : référence, montant, quantité éligible et cumul non confirmés.",
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue prospectus sans GTIN officiel unique vérifié : variantes possibles, EAN non attribué.",
+    "externalId": "26G133G-tramier-olives-noires-68-second",
+    "title": "−68 % sur le 2e · olives noires Tramier",
+    "savingPercent": 34,
+    "basePrice": 3.05,
+    "minPurchaseQty": 2,
+    "promoFormula": {
+      "type": "nth_percent",
+      "nth": 2,
+      "cycle": 2,
+      "percent": 68
+    },
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, 1er bocal 3,05 € ; 2e 0,98 € ; prix et disponibilité locaux à confirmer.",
+    "productMatch": {
+      "brands": [
+        "Tramier"
+      ],
+      "all": [
+        "olives",
+        "noires"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "provider": "E.Leclerc",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "verifiedAt": "2026-10-12",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "À vérifier en magasin : référence, montant, quantité éligible et cumul non confirmés.",
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue prospectus sans GTIN officiel unique vérifié : variantes possibles, EAN non attribué.",
+    "externalId": "26G133G-menguys-melange-68-second",
+    "title": "−68 % sur le 2e · mélange apéritif Menguy's",
+    "savingPercent": 34,
+    "basePrice": 2.14,
+    "minPurchaseQty": 2,
+    "promoFormula": {
+      "type": "nth_percent",
+      "nth": 2,
+      "cycle": 2,
+      "percent": 68
+    },
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, 1er produit 2,14 € ; 2e 0,68 € ; prix et disponibilité locaux à confirmer.",
+    "productMatch": {
+      "brands": [
+        "Menguy's"
+      ],
+      "all": [
+        "mélange"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "provider": "E.Leclerc",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "verifiedAt": "2026-10-12",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "À vérifier en magasin : référence, montant, quantité éligible et cumul non confirmés.",
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue prospectus sans GTIN officiel unique vérifié : variantes possibles, EAN non attribué.",
+    "externalId": "26G133G-lor-espresso-capri-68-second",
+    "title": "−68 % sur le 2e · capsules L'OR Espresso Capri",
+    "savingPercent": 34,
+    "basePrice": 3.39,
+    "minPurchaseQty": 2,
+    "promoFormula": {
+      "type": "nth_percent",
+      "nth": 2,
+      "cycle": 2,
+      "percent": 68
+    },
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, 1ère boîte 3,39 € ; 2e 1,08 € ; prix et disponibilité locaux à confirmer.",
+    "productMatch": {
+      "brands": [
+        "L'OR Espresso"
+      ],
+      "all": [
+        "capsules",
+        "capri"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "provider": "E.Leclerc",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "verifiedAt": "2026-10-12",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "À vérifier en magasin : référence, montant, quantité éligible et cumul non confirmés.",
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue prospectus sans GTIN officiel unique vérifié : variantes possibles, EAN non attribué.",
+    "externalId": "26G133G-maille-vinaigre-balsamique-modene-30",
+    "title": "−30 % · vinaigre balsamique de Modène IGP Maille",
+    "savingPercent": 30,
+    "basePrice": 4.79,
+    "sourceRegularPrice": 4.79,
+    "sourcePromoPrice": 3.35,
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, prix barré 4,79 €, prix publicitaire 3,35 € ; références et prix locaux à confirmer.",
+    "productMatch": {
+      "brands": [
+        "Maille"
+      ],
+      "all": [
+        "vinaigre",
+        "balsamique"
+      ],
+      "minScore": 65
+    }
+  },
+  {
+    "providerId": "leclerc",
+    "provider": "E.Leclerc",
+    "type": "promotion enseigne",
+    "category": "épicerie",
+    "stores": [
+      "leclerc"
+    ],
+    "channels": [
+      "store"
+    ],
+    "verifiedAt": "2026-10-12",
+    "startsAt": "2026-10-06",
+    "expiresAt": "2026-10-17",
+    "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    "scope": "produit",
+    "mechanism": "retailer_promo",
+    "autoStack": false,
+    "autoStackWhenEligible": false,
+    "requiresStoreVerification": true,
+    "stackGroup": "retailer-promo",
+    "stackOrder": 10,
+    "savingBasis": "base",
+    "stackingConfidence": "low",
+    "stacking": "À vérifier en magasin : référence, montant, quantité éligible et cumul non confirmés.",
+    "multiReference": true,
+    "eanResolutionBlocked": true,
+    "eanResolutionReason": "Catalogue prospectus sans GTIN officiel unique vérifié : variantes possibles, EAN non attribué.",
+    "externalId": "26G133G-belle-chaurienne-plat-cuisine-34",
+    "title": "−34 % · plat cuisiné La Belle Chaurienne",
+    "savingPercent": 34,
+    "basePrice": 11.49,
+    "sourceRegularPrice": 11.49,
+    "sourcePromoPrice": 7.58,
+    "conditions": "Catalogue public E.Leclerc 6–17 octobre 2026, prix barré 11,49 €, prix publicitaire 7,58 € ; références et prix locaux à confirmer.",
+    "productMatch": {
+      "brands": [
+        "La Belle Chaurienne"
+      ],
+      "all": [
+        "plat",
+        "cuisiné"
+      ],
+      "minScore": 65
+    }
   }
 ]
