@@ -1,3 +1,4 @@
+import {confirmPublicDailyCampaign} from "../scripts/daily-campaign-evidence.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
@@ -708,4 +709,90 @@ test("promo sur le 2e : taux effectif et coût d'un lot, sans attribuer la remis
   assert.equal(result.retailer[0].minQuantity,2);
   assert.equal(result.retailer[0].savingPercent,30);
   assert.equal(result.retailer[0].savingAmount,2.4);
+});
+
+test("catalogue quotidien : vraies meilleures économies et budget payé avant remboursement",()=>{
+  const at=new Date("2026-10-12T12:00:00Z");
+  const source=(id,basePrice,savingPercent,extra={})=>({
+    id,providerId:"leclerc",provider:"E.Leclerc",title:id,
+    category:"épicerie",scope:"produit",stores:["leclerc"],
+    channels:["store"],sourceUrl:"https://www.e.leclerc/",
+    verifiedAt:"2026-10-12",reviewAfter:"2026-10-16",
+    expiresAt:"2026-10-20",basePrice,savingPercent,...extra
+  });
+  const offers=[
+    source("less-cheap",2,10),
+    source("big-saver",6,50),
+    source("multi",1.8,45,{minPurchaseQty:2}),
+    source("unknown-cost",null,80),
+    source("expired",5,99,{expiresAt:"2026-10-11"})
+  ];
+  const standard=selectDailyCatalogue({offers,store:"leclerc",
+    channel:"store",now:at});
+  assert.deepEqual(standard.highlights.map(x=>x.id),
+    ["unknown-cost","big-saver","multi"]);
+  assert.equal(standard.retailer.find(x=>x.id==="unknown-cost").upfrontCost,null);
+  const multi=standard.retailer.find(x=>x.id==="multi");
+  assert.equal(multi.minQuantity,2);
+  assert.equal(multi.upfrontCost,3.6);
+  assert.equal(multi.savingAmount,1.62);
+  assert.equal(standard.retailer.find(x=>x.id==="big-saver").savingAmount,3);
+  const euros=selectDailyCatalogue({offers,store:"leclerc",
+    channel:"store",now:at,sort:"euros"});
+  assert.deepEqual(euros.highlights.map(x=>x.id),
+    ["big-saver","multi","less-cheap"],
+    "Un rabais en euros connu précède une annonce en % sans prix");
+  const cheap=selectDailyCatalogue({offers,store:"leclerc",
+    channel:"store",now:at,sort:"budget"});
+  assert.deepEqual(cheap.retailer.map(x=>x.id),
+    ["less-cheap","multi","big-saver","unknown-cost"]);
+  const constrained=selectDailyCatalogue({offers,store:"leclerc",
+    channel:"store",now:at,maxSpend:3,sort:"percent",campaigns:[{
+      id:"official",store:"leclerc",channels:["store"],
+      title:"Publicité sans prix",claim:"Catalogue du jour",
+      verifiedAt:"2026-10-12",expiresAt:"2026-10-17",
+      sourceUrl:"https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637",
+      category:"alimentaire",advertisedMaxPercent:99
+    }]});
+  assert.deepEqual(constrained.retailer.map(x=>x.id),["less-cheap"]);
+  assert.deepEqual(constrained.highlights.map(x=>x.id),["less-cheap"]);
+  assert.equal(constrained.campaigns.length,1);
+  assert.equal(constrained.highlights.some(x=>x.id==="official"),false,
+    "Ne jamais classer une publicité non chiffrée comme gain réel");
+});
+
+test("sources du catalogue du jour : une vraie campagne prouvée, jamais une page générique",()=>{
+  const campaign={id:"carrefour-bio-2eme-20261019",store:"carrefour",
+    channels:["store","drive"],title:"Bio & bien plus",
+    verifiedAt:"2026-10-12",startsAt:"2026-10-12",
+    expiresAt:"2026-10-19",
+    sourceUrl:"https://www.carrefour.fr/offres-du-moment"};
+  const evidence='<html><body><article><img alt="Jusqu\'à -60% sur le 2eme sur le Bio">'+
+    '<h2>Bio & bien plus</h2><p>Jusqu\'au 19 octobre 2026</p></article>'+
+    '<p>'+("Offres du quotidien ".repeat(8))+'</p></body></html>';
+  const today=new Date("2026-10-13T12:00:00Z");
+  assert.equal(confirmPublicDailyCampaign(evidence,campaign,today),true);
+  assert.equal(confirmPublicDailyCampaign(evidence,
+    {...campaign,expiresAt:"2026-10-21"},today),false);
+  assert.equal(confirmPublicDailyCampaign(evidence,
+    {...campaign,sourceUrl:"https://www.carrefour.fr.evil.example/"},today),false);
+  assert.equal(confirmPublicDailyCampaign(evidence,campaign,
+    new Date("2026-10-20T12:00:00Z")),false);
+  assert.equal(confirmPublicDailyCampaign(
+    "<script>"+evidence+"</script>",campaign,today),false,
+    "Les données internes masquées du site ne remplacent pas une annonce publique");
+  const farApart="<html><body><p>Jusqu'à -60% sur le 2e</p>"+
+    ("Autres promotions diverses ".repeat(55))+
+    "<h2>Bio & bien plus</h2><p>Jusqu'au 19 octobre 2026</p></body></html>";
+  assert.equal(confirmPublicDailyCampaign(farApart,campaign,today),false,
+    "Le taux d'un autre prospectus ne confirme pas celui du Bio");
+  const leclerc={id:"leclerc-quotidien-20261017",store:"leclerc",
+    sourceUrl:"https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637",
+    verifiedAt:"2026-10-12",startsAt:"2026-10-06",
+    expiresAt:"2026-10-17"};
+  const leclercHtml="<html>Votre catalogue digital ! CATALOGUE: Nos promos du moment "+
+    "Du 06/10/2026 au 17/10/2026. Rayons alimentaires et promotions en vigueur</html>";
+  assert.equal(confirmPublicDailyCampaign(leclercHtml,leclerc,today),true);
+  assert.equal(confirmPublicDailyCampaign(
+    leclercHtml.replace("17/10/2026","18/10/2026"),leclerc,today),false);
 });

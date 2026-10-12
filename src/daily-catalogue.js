@@ -102,6 +102,10 @@ function normalizePick(offer){
     savingAmount:pickSaving(offer,quantity),
     savingPercent:minimumRate,
     basePrice:Number.isFinite(offer.basePrice)?offer.basePrice:null,
+    // The upfront expense is the documented reference price times the
+    // minimum eligible quantity, NOT the expected cashback/net payment.
+    upfrontCost:Number.isFinite(offer.basePrice) && offer.basePrice>0
+      ? Math.round(offer.basePrice*quantity*100)/100 : null,
     minQuantity:quantity,
     higherTierPercent:Number.isFinite(maxAdvertisedRate)
       && (!Number.isFinite(minimumRate) || maxAdvertisedRate>minimumRate)
@@ -116,39 +120,66 @@ function normalizePick(offer){
     needsActivation:offer.providerId!=="carrefour" && offer.providerId!=="leclerc"
   };
 }
-function orderOffers(a,b){
-  const aEan=a.hasExactEan?1:0,bEan=b.hasExactEan?1:0;
-  if(aEan!==bEan) return bEan-aEan;
-  const aRate=Number.isFinite(a.savingPercent)?a.savingPercent:-1;
-  const bRate=Number.isFinite(b.savingPercent)?b.savingPercent:-1;
-  if(aRate!==bRate) return bRate-aRate;
-  const aAmount=Number.isFinite(a.savingAmount)?a.savingAmount:-1;
-  const bAmount=Number.isFinite(b.savingAmount)?b.savingAmount:-1;
-  if(aAmount!==bAmount) return bAmount-aAmount;
+function orderOffers(a,b,sort="percent"){
+  const number=(value)=>Number.isFinite(value)?value:-1;
+  const rate=number(b.savingPercent)-number(a.savingPercent);
+  const saving=number(b.savingAmount)-number(a.savingAmount);
+  const price=number(a.upfrontCost)-number(b.upfrontCost);
+  if(sort==="euros" && saving) return saving;
+  if(sort==="budget"){
+    if(Number.isFinite(a.upfrontCost)!==Number.isFinite(b.upfrontCost))
+      return Number.isFinite(a.upfrontCost)?-1:1;
+    if(Number.isFinite(a.upfrontCost) && Number.isFinite(b.upfrontCost) && price)
+      return price;
+  }
+  if(rate) return rate;
+  if(saving) return saving;
+  if(a.hasExactEan!==b.hasExactEan) return a.hasExactEan ? -1 : 1;
   return String(a.title).localeCompare(String(b.title),"fr");
 }
 
+// No item can be declared affordable without a reference price for the
+// exact minimum quantity; coupons requiring upfront payment count in full.
+function affordable(item,maxSpend){
+  return maxSpend===null || (Number.isFinite(item.upfrontCost)
+    && item.upfrontCost<=maxSpend);
+}
+
 export function selectDailyCatalogue({
-  offers=[],campaigns=[],store="carrefour",channel="store",now=new Date(),limit=8
+  offers=[],campaigns=[],store="carrefour",channel="store",now=new Date(),
+  limit=8,sort="percent",maxSpend=null
 }={}){
   const current=new Date(now);
   const today=parisCivilDay(current);
+  const safeLimit=Number.isInteger(limit)?Math.max(1,Math.min(limit,30)):8;
+  const ranking=["percent","euros","budget"].includes(sort)?sort:"percent";
+  const budget=Number.isFinite(maxSpend) && maxSpend>0
+    ? Math.round(maxSpend*100)/100 : null;
   const eligible=filterOffers(
     filterActiveOffers(offers,current).filter((offer)=>!offer.sourceSyncWarning
       && isOfferWithinShoppingScope(offer) && offer.scope==="produit"),
     {store,channel,search:""}
   );
-  const filtered=eligible.map(normalizePick);
-  const retailer=filtered.filter((item)=>item.providerId===store)
-    .sort(orderOffers).slice(0,limit);
-  const extra=filtered.filter((item)=>item.providerId!==store)
-    .sort(orderOffers).slice(0,limit);
+  const picks=eligible.map(normalizePick).filter((item)=>affordable(item,budget));
+  const retailer=picks.filter((item)=>item.providerId===store)
+    .sort((a,b)=>orderOffers(a,b,ranking)).slice(0,safeLimit);
+  const extra=picks.filter((item)=>item.providerId!==store)
+    .sort((a,b)=>orderOffers(a,b,ranking)).slice(0,safeLimit);
+  // Highlights are genuine dated product candidates only, deduplicated,
+  // not speculative campaign maxima or inferred basket stacking savings.
+  const highlights=[...picks]
+    .filter((item)=>(Number.isFinite(item.savingPercent)
+        && item.savingPercent>0)
+      || (Number.isFinite(item.savingAmount) && item.savingAmount>0))
+    .sort((a,b)=>orderOffers(a,b,ranking)).slice(0,3);
   const seen=new Set();
   const discovery=(Array.isArray(campaigns)?campaigns:[])
     .map((raw)=>safeCampaign(raw,today,store,channel)).filter(Boolean)
     .filter((entry)=>!seen.has(entry.id) && Boolean(seen.add(entry.id)))
     .sort((a,b)=>(b.advertisedMaxPercent??-1)-(a.advertisedMaxPercent??-1))
-    .slice(0,limit);
-  return {today,store,channel,retailer,extra,campaigns:discovery,
+    .slice(0,safeLimit);
+  return {today,store,channel,retailer,extra,campaigns:discovery,highlights,
+    sort:ranking,maxSpend:budget,
+    affordableCandidates:picks.length,
     exactRetailerCount:retailer.filter((item)=>item.hasExactEan).length};
 }

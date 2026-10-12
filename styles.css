@@ -433,3 +433,9 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
   .daily-group>.grid{grid-template-columns:minmax(0,1fr)}
   .daily-offer{padding:14px}
 }
+
+/* Daily catalogue: thumb-friendly price and ranking controls. */
+.daily-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:13px 0}
+.daily-filters .field{min-width:0}
+.daily-filters select{width:100%;max-width:100%}
+@media(max-width:720px){.daily-filters{grid-template-columns:1fr}}

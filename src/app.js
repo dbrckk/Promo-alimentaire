@@ -74,6 +74,9 @@ const els = {
   search:document.querySelector("#search"),
   offers:document.querySelector("#offers"),
   dailyStatus:document.querySelector("#dailyStatus"),
+  dailyHighlights:document.querySelector("#dailyHighlights"),
+  dailySort:document.querySelector("#dailySort"),
+  dailyMaxSpend:document.querySelector("#dailyMaxSpend"),
   dailyRetailer:document.querySelector("#dailyRetailer"),
   dailyExtras:document.querySelector("#dailyExtras"),
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
@@ -152,6 +155,10 @@ const state = {
   loyaltyProfile:loadLoyaltyProfile(),
   storeConfirmations:loadStoreConfirmations(),
   sort:localStorage.getItem("promo-sort") || "percent",
+  dailySort:["percent","euros","budget"].includes(localStorage.getItem("promo-daily-sort"))
+    ? localStorage.getItem("promo-daily-sort") : "percent",
+  dailyMaxSpend:["all","3","5","10","20"].includes(localStorage.getItem("promo-daily-budget"))
+    ? localStorage.getItem("promo-daily-budget") : "all",
   savingsFocus:["all","at-least-50","full-refund"].includes(localStorage.getItem("promo-savings-focus"))
     ? localStorage.getItem("promo-savings-focus") : "all",
   sourceProof:["without-failure","all","failed"].includes(localStorage.getItem("promo-source-proof"))
@@ -201,6 +208,8 @@ els.channel.value=state.channel;
 els.carrefourLoyalty.value=state.loyaltyProfile.carrefour;
 els.leclercLoyalty.value=state.loyaltyProfile.leclerc;
 els.sort.value=state.sort;
+els.dailySort.value=state.dailySort;
+els.dailyMaxSpend.value=state.dailyMaxSpend;
 els.savingsFocus.value=state.savingsFocus;
 els.sourceProof.value=state.sourceProof;
 els.simulatedQuantity.value=state.simulatedQuantity;
@@ -246,6 +255,16 @@ els.sort.addEventListener("change",()=>{
   state.sort=els.sort.value;
   localStorage.setItem("promo-sort",state.sort);
   render();
+});
+els.dailySort.addEventListener("change",()=>{
+  state.dailySort=els.dailySort.value;
+  localStorage.setItem("promo-daily-sort",state.dailySort);
+  renderDailyCatalogue();
+});
+els.dailyMaxSpend.addEventListener("change",()=>{
+  state.dailyMaxSpend=els.dailyMaxSpend.value;
+  localStorage.setItem("promo-daily-budget",state.dailyMaxSpend);
+  renderDailyCatalogue();
 });
 els.search.addEventListener("input",()=>{
   state.search=els.search.value;
@@ -476,7 +495,9 @@ function renderDailyCatalogue(){
   const digest=selectDailyCatalogue({
     offers:resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile),
     campaigns:state.dailyCampaigns,store:state.store,
-    channel:state.channel,now:today,limit:8
+    channel:state.channel,now:today,limit:8,
+    sort:state.dailySort,
+    maxSpend:state.dailyMaxSpend==="all"?null:Number(state.dailyMaxSpend)
   });
   const source=state.store==="carrefour"
     ? state.channel==="store" ? "https://www.carrefour.fr/catalogue/carrefour"
@@ -484,18 +505,28 @@ function renderDailyCatalogue(){
     : state.channel==="store" ? "https://www.e.leclerc/prospectus"
       : "https://www.leclercdrive.fr/";
   els.dailyOfficialLink.href=source;
-  const count=digest.retailer.length+digest.extra.length;
+  const budgetDescription=digest.maxSpend===null?"sans plafond connu"
+    :"budget initial de "+money.format(digest.maxSpend)+" maximum par lot";
+  const sortDescription={
+    percent:"réduction effective sur la quantité minimale",
+    euros:"euros économisés sur la quantité minimale",
+    budget:"coût initial du lot"
+  }[digest.sort];
   els.dailyStatus.textContent="Sélection au "+formatDate(digest.today)+
     " · "+storeLabel(state.store)+" · "+
     (state.channel==="store"?"magasin":state.channel==="drive"?"Drive":"en ligne")+
     " · "+digest.retailer.length+" offre(s) enseigne, "+
     digest.extra.length+" remboursement(s)/coupon(s) et "+
-    digest.campaigns.length+" campagne(s) officielle(s). "+
+    digest.campaigns.length+" campagne(s) officielle(s). "+ 
+    "Classement : "+sortDescription+" ; "+budgetDescription+". "+
     "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat.";
   const renderPick=(item)=>{
     const hasPercent=Number.isFinite(item.savingPercent);
     const quantity=item.minQuantity>1
       ? "Pour "+item.minQuantity+" articles éligibles (minimum)" : "Sur l'article éligible";
+    const upfront=Number.isFinite(item.upfrontCost)
+      ? "Prix initial indicatif du lot : "+money.format(item.upfrontCost)+". "
+      : "Prix initial du lot non documenté. ";
     const price=Number.isFinite(item.savingAmount)
       ? money.format(item.savingAmount)+" d'économie potentielle"+
         (item.minQuantity>1?" pour le lot":"") : "Économie en euros inconnue";
@@ -522,6 +553,7 @@ function renderDailyCatalogue(){
         <div class="source">${escapeHtml(item.provider)}</div>
       </div><span class="badge">${rate}</span></div>
       <p><strong>${escapeHtml(price)}</strong></p>
+      <p class="help">${escapeHtml(upfront)}</p>
       <p class="help">${escapeHtml(quantity)} · ${escapeHtml(exact)}</p>
       ${higherTier ? `<p class="help">${escapeHtml(higherTier)}</p>` : ""}
       ${benefit ? `<p class="help">${escapeHtml(benefit)}</p>` : ""}
@@ -534,6 +566,11 @@ function renderDailyCatalogue(){
     </article>`;
   };
   const fallback=(title)=>`<p class="panel help">${escapeHtml(title)}</p>`;
+  els.dailyHighlights.innerHTML=digest.highlights.length
+    ?digest.highlights.map(renderPick).join("")
+    :fallback(digest.maxSpend===null
+      ?"Aucune économie chiffrée active sur un produit pour ce canal."
+      :"Aucune offre avec prix initial documenté dans le budget choisi. Augmentez le plafond pour voir les références éligibles.");
   els.dailyRetailer.innerHTML=digest.retailer.length
     ?digest.retailer.map(renderPick).join("")
     :fallback("Aucune promotion produit de cette enseigne n'a de preuve active exploitable pour ce canal. Consulte le catalogue officiel pour les offres locales.");
