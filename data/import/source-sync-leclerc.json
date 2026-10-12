@@ -1,11 +1,11 @@
 {
   "sources": {
     "leclerc": {
-      "status": "updated",
-      "checkedAt": "2026-10-12T15:34:56.417Z",
-      "reason": "Toutes les promotions encore dans leur période ont été reconfirmées (HTML=0, rendu public=2).",
-      "extractedCount": 2,
-      "previousSnapshotCount": 5
+      "status": "partial",
+      "checkedAt": "2026-10-12T20:00:26.711Z",
+      "reason": "Seulement 9/10 campagne(s) encore valides reconfirmée(s).",
+      "extractedCount": 9,
+      "previousSnapshotCount": 13
     }
   }
 }
