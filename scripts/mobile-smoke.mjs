@@ -344,6 +344,70 @@ try{
     impossibleExpiry:false,legitimateOffset:true,
     currentActive:true,futureActive:false,tamperedActive:false
   });
+  // End-to-end module integration inside Chrome Android: the same store
+  // confirmation must stop producing automatic savings at Paris midnight,
+  // including for legacy confirmations saved with the old UTC cutoff.
+  const localConfirmationCalendar=await page.evaluate(async()=>{
+    const {
+      createStoreConfirmation,applyLocalStoreConfirmations,isStoreConfirmationActive
+    }=await import("./src/local-verification.js");
+    const offer={
+      id:"calendar-proof",eans:["3017624010701"],
+      requiresStoreVerification:true,expiresAt:"2026-10-10",
+      autoStack:false
+    };
+    const location={store:"leclerc",locationKey:"id:123"};
+    const at=(text)=>new Date(text);
+    const confirmation=createStoreConfirmation(offer,{
+      ...location,confirmedAt:at("2026-10-10T21:30:00Z")
+    });
+    const checked=(now,proof=confirmation)=>
+      applyLocalStoreConfirmations([offer],[proof],{
+        ...location,now:at(now)
+      })[0];
+    const before=checked("2026-10-10T21:59:59.999Z");
+    const after=checked("2026-10-10T22:00:00Z");
+    const previousUtcSaved={
+      ...confirmation,validUntil:"2026-10-10T23:59:59.999Z"
+    };
+    let futureProofRejected=false;
+    try{
+      createStoreConfirmation({...offer,verifiedAt:"2026-10-11"},{
+        ...location,confirmedAt:at("2026-10-10T20:00:00Z")
+      });
+    }catch{futureProofRejected=true;}
+    const dayStartOffer={...offer,startsAt:"2026-10-10"};
+    const startOfParisDay=createStoreConfirmation(dayStartOffer,{
+      ...location,confirmedAt:at("2026-10-09T22:10:00Z")
+    });
+    const seasonalDeadlines=[
+      ["2026-03-29","2026-03-29T12:00:00Z"],
+      ["2026-10-25","2026-10-25T12:00:00Z"]
+    ].map(([date,confirmedAt])=>
+      createStoreConfirmation({...offer,expiresAt:date},{
+        ...location,confirmedAt:at(confirmedAt)
+      }).validUntil
+    );
+    return {
+      cutoff:confirmation.validUntil,
+      beforeVerified:before.storeVerified===true && before.autoStack===true,
+      afterVerified:after.storeVerified===true || after.autoStack===true,
+      oldSavedProofAccepted:isStoreConfirmationActive(previousUtcSaved,offer,{
+        ...location,now:at("2026-10-10T22:30:00Z")
+      }),
+      futureProofRejected,
+      parisDayStart:startOfParisDay.confirmedAt,
+      seasonalDeadlines
+    };
+  });
+  assert.deepEqual(localConfirmationCalendar,{
+    cutoff:"2026-10-10T21:59:59.999Z",
+    beforeVerified:true,afterVerified:false,oldSavedProofAccepted:false,
+    futureProofRejected:true,parisDayStart:"2026-10-09T22:10:00.000Z",
+    seasonalDeadlines:[
+      "2026-03-29T21:59:59.999Z","2026-10-25T22:59:59.999Z"
+    ]
+  });
   // Full basket integration in the actual Android browser: having a
   // loyalty card cannot prove benefit activation, eligibility or PASS payment.
   // A historical offer must never become guaranteed even when the caller

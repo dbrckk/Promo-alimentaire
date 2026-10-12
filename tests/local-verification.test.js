@@ -26,7 +26,8 @@ test("crée une confirmation liée à l'offre et au magasin",()=>{
   });
   assert.equal(c.key,"leclerc-promo|leclerc|id:42");
   assert.equal(c.locationName,"E.Leclerc Test");
-  assert.match(c.validUntil,/2026-10-10/);
+  assert.equal(c.validUntil,"2026-10-10T21:59:59.999Z",
+    "La date limite du samedi doit être 23:59:59.999 heure de Paris");
 });
 
 test("refuse une confirmation sans EAN exact",()=>{
@@ -158,6 +159,24 @@ test("la revue expirée interdit une nouvelle confirmation",()=>{
     store:"leclerc",locationKey:"id:42",
     confirmedAt:new Date("2026-10-07T10:00:00Z")
   }),/expirée|réviser/);
+  assert.throws(()=>createStoreConfirmation({
+    ...offer,verifiedAt:"2026-10-09"
+  },{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-08T12:00:00Z")
+  }),/non démarrée|impossible/,
+  "une source vérifiée dans le futur ne peut pas être validée aujourd'hui");
+  const startsParis={...offer,startsAt:"2026-10-08"};
+  const accepted=createStoreConfirmation(startsParis,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T22:15:00Z")
+  });
+  assert.equal(accepted.confirmedAt,"2026-10-07T22:15:00.000Z",
+    "00h15 en France le 8/10 est déjà dans la période de l'offre");
+  assert.throws(()=>createStoreConfirmation(startsParis,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-07T21:59:59Z")
+  }),/non démarrée|impossible/);
 });
 
 test("une confirmation expire aussi au prochain contrôle de source",()=>{
@@ -166,13 +185,45 @@ test("une confirmation expire aussi au prochain contrôle de source",()=>{
     store:"leclerc",locationKey:"id:42",
     confirmedAt:new Date("2026-10-07T10:00:00Z")
   });
-  assert.match(c.validUntil,/2026-10-08/);
+  assert.equal(c.validUntil,"2026-10-08T21:59:59.999Z");
   assert.equal(isStoreConfirmationActive(c,expiring,{
     store:"leclerc",locationKey:"id:42",
-    now:new Date("2026-10-09T00:00:00Z")
-  }),false);
-});
+    now:new Date("2026-10-08T21:59:59.999Z")
+  }),true);
+  assert.equal(isStoreConfirmationActive(c,expiring,{
+    store:"leclerc",locationKey:"id:42",
+    now:new Date("2026-10-08T22:00:00Z")
+  }),false,
+  "une preuve magasin ne peut pas prolonger l'offre après minuit Paris");
 
+  for(const [date,confirmedAt,lastUtc] of [
+    ["2026-03-28","2026-03-28T12:00:00Z","2026-03-28T22:59:59.999Z"],
+    ["2026-03-29","2026-03-29T12:00:00Z","2026-03-29T21:59:59.999Z"],
+    ["2026-10-24","2026-10-24T12:00:00Z","2026-10-24T21:59:59.999Z"],
+    ["2026-10-25","2026-10-25T12:00:00Z","2026-10-25T22:59:59.999Z"]
+  ]){
+    const dated={...offer,expiresAt:date};
+    const result=createStoreConfirmation(dated,{
+      store:"leclerc",locationKey:"id:42",confirmedAt:new Date(confirmedAt)
+    });
+    assert.equal(result.validUntil,lastUtc,date+" : minuit civil français malgré l'heure d'été/hiver");
+  }
+  const exact={...offer,expiresAt:"2026-10-10T22:20:00Z"};
+  const confirmedExact=createStoreConfirmation(exact,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-10T22:10:00Z")
+  });
+  assert.equal(confirmedExact.validUntil,"2026-10-10T22:20:00.000Z",
+    "les échéances horodatées conservent leur instant exact");
+  const shopmium={...offer,providerId:"shopmium",
+    verifiedAt:"2026-10-07",expiresAt:"2026-11-30"};
+  const shopmiumProof=createStoreConfirmation(shopmium,{
+    store:"leclerc",locationKey:"id:42",
+    confirmedAt:new Date("2026-10-10T10:00:00Z")
+  });
+  assert.equal(shopmiumProof.validUntil,"2026-10-12T21:59:59.999Z",
+    "la limite de contrôle Shopmium doit s'appliquer même sans reviewAfter");
+});
 
 test("la confirmation en magasin n'est pas transférable au Drive ou à la livraison",()=>{
   const mixed={...offer,channels:["store","drive","online"]};

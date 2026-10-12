@@ -1,3 +1,5 @@
+import {isOfferActive,shopmiumLegacyReviewCutoff} from "./ingestion.js";
+
 export function confirmationKey({offerId,store,locationKey}={}){
   return [offerId||"",store||"",locationKey||""].join("|");
 }
@@ -25,7 +27,10 @@ export function createStoreConfirmation(offer,{
   const maxUntil=new Date(date.getTime()+7*24*60*60*1000);
   const offerUntil=endOfOffer(offer.expiresAt);
   const reviewUntil=endOfOffer(offer.reviewAfter);
-  const until=[maxUntil,offerUntil,reviewUntil].filter(Boolean)
+  const shopmiumCutoff=shopmiumLegacyReviewCutoff(offer);
+  const shopmiumUntil=shopmiumCutoff
+    ? endOfOffer(shopmiumCutoff.toISOString().slice(0,10)) : null;
+  const until=[maxUntil,offerUntil,reviewUntil,shopmiumUntil].filter(Boolean)
     .reduce((earliest,next)=>next<earliest ? next : earliest);
 
   return {
@@ -105,27 +110,37 @@ export function pruneStoreConfirmations(confirmations,now=new Date()){
   });
 }
 
+// Reuse the same eligibility calendar as imported offers: date-only
+// boundaries belong to the French civil day; timestamped ones are exact.
 function offerValidAt(offer,date){
-  const start=offer.startsAt
-    ? new Date(String(offer.startsAt).length===10
-        ? offer.startsAt+"T00:00:00.000Z" : offer.startsAt)
-    : null;
-  if(start && (Number.isNaN(start.getTime()) || date<start)) return false;
-  for(const field of ["expiresAt","reviewAfter"]){
-    if(!offer[field]) continue;
-    const until=endOfOffer(offer[field]);
-    if(!until || date>until) return false;
-  }
-  return true;
+  return isOfferActive(offer,date);
 }
 
+// An inclusive date-only deadline ends at 23:59:59.999 Europe/Paris.
+// Compute the next French midnight from its UTC-midnight clock position:
+// in France, DST transitions occur after local midnight, so the UTC
+// midnight on that date is still before any 02:00/03:00 transition.
+// This correctly handles both 23-hour and 25-hour shopping days.
+const PARIS_MIDNIGHT_CLOCK=new Intl.DateTimeFormat("en-GB",{
+  timeZone:"Europe/Paris",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+});
 function endOfOffer(value){
   if(!value) return null;
   const raw=String(value);
-  const date=new Date(raw.length===10 ? raw+"T23:59:59.999Z" : raw);
-  return Number.isNaN(date.getTime()) ? null : date;
+  if(/^\d{4}-\d{2}-\d{2}$/.test(raw)){
+    const utcMidnight=new Date(raw+"T00:00:00Z");
+    if(!Number.isFinite(utcMidnight.getTime())
+      || utcMidnight.toISOString().slice(0,10)!==raw) return null;
+    utcMidnight.setUTCDate(utcMidnight.getUTCDate()+1);
+    const parts=PARIS_MIDNIGHT_CLOCK.formatToParts(utcMidnight);
+    const read=(type)=>Number(parts.find((part)=>part.type===type)?.value);
+    const minutes=read("hour")*60+read("minute");
+    if(!Number.isFinite(minutes)) return null;
+    return new Date(utcMidnight.getTime()-minutes*60000-1);
+  }
+  const date=new Date(raw);
+  return Number.isFinite(date.getTime()) ? date : null;
 }
-
 
 export function offerFingerprint(offer){
   if(!offer || !Array.isArray(offer.eans) || !offer.eans.length) return null;
