@@ -10,6 +10,14 @@ L'activation explicite des avantages Club est requise. La carte PASS doit être 
 
 Une catégorie/une marque Open Food Facts ne prouve pas un EAN éligible chez le commerçant : les avantages générés sont des **candidats heuristiques** sans `eans` fabriqués ni `autoStack`. Ils ne sont plus calculés après la date de révision tant que la source n'est pas reverifiée. Toute autre campagne expirée est également filtrée dans le moteur panier, même si l'appelant a oublié le filtrage de l'interface.
 
+## Parcours officiel selon le canal et preuve Carrefour — 12 octobre 2026
+
+La [FAQ Carrefour](https://www.carrefour.fr/faq?question=drive-pourquoi-existe-t-il-difference-entre-promotions-magasin-celle-drive) précise que promotions Drive et magasin peuvent différer selon l'assortiment et la politique locale. La [FAQ E.Leclerc](https://faq.e.leclerc/hc/fr/articles/360014892877-Comment-consulter-le-catalogue-et-les-promotions-E-Leclerc) renvoie séparément à ses prospectus et à `www.leclercdrive.fr`.
+
+**Lorsque la source est obsolète ou non reconfirmée**, la page mobile État des données ouvre les catalogues `/catalogue` et `e.leclerc/prospectus` pour le magasin, mais `carrefour.fr/promotions` et `leclercdrive.fr` pour le Drive/la livraison. Ce sont des pages de **consultation manuelle**, sans extraction de prix ni réduction ajoutée au panier.
+
+Le vérificateur Carrefour exige désormais : URL officielle portant l'EAN, titre `h1` identifiant la marque et la référence attendues, trois champs numériques (prix promo, prix barré et taux), paire de prix liée et pourcentage cohérent sur la page. Une simple réponse HTTP 200, des recommandations hors produit ou des métadonnées tarifaires incomplètes ne peuvent plus prolonger une promotion.
+
 ## Incident de synchronisation constaté le 10 octobre 2026
 
 La vérification des journaux GitHub Actions établit deux défaillances différentes :
