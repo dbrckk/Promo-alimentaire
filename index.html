@@ -138,11 +138,36 @@
         <p class="eyebrow dark">Sélection du jour en France</p>
         <h2>Analyse du catalogue et des économies intéressantes</h2>
         <p>Les offres réellement présentes dans les données importées sont classées séparément des catalogues publicitaires. Un pourcentage « sur le 2e » n'est jamais présenté comme une remise globale. Le prix et la disponibilité restent à vérifier dans ton magasin.</p>
+        <div class="daily-filters">
+          <div class="field">
+            <label for="dailySort">Meilleures promos selon</label>
+            <select id="dailySort">
+              <option value="percent">Réduction réelle en % sur le lot minimum</option>
+              <option value="euros">Euros économisés sur le lot minimum</option>
+              <option value="budget">Prix initial le moins cher</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="dailyMaxSpend">Budget maximum par achat éligible</label>
+            <select id="dailyMaxSpend">
+              <option value="all">Sans limite (inclure prix inconnus)</option>
+              <option value="3">3 € — uniquement prix connus</option>
+              <option value="5">5 € — uniquement prix connus</option>
+              <option value="10">10 € — uniquement prix connus</option>
+              <option value="20">20 € — uniquement prix connus</option>
+            </select>
+          </div>
+        </div>
         <p id="dailyStatus" class="help" aria-live="polite"></p>
         <div class="daily-links">
           <a id="dailyOfficialLink" class="open" href="https://www.carrefour.fr/offres-du-moment" rel="noopener noreferrer" target="_blank">Voir le catalogue officiel</a>
         </div>
       </div>
+      <section class="daily-group">
+        <h3>Les 3 opportunités à regarder en premier</h3>
+        <p class="help">Classement des offres de produits encore valables, sans additionner des coupons potentiellement incompatibles. Le budget porte sur le prix avant remise ou remboursement.</p>
+        <div id="dailyHighlights" class="grid" aria-live="polite"></div>
+      </section>
       <section class="daily-group">
         <h3>Promotions relevées dans le catalogue de l'enseigne</h3>
         <p class="help">Références et preuves connues, mais prix et carte locale à confirmer avant achat.</p>
