@@ -24,6 +24,24 @@ test("vérifie une promo Carrefour exacte",()=>{
   `;
   const result=verifyCarrefourPromotionPage(html,offer);
   assert.equal(result.ok,true);
+  const missingPrices=verifyCarrefourPromotionPage(html,{
+    ...offer,sourcePromoPrice:null,sourceRegularPrice:null,savingPercent:null
+  });
+  assert.equal(missingPrices.ok,false);
+  assert.ok(missingPrices.reasons.includes("prix promotionnel chiffré manquant"));
+  assert.ok(missingPrices.reasons.includes("prix normal chiffré manquant"));
+  assert.ok(missingPrices.reasons.includes("taux promotionnel chiffré manquant"));
+  const noProductHeading=verifyCarrefourPromotionPage(
+    html.replace(/<h1>([\\s\\S]*?)<\\/h1>/,"<div>$1</div>"),offer
+  );
+  assert.equal(noProductHeading.ok,false);
+  assert.ok(noProductHeading.reasons.includes("titre de la fiche produit absent"));
+  const unrelatedHeading=verifyCarrefourPromotionPage(
+    html.replace("Pâtes Fusilli Fermes et Généreuses PANZANI","Produits variés en catalogue")
+      +"<div>Pâtes Fusilli Fermes et Généreuses PANZANI</div>",offer
+  );
+  assert.equal(unrelatedHeading.ok,false);
+  assert.ok(unrelatedHeading.reasons.includes("marque absente du titre produit"));
 });
 
 test("refuse un taux voisin",()=>{
