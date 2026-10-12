@@ -3,6 +3,12 @@
 PWA mobile-first pour regrouper et comparer les économies disponibles chez **Carrefour** et **E.Leclerc** : promotions, cashback, offres de remboursement (ODR), coupons, bons d'achat remisés et prix observés.
 
 
+## Dates des confirmations magasin en heure française (12 octobre 2026)
+
+Une confirmation locale d'une promotion exacte chez Carrefour/E.Leclerc ne doit **jamais prolonger une offre après le minuit civil en France**. Jusqu'ici, les fins de campagne `YYYY-MM-DD` et échéances de relecture étaient interprétées à **23:59 UTC** : en octobre, une validation de magasin pouvait rester injustement valable environ **deux heures après minuit à Paris** ; le démarrage au début du jour pouvait à l'inverse être refusé. Les calculs utilisent désormais les mêmes dates civiles `Europe/Paris` que l'import et respectent les changements d'heure. Les dates avec heure/zone explicite gardent leur échéance instantanée.
+
+Une preuve `verifiedAt` future ou invalide empêche également la confirmation ; pour Shopmium, la date de revue conservatrice de 5 jours borne la durée de preuve locale. Les anciennes confirmations locales conservées sur le téléphone ne peuvent pas réactiver une remise après la vraie date de fin : la validité de l'offre est revérifiée lors du calcul. Les confirmations restent strictement liées à un magasin physique identifié, à un EAN exact et à leur empreinte d'offre. Les vérifications couvrent le passage de minuit Paris et les changements d'heure été/hiver dans le navigateur Android.
+
 ## État des promotions commerçants : lien magasin ou Drive (12 octobre 2026)
 
 **Une promotion en magasin ne prouve pas le prix ou l'éligibilité en Drive/livraison.** Lorsqu'un fichier Carrefour ou E.Leclerc ne peut être reconfirmé, la PWA propose maintenant le lien public correspondant au canal choisi :
