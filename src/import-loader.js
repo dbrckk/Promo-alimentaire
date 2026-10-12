@@ -73,6 +73,10 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
   const errors=[];
   const sourceStats=[];
   const ids=new Set();
+  // Track which providers actually had a post-verification refresh failure
+  // in each imported file. An old or future-dated failure is not a new outage
+  // for already verified offers.
+  const affectedRefreshByFile=new Map();
 
   // Up to three simultaneous downloads; commit the validated results below
   // in manifest order to preserve collision handling and source summaries.
@@ -110,6 +114,11 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       }
       const activeOffers=result.normalized.filter((offer)=>isOfferActive(offer,now));
       const providerIds=[...new Set(result.normalized.map((offer)=>offer.providerId).filter(Boolean))];
+      affectedRefreshByFile.set(file,new Set(
+        activeOffers
+          .filter((offer)=>failedRefreshWarning(offer,syncSources,now))
+          .map((offer)=>offer.providerId)
+      ));
       const exactEanCount=activeOffers.filter((offer)=>
         Array.isArray(offer.eans) && offer.eans.length>0
       ).length;
@@ -197,11 +206,16 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
   }
 
   for(const stat of sourceStats){
+    const affectedProviders=affectedRefreshByFile.get(stat.file);
     const sync=(stat.providerIds || [])
+      // Keep historical diagnostics on expired/error snapshots, but only
+      // mark an active file if its offers really were affected by that outage.
+      .filter((providerId)=>stat.activeCount===0 || affectedProviders?.has(providerId))
       .map((providerId)=>syncSources[providerId])
       .find((entry)=>["unavailable","partial"].includes(entry?.status)
         && typeof entry.checkedAt==="string"
-        && Number.isFinite(new Date(entry.checkedAt).getTime()));
+        && Number.isFinite(new Date(entry.checkedAt).getTime())
+        && new Date(entry.checkedAt)<=now);
     if(!sync) continue;
     stat.syncState={
       status:sync.status,
