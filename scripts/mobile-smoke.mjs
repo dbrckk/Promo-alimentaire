@@ -326,6 +326,53 @@ try{
   assert.equal(importPoolSafety.failed,1);
   assert.equal(importPoolSafety.downloaded,4);
   assert.ok(importPoolSafety.maxInFlight>=2 && importPoolSafety.maxInFlight<=3);
+  // Android browser integration: source-health review labels must use
+  // France's civil day, not UTC midnight, even around DST transitions.
+  const importParisFreshness=await page.evaluate(async()=>{
+    const {loadImportedOffers}=await import("./src/import-loader.js");
+    const calculate=async(fields,instant)=>{
+      const fetchImpl=async(url)=>{
+        const file=String(url).split("/").at(-1);
+        if(file==="index.json") return {
+          ok:true,json:async()=>({files:["calendar-auto.json"]})
+        };
+        if(file==="calendar-auto.json") return {
+          ok:true,json:async()=>[{
+            providerId:"coupon-network",externalId:"mobile-paris-review",
+            title:"Produit alimentaire",stores:["all"],savingPercent:30,
+            sourceUrl:"https://www.couponnetwork.fr/",verifiedAt:"2026-10-11",
+            ...fields
+          }]
+        };
+        return {ok:false,status:404};
+      };
+      const result=await loadImportedOffers({
+        fetchImpl,now:new Date(instant)
+      });
+      return {
+        count:result.offers.length,
+        next:result.sourceStats[0].nextDeadline,
+        days:result.sourceStats[0].daysUntil,
+        status:result.sourceStats[0].status
+      };
+    };
+    return {
+      end:await calculate({reviewAfter:"2026-10-12"},
+        "2026-10-12T21:59:59.999Z"),
+      expired:await calculate({reviewAfter:"2026-10-12"},
+        "2026-10-12T22:00:00Z"),
+      exact:await calculate({reviewAfter:"2026-10-12T23:15:00Z"},
+        "2026-10-12T12:00:00Z"),
+      dst:await calculate({verifiedAt:"2026-03-28",reviewAfter:"2026-03-29"},
+        "2026-03-28T23:20:00Z")
+    };
+  });
+  assert.deepEqual(importParisFreshness,{
+    end:{count:1,next:"2026-10-12",days:0,status:"review-soon"},
+    expired:{count:0,next:null,days:null,status:"stale"},
+    exact:{count:1,next:"2026-10-13",days:1,status:"review-soon"},
+    dst:{count:1,next:"2026-03-29",days:0,status:"review-soon"}
+  });
   const importedEvidence=await page.evaluate(async()=>{
     const {loadImportedOffers}=await import("./src/import-loader.js");
     const result=await loadImportedOffers();

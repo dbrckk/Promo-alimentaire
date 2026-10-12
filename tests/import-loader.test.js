@@ -380,6 +380,60 @@ test("la fiche Shopmium affiche l'échéance de revue plutôt qu'une fausse fin 
   assert.equal(stale.sourceStats[0].nextDeadline,null);
 });
 
+test("les échéances de sources suivent minuit Paris et les horodatages précis",async()=>{
+  const makeFetch=(fields)=>async(url)=>{
+    const name=String(url);
+    if(name.endsWith("/index.json")) return {
+      ok:true,json:async()=>({files:["calendar-auto.json"]})
+    };
+    if(name.endsWith("/calendar-auto.json")) return {
+      ok:true,json:async()=>[{
+        providerId:"coupon-network",externalId:"paris-deadline",
+        title:"Produit alimentaire confirmé",stores:["all"],savingPercent:30,
+        sourceUrl:"https://www.couponnetwork.fr/",
+        verifiedAt:"2026-10-11",...fields
+      }]
+    };
+    return {ok:false,status:404};
+  };
+  const dated=makeFetch({reviewAfter:"2026-10-12"});
+  const lastMoment=await loadImportedOffers({
+    fetchImpl:dated,now:new Date("2026-10-12T21:59:59.999Z")
+  });
+  assert.equal(lastMoment.offers.length,1);
+  assert.equal(lastMoment.sourceStats[0].nextDeadline,"2026-10-12");
+  assert.equal(lastMoment.sourceStats[0].daysUntil,0,
+    "La révision est aujourd'hui en France et non dans un jour UTC");
+  assert.equal(lastMoment.sourceStats[0].status,"review-soon");
+  const nextParisDay=await loadImportedOffers({
+    fetchImpl:dated,now:new Date("2026-10-12T22:00:00Z")
+  });
+  assert.equal(nextParisDay.offers.length,0);
+  assert.equal(nextParisDay.sourceStats[0].status,"stale");
+  assert.equal(nextParisDay.sourceStats[0].nextDeadline,null,
+    "Ne pas annoncer un contrôle futur pour une offre déjà expirée localement");
+
+  const timestamp=makeFetch({reviewAfter:"2026-10-12T23:15:00Z"});
+  const timestamped=await loadImportedOffers({
+    fetchImpl:timestamp,now:new Date("2026-10-12T12:00:00Z")
+  });
+  assert.equal(timestamped.offers.length,1);
+  assert.equal(timestamped.sourceStats[0].nextDeadline,"2026-10-13",
+    "Un instant UTC du 12 octobre est déjà le 13 en France");
+  assert.equal(timestamped.sourceStats[0].daysUntil,1);
+
+  const dstSpring=makeFetch({
+    verifiedAt:"2026-03-28",reviewAfter:"2026-03-29"
+  });
+  const daylight=await loadImportedOffers({
+    fetchImpl:dstSpring,now:new Date("2026-03-28T23:20:00Z")
+  });
+  assert.equal(daylight.offers.length,1);
+  assert.equal(daylight.sourceStats[0].nextDeadline,"2026-03-29");
+  assert.equal(daylight.sourceStats[0].daysUntil,0,
+    "La journée de passage à l'heure d'été a 23 h, pas 24 h");
+});
+
 test("un manifeste distant ne peut charger ni chemins ni URLs arbitraires",async()=>{
   const {inspectImportManifest}=await import("../src/import-manifest.js");
   assert.deepEqual(inspectImportManifest({files:["one.json","shopmium-auto.json"]}).files,

@@ -124,7 +124,7 @@ function offerValidAt(offer,date){
 const PARIS_MIDNIGHT_CLOCK=new Intl.DateTimeFormat("en-GB",{
   timeZone:"Europe/Paris",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
 });
-function endOfOffer(value){
+export function endOfOffer(value){
   if(!value) return null;
   const raw=String(value);
   if(/^\d{4}-\d{2}-\d{2}$/.test(raw)){
