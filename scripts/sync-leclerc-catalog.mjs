@@ -173,5 +173,9 @@ await writeSourceSyncStatus("leclerc",{
           ? "Pages catalogue inaccessibles : "+failures.length+" échec(s) HTTP/réseau ; aucune offre reconfirmée."
           : "Seulement "+verified+"/"+active.length+" campagne(s) encore valides reconfirmée(s).",
   extractedCount:verified,
-  previousSnapshotCount:offers.length
+  previousSnapshotCount:offers.length,
+  // A verified batch may be partial without invalidating the nine
+  // individual campaign titles/rates already confirmed by the public page.
+  // The PWA can then warn only for the unresolved externalId(s).
+  confirmedExternalIds:[...confirmations.keys()]
 },{write});
