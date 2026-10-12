@@ -57,6 +57,31 @@ export async function writeSourceSyncStatus(source,args,{write=false}={}){
   if(!payload?.sources || typeof payload.sources!=="object" || Array.isArray(payload.sources)){
     throw new Error("Métadonnées de synchronisation invalides.");
   }
+  // Keep a bounded audit trail of individual public confirmations.
+  // A later bot/browser outage must not erase genuine proofs from minutes
+  // earlier, even though the newer sync status correctly remains unavailable.
+  // These historical proofs do NOT extend the original offer expiry.
+  const previous=payload.sources[source]?.lastConfirmedAtById || {};
+  const nowMs=new Date(status.checkedAt).getTime();
+  const cutoff=nowMs-7*24*60*60*1000;
+  const proofs={};
+  if(previous && typeof previous==="object" && !Array.isArray(previous)){
+    for(const [id,stamp] of Object.entries(previous)){
+      if(typeof id!=="string" || !/^[A-Za-z0-9._:-]{1,200}$/.test(id)
+        || typeof stamp!=="string") continue;
+      const instant=new Date(stamp).getTime();
+      if(Number.isFinite(instant) && instant>=cutoff && instant<=nowMs)
+        proofs[id]=new Date(instant).toISOString();
+    }
+  }
+  for(const id of status.confirmedExternalIds || []){
+    proofs[id]=status.checkedAt;
+  }
+  status.lastConfirmedAtById=Object.fromEntries(
+    Object.entries(proofs)
+      .sort((a,b)=>new Date(b[1])-new Date(a[1]) || a[0].localeCompare(b[0]))
+      .slice(0,2000)
+  );
   payload.sources[source]=status;
   await writeFile(file,JSON.stringify(payload,null,2)+"\n","utf8");
 
