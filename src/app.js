@@ -491,7 +491,7 @@ function renderDailyCatalogue(){
     " · "+digest.retailer.length+" offre(s) enseigne, "+
     digest.extra.length+" remboursement(s)/coupon(s) et "+
     digest.campaigns.length+" campagne(s) officielle(s). "+
-    "Données contrôlées à leurs dates propres, pas de remise panier garantie.";
+    "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat.";
   const renderPick=(item)=>{
     const hasPercent=Number.isFinite(item.savingPercent);
     const quantity=item.minQuantity>1
@@ -544,7 +544,7 @@ function renderDailyCatalogue(){
         <a class="open" href="${escapeHtml(item.sourceUrl)}"
            target="_blank" rel="noopener noreferrer">Vérifier la campagne officielle</a>
       </article>`).join("")
-    :fallback("Aucune campagne datée et toujours valable dans le dernier relevé. Le catalogue officiel reste accessible.");
+    :fallback("Aucune campagne datée et contrôlée depuis 7 jours pour ce canal. Les annonces trop anciennes sont masquées : consulte le catalogue officiel pour les promotions du jour.");
 }
 
 async function hydrateDailyCampaigns(){
