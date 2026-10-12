@@ -601,6 +601,9 @@ function renderSourceHealth(){
             </div>
             <div class="source-health-metrics">
               <span><b>${item.activeCount}</b> actives</span>
+              ${item.syncAffectedCount>0
+                ? `<span class="sync-affected-count"><b>${item.syncAffectedCount}</b> sous alerte de synchronisation (gain non garanti)</span>`
+                : ""}
               <span><b>${item.exactEanCount||0}</b> EAN exact(s)</span>
               <span><b>${item.heuristicCount||0}</b> heuristique(s)</span>
               ${item.resolutionBlockedCount

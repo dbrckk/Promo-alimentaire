@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { loadImportedOffers, mergeOffers, offerIdentity, sourceDeadlineSummary, failedRefreshWarning } from "../src/import-loader.js";
+import { loadImportedOffers, mergeOffers, offerIdentity, sourceDeadlineSummary, failedRefreshWarning, sourceRefreshImpact } from "../src/import-loader.js";
 
 const manifest={verifiedAt:"2026-10-07",files:["one.json"]};
 const payload=[{
@@ -194,6 +194,7 @@ test("un échec public est visible sans rafraîchir les offres ni les dates",asy
   assert.equal(result.offers.length,1);
   assert.equal(result.offers[0].verifiedAt,"2026-10-07");
   assert.equal(result.sourceStats[0].status,"sync-warning");
+  assert.equal(result.sourceStats[0].syncAffectedCount,1);
   assert.equal(result.sourceStats[0].syncState.status,"unavailable");
   assert.equal(result.sourceStats[0].syncState.reason,"Aucune offre publique récupérée");
 });
@@ -233,6 +234,7 @@ test("le panneau de fraîcheur n'annonce pas une panne antérieure à la preuve 
     assert.equal(result.offers[0].sourceSyncWarning,undefined);
     assert.equal(result.sourceStats[0].status,"ok",
       "Un échec avant la preuve ou daté du futur ne rend pas l'offre obsolète");
+    assert.equal(result.sourceStats[0].syncAffectedCount,0);
     assert.equal(result.sourceStats[0].syncState,undefined);
   }
 
@@ -562,4 +564,37 @@ test("même calendrier et mêmes échecs source dans la PWA et GitHub Actions",(
     "coupon-network":{status:"partial",checkedAt:"2026-10-13T09:00:00Z"}
   };
   assert.equal(failedRefreshWarning(live,futureFailure,before),null);
+});
+
+test("l'impact d'une synchronisation échouée exclut preuves nouvelles et campagnes expirées",()=>{
+  const now=new Date("2026-10-12T14:00:00Z");
+  const offer=(id,providerId,verifiedAt,reviewAfter="2026-10-20")=>({
+    id,providerId,verifiedAt,reviewAfter,expiresAt:"2026-10-31"
+  });
+  const offers=[
+    offer("old-cn","coupon-network","2026-10-10"),
+    offer("fresh-cn","coupon-network","2026-10-12"),
+    offer("old-shop","shopmium","2026-10-09","2026-10-20"),
+    offer("expired","coupon-network","2026-10-01","2026-10-09")
+  ];
+  const sources={
+    "coupon-network":{
+      status:"unavailable",checkedAt:"2026-10-11T12:00:00Z"
+    },
+    "shopmium":{
+      status:"partial",checkedAt:"2026-10-11T08:00:00Z"
+    }
+  };
+  assert.deepEqual(sourceRefreshImpact(offers,sources,now),{
+    affectedCount:2,
+    unaffectedCount:1,
+    affectedProviderIds:["coupon-network","shopmium"]
+  });
+  assert.deepEqual(sourceRefreshImpact(offers,{
+    "coupon-network":{status:"unavailable",checkedAt:"2026-10-13T08:00:00Z"}
+  },now),{
+    affectedCount:0,
+    unaffectedCount:3,
+    affectedProviderIds:[]
+  });
 });

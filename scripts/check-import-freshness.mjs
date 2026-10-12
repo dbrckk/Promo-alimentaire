@@ -1,7 +1,7 @@
 import { readFile,appendFile } from "node:fs/promises";
 import { join } from "node:path";
 import { isOfferActive, validateImportBatch } from "../src/ingestion.js";
-import {failedRefreshWarning, sourceDeadlineSummary} from "../src/import-loader.js";
+import {sourceRefreshImpact, sourceDeadlineSummary} from "../src/import-loader.js";
 import {inspectImportManifest} from "../src/import-manifest.js";
 
 const directory=new URL("../data/import/",import.meta.url);
@@ -32,6 +32,8 @@ for(const file of ["source-sync-status.json","source-sync-carrefour.json","sourc
 
 let staleFiles=0;
 let activeTotal=0;
+let affectedTotal=0;
+let warningFiles=0;
 const report=[];
 
 for(const file of files){
@@ -58,9 +60,8 @@ for(const file of files){
   // Same evidence gate as the PWA: a past or future failed refresh does
   // not invalidate a newer verification, and expired offers do not create
   // future review deadlines in the GitHub Actions report.
-  const failedProviders=new Set(active.filter((offer)=>
-    failedRefreshWarning(offer,sourceSync,now)
-  ).map((offer)=>offer.providerId));
+  const refreshImpact=sourceRefreshImpact(active,sourceSync,now);
+  const failedProviders=new Set(refreshImpact.affectedProviderIds);
   const syncWarning=providers
     .filter((id)=>active.length===0 || failedProviders.has(id))
     .map((id)=>sourceSync[id])
@@ -68,12 +69,16 @@ for(const file of files){
       && Number.isFinite(new Date(entry.checkedAt).getTime())
       && new Date(entry.checkedAt)<=now) || null;
   activeTotal+=active.length;
+  affectedTotal+=refreshImpact.affectedCount;
   const {nextDeadline,daysUntil}=sourceDeadlineSummary(active,now);
 
   let status="ok";
   if(active.length===0){
     status="stale";
     staleFiles+=1;
+  }else if(refreshImpact.affectedCount>0){
+    status="sync-warning";
+    warningFiles+=1;
   }else if(daysUntil!==null && daysUntil<=warningDays){
     status="review-soon";
   }
@@ -82,6 +87,7 @@ for(const file of files){
     file,
     status,
     active:active.length,
+    affected:refreshImpact.affectedCount,
     total:validation.normalized.length,
     nextDeadline,
     daysUntil,
@@ -99,18 +105,22 @@ for(const item of report){
   const sourceNote=item.syncWarning
     ? " · synchro "+item.syncWarning.status+": "+item.syncWarning.reason
     : "";
-  console.log(`[freshness] ${item.file}: ${item.status} · ${item.active}/${item.total} actives${deadline}${error}${sourceNote}`);
+  const affectedNote=item.affected>0
+    ? " · "+item.affected+" offre(s) sous alerte de synchronisation"
+    : "";
+  console.log(`[freshness] ${item.file}: ${item.status} · ${item.active}/${item.total} actives${affectedNote}${deadline}${error}${sourceNote}`);
   const severity=["stale","missing-or-invalid","invalid"].includes(item.status)
     ? strict ? "error" : "warning"
-    : item.status==="review-soon" ? "warning" : null;
+    : ["review-soon","sync-warning"].includes(item.status) ? "warning" : null;
   if(severity){
     const context=item.syncWarning ? " ; source "+item.syncWarning.status+" : "+item.syncWarning.reason : "";
-    const message=("Offres actives "+item.active+"/"+item.total+context)
+    const message=("Offres actives "+item.active+"/"+item.total
+      +" ; "+(item.affected||0)+" sous alerte de synchronisation"+context)
       .replace(/%/g,"%25").replace(/\r/g,"%0D").replace(/\n/g,"%0A");
     console.log(`::${severity} file=data/import/${item.file},title=Fraîcheur ${item.status}::${message}`);
   }
 }
-console.log(`[freshness] Manifeste: ${files.length} fichier(s) · ${activeTotal} offres actives · ${staleFiles} source(s) problématique(s)`);
+console.log(`[freshness] Manifeste: ${files.length} fichier(s) · ${activeTotal} offres actives · ${affectedTotal} sous alerte de synchronisation · ${staleFiles} fichier(s) périmé(s)/invalide(s) · ${warningFiles} fichier(s) dont la synchronisation a échoué`);
 
 if(process.env.GITHUB_STEP_SUMMARY){
   const clean=(value)=>String(value??"").replace(/[|\r\n]/g," ").slice(0,220);
@@ -119,19 +129,21 @@ if(process.env.GITHUB_STEP_SUMMARY){
     "",
     "Les offres expirées restent exclues de la PWA ; un fournisseur inaccessible ne prolonge jamais les dates de preuve.",
     "",
-    "| Source | Statut | Offres actives | Prochaine échéance | Dernière synchronisation |",
-    "| --- | --- | ---: | --- | --- |",
+    "| Source | Statut | Offres actives | Sous alerte de synchronisation | Prochaine échéance | Dernière synchronisation |",
+    "| --- | --- | ---: | ---: | --- | --- |",
     ...report.map((item)=>
       "| "+clean(item.file)+" | "+clean(item.status)+" | "+
-      item.active+"/"+item.total+" | "+
+      item.active+"/"+item.total+" | "+(item.affected||0)+" | "+
       clean(item.nextDeadline?.slice(0,10)||"—")+" | "+
       clean(item.syncWarning
         ? item.syncWarning.status+": "+item.syncWarning.reason
         : "—")+" |"
     ),
     "",
-    "**Total : "+activeTotal+" offres actives ; "+staleFiles+
-      " fichier(s) sans offre utilisable ou invalide(s).**",
+    "**Total : "+activeTotal+" offres actives dont "+affectedTotal+
+      " sous alerte de synchronisation ; "+staleFiles+
+      " fichier(s) sans offre utilisable ou invalide(s) ; "+warningFiles+
+      " fichier(s) actif(s) en échec de synchronisation.**",
     strict && staleFiles>0
       ? "Contrôle strict en échec : restaurer une source vérifiable, sans réactiver les anciennes offres."
       : "Contrôle terminé.",
