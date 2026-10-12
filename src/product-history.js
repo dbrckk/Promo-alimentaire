@@ -1,4 +1,5 @@
-import { selectBestRecentPrice } from "./open-data.js";
+import { parsePriceEvidenceDate, selectBestRecentPrice } from "./open-data.js";
+import {parisCivilDay} from "./ingestion.js";
 import {canonicalGtin} from "./gtin.js";
 
 /** Use GS1 identity when valid; preserve legacy/non-GTIN local records. */
@@ -31,10 +32,13 @@ export function addPriceObservation(history,{
   const existing=Array.isArray(history) ? history : [];
   const price=Number(observation?.price);
   const seenAt=new Date(recordedAt);
-  const observationAt=new Date(observation?.date);
+  // Open Prices records calendar days in France. Parsing YYYY-MM-DD as UTC
+  // would reject a legitimate same-day receipt between Paris midnight and
+  // UTC midnight (one or two hours later, depending on DST).
+  const observationAt=parsePriceEvidenceDate(observation?.date);
   const locationKey=priceLocationKey(observation);
   if(!product?.code || !store || !Number.isFinite(price) || price<=0
-    || !locationKey || Number.isNaN(seenAt.getTime()) || Number.isNaN(observationAt.getTime())
+    || !locationKey || Number.isNaN(seenAt.getTime()) || !observationAt
     || observationAt>seenAt) return existing;
 
   const productKey=historyProductKey(product.code);
@@ -100,8 +104,18 @@ export function addStorePriceObservations(history,{
 }
 
 function observationDate(item){
-  const time=new Date(item?.date).getTime();
+  const time=parsePriceEvidenceDate(item?.date)?.getTime();
   return Number.isFinite(time) ? time : -Infinity;
+}
+
+// Group Open Prices calendar days by their original French date. Historical
+// ISO timestamps, if present in older storage, are grouped by Paris's date,
+// not the UTC calendar day that might be one day behind on Android.
+function observationDay(item){
+  const value=item?.date;
+  const instant=parsePriceEvidenceDate(value);
+  if(!instant) return null;
+  return value.length===10 ? value : parisCivilDay(instant);
 }
 
 function usableHistory(history,{code,store}={}){
@@ -128,17 +142,17 @@ export function productPriceTrend(history,{code,store,locationId=null,locationKe
 
     // Same-day contradictory receipts use the highest observed price so
     // a temporary cheap checkout does not manufacture a price drop.
-    const latestDay=new Date(sameLocation[0].date).toISOString().slice(0,10);
+    const latestDay=observationDay(sameLocation[0]);
     const latest=sameLocation.filter((item)=>
-      new Date(item.date).toISOString().slice(0,10)===latestDay
+      observationDay(item)===latestDay
     ).sort((a,b)=>b.price-a.price)[0];
     const previousCandidates=sameLocation.filter((item)=>
-      new Date(item.date).toISOString().slice(0,10)<latestDay
+      observationDay(item)<latestDay
     );
     if(!previousCandidates.length) continue;
-    const previousDay=new Date(previousCandidates[0].date).toISOString().slice(0,10);
+    const previousDay=observationDay(previousCandidates[0]);
     const previous=previousCandidates.filter((item)=>
-      new Date(item.date).toISOString().slice(0,10)===previousDay
+      observationDay(item)===previousDay
     ).sort((a,b)=>b.price-a.price)[0];
 
     const delta=round(latest.price-previous.price);
@@ -178,7 +192,7 @@ export function detectPriceDrops(history,{
     const trend=productPriceTrend(history,group);
     if(!trend || trend.direction!=="down") continue;
     if(cutoffEnabled){
-      const latestTime=new Date(trend.latest.date).getTime();
+      const latestTime=observationDate(trend.latest);
       const age=nowTime-latestTime;
       if(!Number.isFinite(nowTime) || !Number.isFinite(latestTime)
         || age<0 || age>maxAgeDays*24*60*60*1000) continue;
