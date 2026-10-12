@@ -1,4 +1,5 @@
 import {canonicalGtin} from "./gtin.js";
+import {parisCivilDay} from "./ingestion.js";
 
 const STORES=new Set(["carrefour","leclerc"]);
 const CODE_PATTERN=/^(?:\d{8}|\d{12,14})$/;
@@ -28,16 +29,19 @@ export function normalizeManualPrice(input,{now=new Date()}={}){
     throw new Error("Prix strictement positif requis (maximum 10 000 €).");
   }
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("Date du relevé invalide.");
+  // Price dates are French civil days, like retailer offer dates. A mobile
+  // phone can be configured for any timezone: neither device midnight nor
+  // elapsed 24-hour blocks may change a recorded shopping date.
   const at=new Date(date+"T12:00:00.000Z");
-  const localToday=Number.isNaN(current.getTime())
-    ? null
-    : new Date(current.getTime()-current.getTimezoneOffset()*60000)
-      .toISOString().slice(0,10);
-  if(Number.isNaN(at.getTime()) || at.toISOString().slice(0,10)!==date
-    || !localToday || date>localToday){
+  const todayParis=parisCivilDay(current);
+  if(!Number.isFinite(at.getTime()) || at.toISOString().slice(0,10)!==date
+    || !todayParis || date>todayParis){
     throw new Error("Date du relevé invalide ou future.");
   }
-  if(current.getTime()-at.getTime()>MAX_AGE_DAYS*DAY_MS){
+  // Use UTC noon solely for calendar arithmetic: 30 inclusive French dates
+  // remain 30 dates across 23-hour and 25-hour daylight-saving transitions.
+  const ageDays=(Date.parse(todayParis+"T12:00:00Z")-at.getTime())/DAY_MS;
+  if(!Number.isInteger(ageDays) || ageDays>MAX_AGE_DAYS){
     throw new Error("Relevé trop ancien : maximum 30 jours.");
   }
   return {
