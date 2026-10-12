@@ -1236,6 +1236,39 @@ try{
   await page.locator("#sort").selectOption("percent");
   await page.screenshot({path:OUT+"/01-offres.png",fullPage:true});
 
+  // Daily catalogue is recomputed from verified imports, not from a
+  // retailer advertisement that would fabricate a checkout price.
+  await page.locator('[data-tab="daily"]').click();
+  await page.locator("#dailyStatus").waitFor({state:"visible"});
+  assert.match(await page.locator("#dailyStatus").innerText(),
+    /Sélection au .*Carrefour.*magasin/);
+  assert.match(await page.locator("#dailyRetailer").innerText(),
+    /Aucune promotion|Contrôler la source/);
+  const dailyCampaignProof=await page.evaluate(async()=>{
+    const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
+    const sample={id:"sample-campaign",store:"carrefour",channels:["store"],
+      title:"Sélection alimentaire",claim:"60% sur le deuxième uniquement",
+      verifiedAt:"2026-10-12",startsAt:"2026-10-12",
+      expiresAt:"2026-10-12",category:"alimentaire",
+      sourceUrl:"https://www.carrefour.fr/offres-du-moment"};
+    const before=selectDailyCatalogue({campaigns:[sample],now:
+      new Date("2026-10-12T21:59:59Z"),store:"carrefour",channel:"store"});
+    const after=selectDailyCatalogue({campaigns:[sample],now:
+      new Date("2026-10-12T22:00:00Z"),store:"carrefour",channel:"store"});
+    return {advertised:before.campaigns.length,expired:after.campaigns.length,
+      fictitiousSaving:"savingAmount" in before.campaigns[0]};
+  });
+  assert.deepEqual(dailyCampaignProof,{advertised:1,expired:0,fictitiousSaving:false});
+  await page.locator("#store").selectOption("leclerc");
+  assert.match(await page.locator("#dailyStatus").innerText(),/E.Leclerc/);
+  assert.equal(await page.locator("#dailyOfficialLink").getAttribute("href"),
+    "https://www.e.leclerc/prospectus");
+  assert.ok(await page.locator("#dailyRetailer .daily-offer").count()>0,
+    "Des offres du catalogue Leclerc encore valables doivent apparaître");
+  await assertNoHorizontalOverflow(page,"analyse du catalogue du jour");
+  await page.screenshot({path:OUT+"/00-catalogue-du-jour.png",fullPage:true});
+  await page.locator("#store").selectOption("carrefour");
+  await page.locator('[data-tab="offers"]').click();
   // Discovery: independent food/free services and 50%+ non-food sources are separated.
   await page.locator('[data-tab="providers"]').click();
   // The production catalogue validator must reject calendar-impossible or
