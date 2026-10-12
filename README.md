@@ -127,6 +127,16 @@ Les sources dont l'activité actuelle est incertaine restent explicitement **non
 
 Le pied de page distingue maintenant **la date du catalogue de référence** (offres intégrées manuellement au code), **le nombre d'offres importées réellement actives** après contrôle de leurs échéances et **la date de preuve la plus récente parmi ces offres actives**. La date de rechargement d'une page, celle du manifeste JSON ou un contrôle GitHub Actions sans preuve marchande ne sont jamais présentés comme une nouvelle vérification des promotions. Si les fichiers d'import ne sont pas accessibles, l'application indique qu'elle utilise seulement le catalogue de référence, sans annoncer de revalidation inexistante.
 
+## Offres officielles Carrefour accessibles même sans fiche EAN (12 octobre 2026)
+
+La page publique [Carrefour — offres du moment](https://www.carrefour.fr/offres-du-moment) annonce des opérations alimentaires, les promotions hebdomadaires et des sélections petit budget (par exemple fruits/légumes ou produits du quotidien à moins de 1 €). Le lien figure désormais dans l'annuaire **Sources** et dans le panneau de diagnostic quand le catalogue produit Carrefour n'est pas reconfirmé. Les conditions réelles et le prix varient selon le point de vente, le canal, la période et la quantité.
+
+**Distinction essentielle :** une campagne publicitaire (« jusqu'à -60 % sur le 2e », « 2+1 » ou « moins de 1 € ») n'est ni un SKU prouvé ni une économie garantie : elle ne crée aucun EAN, aucun panier remisé et aucun cumul automatique dans l'application. L'échec du flux de fiches Carrefour reste visible et les anciennes offres restent expirées.
+
+### Fiabilité identique pour le diagnostic GitHub et la PWA
+
+`npm run check:freshness` réutilise la même fonction de calcul d'échéances que le chargeur des sources publiques : uniquement **offres encore actives**, première date entre revue, expiration et plafond prudent Shopmium, dernière milliseconde du jour civil **Europe/Paris** pour `YYYY-MM-DD`, et jours calendaires pour l'alerte (y compris les changements d'heure). Les échecs de synchronisation obsolètes ou datés du futur ne masquent plus les promotions vérifiées après l'incident. Un rapport CI n'annonce donc plus une date de revue lointaine provenant d'une ancienne campagne expirée.
+
 ## Robustesse des synchronisations de promotions
 
 Les synchronisations Carrefour/E.Leclerc ne confondent plus « campagne encore éligible à une vérification » et « ancienne fiche historique ». Les offres expirées restent archivées sans être prolongées ni interrogées inutilement. Un refus d'accès `HTTP 401/403` chez Carrefour interrompt les requêtes restantes vers ce fournisseur, sans tentative de contournement ; le diagnostic indique le nombre de requêtes évitées. Côté E.Leclerc, un HTML chargé sans preuve du produit et du taux ne constitue pas une revalidation. Coupon Network distingue aussi une page publique accessible mais dont les offres ne figurent pas dans le HTML disponible au synchroniseur (rendu côté navigateur possible). Les erreurs laissent les dates et prix intacts.

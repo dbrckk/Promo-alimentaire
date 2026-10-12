@@ -22,7 +22,7 @@ test("les sources de découverte ont des IDs, preuves et liens utilisables",()=>
 test("l'annuaire alimentaire inclut dons, essais gratuits et enseignes tierces",()=>{
   const sources=filterDiscoveryProviders(providers,{scope:"food"});
   const ids=sources.map((s)=>s.id);
-  for(const id of ["carrefour-testeurs","geev","hophopfood","lidl-plus","carte-u",
+  for(const id of ["carrefour-promos-officielles","carrefour-testeurs","geev","hophopfood","lidl-plus","carte-u",
     "auchan-waaoh","intermarche-app","nous-antigaspi","trnd","home-tester-club","thefork","soliguide","linkee-etudiants","quoty","sampleo","the-insiders"]){
     assert.ok(ids.includes(id),id);
   }
@@ -103,4 +103,17 @@ test("le catalogue refuse une fiche marquée vérifiée si son activité est non
     discoveryStatus:"unconfirmed",discoveryVerifiedAt:"2026-10-09"
   }];
   assert.ok(validateDiscoveryProviders(invalid).some((msg)=>msg.includes("non confirmée")));
+});
+
+test("offres Carrefour officielles accessibles comme source sans rabais fabriqué",()=>{
+  const source=providers.find((item)=>item.id==="carrefour-promos-officielles");
+  assert.ok(source);
+  assert.equal(source.url,"https://www.carrefour.fr/offres-du-moment");
+  assert.equal(source.discoveryVerifiedAt,"2026-10-12");
+  assert.equal(source.stores.includes("carrefour"),true);
+  assert.equal("savingPercent" in source,false);
+  assert.equal("autoStack" in source,false);
+  assert.equal("expiresAt" in source,false);
+  assert.equal(filterDiscoveryProviders(providers,{scope:"food",search:"carrefour"}).some(
+    (item)=>item.id==="carrefour-promos-officielles"),true);
 });

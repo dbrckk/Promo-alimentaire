@@ -72,6 +72,15 @@ export const providers = [
     note:"Avantages fidélité et promotions propres à Carrefour ; à intégrer comme couche magasin."
   },
   {
+    id:"carrefour-promos-officielles",name:"Carrefour — offres du moment",
+    kinds:["promotions alimentaires","catalogues","sélections"],
+    priority:"essentiel",segment:"food",stores:["carrefour"],
+    url:"https://www.carrefour.fr/offres-du-moment",
+    verificationUrl:"https://www.carrefour.fr/offres-du-moment",
+    discoveryVerifiedAt:"2026-10-12",
+    note:"Page officielle Carrefour : promotions hebdomadaires, produits à moins de 1 € et sélections Bio/frais. Certaines campagnes concernent seulement un magasin, un Drive ou plusieurs articles. Les plafonds annoncés ne sont pas des gains panier vérifiés."
+  },
+  {
     id:"leclerc", name:"E.Leclerc", kinds:["fidélité enseigne","promos"], priority:"essentiel",
     stores:["leclerc"], url:"https://www.e.leclerc/",
     note:"Prix et avantages Carte E.Leclerc dépendent du magasin ; source directe à intégrer."

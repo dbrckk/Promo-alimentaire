@@ -1,6 +1,7 @@
 import { readFile,appendFile } from "node:fs/promises";
 import { join } from "node:path";
 import { isOfferActive, validateImportBatch } from "../src/ingestion.js";
+import {failedRefreshWarning, sourceDeadlineSummary} from "../src/import-loader.js";
 import {inspectImportManifest} from "../src/import-manifest.js";
 
 const directory=new URL("../data/import/",import.meta.url);
@@ -54,19 +55,20 @@ for(const file of files){
 
   const active=validation.normalized.filter((offer)=>isOfferActive(offer,now));
   const providers=[...new Set(validation.normalized.map((offer)=>offer.providerId).filter(Boolean))];
-  const syncWarning=providers.map((id)=>sourceSync[id]).find((entry)=>
-    ["unavailable","partial"].includes(entry?.status)
-  ) || null;
+  // Same evidence gate as the PWA: a past or future failed refresh does
+  // not invalidate a newer verification, and expired offers do not create
+  // future review deadlines in the GitHub Actions report.
+  const failedProviders=new Set(active.filter((offer)=>
+    failedRefreshWarning(offer,sourceSync,now)
+  ).map((offer)=>offer.providerId));
+  const syncWarning=providers
+    .filter((id)=>active.length===0 || failedProviders.has(id))
+    .map((id)=>sourceSync[id])
+    .find((entry)=>["unavailable","partial"].includes(entry?.status)
+      && Number.isFinite(new Date(entry.checkedAt).getTime())
+      && new Date(entry.checkedAt)<=now) || null;
   activeTotal+=active.length;
-  const nextDeadlines=validation.normalized
-    .flatMap((offer)=>[offer.reviewAfter,offer.expiresAt].filter(Boolean))
-    .map((value)=>new Date(String(value).length===10 ? value+"T23:59:59Z" : value))
-    .filter((date)=>!Number.isNaN(date.getTime()) && date>=now)
-    .sort((a,b)=>a-b);
-  const nextDeadline=nextDeadlines[0] || null;
-  const daysUntil=nextDeadline
-    ? Math.ceil((nextDeadline-now)/(24*60*60*1000))
-    : null;
+  const {nextDeadline,daysUntil}=sourceDeadlineSummary(active,now);
 
   let status="ok";
   if(active.length===0){
@@ -81,7 +83,7 @@ for(const file of files){
     status,
     active:active.length,
     total:validation.normalized.length,
-    nextDeadline:nextDeadline?.toISOString() || null,
+    nextDeadline,
     daysUntil,
     syncWarning:syncWarning ? {
       status:syncWarning.status,

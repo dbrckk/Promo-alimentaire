@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { loadImportedOffers, mergeOffers, offerIdentity } from "../src/import-loader.js";
+import { loadImportedOffers, mergeOffers, offerIdentity, sourceDeadlineSummary, failedRefreshWarning } from "../src/import-loader.js";
 
 const manifest={verifiedAt:"2026-10-07",files:["one.json"]};
 const payload=[{
@@ -515,4 +515,51 @@ test("un manifeste distant ne peut charger ni chemins ni URLs arbitraires",async
     /Manifeste d'offres refusé/
   );
   assert.equal(calls,1,"Aucun autre fichier ou statut source n'est demandé");
+});
+
+test("même calendrier et mêmes échecs source dans la PWA et GitHub Actions",()=>{
+  const live={
+    providerId:"coupon-network",externalId:"live-source",id:"coupon-network-live-source",
+    verifiedAt:"2026-10-12",reviewAfter:"2026-10-12",
+    expiresAt:"2026-12-31"
+  };
+  const archived={
+    providerId:"coupon-network",externalId:"old",id:"coupon-network-old",
+    verifiedAt:"2026-10-01",reviewAfter:"2026-10-09",
+    expiresAt:"2026-12-31"
+  };
+  const before=new Date("2026-10-12T21:59:59.999Z");
+  assert.deepEqual(sourceDeadlineSummary([live,archived],before),{
+    nextDeadline:"2026-10-12",daysUntil:0
+  });
+  const after=new Date("2026-10-12T22:00:00Z");
+  assert.deepEqual(sourceDeadlineSummary([live,archived],after),{
+    nextDeadline:null,daysUntil:null
+  });
+  const precise={
+    ...live,reviewAfter:"2026-10-12T23:15:00Z"
+  };
+  assert.deepEqual(sourceDeadlineSummary([precise,archived],
+    new Date("2026-10-12T12:00:00Z")),{
+    nextDeadline:"2026-10-13",daysUntil:1
+  });
+  const shopmium={...live,providerId:"shopmium",
+    verifiedAt:"2026-10-09",reviewAfter:null,expiresAt:"2026-11-20"};
+  assert.deepEqual(sourceDeadlineSummary([shopmium],
+    new Date("2026-10-12T12:00:00Z")),{
+    nextDeadline:"2026-10-14",daysUntil:2
+  });
+  const oldFailure={
+    "coupon-network":{status:"unavailable",checkedAt:"2026-10-11T10:00:00Z"}
+  };
+  assert.equal(failedRefreshWarning(live,oldFailure,before),null,
+    "Un échec antérieur à la preuve ne dégrade pas les économies récentes");
+  const laterFailure={
+    "coupon-network":{status:"unavailable",checkedAt:"2026-10-12T13:00:00Z"}
+  };
+  assert.equal(failedRefreshWarning(live,laterFailure,before)?.status,"unavailable");
+  const futureFailure={
+    "coupon-network":{status:"partial",checkedAt:"2026-10-13T09:00:00Z"}
+  };
+  assert.equal(failedRefreshWarning(live,futureFailure,before),null);
 });

@@ -628,6 +628,11 @@ function renderSourceHealth(){
                 <a class="open" href="${catalogLink.url}" target="_blank" rel="noopener noreferrer">
                   Ouvrir les ${catalogLink.label} officiels
                 </a>.
+                ${item.providerIds?.includes("carrefour") ? `
+                  <a class="open" href="https://www.carrefour.fr/offres-du-moment"
+                     target="_blank" rel="noopener noreferrer">
+                    Voir aussi les offres Carrefour du moment
+                  </a> : ces annonces ne prouvent pas un prix final.` : ""}
                 ${isPhysicalStore
                   ? "Choisissez votre magasin et vérifiez la période ainsi que les produits éligibles"
                   : "Sélectionnez votre Drive ou lieu de livraison puis vérifiez le tarif et les produits réellement éligibles"} :
