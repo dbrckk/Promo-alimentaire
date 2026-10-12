@@ -739,7 +739,8 @@ test("catalogue quotidien : vraies meilleures économies et budget payé avant r
   const euros=selectDailyCatalogue({offers,store:"leclerc",
     channel:"store",now:at,sort:"euros"});
   assert.deepEqual(euros.highlights.map(x=>x.id),
-    ["big-saver","multi","unknown-cost"]);
+    ["big-saver","multi","less-cheap"],
+    "Un rabais en euros connu précède une annonce en % sans prix");
   const cheap=selectDailyCatalogue({offers,store:"leclerc",
     channel:"store",now:at,sort:"budget"});
   assert.deepEqual(cheap.retailer.map(x=>x.id),
