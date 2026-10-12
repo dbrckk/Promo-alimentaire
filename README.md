@@ -2,6 +2,18 @@
 
 PWA mobile-first pour regrouper et comparer les économies disponibles chez **Carrefour** et **E.Leclerc** : promotions, cashback, offres de remboursement (ODR), coupons, bons d'achat remisés et prix observés.
 
+
+## État des promotions commerçants : lien magasin ou Drive (12 octobre 2026)
+
+**Une promotion en magasin ne prouve pas le prix ou l'éligibilité en Drive/livraison.** Lorsqu'un fichier Carrefour ou E.Leclerc ne peut être reconfirmé, la PWA propose maintenant le lien public correspondant au canal choisi :
+- Magasin : [catalogues Carrefour](https://www.carrefour.fr/catalogue) ou [prospectus E.Leclerc](https://www.e.leclerc/prospectus).
+- Drive / livraison : [promotions Carrefour](https://www.carrefour.fr/promotions) ou [E.Leclerc DRIVE](https://www.leclercdrive.fr/).
+
+Les liens s'actualisent avec le sélecteur de canal, même sur smartphone, et ne génèrent **aucune économie garantie** : il faut choisir le bon magasin/Drive et confirmer produit, période et prix final. Voir les [explications officielles Carrefour](https://www.carrefour.fr/faq?question=drive-pourquoi-existe-t-il-difference-entre-promotions-magasin-celle-drive) et [E.Leclerc](https://faq.e.leclerc/hc/fr/articles/360014892877-Comment-consulter-le-catalogue-et-les-promotions-E-Leclerc).
+
+La revalidation automatisée de fiches Carrefour exige en outre un **titre de produit cohérent**, une marque, un terme de référence et la preuve chiffrée complète : prix promotionnel, prix habituel et pourcentage dans le même bloc. Une page catalogue, un titre générique ou des prix absents ne prolongent plus les campagnes historiques. Le site Carrefour limite toujours certains accès automatisés : aucune offre n'est fabriquée pour compenser.
+
+
 ## Correctif de fiabilité des remises Club Carrefour (11 octobre 2026)
 
 Une carte Club Carrefour ou PASS **ne prouve pas** que les Avantages Fruits & Légumes / Carrefour Bio ont été activés, ni que le produit est éligible sans exclusion, ni que la Carte PASS sera utilisée pour payer. Le moteur propose donc une **économie potentielle conditionnelle** de 10 % ou 15 % mais ne l'ajoute plus au « gain garanti » par simple sélection d'une carte. Ces économies sont des **crédits en cagnotte**, pas des baisses automatiques du ticket de caisse. La règle est basée sur les [conditions officielles PASS](https://www.carrefour.fr/services/carte-pass) et les [modalités d'activation du Club Carrefour](https://www.carrefour.fr/faq?question=comment-puis-je-adherer-primes-fidelite), consultées le 11/10/2026. Les promotions en cours, lots et références exclues doivent être vérifiés avant achat.
