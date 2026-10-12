@@ -71,3 +71,10 @@ Les tentatives enregistrées **avant** la vérification de l'offre ou datées du
 ### Résilience réseau du chargement PWA — 11/10/2026
 
 Le manifeste validé a un timeout natif de 8 s, les trois diagnostics facultatifs de 5 s, et chaque fichier d'offres de 9 s. Maximum trois chargements de lots sont simultanés. Les réponses sont **traitées dans l'ordre du manifeste**, indépendant de la fin des téléchargements, afin de préserver l'attribution des identifiants dupliqués, les statistiques et la priorité des diagnostics fournisseur. Une erreur de téléchargement affecte le fichier concerné, pas les fichiers valides déjà chargés. Tous les gains restent soumis aux contrôles de date et de provenance.
+
+
+## Preuve en magasin : limites de date (12 octobre 2026)
+
+`src/local-verification.js` s'aligne sur `isOfferActive()` pour les règles de validité des imports : `startsAt`, `verifiedAt`, `reviewAfter`, `expiresAt` et la fenêtre prudente Shopmium. Un `YYYY-MM-DD` désigne le **jour civil Europe/Paris entier** ; `validUntil` est borné à sa dernière milliseconde, y compris les 23/25 heures des jours de changement d'heure. Une échéance explicitement horodatée conserve sa valeur exacte. La durée maximale reste sept jours après confirmation.
+
+Une ancienne preuve sauvegardée avec une échéance à minuit UTC ne suffit pas à réactiver une remise : le filtre `isOfferActive()` est appliqué à chaque utilisation et toute offre expirée est rejetée. Aucune preuve locale ne s'applique aux canaux Drive/livraison. Les assertions sont intégrées au parcours fonctionnel Android, sans ajouter de fichier de tests unitaires.
