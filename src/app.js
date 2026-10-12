@@ -430,7 +430,7 @@ function render(){
       : "Aucune offre ne correspond aux filtres ou aucune source sans échec récent n'est disponible. Le filtre « Toutes » permet de consulter les offres non reconfirmées.";
 
   const activeProviders=filterDiscoveryProviders(providers,{
-    scope:state.sourceScope,search:state.sourceSearch
+    scope:state.sourceScope,search:state.sourceSearch,store:state.store
   });
   els.providers.innerHTML=activeProviders.length
     ? activeProviders.map(renderProvider).join("")
@@ -442,9 +442,10 @@ function render(){
     "other-50":"autres domaines, réduction maximale annoncée d’au moins 50 %",
     all:"toutes catégories"
   };
+  const merchant=state.store==="leclerc"?"E.Leclerc":"Carrefour";
   els.sourceDiscoverySummary.textContent=activeProviders.length+" service(s) référencé(s) · "+
-    scopeLabels[state.sourceScope]+
-    ". Disponibilité et économies exactes à vérifier auprès de chaque source.";
+    scopeLabels[state.sourceScope]+" · "+merchant+
+    " et services indépendants. Disponibilité et économies exactes à vérifier auprès de chaque source.";
 
   const numericPercents=ranked.map(effectivePercent).filter(Number.isFinite);
   const maxPercent=numericPercents.length?Math.max(...numericPercents):null;
