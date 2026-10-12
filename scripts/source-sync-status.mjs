@@ -12,7 +12,7 @@ export function sourceSyncStatusFile(source){
 
 export function makeSourceSyncStatus({
   status,reason="",extractedCount=0,previousSnapshotCount=0,
-  checkedAt=new Date()
+  checkedAt=new Date(),confirmedExternalIds=undefined
 }={}){
   if(!["updated","partial","unavailable"].includes(status)){
     throw new Error("État de synchronisation inconnu.");
@@ -22,10 +22,28 @@ export function makeSourceSyncStatus({
   for(const count of [extractedCount,previousSnapshotCount]){
     if(!Number.isInteger(count) || count<0) throw new Error("Nombre d'offres invalide.");
   }
+  // Partial source failures must not hide the individual records whose
+  // original public campaign proof was successfully reconfirmed. Only the
+  // synchronizer itself may emit these identities; absent metadata falls
+  // back to conservative provider-wide warnings.
+  let confirmed;
+  if(confirmedExternalIds!==undefined){
+    if(!Array.isArray(confirmedExternalIds) || confirmedExternalIds.length>2000
+      || confirmedExternalIds.some((id)=>typeof id!=="string"
+        || id.length===0 || id.length>200
+        || !/^[A-Za-z0-9._:-]+$/.test(id))
+      || new Set(confirmedExternalIds).size!==confirmedExternalIds.length
+      || confirmedExternalIds.length>extractedCount
+      || status==="unavailable" && confirmedExternalIds.length){
+      throw new Error("Identifiants individuels reconfirmés invalides.");
+    }
+    confirmed=[...confirmedExternalIds].sort();
+  }
   return {
     status,checkedAt:date.toISOString(),
     reason:String(reason).slice(0,220),
-    extractedCount,previousSnapshotCount
+    extractedCount,previousSnapshotCount,
+    ...(confirmed===undefined?{}:{confirmedExternalIds:confirmed})
   };
 }
 
