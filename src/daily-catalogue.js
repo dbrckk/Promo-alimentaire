@@ -126,8 +126,12 @@ function orderOffers(a,b,sort="percent"){
   const saving=number(b.savingAmount)-number(a.savingAmount);
   const price=number(a.upfrontCost)-number(b.upfrontCost);
   if(sort==="euros" && saving) return saving;
-  if(sort==="budget" && Number.isFinite(a.upfrontCost)
-    && Number.isFinite(b.upfrontCost) && price) return price;
+  if(sort==="budget"){
+    if(Number.isFinite(a.upfrontCost)!==Number.isFinite(b.upfrontCost))
+      return Number.isFinite(a.upfrontCost)?-1:1;
+    if(Number.isFinite(a.upfrontCost) && Number.isFinite(b.upfrontCost) && price)
+      return price;
+  }
   if(rate) return rate;
   if(saving) return saving;
   if(a.hasExactEan!==b.hasExactEan) return a.hasExactEan ? -1 : 1;
