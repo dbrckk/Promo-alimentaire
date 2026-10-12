@@ -1,3 +1,9 @@
+## Relevés de prix à minuit en France (12 octobre 2026)
+
+L'historique local et les alertes de baisse utilisent maintenant **la même date de preuve Open Prices en Europe/Paris** que la recherche des prix : les reçus du jour deviennent enregistrables dès 00 h 00 en France, sans attendre minuit UTC. Les relevés impossibles ou malformés sont refusés, les comparaisons restent limitées à un même magasin identifié et les seuils temporels ne sont pas prolongés artificiellement.
+
+Les vérifications existantes couvrent un été UTC+2, un hiver UTC+1, les changements d'heure de mars/octobre et le parcours Chrome Android. Cela ne constitue pas une confirmation de prix magasin en temps réel.
+
 # Promo Alimentaire
 
 PWA mobile-first pour regrouper et comparer les économies disponibles chez **Carrefour** et **E.Leclerc** : promotions, cashback, offres de remboursement (ODR), coupons, bons d'achat remisés et prix observés.
