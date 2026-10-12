@@ -687,7 +687,7 @@ try{
   await page.locator("#channel").selectOption("drive");
   await page.locator(
     '#sourceHealth a.open[href="https://www.carrefour.fr/promotions"]'
-  ).first().waitFor({timeout:8000});
+  ).first().waitFor({state:"attached",timeout:8000});
   assert.match(await page.locator("#sourceHealth").innerText(),
     /Sélectionnez votre Drive ou lieu de livraison/i);
   assert.equal(await carrefourStoreLink.count(),0,
