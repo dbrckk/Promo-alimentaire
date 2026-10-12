@@ -1243,6 +1243,30 @@ try{
   assert.match(await page.locator("#providers").innerText(),/MonAvisLeRendGratuit/);
   assert.match(await page.locator("#providers").innerText(),/HopHopFood/);
   assert.match(await page.locator("#providers").innerText(),/Bene Bono/);
+  // The merchant filter must govern the public source directory as well
+  // as the offer cards. Never present an official Carrefour-only program
+  // as usable at E.Leclerc; still show cross-chain and free donation sources.
+  await page.locator("#store").selectOption("carrefour");
+  assert.ok(await page.locator(
+    '#providers .provider-card a.open[href="https://www.carrefour.fr/offres-du-moment"]'
+  ).count()>0);
+  await page.locator("#store").selectOption("leclerc");
+  assert.equal(await page.locator(
+    '#providers .provider-card a.open[href="https://www.carrefour.fr/offres-du-moment"]'
+  ).count(),0);
+  assert.match(await page.locator("#sourceDiscoverySummary").innerText(),
+    /E.Leclerc et services indépendants/);
+  assert.ok(await page.locator("#providers .provider-card")
+    .filter({hasText:"Geev"}).count()>0);
+  assert.ok(await page.locator("#providers .provider-card")
+    .filter({hasText:"Shopmium"}).count()>0);
+  assert.ok(await page.locator("#providers .provider-card")
+    .filter({hasText:"E.Leclerc"}).count()>0);
+  await page.locator("#store").selectOption("carrefour");
+  assert.ok(await page.locator(
+    '#providers .provider-card a.open[href="https://www.carrefour.fr/offres-du-moment"]'
+  ).count()>0);
+
   await page.locator("#sourceSearch").fill("Bene Bono");
   assert.equal(await page.locator("#providers .provider-card").count(),1);
   assert.equal(await page.locator("#providers .provider-card a.open").first()
