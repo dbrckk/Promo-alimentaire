@@ -391,9 +391,47 @@ test("Shopmium décode correctement l'heure française avant et après changemen
   assert.deepEqual(parseValidityDates(
     "Valable entre le 01/10/2026 et le 01/11/2026"),
     {startsAt:"2026-10-01",expiresAt:"2026-11-01"});
+  // DST starts 29 March 2026 at 02:00 CET, not at noon.
+  const changeSpring=parseValidityDates(
+    "Valable entre le 29/03/2026 à partir de 01:30 et le 29/03/2026 jusqu'à 03:30."
+  );
+  assert.deepEqual(changeSpring,{
+    startsAt:"2026-03-29T01:30:00+01:00",
+    expiresAt:"2026-03-29T03:30:00+02:00"
+  });
+  const changeAutumn=parseValidityDates(
+    "Valable entre le 25/10/2026 à partir de 01:30 et le 25/10/2026 jusqu'à 02:30."
+  );
+  assert.deepEqual(changeAutumn,{
+    startsAt:"2026-10-25T01:30:00+02:00",
+    expiresAt:"2026-10-25T02:30:00+02:00"
+  });
+  const autumnStart=parseValidityDates(
+    "Valable entre le 25/10/2026 à partir de 02:30 et le 26/10/2026 jusqu'à 01:30."
+  );
+  assert.equal(autumnStart.startsAt,"2026-10-25T02:30:00+01:00");
+  const endOfDay=parseValidityDates(
+    "Valable entre le 25/10/2026 à partir de 20:00 et le 25/10/2026 jusqu'à 23:59."
+  );
+  assert.equal(endOfDay.expiresAt,"2026-10-25");
 });
 
 test("Shopmium refuse une heure de fin impossible au lieu de publier un délai incertain",()=>{
   assert.equal(parseValidityDates(
     "Valable entre le 01/10/2026 et le 12/10/2026 jusqu'à 27:89."),null);
+  for(const text of [
+    "Valable entre le 31/02/2026 et le 12/10/2026",
+    "Valable entre le 01/10/2026 et le 31/11/2026",
+    "Valable entre le 29/02/2026 et le 01/03/2026",
+    "Valable entre le 12/10/2026 et le 11/10/2026",
+    // This civil minute does not exist at the start of daylight saving time.
+    "Valable entre le 29/03/2026 à partir de 02:30 et le 30/03/2026",
+    "Valable entre le 28/03/2026 et le 29/03/2026 jusqu'à 02:30",
+    "Valable entre le 25/10/2026 à partir de 22:00 et le 25/10/2026 jusqu'à 07:00"
+  ]){
+    assert.equal(parseValidityDates(text),null,text);
+  }
+  assert.deepEqual(parseValidityDates(
+    "Valable entre le 29/02/2024 et le 01/03/2024"),
+    {startsAt:"2024-02-29",expiresAt:"2024-03-01"});
 });

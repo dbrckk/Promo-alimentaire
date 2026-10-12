@@ -179,6 +179,35 @@ try{
     savingPercent:34,tierCount:3,channels:["store","drive"],
     autoStack:false,importValid:true
   });
+  // Integration in the actual Android Chromium timezone: an offer must
+  // not gain an extra hour on French DST transition days, and malformed
+  // campaign calendars must never reach the public catalogue.
+  const shopmiumCalendarSafety=await page.evaluate(async()=>{
+    const {parseValidityDates}=await import("./src/adapters/shopmium.js");
+    const spring=parseValidityDates(
+      "Valable entre le 29/03/2026 à partir de 01:30 et le 29/03/2026 jusqu'à 03:30."
+    );
+    const autumn=parseValidityDates(
+      "Valable entre le 25/10/2026 à partir de 01:30 et le 25/10/2026 jusqu'à 02:30."
+    );
+    return {
+      springStart:spring?.startsAt||null,
+      springEnd:spring?.expiresAt||null,
+      autumnEnd:autumn?.expiresAt||null,
+      missingHour:parseValidityDates(
+        "Valable entre le 29/03/2026 et le 29/03/2026 jusqu'à 02:30."
+      ),
+      corruptDay:parseValidityDates(
+        "Valable entre le 31/02/2026 et le 12/10/2026."
+      )
+    };
+  });
+  assert.deepEqual(shopmiumCalendarSafety,{
+    springStart:"2026-03-29T01:30:00+01:00",
+    springEnd:"2026-03-29T03:30:00+02:00",
+    autumnEnd:"2026-10-25T02:30:00+02:00",
+    missingHour:null,corruptDay:null
+  });
   // Android browser: food-first rule applies to the actual published
   // Shopmium import, not only to isolated fixture records.
   const foodFirstScope=await page.evaluate(async()=>{

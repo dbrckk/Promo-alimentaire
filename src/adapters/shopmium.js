@@ -167,32 +167,64 @@ export function parseValidityDates(text){
   if(!match) return null;
   const startDay=frDateToIso(match[1]);
   const endDay=frDateToIso(match[3]);
+  // Reject corrupt civil days individually, rather than aborting an entire
+  // snapshot because one public campaign displays an impossible date.
+  if(!startDay || !endDay || startDay>endDay) return null;
   const startTime=match[2].match(/à\s+partir\s+de\s+(\d{1,2}):(\d{2})/i);
   const endSuffix=normalized.slice(match.index+match[0].length,match.index+match[0].length+90);
   const endTime=endSuffix.match(/^\s*jusqu['’]à\s+(\d{1,2}):(\d{2})/i);
-  const start=startTime ? parisTimeIso(startDay,startTime[1],startTime[2]) : startDay;
+  const start=startTime ? parisTimeIso(startDay,startTime[1],startTime[2],"start") : startDay;
   const end=endTime && !(Number(endTime[1])===23 && Number(endTime[2])===59)
-    ? parisTimeIso(endDay,endTime[1],endTime[2]) : endDay;
-  return start && end ? {startsAt:start,expiresAt:end} : null;
+    ? parisTimeIso(endDay,endTime[1],endTime[2],"end") : endDay;
+  if(!start || !end) return null;
+  // A date-only end represents the entire final day (23:59 locally),
+  // so do not compare it to midnight UTC as if that were the deadline.
+  if(startDay===endDay && startTime && endTime && end.includes("T")
+    && new Date(start)>new Date(end)) return null;
+  return {startsAt:start,expiresAt:end};
 }
 
-// Shopmium's displayed clocks use the French local time zone. Explicit ISO
-// offsets make deadlines stable on Android, Node (UTC), and across DST changes.
-function parisTimeIso(iso,hourText,minuteText){
+// France changes from CET to CEST within the day, not at noon.
+// Derive the offset at the actual advertised wall-clock minute.
+// During the spring gap (e.g. 02:30 on 29 March 2026), the local time
+// does not exist -> reject the offer. During the autumn overlap, choose
+// the latest instant for a start and earliest for an expiry, to avoid
+// inventing a longer promotional eligibility window.
+const parisPartsFormatter=new Intl.DateTimeFormat("en-GB",{
+  timeZone:"Europe/Paris",hourCycle:"h23",
+  year:"numeric",month:"2-digit",day:"2-digit",
+  hour:"2-digit",minute:"2-digit"
+});
+function parisTimeIso(iso,hourText,minuteText,boundary="end"){
   const h=Number(hourText),m=Number(minuteText);
   if(!Number.isInteger(h) || h<0 || h>23 || !Number.isInteger(m) || m<0 || m>59){
     return null;
   }
-  const sample=new Date(iso+"T12:00:00Z");
-  if(Number.isNaN(sample.getTime())) return null;
-  const zone=new Intl.DateTimeFormat("en-US",{
-    timeZone:"Europe/Paris",timeZoneName:"longOffset"
-  }).formatToParts(sample).find((part)=>part.type==="timeZoneName")?.value || "";
-  const offset=zone.match(/^GMT([+-])(\d{1,2}):(\d{2})$/);
-  if(!offset) return null;
-  const formattedOffset=offset[1]+offset[2].padStart(2,"0")+":"+offset[3];
+  const day=new Date(iso+"T12:00:00Z");
+  if(!Number.isFinite(day.getTime()) || day.toISOString().slice(0,10)!==iso){
+    return null;
+  }
+  const [year,month,date]=iso.split("-").map(Number);
+  const civilStamp=Date.UTC(year,month-1,date,h,m);
+  const validOffsets=[];
+  for(const minutes of [60,120]){
+    const instant=new Date(civilStamp-minutes*60000);
+    const parts=Object.fromEntries(
+      parisPartsFormatter.formatToParts(instant).map((part)=>[part.type,part.value])
+    );
+    if(Number(parts.year)===year && Number(parts.month)===month
+      && Number(parts.day)===date && Number(parts.hour)===h
+      && Number(parts.minute)===m){
+      validOffsets.push({minutes,utc:instant.getTime()});
+    }
+  }
+  if(!validOffsets.length) return null;
+  validOffsets.sort((a,b)=>a.utc-b.utc);
+  const chosen=boundary==="start"
+    ? validOffsets.at(-1) : validOffsets[0];
+  const offset="+0"+String(chosen.minutes/60)+":00";
   return iso+"T"+String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+
-    ":00"+formattedOffset;
+    ":00"+offset;
 }
 
 export function parsePercentTiers(text){
@@ -502,7 +534,14 @@ function htmlToLines(html){
     .replace(/<[^>]+>/g," "))
     .split(/\r?\n/).map(clean).filter(Boolean);
 }
-function frDateToIso(value){ const [d,m,y]=value.split("/"); return `${y}-${m}-${d}`; }
+function frDateToIso(value){
+  if(!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) return null;
+  const [d,m,y]=value.split("/");
+  const iso=y+"-"+m+"-"+d;
+  const date=new Date(iso+"T12:00:00Z");
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0,10)===iso
+    ? iso : null;
+}
 function slugFromUrl(url){ return String(url).match(/\/fr\/n\/([^/?#]+)/)?.[1] || "offer"; }
 function normalizeWord(value){ return String(value??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("fr").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim(); }
 function clean(value){ return String(value??"").replace(/\s+/g," ").trim(); }
