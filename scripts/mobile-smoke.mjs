@@ -1857,10 +1857,9 @@ try{
   await page.locator("#manualPriceAmount").fill("2.69");
   await page.locator("#manualPriceStoreName").fill("Carrefour Centre Lyon");
   await page.locator("#manualPricePostcode").fill("69002");
-  const localDate=await page.evaluate(()=>{
-    const now=new Date();
-    return new Date(now.getTime()-now.getTimezoneOffset()*60000)
-      .toISOString().slice(0,10);
+  const localDate=await page.evaluate(async()=>{
+    const {parisCivilDay}=await import("./src/ingestion.js");
+    return parisCivilDay(new Date());
   });
   await page.locator("#manualPriceDate").fill(localDate);
   await page.locator("#manualPriceSubmit").click();
@@ -2186,14 +2185,46 @@ try{
 
   // A personal price entered against an equivalent UPC-A must be visible
   // for the EAN-13 list entry, without reusing another store or another SKU.
+  // Verify the actual mobile JavaScript modules rather than relying on a
+  // developer-machine timezone. Midnight in France and the end-of-October
+  // DST transition must never change the 30 *calendar day* acceptance rule.
+  const manualParisCalendar=await page.evaluate(async()=>{
+    const {normalizeManualPrice}=await import("./src/manual-prices.js");
+    const {parisCivilDay}=await import("./src/ingestion.js");
+    const base={
+      code:"3017624010701",store:"leclerc",price:2.69,
+      storeName:"E.Leclerc Lyon Centre",postcode:"69002"
+    };
+    const accepted=(date,now)=>{
+      try{normalizeManualPrice({...base,date},{now:new Date(now)});return true;}
+      catch{return false;}
+    };
+    return {
+      appDate:parisCivilDay(new Date()),
+      parisTodayAccepted:accepted("2026-10-09","2026-10-08T23:00:00Z"),
+      followingDayRejected:accepted("2026-10-10","2026-10-08T23:00:00Z"),
+      stillFutureBeforeMidnight:accepted("2026-10-09","2026-10-08T21:59:59Z"),
+      thirtyDaysAccepted:accepted("2026-09-26","2026-10-25T23:40:00Z"),
+      thirtyOneDaysRejected:accepted("2026-09-25","2026-10-25T23:40:00Z")
+    };
+  });
+  assert.deepEqual(manualParisCalendar,{
+    appDate:localDate,
+    parisTodayAccepted:true,followingDayRejected:false,
+    stillFutureBeforeMidnight:false,
+    thirtyDaysAccepted:true,thirtyOneDaysRejected:false
+  });
+  await page.locator("#manualPriceDate").focus();
+  assert.equal(await page.locator("#manualPriceDate").getAttribute("max"),localDate);
+
   const manualBarcode=await page.evaluate(async()=>{
     const {
       manualPriceObservations,mergeManualPriceObservations,
       saveManualPrice,removeManualPrice
     }=await import("./src/manual-prices.js");
     const now=new Date();
-    const date=new Date(now.getTime()-now.getTimezoneOffset()*60000)
-      .toISOString().slice(0,10);
+    const {parisCivilDay}=await import("./src/ingestion.js");
+    const date=parisCivilDay(now);
     const upc="036000291452",ean="0036000291452";
     const input={
       code:upc,store:"leclerc",storeName:"E.Leclerc Lyon Centre",
