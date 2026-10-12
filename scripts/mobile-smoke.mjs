@@ -2214,7 +2214,9 @@ try{
     stillFutureBeforeMidnight:false,
     thirtyDaysAccepted:true,thirtyOneDaysRejected:false
   });
-  await page.locator("#manualPriceDate").focus();
+  await page.locator("#manualPriceDate").evaluate((input)=>{
+    input.dispatchEvent(new Event("focus"));
+  });
   assert.equal(await page.locator("#manualPriceDate").getAttribute("max"),localDate);
 
   const manualBarcode=await page.evaluate(async()=>{
