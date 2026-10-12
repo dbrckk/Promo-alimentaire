@@ -198,6 +198,54 @@ test("un échec public est visible sans rafraîchir les offres ni les dates",asy
   assert.equal(result.sourceStats[0].syncState.reason,"Aucune offre publique récupérée");
 });
 
+test("le panneau de fraîcheur n'annonce pas une panne antérieure à la preuve active",async()=>{
+  const now=new Date("2026-10-12T15:00:00Z");
+  const fresh=[{
+    providerId:"coupon-network",externalId:"new-proof",title:"Alimentaire prouvé",
+    stores:["all"],savingPercent:25,verifiedAt:"2026-10-12",
+    reviewAfter:"2026-10-25",sourceUrl:"https://www.couponnetwork.fr/"
+  }];
+  const check=async(checkedAt)=>{
+    const fetchImpl=async(url)=>{
+      const file=String(url);
+      if(file.endsWith("/index.json"))return {ok:true,json:async()=>({
+        files:["coupon-network-auto.json"]
+      })};
+      if(file.endsWith("/coupon-network-auto.json"))return {
+        ok:true,json:async()=>fresh
+      };
+      if(file.endsWith("/source-sync-status.json"))return {
+        ok:true,json:async()=>({sources:{"coupon-network":{
+          status:"unavailable",checkedAt,reason:"Dernier contrôle sans accès",
+          extractedCount:0,previousSnapshotCount:1
+        }}})
+      };
+      return {ok:false,status:404};
+    };
+    return loadImportedOffers({fetchImpl,now});
+  };
+  for(const checkedAt of [
+    "2026-10-11T12:00:00Z",
+    "2026-10-13T09:00:00Z"
+  ]){
+    const result=await check(checkedAt);
+    assert.equal(result.offers.length,1);
+    assert.equal(result.offers[0].sourceSyncWarning,undefined);
+    assert.equal(result.sourceStats[0].status,"ok",
+      "Un échec avant la preuve ou daté du futur ne rend pas l'offre obsolète");
+    assert.equal(result.sourceStats[0].syncState,undefined);
+  }
+
+  // When the prior proof is older than the actual failed check, the
+  // conservative guard is unchanged: no renewed automatic saving.
+  fresh[0].verifiedAt="2026-10-10";
+  const affected=await check("2026-10-12T12:00:00Z");
+  assert.equal(affected.offers[0].sourceSyncWarning.status,"unavailable");
+  assert.equal(affected.sourceStats[0].status,"sync-warning");
+  assert.equal(affected.sourceStats[0].syncState.checkedAt,"2026-10-12T12:00:00.000Z");
+  assert.equal(affected.offers[0].autoStack,false);
+});
+
 test("l'absence de fichier diagnostic ne bloque pas les imports",async()=>{
   const fetchImpl=async(url)=>{
     const text=String(url);
