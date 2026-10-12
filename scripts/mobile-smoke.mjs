@@ -2152,6 +2152,31 @@ try{
   });
   assert.deepEqual(trendEvidence,{shop:"id:77",delta:-1,pinned:null});
   await assertNoHorizontalOverflow(page,"tendance historique de magasin comparable");
+  // Actual Chrome Android modules must accept the current Paris civil day
+  // at 00:20, when its UTC date is still yesterday. No false future receipt,
+  // no missed decrease alert, and invalid calendar dates stay excluded.
+  const midnightHistory=await page.evaluate(async()=>{
+    const {addPriceObservation,detectPriceDrops}=
+      await import("./src/product-history.js");
+    const product={code:"3017624010701",name:"Produit connu"};
+    const observedAt=new Date("2026-10-12T22:20:00Z"); // Paris: 13/10 00:20
+    let history=[];
+    for(const [date,price] of [["2026-10-12",4],["2026-10-13",3]]){
+      history=addPriceObservation(history,{product,store:"carrefour",
+        observation:{date,price,locationId:19,storeName:"Carrefour"},
+        recordedAt:observedAt});
+    }
+    const invalid=addPriceObservation([],{product,store:"carrefour",
+      observation:{date:"2026-02-30",price:1,locationId:19},
+      recordedAt:observedAt});
+    return {
+      receipts:history.length,
+      priceDrop:detectPriceDrops(history,{now:observedAt,maxAgeDays:7,
+        thresholdPercent:20})[0]?.dropPercent ?? null,
+      invalid:invalid.length
+    };
+  });
+  assert.deepEqual(midnightHistory,{receipts:2,priceDrop:25,invalid:0});
   // Functional regression: UPC-A/EAN-13/GTIN-14 are the same verified GS1
   // product across historical records, repeated receipts and drop alerts.
   const barcodeHistory=await page.evaluate(async()=>{
