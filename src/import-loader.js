@@ -21,6 +21,25 @@ export function failedRefreshWarning(offer,syncSources,now){
     && sync.confirmedExternalIds.length<=2000 ? sync.confirmedExternalIds : null;
   if(ids && typeof offer?.externalId==="string"
     && ids.includes(offer.externalId)) return null;
+  // A transient 0/10 read after a genuine 9/10 visual confirmation is not
+  // evidence that the previous nine promotions disappeared. Keep only the
+  // individually recorded proofs as CONDITIONAL candidates for at most 24h.
+  // Every other record remains blocked, and original review/expiry dates
+  // still apply. No autoStack permission is restored by this grace period.
+  if(offer?.providerId==="leclerc" && typeof offer.externalId==="string"
+    && sync?.lastConfirmedAtById
+    && typeof sync.lastConfirmedAtById==="object"
+    && !Array.isArray(sync.lastConfirmedAtById)){
+    const last=sync.lastConfirmedAtById[offer.externalId];
+    const previous=new Date(last);
+    const instant=previous.getTime();
+    if(typeof last==="string" && Number.isFinite(instant)
+      && instant>=verified.getTime() && instant<=checked.getTime()
+      && instant<=current.getTime()
+      && current.getTime()-instant<=24*60*60*1000){
+      return null;
+    }
+  }
   return {
     status:sync.status,
     checkedAt:checked.toISOString(),
