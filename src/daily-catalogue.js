@@ -14,8 +14,9 @@ function safeCampaign(raw,today,store,channel){
     || !validDate(raw.verifiedAt) || !validDate(raw.expiresAt)
     || raw.verifiedAt>today || raw.expiresAt<today
     || (raw.startsAt && (!validDate(raw.startsAt) || raw.startsAt>today))
-    || !isOfferWithinShoppingScope({category:raw.category,
-      savingPercent:raw.category==="non-alimentaire" ? raw.advertisedMaxPercent : null})
+    // Without an exact product and actual basket price, a large "up to"
+    // advert for nonfood is not verified >=50% savings.
+    || !["alimentaire","épicerie","traiteur","bio","fruits et légumes"].includes(raw.category)
   ) return null;
   try {
     const target=new URL(raw.sourceUrl);
@@ -39,12 +40,16 @@ function validDate(value){
   return Number.isFinite(d.getTime()) && d.toISOString().slice(0,10)===value;
 }
 function itemSaving(offer){
-  const value=computeSaving(offer);
-  if(Number.isFinite(value) && value>0) return value;
+  // An advertised 60% ON THE SECOND ITEM must never become 60% of the
+  // first article. Compute the entire minimum lot before a generic rate.
   const qty=minimumQuantityForRetailerPromo(offer);
   const price=offer.basePrice;
-  return qty && Number.isFinite(price) && price>0
-    ? estimateRetailerPromoSaving(price,qty,offer) : null;
+  if(qty && Number.isFinite(price) && price>0){
+    const saving=estimateRetailerPromoSaving(price,qty,offer);
+    if(Number.isFinite(saving)) return saving;
+  }
+  const value=computeSaving(offer);
+  return Number.isFinite(value) && value>0 ? value : null;
 }
 function rate(offer){
   const explicit=effectiveRetailerPromoPercent(offer);
@@ -57,7 +62,7 @@ function normalizePick(offer){
     id:offer.id,title:offer.title,providerId:offer.providerId,
     provider:offer.provider || offer.providerId,sourceUrl:offer.sourceUrl,
     category:offer.category || "alimentaire",verifiedAt:offer.verifiedAt,
-    expiresAt:offer.reviewAfter || offer.expiresAt || null,
+    expiresAt:[offer.reviewAfter,offer.expiresAt].filter(Boolean).sort()[0] || null,
     savingAmount:itemSaving(offer),savingPercent:rate(offer),
     basePrice:Number.isFinite(offer.basePrice)?offer.basePrice:null,
     minQuantity:minimumQuantityForRetailerPromo(offer)
