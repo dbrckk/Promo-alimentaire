@@ -117,3 +117,44 @@ test("offres Carrefour officielles accessibles comme source sans rabais fabriqu�
   assert.equal(filterDiscoveryProviders(providers,{scope:"food",search:"carrefour"}).some(
     (item)=>item.id==="carrefour-promos-officielles"),true);
 });
+
+test("le choix de l'enseigne masque uniquement les sources du concurrent",()=>{
+  const carrefour=filterDiscoveryProviders(providers,{scope:"food",store:"carrefour"});
+  const leclerc=filterDiscoveryProviders(providers,{scope:"food",store:"leclerc"});
+  const carrefourIds=new Set(carrefour.map((p)=>p.id));
+  const leclercIds=new Set(leclerc.map((p)=>p.id));
+  assert.ok(carrefourIds.has("carrefour-promos-officielles"));
+  assert.ok(carrefourIds.has("carrefour-testeurs"));
+  assert.ok(carrefourIds.has("carrefour"));
+  assert.ok(!leclercIds.has("carrefour-promos-officielles"));
+  assert.ok(!leclercIds.has("carrefour-testeurs"));
+  assert.ok(!leclercIds.has("carrefour"));
+  assert.ok(leclercIds.has("leclerc"));
+  assert.ok(!carrefourIds.has("leclerc"));
+  for(const id of ["shopmium","coupon-network","quoty","geev","hophopfood","soliguide"]){
+    assert.ok(carrefourIds.has(id),"Carrefour garde "+id);
+    assert.ok(leclercIds.has(id),"E.Leclerc garde "+id);
+  }
+  const any=filterDiscoveryProviders(providers,{scope:"food"});
+  assert.ok(any.some((p)=>p.id==="carrefour-promos-officielles"));
+  assert.ok(any.some((p)=>p.id==="leclerc"));
+  // The store filter has no side effect on non-food 50 %+ discovery sources.
+  assert.deepEqual(
+    filterDiscoveryProviders(providers,{scope:"other-50",store:"leclerc"}).map((p)=>p.id),
+    filterDiscoveryProviders(providers,{scope:"other-50"}).map((p)=>p.id)
+  );
+});
+
+test("filtrage boutique, catégorie et recherche composés sans fausses éligibilités",()=>{
+  const actual=filterDiscoveryProviders(providers,{
+    scope:"food",store:"leclerc",search:"carrefour"
+  }).map((provider)=>provider.id);
+  assert.equal(actual.includes("carrefour-promos-officielles"),false);
+  assert.equal(actual.includes("carrefour-testeurs"),false);
+  const independent=filterDiscoveryProviders(providers,{
+    scope:"free-food",store:"leclerc",search:"solidaire"
+  });
+  assert.ok(independent.every((source)=>
+    !source.stores?.length || source.stores.includes("leclerc")
+      || source.stores.includes("all")));
+});

@@ -127,6 +127,12 @@ Les sources dont l'activité actuelle est incertaine restent explicitement **non
 
 Le pied de page distingue maintenant **la date du catalogue de référence** (offres intégrées manuellement au code), **le nombre d'offres importées réellement actives** après contrôle de leurs échéances et **la date de preuve la plus récente parmi ces offres actives**. La date de rechargement d'une page, celle du manifeste JSON ou un contrôle GitHub Actions sans preuve marchande ne sont jamais présentés comme une nouvelle vérification des promotions. Si les fichiers d'import ne sont pas accessibles, l'application indique qu'elle utilise seulement le catalogue de référence, sans annoncer de revalidation inexistante.
 
+## Sources pertinentes selon l'enseigne choisie (12 octobre 2026)
+
+L'onglet **Sources** utilise désormais le même choix de magasin que l'onglet **Offres**. Lorsque E.Leclerc est sélectionné, les programmes uniquement Carrefour (offres officielles, Club Carrefour, MonAvisLeRendGratuit) ne sont plus présentés comme des pistes utilisables en caisse E.Leclerc, et inversement. Les services utilisables dans les deux enseignes (Shopmium, Coupon Network, etc.) ainsi que les services indépendants (Geev, Soliguide, aide alimentaire) restent accessibles. Le changement est immédiat sur Android, sans changer la catégorie ni effacer la recherche.
+
+Le répertoire reste une sélection de **services à consulter**, jamais une confirmation de remise, de disponibilité locale ou de cumul.
+
 ## Offres officielles Carrefour accessibles même sans fiche EAN (12 octobre 2026)
 
 La page publique [Carrefour — offres du moment](https://www.carrefour.fr/offres-du-moment) annonce des opérations alimentaires, les promotions hebdomadaires et des sélections petit budget (par exemple fruits/légumes ou produits du quotidien à moins de 1 €). Le lien figure désormais dans l'annuaire **Sources** et dans le panneau de diagnostic quand le catalogue produit Carrefour n'est pas reconfirmé. Les conditions réelles et le prix varient selon le point de vente, le canal, la période et la quantité.

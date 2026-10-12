@@ -11,12 +11,21 @@ function norm(value){
     .replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
 }
 
-export function filterDiscoveryProviders(providers,{scope="food",search=""}={}){
+export function filterDiscoveryProviders(providers,{scope="food",search="",store=null}={}){
   const selection=SOURCE_SCOPES.has(scope)?scope:"food";
   const query=norm(search);
+  const selectedStore=["carrefour","leclerc"].includes(store) ? store : null;
   const rank={essentiel:0,fort:1,"complément":2};
   return (Array.isArray(providers)?providers:[])
     .filter((source)=>{
+      // Match the same merchant chosen in the main filter. Independent
+      // food-donation, cashback and assistance services (stores: [])
+      // remain visible for either selection. The directory never treats
+      // a merchant-specific program as eligible at the competing chain.
+      const supportedStores=Array.isArray(source.stores) ? source.stores : [];
+      if(selectedStore && supportedStores.length
+        && !supportedStores.includes("all")
+        && !supportedStores.includes(selectedStore)) return false;
       const segment=source.segment==="other"?"other":"food";
       if(selection==="food" && segment!=="food") return false;
       if(selection==="free-food"
