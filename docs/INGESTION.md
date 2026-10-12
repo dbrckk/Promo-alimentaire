@@ -68,6 +68,12 @@ Une tentative de synchronisation `unavailable` ou `partial` postérieure à `ver
 
 Les tentatives enregistrées **avant** la vérification de l'offre ou datées du futur ne doivent pas invalider des données prouvées postérieurement. Les événements d'échec ne modifient jamais `verifiedAt`, `reviewAfter` ou les pourcentages d'origine. Aucune donnée de remplacement n'est inventée.
 
+### Cohérence entre diagnostic de source et preuve active (12 octobre 2026)
+
+L'état « Source non actualisée » est désormais affiché pour un lot **actif** uniquement lorsqu'au moins une de ses offres reçoit réellement `sourceSyncWarning` après un contrôle `partial` ou `unavailable`. Un ancien échec enregistré **avant** une nouvelle preuve produit ne doit pas déclasser tout le lot : l'alerte globale suit la même chronologie que les fiches. Une date `checkedAt` dans le futur est ignorée tant qu'elle ne peut pas constituer un constat.
+
+Pour les lots déjà expirés ou en erreur de structure, le diagnostic historique reste visible sans prolonger la date de révision. Pour les lots actifs réellement touchés par un échec ultérieur, la protection reste inchangée : `autoStack:false`, `autoStackWhenEligible:false`, aucune économie fictive. Le test Chrome Android contrôle ces trois scénarios sur le chargeur réel.
+
 ### Résilience réseau du chargement PWA — 11/10/2026
 
 Le manifeste validé a un timeout natif de 8 s, les trois diagnostics facultatifs de 5 s, et chaque fichier d'offres de 9 s. Maximum trois chargements de lots sont simultanés. Les réponses sont **traitées dans l'ordre du manifeste**, indépendant de la fin des téléchargements, afin de préserver l'attribution des identifiants dupliqués, les statistiques et la priorité des diagnostics fournisseur. Une erreur de téléchargement affecte le fichier concerné, pas les fichiers valides déjà chargés. Tous les gains restent soumis aux contrôles de date et de provenance.
