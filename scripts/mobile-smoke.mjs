@@ -1325,6 +1325,10 @@ try{
   const filteredTitles=await page.locator("#dailyRetailer").innerText();
   assert.match(filteredTitles,/mini nems/i,
     "Un article à 2,99 € doit rester possible sous un plafond de 3 €");
+  assert.ok(await page.locator(
+    '#dailyRetailer a.open[href="https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1457"]'
+  ).count()>0,
+    "Le lecteur Android doit pouvoir ouvrir la page officielle exacte de Nissin");
   assert.match(filteredTitles,/Ramen Nissin/i,
     "Deux nouilles Demae Ramen à 0,99 € doivent être recommandables dans 3 €");
   assert.match(filteredTitles,/cassoulet Côté Table/i,
