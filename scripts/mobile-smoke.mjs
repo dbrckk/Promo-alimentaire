@@ -1301,12 +1301,13 @@ try{
     return {tierRate:t?.savingPercent,tierSaving:t?.savingAmount,
       tierMinimum:t?.minQuantity,
       tierHigherRate:t?.higherTierPercent,tierHigherMinimum:t?.higherTierMinQuantity,
+      tierHigherMaximum:t?.higherTierMaxQuantity,
       fixedRate:f?.savingPercent,fixedSaving:f?.savingAmount,
       fixedMinimum:f?.minQuantity};
   });
   assert.deepEqual(dailyRateProof,{
     tierRate:20,tierSaving:0.4,tierMinimum:1,
-    tierHigherRate:30,tierHigherMinimum:3,
+    tierHigherRate:30,tierHigherMinimum:3,tierHigherMaximum:3,
     fixedRate:25,fixedSaving:1,fixedMinimum:2
   });
   await page.locator("#store").selectOption("leclerc");
