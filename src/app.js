@@ -222,6 +222,7 @@ els.channel.addEventListener("change",()=>{
   state.channel=els.channel.value;
   localStorage.setItem("promo-channel",state.channel);
   render();
+  renderSourceHealth();
   renderOptimizer();
   renderShoppingList();
   if(state.product) renderProductOffers(state.product,state.priceObservations);
@@ -569,10 +570,15 @@ function renderSourceHealth(){
         // A retailer may block automated reading yet still publish a useful
         // official catalogue for manual consultation on the shopper's phone.
         // This link is NOT a replacement for verified SKU and price data.
+        const isPhysicalStore=state.channel==="store";
         const catalogLink=item.providerIds?.includes("carrefour")
-          ? {url:"https://www.carrefour.fr/catalogue",label:"Catalogues Carrefour"}
+          ? isPhysicalStore
+            ? {url:"https://www.carrefour.fr/catalogue",label:"catalogues magasin Carrefour"}
+            : {url:"https://www.carrefour.fr/promotions",label:"promotions Carrefour Drive/livraison"}
           : item.providerIds?.includes("leclerc")
-            ? {url:"https://www.e.leclerc/prospectus",label:"Catalogues E.Leclerc"}
+            ? isPhysicalStore
+              ? {url:"https://www.e.leclerc/prospectus",label:"catalogues magasin E.Leclerc"}
+              : {url:"https://www.leclercdrive.fr/",label:"promotions E.Leclerc DRIVE/livraison"}
             : null;
         const sourceNotConfirmed=item.status==="stale"
           || item.status==="sync-warning"
@@ -618,7 +624,9 @@ function renderSourceHealth(){
                 <a class="open" href="${catalogLink.url}" target="_blank" rel="noopener noreferrer">
                   Ouvrir les ${catalogLink.label} officiels
                 </a>.
-                Vérifiez sur place le magasin, la période et les produits éligibles :
+                ${isPhysicalStore
+                  ? "Choisissez votre magasin et vérifiez la période ainsi que les produits éligibles"
+                  : "Sélectionnez votre Drive ou lieu de livraison puis vérifiez le tarif et les produits réellement éligibles"} :
                 aucun gain n'est ajouté au panier sur la base de ce lien.
               </p>` : ""}
           </article>`;

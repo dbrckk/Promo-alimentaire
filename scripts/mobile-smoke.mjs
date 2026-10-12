@@ -676,6 +676,57 @@ try{
       assert.equal(await manualLink.first().getAttribute("target"),"_blank");
     }
   }
+  // Fallback links are channel-aware: physical Carrefour/Leclerc
+  // catalogues are not proof of Drive checkout promotions. The links
+  // must update instantly on Android and never create basket savings.
+  const carrefourStoreLink=page.locator(
+    '#sourceHealth a.open[href="https://www.carrefour.fr/catalogue"]'
+  );
+  assert.ok(await carrefourStoreLink.count()>0,
+    "La source Carrefour épuisée doit conserver son lien magasin officiel");
+  await page.locator("#channel").selectOption("drive");
+  await page.locator(
+    '#sourceHealth a.open[href="https://www.carrefour.fr/promotions"]'
+  ).first().waitFor({state:"attached",timeout:8000});
+  assert.match(await page.locator("#sourceHealth").innerText(),
+    /Sélectionnez votre Drive ou lieu de livraison/i);
+  assert.equal(await carrefourStoreLink.count(),0,
+    "Le catalogue magasin ne doit pas être proposé comme tarif Drive");
+  await page.locator("#channel").selectOption("online");
+  assert.ok(await page.locator(
+    '#sourceHealth a.open[href="https://www.carrefour.fr/promotions"]'
+  ).count()>0);
+  await page.locator("#channel").selectOption("store");
+  assert.ok(await carrefourStoreLink.count()>0);
+  const carrefourEvidenceGuard=await page.evaluate(async()=>{
+    const {verifyCarrefourPromotionPage}=
+      await import("./src/adapters/carrefour-promotions.js");
+    const offer={
+      sourceUrl:"https://www.carrefour.fr/p/pates-fusilli-panzani-3038359913242",
+      savingPercent:30,sourcePromoPrice:1.11,sourceRegularPrice:1.59,
+      eans:["3038359913242"],
+      productMatch:{brands:["Panzani"],all:["fusilli"]}
+    };
+    const html="<h1>Pâtes Fusilli PANZANI</h1>"+
+      "<p>1,11 € au lieu de 1,59 € PROMO : 30%</p>";
+    return {
+      legitimate:verifyCarrefourPromotionPage(html,offer).ok,
+      noPrice:verifyCarrefourPromotionPage(html,{
+        ...offer,sourceRegularPrice:null
+      }).ok,
+      noH1:verifyCarrefourPromotionPage(
+        html.replace(/<h1[^>]*>([\s\S]*?)<\/h1>/i,"<p>$1</p>"),offer
+      ).ok,
+      unrelatedTitle:verifyCarrefourPromotionPage(
+        html.replace("Pâtes Fusilli PANZANI","Promotion du moment")
+          +"<p>Pâtes Fusilli PANZANI</p>",offer
+      ).ok
+    };
+  });
+  assert.deepEqual(carrefourEvidenceGuard,{
+    legitimate:true,noPrice:false,noH1:false,unrelatedTitle:false
+  });
+
   // Real Coupon Network public catalogue cards place the amount after
   // the product condition, unlike the historical coupon pages. Exercise
   // the browser adapter, including a shell with no product offers, before

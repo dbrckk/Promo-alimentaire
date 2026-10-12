@@ -4,6 +4,11 @@ export function verifyCarrefourPromotionPage(html,offer,{
   const text=normalizePageText(html);
   const reasons=[];
   if(!text) return {ok:false,reasons:["page vide"]};
+  // A page with recommendations or a generic catalogue shell may contain
+  // brand terms and unrelated crossed-out prices. Require a real product H1.
+  const headingHtml=String(html ?? "").match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
+  const productHeading=normalizePageText(headingHtml || "");
+  if(!productHeading) reasons.push("titre de la fiche produit absent");
 
   const eans=(offer?.eans || []).map((value)=>String(value).replace(/\D/g,"")).filter(Boolean);
   let officialProductPage=false;
@@ -26,6 +31,17 @@ export function verifyCarrefourPromotionPage(html,offer,{
   const brands=(rules.brands || []).map(normalizeText).filter(Boolean);
   const required=(rules.all || []).map(normalizeText).filter(Boolean);
   const optional=(rules.any || []).map(normalizeText).filter(Boolean);
+  // Proof from nearby suggestions is insufficient: at least the brand and
+  // one distinctive product term must identify the H1 itself.
+  if(!brands.length || !required.length){
+    reasons.push("marque ou référence produit précise manquante");
+  }
+  if(brands.length && !brands.some((term)=>contains(productHeading,term))){
+    reasons.push("marque absente du titre produit");
+  }
+  if(required.length && !required.some((term)=>contains(productHeading,term))){
+    reasons.push("référence absente du titre produit");
+  }
 
   if(brands.length && !brands.some((term)=>contains(text,term))){
     reasons.push("marque absente");
@@ -43,6 +59,17 @@ export function verifyCarrefourPromotionPage(html,offer,{
     ? NaN : Number(offer.sourcePromoPrice);
   const regularPrice=offer?.sourceRegularPrice===null || offer?.sourceRegularPrice===undefined
     ? NaN : Number(offer.sourceRegularPrice);
+  // Never refresh a dated campaign using just a merchant product title:
+  // official price, previous price and advertised discount are all required.
+  if(!Number.isFinite(percent) || percent<=0 || percent>100){
+    reasons.push("taux promotionnel chiffré manquant");
+  }
+  if(!Number.isFinite(promoPrice) || promoPrice<=0){
+    reasons.push("prix promotionnel chiffré manquant");
+  }
+  if(!Number.isFinite(regularPrice) || regularPrice<=0){
+    reasons.push("prix normal chiffré manquant");
+  }
 
   const pair=Number.isFinite(promoPrice) && Number.isFinite(regularPrice)
     ? findPricePair(text,promoPrice,regularPrice) : null;
