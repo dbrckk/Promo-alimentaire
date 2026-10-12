@@ -6,7 +6,7 @@ export function verifyCarrefourPromotionPage(html,offer,{
   if(!text) return {ok:false,reasons:["page vide"]};
   // A page with recommendations or a generic catalogue shell may contain
   // brand terms and unrelated crossed-out prices. Require a real product H1.
-  const headingHtml=String(html ?? "").match(/<h1\\b[^>]*>([\\s\\S]*?)<\\/h1>/i)?.[1];
+  const headingHtml=String(html ?? "").match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
   const productHeading=normalizePageText(headingHtml || "");
   if(!productHeading) reasons.push("titre de la fiche produit absent");
 
