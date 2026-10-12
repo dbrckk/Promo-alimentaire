@@ -1,5 +1,6 @@
-import { isOfferActive, shopmiumLegacyReviewCutoff, validateImportBatch } from "./ingestion.js";
+import { isOfferActive, parisCivilDay, shopmiumLegacyReviewCutoff, validateImportBatch } from "./ingestion.js";
 import {inspectImportManifest} from "./import-manifest.js";
+import {endOfOffer} from "./local-verification.js";
 
 // A failed refresh is NOT a new expiry date or proof that an old offer is
 // false. Keep it visible as a candidate, but never silently count its
@@ -125,21 +126,30 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
       // A newer date on an expired offer cannot be advertised as the
       // latest proof among the active catalog.
       const verifiedDates=activeOffers.map((offer)=>offer.verifiedAt).filter(Boolean).sort();
-      const deadlines=result.normalized
+      // Count only offers still active, using the very same inclusive
+      // Europe/Paris civil deadlines as store confirmations and offer validity.
+      // A source review on 12/10 ends at 23:59:59.999 Paris, not UTC.
+      const deadlines=activeOffers
         .map((offer)=>{
-          // A supplier's earliest deadline wins: showing a distant advertised
-          // expiry after a nearer review cut-off falsely implies availability.
+          const legacyReview=shopmiumLegacyReviewCutoff(offer);
           const candidates=[
-            ...[offer.reviewAfter,offer.expiresAt].filter(Boolean)
-              .map((value)=>new Date(String(value).length===10 ? value+"T23:59:59Z" : value)),
-            shopmiumLegacyReviewCutoff(offer)
-          ].filter((date)=>date && !Number.isNaN(date.getTime()));
+            endOfOffer(offer.reviewAfter),
+            endOfOffer(offer.expiresAt),
+            legacyReview ? endOfOffer(legacyReview.toISOString().slice(0,10)) : null
+          ].filter((date)=>date && Number.isFinite(date.getTime()));
           return candidates.sort((a,b)=>a-b)[0] || null;
         })
         .filter((date)=>date && date>=now)
         .sort((a,b)=>a-b);
       const nextDeadline=deadlines[0] || null;
-      const daysUntil=nextDeadline ? Math.ceil((nextDeadline-now)/(24*60*60*1000)) : null;
+      const nextDeadlineDay=nextDeadline ? parisCivilDay(nextDeadline) : null;
+      const todayParis=parisCivilDay(now);
+      // "jours restants" is a difference between French *calendar days*,
+      // not a 24-hour duration (DST makes some civil days 23/25 hours).
+      const daysUntil=nextDeadlineDay && todayParis
+        ? Math.round((Date.parse(nextDeadlineDay+"T12:00:00Z")
+          -Date.parse(todayParis+"T12:00:00Z"))/(24*60*60*1000))
+        : null;
       const validityStatus=activeOffers.length===0
         ? "stale" : daysUntil!==null && daysUntil<=3 ? "review-soon" : "ok";
       sourceStats.push({
@@ -156,7 +166,7 @@ export async function loadImportedOffers({fetchImpl=fetch,now=new Date()}={}) {
         resolutionBlockedCount,
         storeVerificationCount,
         latestVerifiedAt:verifiedDates.at(-1) || null,
-        nextDeadline:nextDeadline?.toISOString().slice(0,10) || null
+        nextDeadline:nextDeadlineDay
       });
       for(const offer of result.normalized){
         if(ids.has(offer.id)){
