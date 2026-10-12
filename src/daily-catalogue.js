@@ -107,6 +107,7 @@ function normalizePick(offer){
       && (!Number.isFinite(minimumRate) || maxAdvertisedRate>minimumRate)
       ? maxAdvertisedRate : null,
     higherTierMinQuantity:bestTier?.minQty ?? null,
+    higherTierMaxQuantity:bestTier?.maxQty ?? null,
     hasExactEan:Boolean(offer.eans?.length && offer.eanEvidenceUrl),
     requiresStoreVerification:Boolean(offer.requiresStoreVerification),
     rewardType:offer.rewardType || null,
