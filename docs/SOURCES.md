@@ -365,7 +365,7 @@ La forme « jusqu'à 23:59 » reste une date de fin inclusive au niveau du jour 
 
 ## Classification prudente des 111 coupons alimentaires et non alimentaires — 12 octobre 2026
 
-Le catalogue Coupon Network public est importé avec la catégorie générique `autre` pour ses fiches. Après normalisation, l'application reconnaît désormais comme **alimentaires** uniquement les familles de produits clairement nommées dans le titre ou les conditions : par exemple carottes, yaourts, fromages, café, compotes, biscuits et produits de boulangerie explicitement identifiables. Les termes vagues comme « bio », « nature », « maison » ou la simple marque ne suffisent pas à qualifier un produit.
+Le catalogue Coupon Network public est importé avec la catégorie générique `autre` pour ses fiches. Après normalisation, l'application reconnaît désormais comme **alimentaires** uniquement les familles de produits clairement nommées dans le titre ou les conditions : par exemple carottes, yaourts, fromages, café, compotes et produits de boulangerie explicitement identifiables. Les termes vagues comme « bio », « nature », « maison » ou la simple marque ne suffisent pas à qualifier un produit.
 
 Les indices de **ménage, hygiène, produits pour animaux ou alcool** sont examinés en priorité : un shampooing « au lait » reste non alimentaire. Les boissons alcoolisées qui ne sont mentionnées que par leur nom de gamme connu dans le catalogue public (p. ex. Jack Daniel's ou Pelican Blonde) ne sont pas assimilées à l'alimentaire. Les réductions fixes sans prix de référence vérifié ne permettent pas d'affirmer que le seuil de **50 %** non alimentaire est atteint : elles restent exclues de la liste d'économies.
 
