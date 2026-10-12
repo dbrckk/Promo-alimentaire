@@ -177,7 +177,9 @@ export function parseValidityDates(text){
   const end=endTime && !(Number(endTime[1])===23 && Number(endTime[2])===59)
     ? parisTimeIso(endDay,endTime[1],endTime[2],"end") : endDay;
   if(!start || !end) return null;
-  if(startDay===endDay && startTime && endTime
+  // A date-only end represents the entire final day (23:59 locally),
+  // so do not compare it to midnight UTC as if that were the deadline.
+  if(startDay===endDay && startTime && endTime && end.includes("T")
     && new Date(start)>new Date(end)) return null;
   return {startsAt:start,expiresAt:end};
 }
