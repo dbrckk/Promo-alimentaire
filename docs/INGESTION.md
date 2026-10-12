@@ -131,3 +131,9 @@ La commande `npm run check:freshness -- --strict` distingue :
 - `missing-or-invalid` / `invalid` : un fichier absent ou illisible reste **bloquant**, y compris s'il est déclaré historique.
 
 Actuellement, seul `carrefour-promotions-auto.json` est archivé explicitement : ses **11 campagnes périmées** subsistent pour audit, sans promotion Carrefour reconfirmée. Le dernier échec du contrôle strict du 12 octobre venait uniquement de ces campagnes anciennes. Les sources Coupon Network, Shopmium et Leclerc continuent à être contrôlées normalement. Le suivi doit toujours retrouver une source Carrefour exploitable ; une archive n'en remplace pas une.
+
+## Sélection quotidienne, sans transformer les publicités en prix (12 octobre 2026)
+
+Le module `src/daily-catalogue.js` consomme les lots normalisés et `filterActiveOffers` ; les campagnes `data/daily-campaigns.json` sont une deuxième catégorie strictement **éditoriale**, jamais déclarée dans `data/import/index.json`. Le navigateur applique chaque fois la date `Europe/Paris`, le canal et l'enseigne. Les annonces doivent porter une date de consultation valide, une date de fin officielle et un lien HTTPS appartenant au domaine de l'enseigne ; sans ces preuves, elles sont rejetées. Elles conservent leurs plafonds uniquement dans les textes publicitaires et **n'ont pas** de taux global, de prix SKU, de code GTIN ni de gain panier produit.
+
+Les recommandations de fiches enseigne classent d'abord les EAN ayant leur preuve, puis les taux documentés, puis les montants. Toutes restent des candidates à confirmer en magasin, et les ODR sont présentées indépendamment : aucune addition de gains non cumulables. Les campagnes non renouvelées disparaissent automatiquement à leur échéance ; le catalogue officiel reste accessible.
