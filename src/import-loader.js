@@ -14,6 +14,13 @@ export function failedRefreshWarning(offer,syncSources,now){
   const verified=new Date(stamp.length===10 ? stamp+"T00:00:00Z" : stamp);
   if([checked,current,verified].some((date)=>!Number.isFinite(date.getTime()))
     || checked>current || checked<=verified) return null;
+  // A partial source sync is not a failure for every one of its products.
+  // This bounded list is issued by the official public-catalogue verifier;
+  // missing lists retain the old conservative provider-wide fallback.
+  const ids=sync.status==="partial" && Array.isArray(sync.confirmedExternalIds)
+    && sync.confirmedExternalIds.length<=2000 ? sync.confirmedExternalIds : null;
+  if(ids && typeof offer?.externalId==="string"
+    && ids.includes(offer.externalId)) return null;
   return {
     status:sync.status,
     checkedAt:checked.toISOString(),
