@@ -582,7 +582,7 @@ function renderDailyCatalogue(){
     ?digest.retailer.map(renderPick).join("")
     :fallback("Aucune promotion produit de cette enseigne n'a de preuve active exploitable pour ce canal. "+
       (unconfirmedRetailerCount
-        ? unconfirmedRetailerCount+" ancienne(s) candidate(s) apparaissent dans la section « À vérifier aujourd'hui » (si budget illimité), ou dans l'onglet Offres avec le filtre « Toutes ». Aucune économie correspondante n'est garantie. "
+        ? unconfirmedRetailerCount+" ancienne(s) candidate(s) apparaissent dans la section « À vérifier aujourd'hui » (si budget illimité), ou dans l'onglet Offres avec le filtre « Toutes, y compris non reconfirmées ». Aucune économie correspondante n'est garantie. "
         : "")+
       "Consulte le catalogue officiel pour les offres locales.");
   els.dailyUnconfirmed.innerHTML=digest.unconfirmed.length
