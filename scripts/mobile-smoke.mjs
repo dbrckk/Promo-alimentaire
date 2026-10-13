@@ -1325,6 +1325,14 @@ try{
     assert.match(await page.locator("#dailyRetailer").innerText(),
       /Aucune promotion produit.*preuve active exploitable/i,
       "L'absence de nouvelles preuves doit être affichée clairement");
+    const status=await page.locator("#dailyStatus").innerText();
+    if(status.includes("non reconfirmée(s)")){
+      assert.match(await page.locator("#dailyRetailer").innerText(),
+        /Toutes, y compris non reconfirmées/,
+        "Les candidates archivées restent consultables uniquement sur demande");
+      assert.match(await page.locator("#dailyRetailer").innerText(),
+        /Aucune économie correspondante n'est garantie/);
+    }
   }else{
     assert.ok(await page.locator("#dailyRetailer .daily-offer a.open").count()>0,
       "Chaque offre réellement visible doit permettre de contrôler sa source");
