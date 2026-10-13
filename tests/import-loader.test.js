@@ -2,6 +2,9 @@ import {confirmPublicDailyCampaign} from "../scripts/daily-campaign-evidence.mjs
 import test from "node:test";
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
+import {mkdtemp,rm,writeFile} from "node:fs/promises";
+import {tmpdir} from "node:os";
+import {join} from "node:path";
 import { loadImportedOffers, mergeOffers, offerIdentity, sourceDeadlineSummary, failedRefreshWarning, sourceRefreshImpact } from "../src/import-loader.js";
 import {selectDailyCatalogue} from "../src/daily-catalogue.js";
 
@@ -625,19 +628,58 @@ test("le manifeste distingue archives documentées et sources actives",async()=>
   }
 });
 
-test("la vérification planifiée stricte accepte les archives Carrefour sans cacher leur absence d'offres",()=>{
-  // Reproduce the actual Oct-12 strict GitHub Actions failure: the 11 legacy
-  // Carrefour campaigns are expired while other merchants still have offers.
-  const output=execFileSync(process.execPath,
+test("la vérification planifiée stricte accepte une archive sans masquer une offre active",async()=>{
+  // Verify the real CLI against isolated data. The production catalog changes
+  // daily and must not break a regression merely by refreshing campaign dates.
+  const dir=await mkdtemp(join(tmpdir(),"promo-freshness-"));
+  const writeJson=(name,value)=>
+    writeFile(join(dir,name),JSON.stringify(value,null,2)+"\n","utf8");
+  const archived=Array.from({length:11},(_,index)=>({
+    ...payload[0],providerId:"carrefour",externalId:"expired-"+index,
+    stores:["carrefour"],verifiedAt:"2026-10-07",
+    reviewAfter:"2026-10-09",expiresAt:"2026-10-09"
+  }));
+  const live=Array.from({length:2},(_,index)=>({
+    ...payload[0],providerId:"coupon-network",externalId:"live-"+index,
+    verifiedAt:"2026-10-11",reviewAfter:"2026-10-19",
+    sourceUrl:"https://www.couponnetwork.fr/"
+  }));
+  const env={...process.env,NODE_ENV:"test",
+    PROMO_FRESHNESS_FIXTURE_DIR:dir,
+    CHECK_DATE:"2026-10-12T17:53:14.000Z"};
+  const check=()=>execFileSync(process.execPath,
     ["scripts/check-import-freshness.mjs","--strict"],{
-      cwd:new URL("../",import.meta.url),
-      env:{...process.env,CHECK_DATE:"2026-10-12T17:53:14.000Z"},
-      encoding:"utf8"
+      cwd:new URL("../",import.meta.url),env,encoding:"utf8"
     });
-  assert.match(output,/carrefour-promotions-auto\.json: archived · 0\/11 actives/);
-  assert.match(output,/coupon-network-auto\.json: ok · 111\/111 actives/);
-  assert.match(output,/1 fichier\(s\) en archive historique explicite/);
-  assert.match(output,/0 fichier\(s\) périmé\(s\)\/invalide\(s\)/);
+  try{
+    await writeJson("index.json",{
+      verifiedAt:"2026-10-12",
+      files:["carrefour-promotions-auto.json","coupon-network-auto.json"],
+      archivedOnly:{
+        "carrefour-promotions-auto.json":"Campagnes antérieures archivées pour audit"
+      }
+    });
+    await writeJson("carrefour-promotions-auto.json",archived);
+    await writeJson("coupon-network-auto.json",live);
+    const output=check();
+    assert.match(output,/carrefour-promotions-auto\.json: archived · 0\/11 actives/);
+    assert.match(output,/coupon-network-auto\.json: ok · 2\/2 actives/);
+    assert.match(output,/1 fichier\(s\) en archive historique explicite/);
+    assert.match(output,/0 fichier\(s\) périmé\(s\)\/invalide\(s\)/);
+
+    // The archive exemption must fail if an active campaign slips inside.
+    await writeJson("carrefour-promotions-auto.json",[
+      ...archived.slice(0,10),{
+        ...archived[10],externalId:"active-but-marked-archive",
+        verifiedAt:"2026-10-12",reviewAfter:"2026-10-15",
+        expiresAt:"2026-10-15"
+      }
+    ]);
+    assert.throws(check,/Command failed/,
+      "Une archive contenant une offre active doit échouer en mode strict");
+  }finally{
+    await rm(dir,{recursive:true,force:true});
+  }
 });
 
 test("analyse du catalogue : vrais relevés enseigne séparés des remboursements et campagnes",()=>{
