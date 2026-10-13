@@ -26,6 +26,7 @@ function requiredCount(value,name){
 }
 let confirmed=0;
 let retained=records.length;
+let confirmedExternalIds=undefined;
 if(outcome==="success"){
   confirmed=requiredCount(process.env.SHOPMIUM_CONFIRMED_COUNT,"confirmed_count");
   retained=requiredCount(process.env.SHOPMIUM_RETAINED_COUNT,"retained_count");
@@ -33,6 +34,22 @@ if(outcome==="success"){
   if(confirmed+retained!==written || written!==records.length){
     throw new Error("Incohérence entre fiches réellement vérifiées, retenues et snapshot publié.");
   }
+  let ids;
+  try{ids=JSON.parse(process.env.SHOPMIUM_CONFIRMED_IDS || "");}
+  catch{throw new Error("confirmed_ids Shopmium manquant ou JSON invalide.");}
+  if(!Array.isArray(ids) || ids.length!==confirmed || ids.length>2000
+    || ids.some((id)=>typeof id!=="string" || !/^[A-Za-z0-9._:-]{1,200}$/.test(id))
+    || new Set(ids).size!==ids.length){
+    throw new Error("confirmed_ids Shopmium incohérents avec les fiches revalidées.");
+  }
+  const snapshotIds=new Set(records.map((offer)=>offer.externalId));
+  if(ids.some((id)=>!snapshotIds.has(id))){
+    throw new Error("confirmed_ids Shopmium absent(s) du snapshot publié.");
+  }
+  // The sole unconfirmed offer must remain a review candidate. Without
+  // these exact IDs, a provider-level 'partial' would wrongly suppress all
+  // 45 independently revalidated offers from the daily catalogue.
+  if(retained>0) confirmedExternalIds=ids;
 }
 const allConfirmed=outcome==="success"
   && records.length>0 && confirmed===records.length;
@@ -48,7 +65,8 @@ const reason=outcome==="failure"
 
 await writeSourceSyncStatus("shopmium",{
   status,reason,extractedCount:confirmed,
-  previousSnapshotCount:records.length,checkedAt:now
+  previousSnapshotCount:records.length,checkedAt:now,
+  ...(confirmedExternalIds===undefined?{}:{confirmedExternalIds})
 },{write:process.argv.includes("--write")});
 console.log("[shopmium-status] "+status+" · "+confirmed+"/"+records.length+
   " actives reconfirmées · "+(outcome==="failure"?"source indisponible":"synchronisation réussie"));
