@@ -439,3 +439,8 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
 .daily-filters .field{min-width:0}
 .daily-filters select{width:100%;max-width:100%}
 @media(max-width:720px){.daily-filters{grid-template-columns:1fr}}
+
+/* Verification leads are intentionally visually distinct from validated
+   daily savings: historical figures never imply a current shelf price. */
+.daily-unconfirmed{border-style:dashed;border-color:var(--line)}
+.daily-unconfirmed .badge{align-self:start}

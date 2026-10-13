@@ -1,3 +1,11 @@
+### Catalogue du jour : pistes concrètes à vérifier même si la source n'a pas confirmé les offres (14 octobre 2026)
+
+L'onglet **Promos du jour** inclut désormais **À vérifier aujourd'hui — catalogue non reconfirmé**, en dessous des promotions encore vérifiées. Il présente uniquement les anciennes offres produit de l'enseigne **dans leur période initiale de validité**, pour le **magasin et le canal actuellement sélectionnés**, lorsque le contrôle source a réellement échoué. Les campagnes expirées, les promotions d'autres enseignes et les annonces sans preuve ne sont jamais réactivées.
+
+**Sécurité des prix** : cette section est une *liste de vérifications*, pas une liste de remises actuelles. Les éventuels pourcentages, coûts ou économies y sont explicitement indiqués comme **anciens**, les valeurs courantes sont `null`, et ces pistes ne rejoignent ni le TOP 3 ni les prix garantis ni le panier. Avec un budget maximal de 3/5/10/20 €, elles sont masquées : un ancien prix ne prouve pas la capacité actuelle à acheter le lot. Chaque entrée pointe vers sa source officielle, donne sa date de dernière preuve, son éventuel échec de synchronisation et sa date de fin annoncée.
+
+Les scénarios de vérification existants sont étendus aux canaux magasin/Drive, échéances françaises, listes vides et parcours Android Chrome. La source E.Leclerc du 12 octobre ayant échoué, ces anciennes pistes deviennent visibles **pour contrôle manuel uniquement** tant que leur date de fin initiale n'est pas dépassée.
+
 ### Huit nouvelles promotions alimentaires issues du catalogue public E.Leclerc (12 octobre 2026)
 
 Le lot `data/import/leclerc-catalog-2026-10-07.json` comprend désormais **8 promotions supplémentaires** relevées dans le [catalogue officiel « Nos promos du moment » du 6 au 17 octobre](https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893), notamment :

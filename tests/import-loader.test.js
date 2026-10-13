@@ -896,3 +896,56 @@ test("source partiellement vérifiée : 9 bonnes offres restent visibles, la 10e
     shopmium:{...partialShopmium.shopmium,confirmedExternalIds:undefined}
   },checkAt).affectedCount,46);
 });
+
+test("catalogue du jour : pistes enseigne non reconfirmées séparées des économies",()=>{
+  const at=new Date("2026-10-14T12:00:00Z");
+  const sample=(id,props={})=>({
+    id,providerId:"leclerc",provider:"E.Leclerc",title:"Remise alimentaire "+id,
+    scope:"produit",category:"épicerie",stores:["leclerc"],channels:["store"],
+    sourceUrl:"https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1893",
+    basePrice:1.5,savingPercent:40,verifiedAt:"2026-10-12",
+    reviewAfter:"2026-10-17",expiresAt:"2026-10-17",
+    ...props
+  });
+  const warning={status:"unavailable",checkedAt:"2026-10-13T20:00:00Z"};
+  const checked=sample("confirmed");
+  const warned=sample("warned",{
+    sourceSyncWarning:warning,basePrice:1.1,
+    eans:["3564700602706"],eanEvidenceUrl:"https://www.e.leclerc/fp/example"
+  });
+  const expired=sample("expired",{reviewAfter:"2026-10-13",
+    sourceSyncWarning:warning});
+  const wrongChannel=sample("drive",{channels:["drive"],
+    sourceSyncWarning:warning});
+  const otherStore=sample("carrefour",{providerId:"carrefour",
+    stores:["carrefour"],sourceSyncWarning:warning});
+  const options={offers:[checked,warned,expired,wrongChannel,otherStore],
+    store:"leclerc",channel:"store",now:at};
+  const result=selectDailyCatalogue(options);
+  assert.deepEqual(result.retailer.map((x)=>x.id),["confirmed"]);
+  assert.deepEqual(result.highlights.map((x)=>x.id),["confirmed"]);
+  assert.deepEqual(result.unconfirmed.map((x)=>x.id),["warned"]);
+  assert.equal(result.unconfirmedRetailerCount,1);
+  assert.equal(result.unconfirmed[0].savingPercent,null);
+  assert.equal(result.unconfirmed[0].savingAmount,null);
+  assert.equal(result.unconfirmed[0].upfrontCost,null);
+  assert.equal(result.unconfirmed[0].historicalRate,40);
+  assert.equal(result.unconfirmed[0].historicalUpfront,1.1);
+  assert.equal(result.unconfirmed[0].hasExactEan,true);
+  assert.equal(result.unconfirmed[0].needsReconfirmation,true);
+  assert.equal(result.unconfirmed[0].lastProofAt,"2026-10-12");
+  assert.equal(result.unconfirmed[0].advertisedUntil,"2026-10-17");
+  const budget=selectDailyCatalogue({...options,maxSpend:3});
+  assert.equal(budget.unconfirmed.length,0,
+    "Le prix historique ne prouve jamais un budget actuel de 3 €");
+  assert.equal(budget.unconfirmedRetailerCount,1);
+  assert.deepEqual(budget.highlights.map((x)=>x.id),["confirmed"]);
+  const nextDay=selectDailyCatalogue({...options,
+    now:new Date("2026-10-17T22:00:00Z")});
+  assert.equal(nextDay.unconfirmed.length,0,
+    "Le catalogue du 17 octobre expire à minuit Paris");
+  const drive=selectDailyCatalogue({...options,channel:"drive"});
+  assert.deepEqual(drive.unconfirmed.map((x)=>x.id),["drive"]);
+  const competitor=selectDailyCatalogue({...options,store:"carrefour"});
+  assert.deepEqual(competitor.unconfirmed.map((x)=>x.id),["carrefour"]);
+});

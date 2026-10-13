@@ -78,6 +78,7 @@ const els = {
   dailySort:document.querySelector("#dailySort"),
   dailyMaxSpend:document.querySelector("#dailyMaxSpend"),
   dailyRetailer:document.querySelector("#dailyRetailer"),
+  dailyUnconfirmed:document.querySelector("#dailyUnconfirmed"),
   dailyExtras:document.querySelector("#dailyExtras"),
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
@@ -499,14 +500,9 @@ function renderDailyCatalogue(){
     sort:state.dailySort,
     maxSpend:state.dailyMaxSpend==="all"?null:Number(state.dailyMaxSpend)
   });
-  // A blocked source may hide otherwise dated candidates. Make that
-  // visible without promoting them back into today's verified ranking.
-  const unconfirmedRetailerCount=filterOffers(
-    activeOffers().filter((offer)=>offer.scope==="produit"
-      && offer.providerId===state.store && offer.sourceSyncWarning
-      && isOfferWithinShoppingScope(offer)),
-    {store:state.store,channel:state.channel,search:""}
-  ).length;
+  // Derived by the daily selection engine, so the main summary and the
+  // verification shortlist always apply identical date/channel filters.
+  const unconfirmedRetailerCount=digest.unconfirmedRetailerCount;
   const source=state.store==="carrefour"
     ? state.channel==="store" ? "https://www.carrefour.fr/catalogue/carrefour"
       : "https://www.carrefour.fr/offres-du-moment"
@@ -586,9 +582,51 @@ function renderDailyCatalogue(){
     ?digest.retailer.map(renderPick).join("")
     :fallback("Aucune promotion produit de cette enseigne n'a de preuve active exploitable pour ce canal. "+
       (unconfirmedRetailerCount
-        ? unconfirmedRetailerCount+" ancienne(s) candidate(s) reste(nt) consultable(s) uniquement pour vérification : onglet Offres, filtre « Toutes, y compris non reconfirmées ». Aucune économie correspondante n'est garantie. "
+        ? unconfirmedRetailerCount+" ancienne(s) candidate(s) apparaissent dans la section « À vérifier aujourd'hui » (si budget illimité), ou dans l'onglet Offres avec le filtre « Toutes, y compris non reconfirmées ». Aucune économie correspondante n'est garantie. "
         : "")+
       "Consulte le catalogue officiel pour les offres locales.");
+  els.dailyUnconfirmed.innerHTML=digest.unconfirmed.length
+    ?digest.unconfirmed.map((item)=>{
+      const priorRate=Number.isFinite(item.historicalRate)
+        ? "Remise annoncée lors du dernier relevé : "+
+          formatPercent(item.historicalRate)+" sur le lot requis." : null;
+      const formerPrice=Number.isFinite(item.historicalUpfront)
+        ? "Ancien coût initial indicatif du lot : "+
+          money.format(item.historicalUpfront)+" (non actuel)." : null;
+      const formerSaving=Number.isFinite(item.historicalSavingAmount)
+        ? "Ancienne économie théorique du lot : "+
+          money.format(item.historicalSavingAmount)+" (non confirmée)." : null;
+      const minQty=item.minQuantity>1
+        ? item.minQuantity+" produits nécessaires d'après l'ancienne annonce."
+        : "Un produit éligible selon l'ancienne annonce.";
+      return `<article class="card daily-offer daily-unconfirmed">
+        <div class="card-head"><div>
+          <h4>${escapeHtml(item.title)}</h4>
+          <div class="source">${escapeHtml(item.provider)}</div>
+        </div><span class="badge warn">Non reconfirmée</span></div>
+        <p class="help">Ancienne preuve : ${formatDate(item.lastProofAt)}
+          ${item.advertisedUntil?" · fin annoncée "+formatDate(item.advertisedUntil):""}.
+          ${item.lastAttemptAt
+            ? "Nouvelle lecture infructueuse le "+formatDateTime(item.lastAttemptAt)+"."
+            : "Source non reconfirmée."}
+        </p>
+        <p><strong>À vérifier auprès du magasin avant achat.</strong></p>
+        ${priorRate?`<p class="help">${escapeHtml(priorRate)}</p>`:""}
+        ${formerPrice?`<p class="help">${escapeHtml(formerPrice)}</p>`:""}
+        ${formerSaving?`<p class="help">${escapeHtml(formerSaving)}</p>`:""}
+        <p class="help">${escapeHtml(minQty)} ·
+          ${item.hasExactEan
+            ?"Code EAN documenté historiquement, éligibilité locale non confirmée."
+            :"Référence de gamme et magasin à confirmer."}
+        </p>
+        <a class="open" href="${escapeHtml(item.sourceUrl)}"
+          target="_blank" rel="noopener noreferrer">Vérifier le catalogue</a>
+      </article>`;
+    }).join("")
+    :fallback(digest.maxSpend!==null && unconfirmedRetailerCount
+      ?"Aucun ancien prix ne suffit à garantir votre plafond de dépenses. Retirez le filtre budget pour consulter les "+
+        unconfirmedRetailerCount+" piste(s) non reconfirmée(s), sans les confondre avec les offres valides."
+      : "Aucune ancienne promotion encore dans sa période annoncée ne nécessite de revérification pour ce magasin et ce canal.");
   els.dailyExtras.innerHTML=digest.extra.length
     ?digest.extra.map(renderPick).join("")
     :fallback("Aucun remboursement public suffisamment récent à proposer pour ce canal.");

@@ -1343,7 +1343,19 @@ try{
     assert.ok(await page.locator("#dailyRetailer .daily-offer a.open").count()>0,
       "Chaque offre réellement visible doit permettre de contrôler sa source");
   }
+  assert.ok(await page.locator("#dailyUnconfirmed").count()>0,
+    "Le catalogue non reconfirmé possède une section séparée sur Android");
+  const pendingOnScreen=await page.locator("#dailyUnconfirmed .daily-unconfirmed").count();
+  if(pendingOnScreen){
+    assert.match(await page.locator("#dailyUnconfirmed").innerText(),
+      /Non reconfirmée/);
+    assert.match(await page.locator("#dailyUnconfirmed").innerText(),
+      /Ancien coût initial|À vérifier auprès du magasin/);
+    assert.ok(await page.locator("#dailyUnconfirmed .daily-unconfirmed a.open").count()>0);
+  }
   await page.locator("#dailyMaxSpend").selectOption("3");
+  assert.equal(await page.locator("#dailyUnconfirmed .daily-unconfirmed").count(),0,
+    "Le prix d'un ancien catalogue ne démontre pas qu'un article respecte le budget");
   assert.match(await page.locator("#dailyStatus").innerText(),/budget initial de 3,00/);
   const underBudgetCount=await page.locator("#dailyRetailer .daily-offer").count();
   assert.ok(underBudgetCount<=initialRetailerCount,
@@ -1391,12 +1403,18 @@ try{
       all:without.retailer.map((x)=>x.id),
       highlights:without.highlights.length,
       blocked:empty.retailer.length,
+      verificationOnly:without.unconfirmed.map((x)=>x.id),
+      noUnconfirmedBudget:within.unconfirmed.length,
+      countedButNotRecommended:empty.unconfirmedRetailerCount,
+      historicalOnly:without.unconfirmed[0]?.savingAmount===null,
       upfront:within.retailer[0]?.upfrontCost
     };
   });
   assert.deepEqual(dailySafety,{
     budget:["petit lot"],all:["gros lot","petit lot"],
-    highlights:2,blocked:0,upfront:2.99
+    highlights:2,blocked:0,verificationOnly:["non confirmé"],
+    noUnconfirmedBudget:0,countedButNotRecommended:1,historicalOnly:true,
+    upfront:2.99
   });
   await page.locator("#dailySort").selectOption("percent");
     await assertNoHorizontalOverflow(page,"analyse du catalogue du jour");
