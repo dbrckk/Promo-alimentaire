@@ -380,3 +380,9 @@ Le catalogue Coupon Network public est importé avec la catégorie générique `
 Les indices de **ménage, hygiène, produits pour animaux ou alcool** sont examinés en priorité : un shampooing « au lait » reste non alimentaire. Les boissons alcoolisées qui ne sont mentionnées que par leur nom de gamme connu dans le catalogue public (p. ex. Jack Daniel's ou Pelican Blonde) ne sont pas assimilées à l'alimentaire. Les réductions fixes sans prix de référence vérifié ne permettent pas d'affirmer que le seuil de **50 %** non alimentaire est atteint : elles restent exclues de la liste d'économies.
 
 Les fiches sans signe assez spécifique conservent la catégorie `autre` (candidates conditionnelles), au lieu d'être déclarées alimentaires par défaut. La catégorie inférée sert **uniquement à la présentation et au filtrage** : elle ne certifie pas l'EAN, la disponibilité magasin, le montant effectivement remboursé ou le cumul. Les montants et dates du snapshot restent inchangés.
+
+## Traçabilité de synchronisation Shopmium — 13 octobre 2026
+
+Le synchroniseur fournit `confirmed_count`, `retained_count`, `snapshot_count` et un tableau JSON `confirmed_ids` correspondant **uniquement aux fiches officielles individuellement lues avec succès lors de cette exécution**. Le workflow transmet ces preuves au diagnostic fournisseur ; le diagnostic vérifie le nombre, l'unicité, la syntaxe et la présence exacte de chaque `externalId` dans le snapshot publié. Une synchronisation partielle publie `confirmedExternalIds` et conserve les dates des fiches non reconfirmées. L'interface du catalogue et le rapport de fraîcheur peuvent ainsi distinguer les promotions contrôlées aujourd'hui des candidates seulement héritées d'une ancienne synchronisation.
+
+Une absence de liste, un état `unavailable` ou une liste incohérente ne vaut jamais preuve positive ; aucun remboursement n'est ajouté au panier garanti sur cette base.
