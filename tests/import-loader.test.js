@@ -862,4 +862,37 @@ test("source partiellement vérifiée : 9 bonnes offres restent visibles, la 10e
   const legacy={leclerc:{status:"partial",checkedAt:"2026-10-12T20:00:00Z"}};
   assert.equal(sourceRefreshImpact(snapshot,legacy,at).affectedCount,10,
     "Une ancienne source sans IDs reste traitée prudemment");
+
+  // Integration: the public Shopmium sync may revalidate 45 of 46 offers.
+  // Do not exclude the 45 successful records from the daily catalogue just
+  // because the supplier is 'partial'. The unconfirmed one stays excluded.
+  const checkAt=new Date("2026-10-13T19:00:00Z");
+  const shopmium=Array.from({length:46},(_,index)=>({
+    id:"shopmium-auto-food-"+index,externalId:"auto-food-"+index,
+    title:"Produit alimentaire "+index,provider:"Shopmium",
+    providerId:"shopmium",scope:"produit",category:"alimentaire",
+    stores:["all"],channels:["store"],savingPercent:20,
+    verifiedAt:"2026-10-13",reviewAfter:"2026-10-17",
+    expiresAt:"2026-10-31",
+    sourceUrl:"https://offers.shopmium.com/fr/n/kiri-6"
+  }));
+  const partialShopmium={shopmium:{
+    status:"partial",checkedAt:"2026-10-13T12:56:31Z",
+    confirmedExternalIds:shopmium.slice(0,45).map((offer)=>offer.externalId),
+    extractedCount:45,previousSnapshotCount:46
+  }};
+  assert.equal(sourceRefreshImpact(shopmium,partialShopmium,checkAt).affectedCount,1);
+  const loadedShopmium=shopmium.map((offer)=>{
+    const warning=failedRefreshWarning(offer,partialShopmium,checkAt);
+    return warning?{...offer,sourceSyncWarning:warning}:offer;
+  });
+  const daily=selectDailyCatalogue({
+    offers:loadedShopmium,store:"carrefour",channel:"store",now:checkAt
+  });
+  assert.equal(daily.affordableCandidates,45);
+  assert.equal(daily.highlights.length,3);
+  assert.equal(daily.extra.some((offer)=>offer.id===shopmium[45].id),false);
+  assert.equal(sourceRefreshImpact(shopmium,{
+    shopmium:{...partialShopmium.shopmium,confirmedExternalIds:undefined}
+  },checkAt).affectedCount,46);
 });
