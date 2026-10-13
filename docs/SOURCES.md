@@ -18,6 +18,16 @@ La [FAQ Carrefour](https://www.carrefour.fr/faq?question=drive-pourquoi-existe-t
 
 Le vérificateur Carrefour exige désormais : URL officielle portant l'EAN, titre `h1` identifiant la marque et la référence attendues, trois champs numériques (prix promo, prix barré et taux), paire de prix liée et pourcentage cohérent sur la page. Une simple réponse HTTP 200, des recommandations hors produit ou des métadonnées tarifaires incomplètes ne peuvent plus prolonger une promotion.
 
+
+## Régression de synchronisation E.Leclerc — 13 octobre 2026
+
+L'exécution quotidienne `Verify E.Leclerc catalogue` avait échoué après reconfirmation de fiches : une assertion de CI attendait **exactement** `verifiedAt = 2026-10-12`, alors qu'une vérification ultérieure autorisée écrivait `2026-10-13`. Ce décalage est un défaut de scénario de test, **pas une preuve que le commerçant a confirmé une nouvelle promotion**.
+
+Les contrôles d'intégration existants vérifient désormais la date de preuve contre la première date documentée du catalogue, la date courante et l'expiration réelle de la campagne ; ils n'exigent plus que la preuve reste éternellement datée du jour d'import initial.
+
+La commande `scripts/check-import-freshness.mjs --strict` reste inchangée **en production** : elle échoue toujours pour un lot manquant, invalide ou périmé hors archive explicitement documentée. Son scénario de régression utilise un répertoire JSON temporaire isolé quand `NODE_ENV=test` et `PROMO_FRESHNESS_FIXTURE_DIR` sont fournis ensemble. Ainsi les renouvellements Shopmium et Coupon Network ne changent pas artificiellement les assertions sur un ancien instant d'essai ; le test confirme également qu'une archive contenant une offre active est refusée en mode strict.
+
+
 ## Incident de synchronisation constaté le 10 octobre 2026
 
 La vérification des journaux GitHub Actions établit deux défaillances différentes :
