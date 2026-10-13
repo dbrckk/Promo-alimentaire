@@ -1,10 +1,19 @@
 import { readFile,appendFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join,resolve,sep } from "node:path";
+import { pathToFileURL,fileURLToPath } from "node:url";
 import { isOfferActive, validateImportBatch } from "../src/ingestion.js";
 import {sourceRefreshImpact, sourceDeadlineSummary} from "../src/import-loader.js";
 import {inspectImportManifest} from "../src/import-manifest.js";
 
-const directory=new URL("../data/import/",import.meta.url);
+// The command always reads production imports, except when its existing
+// integration scenario explicitly supplies a disposable fixture directory.
+// This keeps CI assertions deterministic even after daily source syncs write
+// newer timestamps or replace campaign snapshots.
+const fixturePath=process.env.NODE_ENV==="test"
+  ? process.env.PROMO_FRESHNESS_FIXTURE_DIR : null;
+const directory=fixturePath
+  ? pathToFileURL(resolve(fixturePath)+sep)
+  : new URL("../data/import/",import.meta.url);
 const manifest=JSON.parse(await readFile(new URL("index.json",directory),"utf8"));
 const checkedManifest=inspectImportManifest(manifest);
 if(!checkedManifest.ok){
@@ -38,7 +47,7 @@ let warningFiles=0;
 const report=[];
 
 for(const file of files){
-  const path=join(directory.pathname,file);
+  const path=join(fileURLToPath(directory),file);
   let parsed;
   try{
     parsed=JSON.parse(await readFile(path,"utf8"));
