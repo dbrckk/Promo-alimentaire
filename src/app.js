@@ -499,6 +499,14 @@ function renderDailyCatalogue(){
     sort:state.dailySort,
     maxSpend:state.dailyMaxSpend==="all"?null:Number(state.dailyMaxSpend)
   });
+  // A blocked source may hide otherwise dated candidates. Make that
+  // visible without promoting them back into today's verified ranking.
+  const unconfirmedRetailerCount=filterOffers(
+    activeOffers().filter((offer)=>offer.scope==="produit"
+      && offer.providerId===state.store && offer.sourceSyncWarning
+      && isOfferWithinShoppingScope(offer)),
+    {store:state.store,channel:state.channel,search:""}
+  ).length;
   const source=state.store==="carrefour"
     ? state.channel==="store" ? "https://www.carrefour.fr/catalogue/carrefour"
       : "https://www.carrefour.fr/offres-du-moment"
@@ -519,7 +527,10 @@ function renderDailyCatalogue(){
     digest.extra.length+" remboursement(s)/coupon(s) et "+
     digest.campaigns.length+" campagne(s) officielle(s). "+ 
     "Classement : "+sortDescription+" ; "+budgetDescription+". "+
-    "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat.";
+    "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat."+
+    (unconfirmedRetailerCount
+      ? " "+unconfirmedRetailerCount+" offre(s) enseigne non reconfirmée(s) volontairement exclue(s) des meilleures promotions."
+      : "");
   const renderPick=(item)=>{
     const hasPercent=Number.isFinite(item.savingPercent);
     const quantity=item.minQuantity>1
@@ -573,7 +584,11 @@ function renderDailyCatalogue(){
       :"Aucune offre avec prix initial documenté dans le budget choisi. Augmentez le plafond pour voir les références éligibles.");
   els.dailyRetailer.innerHTML=digest.retailer.length
     ?digest.retailer.map(renderPick).join("")
-    :fallback("Aucune promotion produit de cette enseigne n'a de preuve active exploitable pour ce canal. Consulte le catalogue officiel pour les offres locales.");
+    :fallback("Aucune promotion produit de cette enseigne n'a de preuve active exploitable pour ce canal. "+
+      (unconfirmedRetailerCount
+        ? unconfirmedRetailerCount+" ancienne(s) candidate(s) reste(nt) consultable(s) uniquement pour vérification : onglet Offres, filtre « Toutes, y compris non reconfirmées ». Aucune économie correspondante n'est garantie. "
+        : "")+
+      "Consulte le catalogue officiel pour les offres locales.");
   els.dailyExtras.innerHTML=digest.extra.length
     ?digest.extra.map(renderPick).join("")
     :fallback("Aucun remboursement public suffisamment récent à proposer pour ce canal.");
