@@ -95,8 +95,15 @@ test("huit nouveaux produits alimentaires gardent le prix réel, le lot et le li
   const validated=validateImportBatch(offers);
   assert.equal(validated.ok,true,
     "Toutes les offres du catalogue doivent respecter les validations d'import");
+  // A fresh official revalidation can move verifiedAt forward, while the
+  // campaign's actual October 17 expiry remains immutable. Evaluate the
+  // catalogue on its latest PROVEN day rather than a frozen import date.
+  // The assertions above forbid proofs in the future or after expiry.
+  const latestProof=expected.map(([id])=>byExternalId(id).verifiedAt)
+    .sort().at(-1);
   const daily=selectDailyCatalogue({offers:validated.normalized,
-    store:"leclerc",channel:"store",now:new Date("2026-10-12T12:00:00Z"),
+    store:"leclerc",channel:"store",
+    now:new Date(latestProof+"T12:00:00Z"),
     sort:"budget",maxSpend:3,limit:30});
   const affordable=daily.retailer;
   assert.ok(affordable.some(x=>x.title.includes("Ramen Nissin")));
