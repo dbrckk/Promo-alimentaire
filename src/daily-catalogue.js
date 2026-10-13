@@ -155,11 +155,45 @@ export function selectDailyCatalogue({
   const ranking=["percent","euros","budget"].includes(sort)?sort:"percent";
   const budget=Number.isFinite(maxSpend) && maxSpend>0
     ? Math.round(maxSpend*100)/100 : null;
-  const eligible=filterOffers(
-    filterActiveOffers(offers,current).filter((offer)=>!offer.sourceSyncWarning
-      && isOfferWithinShoppingScope(offer) && offer.scope==="produit"),
+  const scoped=filterOffers(
+    filterActiveOffers(offers,current).filter((offer)=>
+      isOfferWithinShoppingScope(offer) && offer.scope==="produit"),
     {store,channel,search:""}
   );
+  // A source outage must not silently promote an old campaign back into
+  // the verified rankings. It can, however, supply an explicitly labelled
+  // shopping-time verification lead while the *original* campaign remains
+  // in its advertised validity window. Never use a stale price as evidence
+  // that the product meets the shopper's current cash budget.
+  const eligible=scoped.filter((offer)=>!offer.sourceSyncWarning);
+  const pending=scoped.filter((offer)=>offer.providerId===store
+    && Boolean(offer.sourceSyncWarning));
+  const pendingPicks=pending.map((offer)=>{
+    const original=normalizePick(offer);
+    return {
+      ...original,
+      // Historical amounts are not current prices, even if numerically
+      // precise. Keep them separate and name them explicitly.
+      savingAmount:null,savingPercent:null,basePrice:null,upfrontCost:null,
+      historicalRate:original.savingPercent,
+      historicalSavingAmount:original.savingAmount,
+      historicalUpfront:original.upfrontCost,
+      lastProofAt:offer.verifiedAt,
+      lastAttemptAt:offer.sourceSyncWarning?.checkedAt || null,
+      advertisedUntil:offer.expiresAt || null,
+      needsReconfirmation:true
+    };
+  });
+  const unconfirmed=budget===null
+    ?pendingPicks.sort((a,b)=>
+      Number(b.hasExactEan)-Number(a.hasExactEan)
+      || orderOffers({...a,savingPercent:a.historicalRate,
+          savingAmount:a.historicalSavingAmount,
+          upfrontCost:a.historicalUpfront},
+        {...b,savingPercent:b.historicalRate,
+          savingAmount:b.historicalSavingAmount,
+          upfrontCost:b.historicalUpfront},ranking)
+    ).slice(0,safeLimit) : [];
   const picks=eligible.map(normalizePick).filter((item)=>affordable(item,budget));
   const retailer=picks.filter((item)=>item.providerId===store)
     .sort((a,b)=>orderOffers(a,b,ranking)).slice(0,safeLimit);
@@ -179,6 +213,9 @@ export function selectDailyCatalogue({
     .sort((a,b)=>(b.advertisedMaxPercent??-1)-(a.advertisedMaxPercent??-1))
     .slice(0,safeLimit);
   return {today,store,channel,retailer,extra,campaigns:discovery,highlights,
+    // Explicitly excluded from highlights, merchant "verified" cards and
+    // any basket savings. This is a bounded verification-only shortlist.
+    unconfirmed,unconfirmedRetailerCount:pendingPicks.length,
     sort:ranking,maxSpend:budget,
     affordableCandidates:picks.length,
     exactRetailerCount:retailer.filter((item)=>item.hasExactEan).length};
