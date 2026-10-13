@@ -148,7 +148,11 @@ if(write && process.env.GITHUB_OUTPUT){
   await appendFile(process.env.GITHUB_OUTPUT,
     "confirmed_count="+fresh.length+"\n"+
     "retained_count="+retained.length+"\n"+
-    "snapshot_count="+active.length+"\n",
+    "snapshot_count="+active.length+"\n"+
+    // Individual proofs belong to this run, not to yesterday's snapshot.
+    // JSON remains a single bounded GITHUB_OUTPUT line, validated by the
+    // next step against the exact committed offer IDs.
+    "confirmed_ids="+JSON.stringify(fresh.map((offer)=>offer.externalId))+"\n",
     "utf8"
   );
 }
