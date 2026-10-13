@@ -1381,7 +1381,7 @@ try{
     };
   });
   assert.deepEqual(dailySafety,{
-    budget:["petit lot"],all:["petit lot","gros lot"],
+    budget:["petit lot"],all:["gros lot","petit lot"],
     highlights:2,blocked:0,upfront:2.99
   });
   await page.locator("#dailySort").selectOption("percent");
