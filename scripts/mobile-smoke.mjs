@@ -1314,50 +1314,76 @@ try{
   assert.match(await page.locator("#dailyStatus").innerText(),/E.Leclerc/);
   assert.equal(await page.locator("#dailyOfficialLink").getAttribute("href"),
     "https://www.e.leclerc/prospectus");
-  assert.ok(await page.locator("#dailyRetailer .daily-offer").count()>0,
-    "Des offres du catalogue Leclerc encore valables doivent apparaître");
-  assert.ok(await page.locator("#dailyHighlights .daily-offer").count()>0,
-    "Les meilleures opportunités actives doivent apparaître en haut");
-  assert.ok(await page.locator("#dailyHighlights .daily-offer").count()<=3,
-    "Les recommandations prioritaires restent volontairement limitées à trois");
+  // The actual public catalogue can legitimately have ZERO verified offers
+  // after a source refresh fails. Live deployment must not fail merely
+  // because an unreliable provider has been hidden for safety.
+  const initialRetailerCount=await page.locator("#dailyRetailer .daily-offer").count();
+  const initialHighlightCount=await page.locator("#dailyHighlights .daily-offer").count();
+  assert.ok(initialHighlightCount<=3,
+    "Les meilleures opportunités restent limitées à trois");
+  if(initialRetailerCount===0){
+    assert.match(await page.locator("#dailyRetailer").innerText(),
+      /Aucune promotion produit.*preuve active exploitable/i,
+      "L'absence de nouvelles preuves doit être affichée clairement");
+  }else{
+    assert.ok(await page.locator("#dailyRetailer .daily-offer a.open").count()>0,
+      "Chaque offre réellement visible doit permettre de contrôler sa source");
+  }
   await page.locator("#dailyMaxSpend").selectOption("3");
   assert.match(await page.locator("#dailyStatus").innerText(),/budget initial de 3,00/);
-  const filteredTitles=await page.locator("#dailyRetailer").innerText();
-  assert.match(filteredTitles,/mini nems/i,
-    "Un article à 2,99 € doit rester possible sous un plafond de 3 €");
-  const leclercSync=JSON.parse(await readFile(
-    new URL("../data/import/source-sync-leclerc.json",import.meta.url),
-    "utf8"
-  )).sources.leclerc;
-  const nissinId="26G133G-nissin-demae-ramen-68-second";
-  const nissinReconfirmed=leclercSync.status==="updated"
-    || leclercSync.confirmedExternalIds?.includes(nissinId);
-  if(nissinReconfirmed){
-    assert.ok(await page.locator(
-      '#dailyRetailer a.open[href="https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/1457"]'
-    ).count()>0,
-      "Le lecteur Android doit ouvrir la page publique exacte Nissin");
-    assert.match(filteredTitles,/Ramen Nissin/i,
-      "Deux nouilles Demae Ramen à 0,99 € doivent rester éligibles dans 3 €");
-  }else{
-    assert.doesNotMatch(filteredTitles,/Ramen Nissin/i,
-      "Une référence spécifiquement non reconfirmée ne devient pas une promotion sûre");
+  const underBudgetCount=await page.locator("#dailyRetailer .daily-offer").count();
+  assert.ok(underBudgetCount<=initialRetailerCount,
+    "Un plafond ne doit jamais faire apparaître des promotions supplémentaires");
+  if(!underBudgetCount){
+    assert.match(await page.locator("#dailyRetailer").innerText(),
+      /Aucune promotion produit.*preuve active exploitable/i);
   }
-  assert.match(filteredTitles,/cassoulet Côté Table/i,
-    "Deux cassoulets à 1,15 € doivent être recommandables dans 3 €");
-  assert.doesNotMatch(filteredTitles,/Petit Navire/i,
-    "Le lot Petit Navire 2+1 à 7,50 € ne doit pas passer un budget de 3 €");
-
-  assert.doesNotMatch(filteredTitles,/Gullón/i,
-    "Les 2 biscuits à 2,39 € ne tiennent pas dans un budget total de 3 €");
-  assert.match(await page.locator("#dailyHighlights").innerText(),
-    /Prix initial indicatif du lot/);
   await page.locator("#dailySort").selectOption("euros");
   assert.match(await page.locator("#dailyStatus").innerText(),
     /euros économisés/);
   await page.locator("#dailyMaxSpend").selectOption("all");
-  assert.ok(await page.locator("#dailyRetailer .daily-offer").count()>=2,
-    "Lever le budget doit restaurer les promotions disponibles");
+  assert.equal(await page.locator("#dailyRetailer .daily-offer").count(),
+    initialRetailerCount,
+    "Lever le budget restaure exactement les offres encore vérifiées");
+  // Deterministic Android integration uses seeded product evidence rather
+  // than relying on live retailer confirmations, which may expire overnight.
+  const dailySafety=await page.evaluate(async()=>{
+    const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
+    const now=new Date("2026-10-12T12:00:00Z");
+    const item=(id,basePrice,props={})=>({
+      id,title:id,provider:"E.Leclerc",providerId:"leclerc",
+      category:"alimentaire",scope:"produit",stores:["leclerc"],
+      channels:["store"],basePrice,savingPercent:20,
+      sourceUrl:"https://nos-catalogues-promos-v2.e.leclerc/catalog/example/1",
+      verifiedAt:"2026-10-12",reviewAfter:"2026-10-14",
+      ...props
+    });
+    const offers=[
+      item("petit lot",2.99),
+      item("gros lot",7.5),
+      item("non confirmé",1.2,{sourceSyncWarning:{
+        status:"unavailable",checkedAt:"2026-10-12T11:00:00Z"}}),
+      item("périmé",1.1,{reviewAfter:"2026-10-11"})
+    ];
+    const within=selectDailyCatalogue({offers,store:"leclerc",
+      channel:"store",maxSpend:3,now});
+    const without=selectDailyCatalogue({offers,store:"leclerc",
+      channel:"store",now});
+    const empty=selectDailyCatalogue({offers:[
+      offers[2],offers[3]
+    ],store:"leclerc",channel:"store",now});
+    return {
+      budget:within.retailer.map((x)=>x.id),
+      all:without.retailer.map((x)=>x.id),
+      highlights:without.highlights.length,
+      blocked:empty.retailer.length,
+      upfront:within.retailer[0]?.upfrontCost
+    };
+  });
+  assert.deepEqual(dailySafety,{
+    budget:["petit lot"],all:["petit lot","gros lot"],
+    highlights:2,blocked:0,upfront:2.99
+  });
   await page.locator("#dailySort").selectOption("percent");
     await assertNoHorizontalOverflow(page,"analyse du catalogue du jour");
   await page.screenshot({path:OUT+"/00-catalogue-du-jour.png",fullPage:true});
