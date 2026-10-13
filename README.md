@@ -760,3 +760,11 @@ Les offres dont le palier maximal s'applique **uniquement à 3 articles** sont d
 ### Comprendre les offres masquées par une synchronisation indisponible (13 octobre 2026)
 
 Le « Catalogue du jour » reste une sélection **à preuves suffisantes**, et non un catalogue complet garanti. Quand un fournisseur (par exemple E.Leclerc) n'a pas pu reconfirmer sa source, ses anciennes fiches encore dans leur période de révision sont **exclues** des meilleures offres et du gain calculé. La page indique désormais combien de candidats sont masqués pour l'enseigne et le canal choisis ; elle renvoie à l'onglet **Offres** et au filtre **« Toutes, y compris non reconfirmées »** pour inspecter explicitement ces fiches et leurs liens officiels. Ces candidats ne sont ni des promotions du jour prouvées, ni des gains garantis. Les fiches réellement expirées restent exclues quel que soit le filtre.
+
+### Synchronisation partielle Shopmium : preuves individuelles (13 octobre 2026)
+
+Un contrôle public peut reconfirmer **45 fiches sur 46**. Auparavant, le diagnostic `partial` ne fournissait que deux compteurs : l'interface ne savait pas quelles fiches avaient été lues et pouvait masquer **toutes** les ODR Shopmium du « Catalogue du jour », y compris celles réellement reconfirmées.
+
+Le synchroniseur transmet maintenant les **identifiants `externalId` des fiches vérifiées dans cette exécution**. Le script de diagnostic refuse une liste JSON invalide, un doublon, un nombre différent du compteur ou un identifiant absent du snapshot. La liste `confirmedExternalIds` est enregistrée uniquement lorsque la source est partielle. Le lecteur PWA et le contrôle de fraîcheur reconnaissent ces preuves individuelles : les fiches reconfirmées restent candidates aux économies du jour ; seules les fiches conservées sans nouvelle preuve reçoivent `sourceSyncWarning`.
+
+Ce correctif ne confirme ni le stock, ni le prix en caisse, ni l'éligibilité du panier ou l'approbation du remboursement. En cas de panne complète ou de diagnostic ancien dépourvu d'identifiants, le comportement conservateur existant est maintenu.
