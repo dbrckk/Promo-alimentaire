@@ -756,3 +756,7 @@ Une page de campagne indiquant une fin au mois prochain **ne prouve pas** que se
 Ce filtre agit uniquement sur les **campagnes de découverte**, jamais en étendant artificiellement la validité des promotions produit. Des vérifications ajoutées au parcours Chromium Android attestent de la disparition d'une annonce après 7 jours sans contrôle.
 
 Les offres dont le palier maximal s'applique **uniquement à 3 articles** sont désormais signalées « pour exactement 3 articles ». Quand la source fournit une plage (par exemple de 3 à 4), la plage entière est affichée ; « à partir de 3 » n'est utilisé que si aucun maximum n'est fixé.
+
+### Comprendre les offres masquées par une synchronisation indisponible (13 octobre 2026)
+
+Le « Catalogue du jour » reste une sélection **à preuves suffisantes**, et non un catalogue complet garanti. Quand un fournisseur (par exemple E.Leclerc) n'a pas pu reconfirmer sa source, ses anciennes fiches encore dans leur période de révision sont **exclues** des meilleures offres et du gain calculé. La page indique désormais combien de candidats sont masqués pour l'enseigne et le canal choisis ; elle renvoie à l'onglet **Offres** et au filtre **« Toutes, y compris non reconfirmées »** pour inspecter explicitement ces fiches et leurs liens officiels. Ces candidats ne sont ni des promotions du jour prouvées, ni des gains garantis. Les fiches réellement expirées restent exclues quel que soit le filtre.
