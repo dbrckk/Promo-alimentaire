@@ -69,7 +69,14 @@ test("huit nouveaux produits alimentaires gardent le prix réel, le lot et le li
     assert.equal(offer.savingPercent,rate);
     assert.equal(offer.stores[0],"leclerc");
     assert.deepEqual(offer.channels,["store"]);
-    assert.equal(offer.verifiedAt,"2026-10-12");
+    // The sync is allowed to reconfirm individually sourced offers after
+    // the initial catalogue date. Never freeze CI to the original date.
+    assert.match(offer.verifiedAt,/^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(offer.verifiedAt>="2026-10-12","Preuve antérieure au prospectus");
+    assert.ok(offer.verifiedAt<=new Date().toISOString().slice(0,10),
+      "La validation ne doit jamais être datée dans le futur");
+    assert.ok(offer.verifiedAt<=offer.expiresAt,
+      "Aucune reconfirmation après expiration de la campagne");
     assert.equal(offer.expiresAt,"2026-10-17");
     assert.match(offer.sourceUrl,/^https:\/\/nos-catalogues-promos-v2\.e\.leclerc\/catalog\/26G133G\//);
     if(id==="26G133G-nissin-demae-ramen-68-second"){
