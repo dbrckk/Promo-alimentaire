@@ -230,10 +230,16 @@ try{
       rayonFromage:classifyShopmiumRayon(
         "<p>Valable en Drive & livraison. Au rayon Fromage.</p>"
       ),
-      officialCoffeeFood:source.find((x)=>x.sourceUrl?.endsWith(
-        "/cafes-legal-capsules-compatibles-nespresso"))?.category,
-      officialAjaxNonfood:source.find((x)=>x.sourceUrl?.endsWith(
-        "/ajax-power-mousse"))?.category,
+      // Public Shopmium snapshots rotate daily. An expired/withdrawn item
+      // must not be artificially reintroduced merely to satisfy this smoke
+      // scenario. Validate classification only when the SKU is present;
+      // the synthetic rayons above verify both categories unconditionally.
+      officialCoffeeSafe:source.every((x)=>
+        !x.sourceUrl?.endsWith("/cafes-legal-capsules-compatibles-nespresso")
+          || x.category==="alimentaire"),
+      officialAjaxSafe:source.every((x)=>
+        !x.sourceUrl?.endsWith("/ajax-power-mousse")
+          || x.category==="non-alimentaire"),
       noAjax:!result.some((x)=>x.sourceUrl?.endsWith("/ajax-power-mousse")),
       noLeak:result.every((x)=>!forbiddenIds.has(x.externalId)),
       syntheticFood:isOfferWithinShoppingScope({
@@ -251,7 +257,7 @@ try{
     rayonDouche:"non-alimentaire",rayonBoisson:"alimentaire",
     rayonMenager:"non-alimentaire",rayonCafe:"alimentaire",
     rayonFrais:"alimentaire",rayonFromage:"alimentaire",
-    officialCoffeeFood:"alimentaire",officialAjaxNonfood:"non-alimentaire",
+    officialCoffeeSafe:true,officialAjaxSafe:true,
     noAjax:true,noLeak:true,syntheticFood:true,
     syntheticLowNonFood:false,syntheticHighNonFood:true
   });
