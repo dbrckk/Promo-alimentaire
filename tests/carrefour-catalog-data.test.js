@@ -122,6 +122,8 @@ test("détecter les nouveautés alimentaires du jour sans créer de prix EAN",()
   const page=`<section>
     <img alt="Fruits et légumes à moins de 1 euro" />
     <h3>Fruits et légumes à 0,99€</h3><p>En Hypermarché et en Drive</p>
+    <img alt="Produits du quotidien à moins de 1 euro" />
+    <h3>Les produits du quotidien à moins de 1€</h3><p>En Hypermarché et en Drive.</p>
     <img alt="Bio à moins de 2 euros" />
     <h3>Le Bio à moins de 2€</h3><p>En Hypermarché et en Drive.</p>
     <img alt="34% d'économies Club dès 15€ d'achat sur la poissonnerie Exclu Drive" />
@@ -133,6 +135,7 @@ test("détecter les nouveautés alimentaires du jour sans créer de prix EAN",()
   const leads=discoverCarrefourDailyLeads(page,date);
   assert.deepEqual(leads.map((item)=>item.id),[
     "carrefour-public-lead-legumes-099-20261014",
+    "carrefour-public-lead-quotidien-moins-1-20261014",
     "carrefour-public-lead-bio-2-20261014",
     "carrefour-public-lead-poissonnerie-club-15-20261014"
   ]);
@@ -142,18 +145,31 @@ test("détecter les nouveautés alimentaires du jour sans créer de prix EAN",()
     && !("autoStack" in item) && !("eans" in item)));
   const inStore=selectDailyCatalogue({campaigns:leads,now:date,
     store:"carrefour",channel:"store"});
-  assert.equal(inStore.campaigns.length,2);
+  assert.equal(inStore.campaigns.length,3);
   assert.equal(inStore.campaigns.some((item)=>item.minimumPurchase===15),false);
+  const essentials=inStore.campaigns.find((entry)=>
+    entry.id==="carrefour-public-lead-quotidien-moins-1-20261014");
+  assert.ok(essentials);
+  assert.equal(essentials.detailsUrl,"https://www.carrefour.fr/boutique/produits-1euro");
+  assert.equal(essentials.advertisedPrice,null,
+    "La sélection entière ne certifie le tarif d'aucun produit précis");
+  assert.equal("savingAmount" in essentials,false);
+  assert.equal("savingPercent" in essentials,false);
+  assert.equal(selectDailyCatalogue({campaigns:[{
+    ...leads.find((entry)=>entry.id===essentials.id),
+    detailsUrl:"https://attacker.example/cheap"
+  }],now:date,store:"carrefour",channel:"store"}).campaigns.length,0,
+    "Un lien de sélection non officiel doit être rejeté");
   const drive=selectDailyCatalogue({campaigns:leads,now:date,
     store:"carrefour",channel:"drive"});
-  assert.equal(drive.campaigns.length,3);
+  assert.equal(drive.campaigns.length,4);
   assert.equal(drive.campaigns.find((item)=>item.minimumPurchase===15)?.advertisedMaxPercent,null);
   const budget=selectDailyCatalogue({campaigns:leads,now:date,
     store:"carrefour",channel:"drive",maxSpend:3});
-  assert.equal(budget.campaigns.length,2,
+  assert.equal(budget.campaigns.length,3,
     "Un avantage Club exigeant 15 € d'achat ne peut pas être un bon plan à 3 €");
   assert.equal(selectDailyCatalogue({campaigns:leads,now:date,
-    store:"carrefour",channel:"drive",maxSpend:20}).campaigns.length,3);
+    store:"carrefour",channel:"drive",maxSpend:20}).campaigns.length,4);
   const tomorrow=selectDailyCatalogue({campaigns:leads,
     now:new Date("2026-10-14T22:00:00Z"),store:"carrefour",channel:"drive"});
   assert.equal(tomorrow.campaigns.length,0);
