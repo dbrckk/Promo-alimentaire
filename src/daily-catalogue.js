@@ -69,7 +69,7 @@ function safeCampaign(raw,today,store,channel){
     ? null :raw.minimumPurchase;
   if(minimumPurchase!==null && (!Number.isFinite(minimumPurchase)
     || minimumPurchase<=0 || minimumPurchase>1000
-    || !new RegExp(String(minimumPurchase).replace(".","[,.]")+"\\\\s*€?").test(
+    || !new RegExp(String(minimumPurchase).replace(".","[,.]")+"\\s*€").test(
       raw.claim+" "+raw.title))) return null;
   try {
     const target=new URL(raw.sourceUrl);
