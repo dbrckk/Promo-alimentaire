@@ -1288,9 +1288,34 @@ try{
     const response=await fetch("./data/daily-campaigns.json");
     const raw=await response.json();
     const now=new Date("2026-10-14T12:00:00Z");
-    const store=selectDailyCatalogue({campaigns:raw.campaigns,
+    // The 14 October editorial discoveries are historical after a week.
+    // Keep this regression deterministic even after the scheduled workflow
+    // correctly prunes the production feed's expired entries.
+    const ids=[
+      "carrefour-public-lead-legumes-099-20261014",
+      "carrefour-public-lead-bio-2-20261014",
+      "carrefour-public-lead-poissonnerie-club-15-20261014"
+    ];
+    const base={store:"carrefour",sourceUrl:"https://www.carrefour.fr/offres-du-moment",
+      startsAt:"2026-10-14",expiresAt:"2026-10-14",verifiedAt:"2026-10-14"};
+    const fixtures=[
+      {...base,id:ids[0],channels:["store","drive"],
+        category:"fruits et légumes",title:"Fruits et légumes à 0,99 €",
+        claim:"Prix publicitaire à vérifier"},
+      {...base,id:ids[1],channels:["store","drive"],category:"bio",
+        title:"Bio à moins de 2 €",claim:"Prix publicitaire à vérifier"},
+      {...base,id:ids[2],channels:["drive"],category:"alimentaire",
+        title:"Poissonnerie Club dès 15 €",minimumPurchase:15,
+        claim:"Avantage Club dès 15 € à contrôler"}
+    ];
+    const testCampaigns=[
+      ...raw.campaigns.filter((c)=>!ids.includes(c.id)),
+      ...fixtures.map((entry)=>raw.campaigns.find((c)=>c.id===entry.id)||entry)
+    ];
+
+    const store=selectDailyCatalogue({campaigns:testCampaigns,
       now,store:"carrefour",channel:"store"});
-    const drive=selectDailyCatalogue({campaigns:raw.campaigns,
+    const drive=selectDailyCatalogue({campaigns:testCampaigns,
       now,store:"carrefour",channel:"drive"});
     const bio=store.campaigns.find((c)=>c.id==="carrefour-bio-2eme-20261019");
     const grape=store.campaigns.find((c)=>
@@ -1315,13 +1340,13 @@ try{
         c.id==="carrefour-public-lead-legumes-099-20261014"),
       fishDrive:drive.campaigns.some((c)=>
         c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
-      fishBlockedAt3:!selectDailyCatalogue({campaigns:raw.campaigns,
+      fishBlockedAt3:!selectDailyCatalogue({campaigns:testCampaigns,
         now,store:"carrefour",channel:"drive",maxSpend:3}).campaigns.some((c)=>
         c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
-      budgetUnknown:selectDailyCatalogue({campaigns:raw.campaigns,
+      budgetUnknown:selectDailyCatalogue({campaigns:testCampaigns,
         now,store:"carrefour",channel:"drive",maxSpend:3}).campaigns.some((c)=>
         c.id==="carrefour-public-lead-legumes-099-20261014"),
-      leadExpired:!selectDailyCatalogue({campaigns:raw.campaigns,
+      leadExpired:!selectDailyCatalogue({campaigns:testCampaigns,
         now:new Date("2026-10-14T22:00:00Z"),
         store:"carrefour",channel:"drive"}).campaigns.some((c)=>
         c.id==="carrefour-public-lead-legumes-099-20261014")
