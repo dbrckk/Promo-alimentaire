@@ -18,7 +18,8 @@
       "expiresAt": "2026-10-19",
       "verifiedAt": "2026-10-14",
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
-      "offerMechanism": "second-item"
+      "offerMechanism": "second-item",
+      "detailsUrl": "https://www.carrefour.fr/r/bio-et-ecologie"
     },
     {
       "id": "carrefour-courses-en-ligne-20261108",
@@ -80,7 +81,8 @@
       "startsAt": "2026-10-14",
       "expiresAt": "2026-10-16",
       "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "detailsUrl": "https://www.carrefour.fr/evenements/le-coin-des-familles"
     },
     {
       "id": "carrefour-semaine-second-20261019",
@@ -97,7 +99,8 @@
       "startsAt": "2026-10-14",
       "expiresAt": "2026-10-19",
       "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "detailsUrl": "https://www.carrefour.fr/boutique/promos-hebdomadaires"
     },
     {
       "id": "carrefour-raisin-red-globe-20261015",
@@ -131,7 +134,8 @@
       "startsAt": "2026-10-14",
       "expiresAt": "2026-10-26",
       "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "detailsUrl": "https://www.carrefour.fr/evenements/semaine-du-gout"
     }
   ]
 }
