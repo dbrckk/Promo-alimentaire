@@ -4,7 +4,7 @@ import {readFile} from "node:fs/promises";
 import {isValidGtin} from "../src/gtin.js";
 import {normalizeImportedOffer} from "../src/ingestion.js";
 import {selectDailyCatalogue} from "../src/daily-catalogue.js";
-import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,retainRecentDailyLeads} from "../scripts/daily-campaign-evidence.mjs";
+import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,discoverCarrefourFoodBrochures,retainRecentDailyLeads} from "../scripts/daily-campaign-evidence.mjs";
 
 const snapshot=JSON.parse(await readFile(
   new URL("../data/import/carrefour-promotions-auto.json",import.meta.url),"utf8"
@@ -242,4 +242,75 @@ test("le coût après avantage classe les produits sans masquer l'argent à avan
   }],store:"leclerc",channel:"store",now,sort:"net"});
   assert.equal(pending.highlights.length,0);
   assert.equal(pending.unconfirmed[0]?.netAfterBenefit,null);
+});
+
+test("catalogue alimentaire du jour : dates réelles et lien officiel sans fausse remise",()=>{
+  const html=`<main><h2>Catalogues du moment</h2>
+    <p>AU COEUR DU GOÛT Du 13 oct. au 26 oct. 2026</p>
+    <p>PRÊT À JOUER AVEC NOUS ? Du 13 oct. au 07 déc. 2026</p>
+    <p>LE CHEF C'EST MOI 2 Du 13 oct. au 26 oct. 2026</p>
+    <h2>Catalogues bientôt disponibles</h2>
+    <p>Le mois MONOPOLY produits laitiers Du 20 oct. au 30 oct. 2026</p>
+  </main>`;
+  const now=new Date("2026-10-14T11:00:00Z");
+  const leads=discoverCarrefourFoodBrochures(html,now);
+  assert.equal(leads.length,1);
+  const lead=leads[0];
+  assert.equal(lead.id,"carrefour-public-lead-brochure-au-coeur-du-gout-20261014");
+  assert.equal(lead.sourceUrl,"https://www.carrefour.fr/catalogue/carrefour");
+  assert.equal(lead.verifiedAt,"2026-10-14");
+  assert.equal(lead.expiresAt,"2026-10-14",
+    "Le prospectus peut durer deux semaines, mais la preuve est datée du jour");
+  assert.match(lead.claim,/2026-10-13 au 2026-10-26/);
+  for(const forbidden of ["eans","savingAmount","savingPercent","basePrice","autoStack"]){
+    assert.equal(forbidden in lead,false,forbidden);
+  }
+  assert.equal(selectDailyCatalogue({campaigns:leads,store:"carrefour",
+    channel:"store",now}).campaigns.length,1);
+  assert.equal(selectDailyCatalogue({campaigns:leads,store:"carrefour",
+    channel:"drive",now}).campaigns.length,0);
+  assert.equal(selectDailyCatalogue({campaigns:leads,store:"carrefour",
+    channel:"store",now:new Date("2026-10-14T22:00:00Z")}).campaigns.length,0);
+  assert.deepEqual(discoverCarrefourFoodBrochures(html,
+    new Date("2026-10-27T12:00:00Z")),[],
+    "Une brochure terminée n'est plus une proposition du jour");
+  assert.deepEqual(discoverCarrefourFoodBrochures("<html>403 Access denied</html>",now),[]);
+});
+
+test("le contrôle des prospectus interdit les fausses dates et les campagnes hors alimentaire",()=>{
+  const now=new Date("2026-10-14T11:00:00Z");
+  const html=`<h2>Catalogues du moment</h2>
+    <p>AU COEUR DU GOÛT Du 13 oct. au 31 sept. 2026</p>
+    <p>TOUTES EN BEAUTÉ Du 06 oct. au 19 oct. 2026</p>
+    <p>LE MOIS MONOPOLY PRODUITS LAITIERS Du 20 oct. au 30 oct. 2026</p>
+    <h2>Magazines</h2>`;
+  assert.deepEqual(discoverCarrefourFoodBrochures(html,now),[],
+    "Mois impossible, non alimentaire et campagne future exclus");
+  const tiny=`<h2>Catalogues du moment</h2>
+    <p>AU COEUR DU GOÛT</p>
+    <p>TOUTES EN BEAUTÉ Du 13 oct. au 26 oct. 2026</p>
+    <h2>Magazines</h2>`;
+  assert.deepEqual(discoverCarrefourFoodBrochures(tiny,now),[],
+    "La période d'un autre prospectus ne peut servir de preuve");
+});
+
+test("petits prix alimentaires : sélectionner les annonces sans présumer d'un EAN ou panier",()=>{
+  const page=`<img alt="Produits du quotidien à moins de 1 euro"/>
+    <h3>Les produits du quotidien à moins de 1€</h3>
+    <p>En Hypermarché et en Drive</p>
+    <img alt="Recettes à petits prix"/>
+    <h3>Recettes à petits prix</h3>
+    <p>En Hypermarché et en Drive</p>`;
+  const now=new Date("2026-10-14T11:00:00Z");
+  const leads=discoverCarrefourDailyLeads(page,now);
+  assert.deepEqual(leads.map((x)=>x.id),[
+    "carrefour-public-lead-quotidien-1-20261014",
+    "carrefour-public-lead-recettes-budget-20261014"
+  ]);
+  const selected=selectDailyCatalogue({campaigns:leads,now,
+    store:"carrefour",channel:"store",maxSpend:3});
+  assert.equal(selected.campaigns.length,2);
+  assert.ok(selected.campaigns.every((x)=>x.advertisedPrice===null
+    && !("savingAmount" in x) && !("savingPercent" in x)),
+  "Pas de prix exact ni de gain automatique sur une simple sélection publicitaire");
 });

@@ -181,6 +181,50 @@
       "verifiedAt": "2026-10-14",
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
       "minimumPurchase": 15
+    },
+    {
+      "id": "carrefour-public-lead-brochure-au-coeur-du-gout-20261014",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "category": "alimentaire",
+      "title": "Catalogue Carrefour « Au cœur du goût »",
+      "claim": "Prospectus alimentaire officiel annoncé du 2026-10-13 au 2026-10-26. Consulter le catalogue et sélectionner son magasin ; aucun prix produit ou pourcentage d'économie n'est confirmé ici.",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-14",
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/catalogue/carrefour"
+    },
+    {
+      "id": "carrefour-public-lead-quotidien-1-20261014",
+      "store": "carrefour",
+      "channels": [
+        "store",
+        "drive"
+      ],
+      "category": "épicerie",
+      "title": "Produits du quotidien : sélection annoncée à moins de 1 €",
+      "claim": "Des produits du quotidien sont annoncés sous le seuil de 1 €. Le produit exact, sa quantité et son prix local doivent être consultés dans le magasin choisi.",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-14",
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+    },
+    {
+      "id": "carrefour-public-lead-recettes-budget-20261014",
+      "store": "carrefour",
+      "channels": [
+        "store",
+        "drive"
+      ],
+      "category": "alimentaire",
+      "title": "Recettes à petits prix : idées à consulter",
+      "claim": "Carrefour publie une sélection de recettes économiques. Aucun prix final, nombre de portions ou remise précise n'est vérifié.",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-14",
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     }
   ]
 }

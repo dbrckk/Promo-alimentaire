@@ -1250,6 +1250,48 @@ try{
     /Sélection au .*Carrefour.*magasin/);
   assert.match(await page.locator("#dailyRetailer").innerText(),
     /Aucune promotion|Contrôler la source/);
+  // A real current food-brochure record is source discovery only: do not
+  // turn the range printed on the official catalogue index into a checkout
+  // discount, SKU, or price usable by the basket optimiser.
+  const brochureOnAndroid=await page.evaluate(async()=>{
+    const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
+    const leaf={id:"carrefour-public-lead-brochure-au-coeur-du-gout-20261014",
+      title:"Catalogue Carrefour « Au cœur du goût »",
+      claim:"Prospectus alimentaire officiel annoncé du 2026-10-13 au 2026-10-26. Choisir le magasin.",
+      store:"carrefour",channels:["store"],category:"alimentaire",
+      startsAt:"2026-10-14",expiresAt:"2026-10-14",
+      verifiedAt:"2026-10-14",
+      sourceUrl:"https://www.carrefour.fr/catalogue/carrefour"};
+    const options={campaigns:[leaf],store:"carrefour",channel:"store"};
+    const current=selectDailyCatalogue({...options,
+      now:new Date("2026-10-14T11:00:00Z")});
+    const tomorrow=selectDailyCatalogue({...options,
+      now:new Date("2026-10-14T22:00:00Z")});
+    const drive=selectDailyCatalogue({...options,channel:"drive",
+      now:new Date("2026-10-14T11:00:00Z")});
+    return {
+      shown:current.campaigns.length,
+      title:current.campaigns[0]?.title,
+      checkoutSaving:current.campaigns[0]?.savingAmount ?? null,
+      checkoutPercent:current.campaigns[0]?.savingPercent ?? null,
+      expired:tomorrow.campaigns.length,drive:drive.campaigns.length
+    };
+  });
+  assert.deepEqual(brochureOnAndroid,{
+    shown:1,title:"Catalogue Carrefour « Au cœur du goût »",
+    checkoutSaving:null,checkoutPercent:null,expired:0,drive:0
+  });
+  // The public campaign feed may legitimately be purged after its 7-day
+  // audit retention; only assert rendered cards if today's datum is present.
+  const brochureCard=page.locator("#dailyCampaigns .daily-offer")
+    .filter({hasText:"Catalogue Carrefour « Au cœur du goût »"});
+  if(await brochureCard.count()){
+    assert.match(await brochureCard.first().innerText(),
+      /Prospectus alimentaire du jour/);
+    assert.equal(await brochureCard.first().locator("a.open").first()
+      .getAttribute("href"),"https://www.carrefour.fr/catalogue/carrefour");
+  }
+
   const dailyCampaignProof=await page.evaluate(async()=>{
     const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
     const sample={id:"sample-campaign",store:"carrefour",channels:["store"],
@@ -1313,10 +1355,12 @@ try{
       ...fixtures.map((entry)=>raw.campaigns.find((c)=>c.id===entry.id)||entry)
     ];
 
+    // Exercise ALL evidenced entries. The visible recommendation cap may
+    // change without hiding a source record or changing its validity.
     const store=selectDailyCatalogue({campaigns:testCampaigns,
-      now,store:"carrefour",channel:"store"});
+      now,store:"carrefour",channel:"store",limit:30});
     const drive=selectDailyCatalogue({campaigns:testCampaigns,
-      now,store:"carrefour",channel:"drive"});
+      now,store:"carrefour",channel:"drive",limit:30});
     const bio=store.campaigns.find((c)=>c.id==="carrefour-bio-2eme-20261019");
     const grape=store.campaigns.find((c)=>
       c.id==="carrefour-raisin-red-globe-20261015");
@@ -1341,10 +1385,10 @@ try{
       fishDrive:drive.campaigns.some((c)=>
         c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
       fishBlockedAt3:!selectDailyCatalogue({campaigns:testCampaigns,
-        now,store:"carrefour",channel:"drive",maxSpend:3}).campaigns.some((c)=>
+        now,store:"carrefour",channel:"drive",maxSpend:3,limit:30}).campaigns.some((c)=>
         c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
       budgetUnknown:selectDailyCatalogue({campaigns:testCampaigns,
-        now,store:"carrefour",channel:"drive",maxSpend:3}).campaigns.some((c)=>
+        now,store:"carrefour",channel:"drive",maxSpend:3,limit:30}).campaigns.some((c)=>
         c.id==="carrefour-public-lead-legumes-099-20261014"),
       leadExpired:!selectDailyCatalogue({campaigns:testCampaigns,
         now:new Date("2026-10-14T22:00:00Z"),

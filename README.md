@@ -1,3 +1,11 @@
+## Prospectus du jour et sélections à moins de 1 € (14 octobre 2026)
+
+Le programme quotidien `scripts/sync-daily-campaigns.mjs` consulte désormais **aussi l'index public des prospectus Carrefour Hypermarché** : `https://www.carrefour.fr/catalogue/carrefour`, même lorsque les anciennes campagnes du flux sont expirées. Le moteur retient uniquement les **thèmes alimentaires explicitement reconnus**, une période « Du ... au ... » située immédiatement après le titre et **en cours ce jour en France**. Par exemple, le prospectus officiel « Au cœur du goût », du 13 au 26 octobre 2026, est référencé comme **prospectus alimentaire à consulter** dans l'onglet *Promos du jour*.
+
+Les annonces officielles « produits du quotidien à moins de 1 € » et « recettes à petits prix » rejoignent les pistes de découverte lorsque leur titre, leur visuel et leur canal sont retrouvés sur `https://www.carrefour.fr/offres-du-moment`.
+
+**Aucune transformation en promotion produit :** ces pistes n'ont ni EAN, ni prix de référence vérifié, ni réduction confirmée, ni avantage automatiquement cumulable. Elles sont horodatées au **jour civil Europe/Paris**, deviennent invisibles après minuit si non reconfirmées, ne servent pas à déclarer un achat « dans le budget » et les vérifications d'absence de faux tarifs font partie des contrôles GitHub et du parcours Android. Les catalogues hors alimentaire, futurs, expirés, les dates incohérentes et les pages bloquées sont rejetés. Les anciens candidats ne sont pas réactivés par simple consultation de l'index.
+
 ### Promos du jour : coût après avantage sans confondre trésorerie et économie (14 octobre 2026)
 
 Dans l'onglet **Promos du jour**, le tri **Coût théorique le plus bas après avantage** compare le coût des lots pour lesquels **le prix initial et l'économie applicable à la quantité minimale sont tous deux documentés**. Le coût estimé après avantage s'affiche sur les fiches, mais reste un **scénario conditionnel** (référence éligible, bonne quantité, approbation du remboursement ou crédit fidélité).
