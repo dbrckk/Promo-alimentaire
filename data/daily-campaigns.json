@@ -209,7 +209,8 @@
       "startsAt": "2026-10-14",
       "expiresAt": "2026-10-14",
       "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "detailsUrl": "https://www.carrefour.fr/boutique/produits-1euro"
     },
     {
       "id": "carrefour-public-lead-recettes-budget-20261014",

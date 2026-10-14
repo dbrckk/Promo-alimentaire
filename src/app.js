@@ -525,7 +525,10 @@ function renderDailyCatalogue(){
     digest.campaigns.length+" campagne(s) officielle(s). "+ 
     "Classement : "+sortDescription+" ; "+budgetDescription+". "+
     "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat. "+ 
-    "Les sélections publicitaires sans prix exact ne sont pas garanties dans le budget ; les seuils d'achat connus sont filtrés."+
+    "Les sélections publicitaires sans prix exact ne sont pas garanties dans le budget ; les seuils d'achat connus sont filtrés. "+
+    (digest.maxSpend!==null
+      ? "Pistes alimentaires économiques mises en avant, mais aucun prix précis sous ce plafond n'est confirmé. "
+      : "")+
     (unconfirmedRetailerCount
       ? " "+unconfirmedRetailerCount+" offre(s) enseigne non reconfirmée(s) volontairement exclue(s) des meilleures promotions."
       : "");

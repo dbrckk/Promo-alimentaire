@@ -314,3 +314,48 @@ test("petits prix alimentaires : sélectionner les annonces sans présumer d'un 
     && !("savingAmount" in x) && !("savingPercent" in x)),
   "Pas de prix exact ni de gain automatique sur une simple sélection publicitaire");
 });
+
+test("petits budgets : nouveautés Carrefour visibles en premier sans prix de caisse inventé",()=>{
+  const date=new Date("2026-10-14T12:00:00Z");
+  const source="https://www.carrefour.fr/offres-du-moment";
+  const html=`<main>
+    <img alt="Fruits et légumes à moins de 1 euro" />
+    <h3>Fruits et légumes à 0,99€</h3><p>En Hypermarché et en Drive</p>
+    <img alt="Produits du quotidien à moins de 1 euro" />
+    <h3>Les produits du quotidien à moins de 1€</h3><p>En Hypermarché et en Drive</p>
+    <img alt="Bio à moins de 2 euros" />
+    <h3>Le Bio à moins de 2€</h3><p>En Hypermarché et en Drive</p>
+  </main>`;
+  const leads=discoverCarrefourDailyLeads(html,date);
+  assert.deepEqual(leads.map(x=>x.id),[
+    "carrefour-public-lead-legumes-099-20261014",
+    "carrefour-public-lead-quotidien-1-20261014",
+    "carrefour-public-lead-bio-2-20261014"
+  ]);
+  const essentials=leads.find(x=>x.id.includes("quotidien-1"));
+  assert.equal(essentials.sourceUrl,source);
+  assert.equal(essentials.detailsUrl,"https://www.carrefour.fr/boutique/produits-1euro");
+  assert.equal("savingPercent" in essentials,false);
+  assert.equal("savingAmount" in essentials,false);
+  assert.equal("advertisedPrice" in essentials,false);
+  const raw=dailyCampaigns.filter(x=>x.store==="carrefour"
+    && !x.id.startsWith("carrefour-public-lead-"));
+  const ranked=selectDailyCatalogue({
+    campaigns:[...raw,...leads],now:date,
+    store:"carrefour",channel:"store",maxSpend:3,limit:3
+  });
+  assert.deepEqual(ranked.campaigns.map(x=>x.id),leads.map(x=>x.id),
+    "Un catalogue volumineux ne masque plus les petits prix annoncés");
+  assert.ok(ranked.campaigns.every(x=>x.advertisedPrice===null
+    && !("savingAmount" in x) && !("savingPercent" in x)));
+  const tampered=selectDailyCatalogue({
+    campaigns:[{...essentials,detailsUrl:"https://example.invalid/discount"}],
+    now:date,store:"carrefour",channel:"store"
+  });
+  assert.equal(tampered.campaigns.length,0);
+  const expired=selectDailyCatalogue({
+    campaigns:leads,now:new Date("2026-10-14T22:00:00Z"),
+    store:"carrefour",channel:"store",maxSpend:3
+  });
+  assert.equal(expired.campaigns.length,0);
+});

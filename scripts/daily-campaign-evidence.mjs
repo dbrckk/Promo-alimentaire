@@ -160,7 +160,9 @@ export function discoverCarrefourDailyLeads(html,now=new Date()){
   })) found.push(make("quotidien-1",
     "Produits du quotidien : sélection annoncée à moins de 1 €",
     "Des produits du quotidien sont annoncés sous le seuil de 1 €. Le produit exact, sa quantité et son prix local doivent être consultés dans le magasin choisi.",
-    "épicerie"));
+    "épicerie",["store","drive"],{
+      detailsUrl:"https://www.carrefour.fr/boutique/produits-1euro"
+    }));
   if(hasLocalCampaignProof(text,{
     heading:"Recettes à petits prix",
     precededBy:"Recettes à petits prix",
