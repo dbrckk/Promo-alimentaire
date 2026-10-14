@@ -171,3 +171,24 @@ export function discoverCarrefourDailyLeads(html,now=new Date()){
     "alimentaire",["drive"],{minimumPurchase:15}));
   return found;
 }
+
+
+/**
+ * Retain verified, day-only editorial discoveries for their original day
+ * even if the next background HTTP request is denied (e.g. Carrefour 403).
+ * This does not prolong the offer: the client rejects it after local midnight.
+ * Retain at most seven expired days for traceability.
+ */
+export function retainRecentDailyLeads(entries,today){
+  if(!Array.isArray(entries) || !validDay(today)) return [];
+  const threshold=new Date(today+"T12:00:00Z");
+  threshold.setUTCDate(threshold.getUTCDate()-7);
+  const oldest=threshold.toISOString().slice(0,10);
+  return entries.filter((entry)=>{
+    if(!String(entry?.id||"").startsWith("carrefour-public-lead-"))
+      return true;
+    return validDay(entry?.expiresAt) && validDay(entry?.verifiedAt)
+      && entry.verifiedAt===entry.expiresAt
+      && entry.expiresAt>=oldest && entry.expiresAt<=today;
+  });
+}
