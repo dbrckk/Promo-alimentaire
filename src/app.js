@@ -496,7 +496,7 @@ function renderDailyCatalogue(){
   const digest=selectDailyCatalogue({
     offers:resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile),
     campaigns:state.dailyCampaigns,store:state.store,
-    channel:state.channel,now:today,limit:8,
+    channel:state.channel,now:today,limit:12,
     sort:state.dailySort,
     maxSpend:state.dailyMaxSpend==="all"?null:Number(state.dailyMaxSpend)
   });
@@ -654,7 +654,9 @@ function renderDailyCatalogue(){
       const announcedPrice=Number.isFinite(item.advertisedPrice)
         ? `<p class="help"><strong>Prix publicitaire : ${money.format(item.advertisedPrice)} / ${escapeHtml(item.priceUnit)}</strong>
             · magasin, quantité et tarif final à confirmer.</p>` : "";
+      const catalogueOnly=item.id.startsWith("carrefour-public-lead-brochure-");
       return `<article class="card daily-offer">
+        ${catalogueOnly?'<span class="badge">Prospectus alimentaire du jour</span>':""}
         <h4>${escapeHtml(item.title)}</h4>
         <p>${escapeHtml(item.claim)}</p>
         ${illustrative}${announcedPrice}${purchaseThreshold}${noExactPrice}
