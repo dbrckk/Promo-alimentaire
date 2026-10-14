@@ -203,3 +203,43 @@ test("un refus HTTP 403 ne supprime pas une piste vérifiée le même jour",()=>
   assert.equal(retainRecentDailyLeads([{...lead,expiresAt:"2026-10-15"}],
     today).length,0,"Aucune prolongation de campagne sans nouvelle preuve");
 });
+
+test("le coût après avantage classe les produits sans masquer l'argent à avancer",()=>{
+  const base={category:"alimentaire",scope:"produit",stores:["leclerc"],
+    channels:["store"],verifiedAt:"2026-10-14",reviewAfter:"2026-10-17",
+    expiresAt:"2026-10-17",sourceUrl:"https://www.e.leclerc/prospectus"};
+  const offers=[
+    {...base,id:"ticket",providerId:"leclerc",title:"Ticket fidélité",
+      basePrice:4,savingPercent:20,mechanism:"retailer_loyalty",
+      rewardType:"loyalty_credit"},
+    {...base,id:"free-after-refund",providerId:"shopmium",title:"Remboursé après achat",
+      basePrice:5,savingPercent:100,mechanism:"manufacturer_refund"},
+    {...base,id:"affordable",providerId:"shopmium",title:"Coupon accessible",
+      basePrice:3,savingAmount:1,mechanism:"manufacturer_refund"},
+    {...base,id:"unknown-price",providerId:"shopmium",title:"Prix non documenté",
+      savingAmount:1,mechanism:"manufacturer_refund"}
+  ];
+  const now=new Date("2026-10-14T12:00:00Z");
+  const all=selectDailyCatalogue({offers,store:"leclerc",
+    channel:"store",now,sort:"net",limit:10});
+  assert.deepEqual(all.highlights.map((item)=>item.id),[
+    "free-after-refund","affordable","ticket"
+  ]);
+  assert.deepEqual(all.highlights.map((item)=>item.netAfterBenefit),[0,2,3.2]);
+  assert.equal(all.extra.find((item)=>item.id==="unknown-price").netAfterBenefit,null);
+  const fullyRefunded=all.extra.find((item)=>item.id==="free-after-refund");
+  assert.equal(fullyRefunded.upfrontCost,5,
+    "100 % remboursé ne signifie pas payer 0 € en caisse");
+  assert.equal(fullyRefunded.netAfterBenefit,0);
+  const budget=selectDailyCatalogue({offers,store:"leclerc",
+    channel:"store",now,sort:"net",maxSpend:3,limit:10});
+  assert.deepEqual(budget.highlights.map((item)=>item.id),["affordable"]);
+  assert.equal(budget.retailer.length,0);
+  assert.equal(budget.extra.length,1);
+  const pending=selectDailyCatalogue({offers:[{
+    ...offers[0],sourceSyncWarning:{
+      status:"unavailable",checkedAt:"2026-10-14T11:00:00Z"}
+  }],store:"leclerc",channel:"store",now,sort:"net"});
+  assert.equal(pending.highlights.length,0);
+  assert.equal(pending.unconfirmed[0]?.netAfterBenefit,null);
+});
