@@ -1,5 +1,5 @@
 import {readFile,writeFile} from "node:fs/promises";
-import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads} from "./daily-campaign-evidence.mjs";
+import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,retainRecentDailyLeads} from "./daily-campaign-evidence.mjs";
 import {parisCivilDay} from "../src/ingestion.js";
 
 const destination=new URL("../data/daily-campaigns.json",import.meta.url);
@@ -58,12 +58,9 @@ const next=payload.campaigns.map((entry)=>{
 const officialPage=pages.get("https://www.carrefour.fr/offres-du-moment");
 const discovered=officialPage
   ?discoverCarrefourDailyLeads(officialPage,now) : [];
-const cutoff=new Date(today+"T12:00:00Z");
-cutoff.setUTCDate(cutoff.getUTCDate()-7);
-const oldest=cutoff.toISOString().slice(0,10);
-const historical=next.filter((entry)=>!String(entry.id).startsWith(
-  "carrefour-public-lead-"
-) || (entry.expiresAt>=oldest && entry.expiresAt<today));
+// Keep today's original observation during 403 outages; the PWA applies
+// the original expiry at local French midnight regardless of re-fetch status.
+const historical=retainRecentDailyLeads(next,today);
 const newlyAdded=discovered.filter((entry)=>!historical.some((old)=>old.id===entry.id));
 const updated=[...historical,...newlyAdded];
 const discoveryChanged=JSON.stringify(updated)!==JSON.stringify(payload.campaigns);
