@@ -1,5 +1,5 @@
 import {readFile,writeFile} from "node:fs/promises";
-import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,retainRecentDailyLeads} from "./daily-campaign-evidence.mjs";
+import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,discoverCarrefourFoodBrochures,retainRecentDailyLeads} from "./daily-campaign-evidence.mjs";
 import {parisCivilDay} from "../src/ingestion.js";
 
 const destination=new URL("../data/daily-campaigns.json",import.meta.url);
@@ -8,9 +8,15 @@ const now=new Date();
 const today=parisCivilDay(now);
 const payload=JSON.parse(await readFile(destination,"utf8"));
 if(!Array.isArray(payload.campaigns)) throw Error("Campagnes publiques invalides");
-const sources=[...new Set(payload.campaigns
-  .filter((c)=>typeof c?.sourceUrl==="string" && c.expiresAt>=today)
-  .map((c)=>c.sourceUrl))];
+const FOOD_BROCHURE_INDEX="https://www.carrefour.fr/catalogue/carrefour";
+const sources=[...new Set([
+  // Always inspect the current public food catalogue: future editions have
+  // new dates and cannot be discovered solely from archived campaign URLs.
+  FOOD_BROCHURE_INDEX,
+  ...payload.campaigns
+    .filter((c)=>typeof c?.sourceUrl==="string" && c.expiresAt>=today)
+    .map((c)=>c.sourceUrl)
+])];
 const pages=new Map();
 for(const url of sources){
   try{
@@ -18,6 +24,7 @@ for(const url of sources){
     const ok=parsed.protocol==="https:" && !parsed.search && !parsed.hash
       && !parsed.username && !parsed.password
       && (parsed.href==="https://www.carrefour.fr/offres-du-moment"
+        || parsed.href===FOOD_BROCHURE_INDEX
         || parsed.hostname==="nos-catalogues-promos-v2.e.leclerc"
           && /^\/catalog\/[a-z0-9-]+\/[a-z0-9-]+\/?$/i.test(parsed.pathname));
     if(!ok){
@@ -56,15 +63,18 @@ const next=payload.campaigns.map((entry)=>{
 // discovery leads. Each observed lead is dated TODAY and must not create a
 // shelf price or automatically eligible loyalty refund.
 const officialPage=pages.get("https://www.carrefour.fr/offres-du-moment");
-const discovered=officialPage
-  ?discoverCarrefourDailyLeads(officialPage,now) : [];
+const discovered=[
+  ...(officialPage?discoverCarrefourDailyLeads(officialPage,now):[]),
+  ...(pages.has(FOOD_BROCHURE_INDEX)
+    ?discoverCarrefourFoodBrochures(pages.get(FOOD_BROCHURE_INDEX),now):[])
+];
 // Keep today's original observation during 403 outages; the PWA applies
 // the original expiry at local French midnight regardless of re-fetch status.
 const historical=retainRecentDailyLeads(next,today);
 const newlyAdded=discovered.filter((entry)=>!historical.some((old)=>old.id===entry.id));
 const updated=[...historical,...newlyAdded];
 const discoveryChanged=JSON.stringify(updated)!==JSON.stringify(payload.campaigns);
-console.log("[daily] annonces petit budget/jour vérifiées sur la page publique : "+
+console.log("[daily] annonces et brochures alimentaires du jour, sources publiques : "+
   discovered.length+" ; entrées nouvelles : "+newlyAdded.length);
 
 console.log("[daily] campagnes reconfirmées "+confirmed+"/"+payload.campaigns.length+
