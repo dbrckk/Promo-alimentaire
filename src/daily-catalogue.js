@@ -291,9 +291,9 @@ export function selectDailyCatalogue({
   // essentials first. These are EDITORIAL leads, not price-verified items:
   // the UI still labels every campaign's exact purchase price unknown.
   const budgetLeadPriority=(item)=>{
-    if(/^carrefour-public-lead-legumes-099-\\d{8}$/.test(item.id)) return 3;
-    if(/^carrefour-public-lead-quotidien-moins-1-\\d{8}$/.test(item.id)) return 2;
-    if(/^carrefour-public-lead-bio-2-\\d{8}$/.test(item.id)) return 1;
+    if(/^carrefour-public-lead-legumes-099-\d{8}$/.test(item.id)) return 3;
+    if(/^carrefour-public-lead-quotidien-moins-1-\d{8}$/.test(item.id)) return 2;
+    if(/^carrefour-public-lead-bio-2-\d{8}$/.test(item.id)) return 1;
     return 0;
   };
   const discovery=(Array.isArray(campaigns)?campaigns:[])
