@@ -514,7 +514,8 @@ function renderDailyCatalogue(){
   const sortDescription={
     percent:"réduction effective sur la quantité minimale",
     euros:"euros économisés sur la quantité minimale",
-    budget:"coût initial du lot"
+    budget:"coût initial du lot",
+    net:"coût théorique après avantage sur le lot (prix à avancer inchangé)"
   }[digest.sort];
   els.dailyStatus.textContent="Sélection au "+formatDate(digest.today)+
     " · "+storeLabel(state.store)+" · "+
@@ -539,6 +540,9 @@ function renderDailyCatalogue(){
       ? money.format(item.savingAmount)+" d'économie potentielle"+
         (item.minQuantity>1?" pour le lot":"") : "Économie en euros inconnue";
     const rate=hasPercent?formatPercent(item.savingPercent):"Taux inconnu";
+    const afterBenefit=Number.isFinite(item.netAfterBenefit)
+      ? "Coût théorique après avantage : "+money.format(item.netAfterBenefit)+
+        " (sous réserve d'éligibilité, sans garantie de prix en caisse)." : null;
     const upperLimit=Number.isInteger(item.higherTierMaxQuantity)
       ? item.higherTierMaxQuantity : null;
     const upperQty=upperLimit===item.higherTierMinQuantity
@@ -554,7 +558,9 @@ function renderDailyCatalogue(){
       ? "EAN documenté (disponibilité locale non confirmée)"
       : "Référence exacte à confirmer";
     const benefit=item.rewardType==="loyalty_credit"
-      ? "Cagnotte fidélité après achat, pas remise de caisse" : null;
+      ? "Cagnotte fidélité après achat, pas remise de caisse"
+      : item.mechanism==="manufacturer_refund"
+        ? "Remboursement éventuel après achat : prévoir le prix initial complet" : null;
     return `<article class="card daily-offer">
       <div class="card-head"><div>
         <h4>${escapeHtml(item.title)}</h4>
@@ -562,6 +568,7 @@ function renderDailyCatalogue(){
       </div><span class="badge">${rate}</span></div>
       <p><strong>${escapeHtml(price)}</strong></p>
       <p class="help">${escapeHtml(upfront)}</p>
+      ${afterBenefit ? `<p class="help"><strong>${escapeHtml(afterBenefit)}</strong></p>` : ""}
       <p class="help">${escapeHtml(quantity)} · ${escapeHtml(exact)}</p>
       ${higherTier ? `<p class="help">${escapeHtml(higherTier)}</p>` : ""}
       ${benefit ? `<p class="help">${escapeHtml(benefit)}</p>` : ""}
