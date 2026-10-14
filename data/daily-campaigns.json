@@ -153,6 +153,22 @@
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     },
     {
+      "id": "carrefour-public-lead-quotidien-moins-1-20261014",
+      "store": "carrefour",
+      "channels": [
+        "store",
+        "drive"
+      ],
+      "category": "épicerie",
+      "title": "Produits du quotidien : sélection annoncée à moins de 1 €",
+      "claim": "L'enseigne annonce une sélection de produits du quotidien à moins de 1 €. Prix, taille du conditionnement, disponibilité et éligibilité dans le magasin choisi à contrôler ; aucun article à ce prix n'est garanti.",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-14",
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "detailsUrl": "https://www.carrefour.fr/boutique/produits-1euro"
+    },
+    {
       "id": "carrefour-public-lead-bio-2-20261014",
       "store": "carrefour",
       "channels": [
