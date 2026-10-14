@@ -79,9 +79,14 @@ function safeCampaign(raw,today,store,channel){
     if(target.protocol!=="https:" || !allowed
       || target.username || target.password || target.search || target.hash) return null;
   }catch{return null;}
+  // A one-day low-budget selection has a fixed official detail page.
+  // Never accept arbitrary merchant or third-party URLs from raw JSON.
+  const pinnedDetails=/^carrefour-public-lead-quotidien-1-\d{8}$/.test(raw.id)
+    ? "https://www.carrefour.fr/boutique/produits-1euro"
+    : CAMPAIGN_DETAILS.get(raw.id);
   if(raw.detailsUrl!==undefined
     && (typeof raw.detailsUrl!=="string"
-      || CAMPAIGN_DETAILS.get(raw.id)!==raw.detailsUrl)) return null;
+      || pinnedDetails!==raw.detailsUrl)) return null;
   return {
     id:raw.id,title:raw.title,claim:raw.claim,sourceUrl:raw.sourceUrl,
     detailsUrl:raw.detailsUrl || null,
@@ -281,6 +286,15 @@ export function selectDailyCatalogue({
       || (Number.isFinite(item.savingAmount) && item.savingAmount>0))
     .sort((a,b)=>orderOffers(a,b,ranking)).slice(0,3);
   const seen=new Set();
+  // A small budget should first show low-priced food *leads*, not bury
+  // them behind large headline percentages for unspecified product sets.
+  // This editorial priority does not validate any item-level shelf price.
+  const budgetLeadPriority=(item)=>{
+    if(/^carrefour-public-lead-legumes-099-\d{8}$/.test(item.id)) return 3;
+    if(/^carrefour-public-lead-quotidien-1-\d{8}$/.test(item.id)) return 2;
+    if(/^carrefour-public-lead-bio-2-\d{8}$/.test(item.id)) return 1;
+    return 0;
+  };
   const discovery=(Array.isArray(campaigns)?campaigns:[])
     .map((raw)=>safeCampaign(raw,today,store,channel)).filter(Boolean)
     .filter((entry)=>budget===null || entry.minimumPurchase===null
@@ -288,7 +302,9 @@ export function selectDailyCatalogue({
     .filter((entry)=>!seen.has(entry.id) && Boolean(seen.add(entry.id)))
     // Rank by illustrative full-lot ceiling rather than advertising the
     // second item's headline percentage as if it applied to the basket.
-    .sort((a,b)=>(b.illustrativeBasketPercent??-1)
+    .sort((a,b)=>(budget!==null
+      ? budgetLeadPriority(b)-budgetLeadPriority(a) : 0)
+      || (b.illustrativeBasketPercent??-1)
       -(a.illustrativeBasketPercent??-1)
       || Number(b.advertisedPrice!==null)-Number(a.advertisedPrice!==null)
       || a.expiresAt.localeCompare(b.expiresAt)
