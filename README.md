@@ -1,3 +1,9 @@
+### Catalogue alimentaire du 14 octobre : sélection de produits du quotidien sous 1 € (source uniquement)
+
+La page officielle [Offres du moment Carrefour](https://www.carrefour.fr/offres-du-moment) annonce également une sélection de **produits du quotidien à moins de 1 €**, en hypermarchés et Drives, que le détecteur du jour ne recensait pas encore. L'analyse l'ajoute parmi les **opérations publicitaires à consulter**, avec accès à la [sélection officielle de produits à petit prix](https://www.carrefour.fr/boutique/produits-1euro). Cette page de sélection peut afficher un assortiment plus large : son contenu ne garantit pas que chaque article soit vendu à moins de 1 €.
+
+La détection exige **simultanément** l'image descriptive, le titre de l'annonce et la mention du canal à proximité sur le site officiel public. Elle conserve la preuve du 14 octobre uniquement jusqu'au **minuit civil de Paris** ; toute reconfirmation ultérieure nécessite une nouvelle lecture accessible. Aucun GTIN, prix d'article, remboursement ou gain de panier n'est déduit d'une publicité de gamme. Le détail renvoie exclusivement vers l'URL Carrefour fixée dans le code et ne peut être remplacé par une URL arbitraire.
+
 ### Promos du jour : coût après avantage sans confondre trésorerie et économie (14 octobre 2026)
 
 Dans l'onglet **Promos du jour**, le tri **Coût théorique le plus bas après avantage** compare le coût des lots pour lesquels **le prix initial et l'économie applicable à la quantité minimale sont tous deux documentés**. Le coût estimé après avantage s'affiche sur les fiches, mais reste un **scénario conditionnel** (référence éligible, bonne quantité, approbation du remboursement ou crédit fidélité).
