@@ -287,6 +287,15 @@ export function selectDailyCatalogue({
       || (Number.isFinite(item.savingAmount) && item.savingAmount>0))
     .sort((a,b)=>orderOffers(a,b,ranking)).slice(0,3);
   const seen=new Set();
+  // When someone chooses a small cash budget, surface source-only food
+  // essentials first. These are EDITORIAL leads, not price-verified items:
+  // the UI still labels every campaign's exact purchase price unknown.
+  const budgetLeadPriority=(item)=>{
+    if(/^carrefour-public-lead-legumes-099-\\d{8}$/.test(item.id)) return 3;
+    if(/^carrefour-public-lead-quotidien-moins-1-\\d{8}$/.test(item.id)) return 2;
+    if(/^carrefour-public-lead-bio-2-\\d{8}$/.test(item.id)) return 1;
+    return 0;
+  };
   const discovery=(Array.isArray(campaigns)?campaigns:[])
     .map((raw)=>safeCampaign(raw,today,store,channel)).filter(Boolean)
     .filter((entry)=>budget===null || entry.minimumPurchase===null
@@ -294,7 +303,9 @@ export function selectDailyCatalogue({
     .filter((entry)=>!seen.has(entry.id) && Boolean(seen.add(entry.id)))
     // Rank by illustrative full-lot ceiling rather than advertising the
     // second item's headline percentage as if it applied to the basket.
-    .sort((a,b)=>(b.illustrativeBasketPercent??-1)
+    .sort((a,b)=>(budget!==null
+      ? budgetLeadPriority(b)-budgetLeadPriority(a) : 0)
+      || (b.illustrativeBasketPercent??-1)
       -(a.illustrativeBasketPercent??-1)
       || Number(b.advertisedPrice!==null)-Number(a.advertisedPrice!==null)
       || a.expiresAt.localeCompare(b.expiresAt)
