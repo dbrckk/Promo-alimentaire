@@ -3,6 +3,19 @@ import {filterOffers,isOfferWithinShoppingScope,effectivePercent} from "./domain
 import {effectiveRetailerPromoPercent} from "./retailer-promo.js";
 import {effectiveOfferPercent,estimateOfferSaving,requiredQuantity} from "./matching.js";
 
+// Campaign detail links are distinct from the official evidence page:
+// a landing page can show a product selection without proving the advertised
+// discount for a specific EAN. Only allow verified, pinned retailer paths.
+const CAMPAIGN_DETAILS=new Map([
+  ["carrefour-bio-2eme-20261019","https://www.carrefour.fr/r/bio-et-ecologie"],
+  ["carrefour-bons-plans-famille-20261016",
+    "https://www.carrefour.fr/evenements/le-coin-des-familles"],
+  ["carrefour-semaine-second-20261019",
+    "https://www.carrefour.fr/boutique/promos-hebdomadaires"],
+  ["carrefour-semaine-gout-20261026",
+    "https://www.carrefour.fr/evenements/semaine-du-gout"]
+]);
+
 // Daily suggestions are NOT an additional price database. The imported
 // retailer/manufacturer offers have already passed the ingestion validators.
 // A campaign is editorial source discovery, never a priced or stackable offer.
@@ -58,8 +71,12 @@ function safeCampaign(raw,today,store,channel){
     if(target.protocol!=="https:" || !allowed
       || target.username || target.password || target.search || target.hash) return null;
   }catch{return null;}
+  if(raw.detailsUrl!==undefined
+    && (typeof raw.detailsUrl!=="string"
+      || CAMPAIGN_DETAILS.get(raw.id)!==raw.detailsUrl)) return null;
   return {
     id:raw.id,title:raw.title,claim:raw.claim,sourceUrl:raw.sourceUrl,
+    detailsUrl:raw.detailsUrl || null,
     verifiedAt:raw.verifiedAt,expiresAt:raw.expiresAt,
     advertisedMaxPercent:Number.isFinite(raw.advertisedMaxPercent)
       ? raw.advertisedMaxPercent : null,
