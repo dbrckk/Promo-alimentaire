@@ -62,6 +62,7 @@ test("14 octobre : campagnes Carrefour classées au taux indicatif du LOT",()=>{
   assert.equal(bio.advertisedMaxPercent,60);
   assert.equal(bio.illustrativeBasketPercent,30);
   assert.equal(bio.illustrativeQuantity,2);
+  assert.equal(bio.detailsUrl,"https://www.carrefour.fr/r/bio-et-ecologie");
   assert.equal(weekly.illustrativeBasketPercent,25);
   assert.equal(grape.advertisedPrice,2.99);
   assert.equal(grape.priceUnit,"kg");
@@ -86,7 +87,11 @@ test("aucun gain inventé à partir de pourcentages publicitaires ou prix isolé
   const inventedPercent={...baseline,advertisedMaxPercent:150};
   const inventedMechanism={...baseline,offerMechanism:"automatic-stack"};
   const inventedPrice={...baseline,advertisedPrice:1.99,priceUnit:"kg"};
-  const invalids=[missingPercent,inventedPercent,inventedMechanism,inventedPrice];
+  const inventedLink={...baseline,
+    detailsUrl:"https://www.carrefour.fr/edito/unrelated-product"};
+  const phishingLink={...baseline,detailsUrl:"https://evil.example/deal"};
+  const invalids=[missingPercent,inventedPercent,inventedMechanism,
+    inventedPrice,inventedLink,phishingLink];
   for(const campaign of invalids){
     assert.equal(selectDailyCatalogue({campaigns:[campaign],now,
       store:"carrefour",channel:"store"}).campaigns.length,0);
