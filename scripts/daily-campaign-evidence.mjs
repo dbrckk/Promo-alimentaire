@@ -154,6 +154,22 @@ export function discoverCarrefourDailyLeads(html,now=new Date()){
     "L'enseigne affiche une sélection à 0,99 €. Produit, quantité, unité et prix dans le magasin choisi à contrôler avant achat.",
     "fruits et légumes"));
   if(hasLocalCampaignProof(text,{
+    heading:"Les produits du quotidien à moins de 1€",
+    precededBy:"Produits du quotidien à moins de 1 euro",
+    followedBy:"En Hypermarché et en Drive"
+  })) found.push(make("quotidien-1",
+    "Produits du quotidien : sélection annoncée à moins de 1 €",
+    "Des produits du quotidien sont annoncés sous le seuil de 1 €. Le produit exact, sa quantité et son prix local doivent être consultés dans le magasin choisi.",
+    "épicerie"));
+  if(hasLocalCampaignProof(text,{
+    heading:"Recettes à petits prix",
+    precededBy:"Recettes à petits prix",
+    followedBy:"En Hypermarché et en Drive"
+  })) found.push(make("recettes-budget",
+    "Recettes à petits prix : idées à consulter",
+    "Carrefour publie une sélection de recettes économiques. Aucun prix final, nombre de portions ou remise précise n'est vérifié.",
+    "alimentaire"));
+  if(hasLocalCampaignProof(text,{
     heading:"Le Bio à moins de 2€",
     precededBy:"Bio à moins de 2 euros",
     followedBy:"En Hypermarché et en Drive"
@@ -191,4 +207,68 @@ export function retainRecentDailyLeads(entries,today){
       && entry.verifiedAt===entry.expiresAt
       && entry.expiresAt>=oldest && entry.expiresAt<=today;
   });
+}
+
+// Look for an actually current food brochure on Carrefour's public catalogue
+// index. This is an editorial link, not proof that any advertised product or
+// price is available in a particular store. The start/end range must appear
+// immediately after the named food brochure; catalogues for electronics,
+// beauty, pet supplies or dated campaigns are never imported.
+//
+// Date-only daily lead: even a brochure lasting two weeks is rechecked each
+// day; a failed fetch cannot prolong its verification.
+const FOOD_BROCHURES=[
+  {needle:"au coeur du gout",slug:"au-coeur-du-gout",
+    label:"Au cœur du goût"},
+  {needle:"le mois monopoly produits laitiers",slug:"produits-laitiers",
+    label:"Produits laitiers"},
+  {needle:"saveurs de saison",slug:"saveurs-de-saison",
+    label:"Saveurs de saison"}
+];
+const FRENCH_MONTHS={
+  janv:1,janvier:1,fev:2,fevr:2,fevrier:2,mars:3,avr:4,avril:4,
+  mai:5,juin:6,juil:7,juillet:7,aout:8,sept:9,septembre:9,
+  oct:10,octobre:10,nov:11,novembre:11,dec:12,decembre:12
+};
+function frenchCatalogDay(day,month,year){
+  const value=FRENCH_MONTHS[month];
+  if(!value) return null;
+  const stamp=String(year)+"-"+String(value).padStart(2,"0")+"-"+
+    String(Number(day)).padStart(2,"0");
+  return validDay(stamp)?stamp:null;
+}
+export function discoverCarrefourFoodBrochures(html,now=new Date()){
+  const today=parisCivilDay(now);
+  if(!validDay(today)) return [];
+  const text=pageText(html);
+  // Catalogue INDEX only. Bounded text windows forbid borrowing a date from
+  // another flyer; pages with challenge/denied content are ignored.
+  if(text.length<100 || /access denied|captcha|connexion obligatoire/.test(text)
+    || !text.includes("catalogues du moment")) return [];
+  const currentSection=text.slice(text.indexOf("catalogues du moment")+20)
+    .split(/catalogues bientot disponibles|magazines/)[0].slice(0,6000);
+  const results=[];
+  for(const brochure of FOOD_BROCHURES){
+    const pos=currentSection.indexOf(brochure.needle);
+    if(pos<0) continue;
+    // Match immediately following date, with no unrelated brochure between.
+    const tail=currentSection.slice(pos+brochure.needle.length,
+      pos+brochure.needle.length+100);
+    const range=/^\s*du\s+(\d{1,2})\s+(\w+)\s+au\s+(\d{1,2})\s+(\w+)\s+(20\d{2})\b/.exec(tail);
+    if(!range) continue;
+    const start=frenchCatalogDay(range[1],range[2],range[5]);
+    const end=frenchCatalogDay(range[3],range[4],range[5]);
+    if(!start || !end || end<start || today<start || today>end) continue;
+    results.push({
+      id:"carrefour-public-lead-brochure-"+brochure.slug+"-"+
+        today.replace(/-/g,""),
+      store:"carrefour",channels:["store"],category:"alimentaire",
+      title:"Catalogue Carrefour « "+brochure.label+" »",
+      claim:"Prospectus alimentaire officiel annoncé du "+start+
+        " au "+end+". Consulter le catalogue et sélectionner son magasin ; aucun prix produit ou pourcentage d'économie n'est confirmé ici.",
+      startsAt:today,expiresAt:today,verifiedAt:today,
+      sourceUrl:"https://www.carrefour.fr/catalogue/carrefour"
+    });
+  }
+  return results;
 }
