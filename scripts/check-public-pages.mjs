@@ -66,7 +66,7 @@ async function inspectDeployment(){
   // imported offer snapshot against the checked-out, CI-validated commit.
   // This also catches stale/missing source status JSON and daily brochures.
   const localWorker=await readFile(new URL("../sw.js",import.meta.url),"utf8");
-  const staticList=localWorker.match(/const\\s+STATIC_ASSETS\\s*=\\s*\\[([\\s\\S]*?)\\]/)?.[1];
+  const staticList=localWorker.match(/const\s+STATIC_ASSETS\s*=\s*\[([\s\S]*?)\]/)?.[1];
   assert.ok(staticList,"Service worker's static asset list is missing.");
   const staticAssets=[...staticList.matchAll(/["'](\\.\\/[^"']+)["']/g)]
     .map((item)=>item[1]);
@@ -79,7 +79,7 @@ async function inspectDeployment(){
   ]);
   assets.delete("./"); // Root navigation serves the same bytes as index.html.
   for(const asset of assets){
-    assert.match(asset,/^\\.\\/[a-zA-Z0-9_./-]+$/,"Unsafe asset path.");
+    assert.match(asset,/^\.\/[a-zA-Z0-9_./-]+$/,"Unsafe asset path.");
     assert.ok(!asset.includes("..") && !asset.includes("//"),
       "Unsafe PWA asset path: "+asset);
   }
