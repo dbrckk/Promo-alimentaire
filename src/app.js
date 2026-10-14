@@ -649,6 +649,8 @@ function renderDailyCatalogue(){
           <strong>Aucun gain panier calculé.</strong></p>
         <a class="open" href="${escapeHtml(item.sourceUrl)}"
            target="_blank" rel="noopener noreferrer">Vérifier la campagne officielle</a>
+        ${item.detailsUrl ? `<a class="open" href="${escapeHtml(item.detailsUrl)}"
+           target="_blank" rel="noopener noreferrer">Voir les produits de cette sélection</a>` : ""}
       </article>`;
     }).join("")
     :fallback("Aucune campagne datée et contrôlée depuis 7 jours pour ce canal. Les annonces trop anciennes sont masquées : consulte le catalogue officiel pour les promotions du jour.");
