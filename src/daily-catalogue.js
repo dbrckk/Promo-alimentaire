@@ -82,7 +82,7 @@ function safeCampaign(raw,today,store,channel){
   // The only dynamic editorial detail link is the source-confirmed
   // Carrefour budget selection, pinned to a fixed official URL. Do not
   // derive or trust arbitrary URLs from the fetched public campaign data.
-  const pinnedDetails=/^carrefour-public-lead-quotidien-moins-1-\\d{8}$/.test(raw.id)
+  const pinnedDetails=/^carrefour-public-lead-quotidien-moins-1-\d{8}$/.test(raw.id)
     ? "https://www.carrefour.fr/boutique/produits-1euro"
     : CAMPAIGN_DETAILS.get(raw.id);
   if(raw.detailsUrl!==undefined
