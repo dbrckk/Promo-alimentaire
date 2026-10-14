@@ -41,7 +41,7 @@ function safeCampaign(raw,today,store,channel){
     return null;
   if(mechanism==="three-for-two"
     && (raw.advertisedMaxPercent!==undefined
-      || !/(?:2\\s*\\+\\s*1|deux achet[eé]s)/i.test(raw.title+" "+raw.claim)))
+      || !/(?:2\s*\+\s*1|deux achet[eé]s)/i.test(raw.title+" "+raw.claim)))
     return null;
   const advertisedPrice=raw.advertisedPrice===undefined ? null : raw.advertisedPrice;
   if(advertisedPrice!==null
