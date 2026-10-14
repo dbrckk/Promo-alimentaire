@@ -149,18 +149,26 @@ function normalizePick(offer){
     : null;
   const maxAdvertisedRate=bestTier?.savingPercent ?? null;
   const minimumRate=pickRate(offer,quantity);
+  const upfrontCost=Number.isFinite(offer.basePrice) && offer.basePrice>0
+    ? Math.round(offer.basePrice*quantity*100)/100 : null;
+  const savingAmount=pickSaving(offer,quantity);
+  // A conditional cashback or loyalty credit may arrive after checkout.
+  // This is the theoretical final cost, NEVER cash required to buy the lot.
+  const netAfterBenefit=Number.isFinite(upfrontCost)
+    && Number.isFinite(savingAmount) && savingAmount>=0
+    && savingAmount<=upfrontCost
+    ? Math.round((upfrontCost-savingAmount)*100)/100 : null;
   return {
     id:offer.id,title:offer.title,providerId:offer.providerId,
     provider:offer.provider || offer.providerId,sourceUrl:offer.sourceUrl,
     category:offer.category || "alimentaire",verifiedAt:offer.verifiedAt,
     expiresAt:[offer.reviewAfter,offer.expiresAt].filter(Boolean).sort()[0] || null,
-    savingAmount:pickSaving(offer,quantity),
+    savingAmount,
     savingPercent:minimumRate,
     basePrice:Number.isFinite(offer.basePrice)?offer.basePrice:null,
     // The upfront expense is the documented reference price times the
     // minimum eligible quantity, NOT the expected cashback/net payment.
-    upfrontCost:Number.isFinite(offer.basePrice) && offer.basePrice>0
-      ? Math.round(offer.basePrice*quantity*100)/100 : null,
+    upfrontCost,netAfterBenefit,
     minQuantity:quantity,
     higherTierPercent:Number.isFinite(maxAdvertisedRate)
       && (!Number.isFinite(minimumRate) || maxAdvertisedRate>minimumRate)
@@ -170,6 +178,7 @@ function normalizePick(offer){
     hasExactEan:Boolean(offer.eans?.length && offer.eanEvidenceUrl),
     requiresStoreVerification:Boolean(offer.requiresStoreVerification),
     rewardType:offer.rewardType || null,
+    mechanism:offer.mechanism || null,
     scope:offer.scope,
     candidate:true, // Nothing is automatically a guaranteed checkout price.
     needsActivation:offer.providerId!=="carrefour" && offer.providerId!=="leclerc"
@@ -181,6 +190,15 @@ function orderOffers(a,b,sort="percent"){
   const saving=number(b.savingAmount)-number(a.savingAmount);
   const price=number(a.upfrontCost)-number(b.upfrontCost);
   if(sort==="euros" && saving) return saving;
+  if(sort==="net"){
+    // A missing price or cashback amount cannot be treated as a free lot.
+    if(Number.isFinite(a.netAfterBenefit)!==Number.isFinite(b.netAfterBenefit))
+      return Number.isFinite(a.netAfterBenefit)?-1:1;
+    if(Number.isFinite(a.netAfterBenefit) && Number.isFinite(b.netAfterBenefit)
+      && a.netAfterBenefit!==b.netAfterBenefit)
+      return a.netAfterBenefit-b.netAfterBenefit;
+    if(price) return price;
+  }
   if(sort==="budget"){
     if(Number.isFinite(a.upfrontCost)!==Number.isFinite(b.upfrontCost))
       return Number.isFinite(a.upfrontCost)?-1:1;
@@ -207,7 +225,7 @@ export function selectDailyCatalogue({
   const current=new Date(now);
   const today=parisCivilDay(current);
   const safeLimit=Number.isInteger(limit)?Math.max(1,Math.min(limit,30)):8;
-  const ranking=["percent","euros","budget"].includes(sort)?sort:"percent";
+  const ranking=["percent","euros","budget","net"].includes(sort)?sort:"percent";
   const budget=Number.isFinite(maxSpend) && maxSpend>0
     ? Math.round(maxSpend*100)/100 : null;
   const scoped=filterOffers(
@@ -230,6 +248,7 @@ export function selectDailyCatalogue({
       // Historical amounts are not current prices, even if numerically
       // precise. Keep them separate and name them explicitly.
       savingAmount:null,savingPercent:null,basePrice:null,upfrontCost:null,
+      netAfterBenefit:null,
       historicalRate:original.savingPercent,
       historicalSavingAmount:original.savingAmount,
       historicalUpfront:original.upfrontCost,
