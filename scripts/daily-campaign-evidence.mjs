@@ -154,6 +154,16 @@ export function discoverCarrefourDailyLeads(html,now=new Date()){
     "L'enseigne affiche une sélection à 0,99 €. Produit, quantité, unité et prix dans le magasin choisi à contrôler avant achat.",
     "fruits et légumes"));
   if(hasLocalCampaignProof(text,{
+    heading:"Les produits du quotidien à moins de 1€",
+    precededBy:"Produits du quotidien à moins de 1 euro",
+    followedBy:"En Hypermarché et en Drive"
+  })) found.push(make("quotidien-moins-1",
+    "Produits du quotidien : sélection annoncée à moins de 1 €",
+    "L'enseigne annonce une sélection de produits du quotidien à moins de 1 €. Prix, taille du conditionnement, disponibilité et éligibilité dans le magasin choisi à contrôler ; aucun article à ce prix n'est garanti.",
+    "épicerie",["store","drive"],{
+      detailsUrl:"https://www.carrefour.fr/boutique/produits-1euro"
+    }));
+  if(hasLocalCampaignProof(text,{
     heading:"Le Bio à moins de 2€",
     precededBy:"Bio à moins de 2 euros",
     followedBy:"En Hypermarché et en Drive"
