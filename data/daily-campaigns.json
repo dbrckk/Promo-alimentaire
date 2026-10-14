@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-14T07:00:00Z",
+  "checkedAt": "2026-10-14T09:13:29.678Z",
   "kind": "public-campaign-discovery",
   "warning": "Campagnes officielles signalées, sans preuve de prix final ni cumul automatique. Nouvelle vérification du magasin requise.",
   "campaigns": [
@@ -136,51 +136,6 @@
       "verifiedAt": "2026-10-14",
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
       "detailsUrl": "https://www.carrefour.fr/evenements/semaine-du-gout"
-    },
-    {
-      "id": "carrefour-public-lead-legumes-099-20261014",
-      "store": "carrefour",
-      "channels": [
-        "store",
-        "drive"
-      ],
-      "category": "fruits et légumes",
-      "title": "Sélection fruits et légumes : annonce à 0,99 €",
-      "claim": "L'enseigne affiche une sélection à 0,99 €. Produit, quantité, unité et prix dans le magasin choisi à contrôler avant achat.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
-    },
-    {
-      "id": "carrefour-public-lead-bio-2-20261014",
-      "store": "carrefour",
-      "channels": [
-        "store",
-        "drive"
-      ],
-      "category": "bio",
-      "title": "Produits Bio annoncés à moins de 2 €",
-      "claim": "Sélection Bio Carrefour à petit prix ; sans référence exacte, le montant et la quantité du produit ne sont pas confirmés.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
-    },
-    {
-      "id": "carrefour-public-lead-poissonnerie-club-15-20261014",
-      "store": "carrefour",
-      "channels": [
-        "drive"
-      ],
-      "category": "alimentaire",
-      "title": "Poissonnerie : 34 % d'économies Club dès 15 €",
-      "claim": "Avantage Club annoncé dès 15 € sur une sélection hors promotions, uniquement aujourd'hui dans les Drives participants. Conditions fidélité et panier éligible à confirmer.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
-      "minimumPurchase": 15
     }
   ]
 }
