@@ -1301,6 +1301,10 @@ try{
       grapePrice:grape?.advertisedPrice,grapeUnit:grape?.priceUnit,
       campaignLink:store.campaigns.find((c)=>
         c.id==="carrefour-semaine-second-20261019")?.detailsUrl,
+      maliciousDeepLinkAccepted:selectDailyCatalogue({campaigns:[
+        {...raw.campaigns.find((c)=>c.id==="carrefour-semaine-second-20261019"),
+          detailsUrl:"https://www.carrefour.fr/edito/unrelated"}
+      ],now,store:"carrefour",channel:"store"}).campaigns.length>0,
       fakeBasketSaving:store.campaigns.some((c)=>
         "savingPercent" in c || "savingAmount" in c),
       driveFamily:drive.campaigns.some((c)=>
@@ -1312,6 +1316,7 @@ try{
   assert.deepEqual(dailyAdsSafety,{
     bioCeiling:30,bioFor:2,grapePrice:2.99,grapeUnit:"kg",
     campaignLink:"https://www.carrefour.fr/boutique/promos-hebdomadaires",
+    maliciousDeepLinkAccepted:false,
     fakeBasketSaving:false,driveFamily:true,inStoreFamily:false
   });
   // Integrated Android browser audit: tier rates and fixed refunds must be
