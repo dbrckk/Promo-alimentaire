@@ -1496,6 +1496,44 @@ try{
     noUnconfirmedBudget:0,countedButNotRecommended:1,historicalOnly:true,
     upfront:2.99
   });
+  // The same "after benefit" comparison runs on actual Android-sized Chrome.
+  // Even if a reimbursement makes the theoretical net cost zero, the full
+  // documented checkout cash must remain within a cash-budget filter.
+  const dailyNetCost=await page.evaluate(async()=>{
+    const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
+    const base={providerId:"shopmium",provider:"Shopmium",category:"alimentaire",
+      scope:"produit",stores:["all"],channels:["store"],
+      sourceUrl:"https://www.shopmium.com/fr/",verifiedAt:"2026-10-14",
+      reviewAfter:"2026-10-15",expiresAt:"2026-10-17",
+      mechanism:"manufacturer_refund"};
+    const offers=[
+      {...base,id:"full-refund",title:"Remboursement sous condition",
+        basePrice:5,savingPercent:100},
+      {...base,id:"small-coupon",title:"Bon de réduction",
+        basePrice:3,savingAmount:1},
+      {...base,id:"no-price",title:"Prix absent",savingAmount:1}
+    ];
+    const now=new Date("2026-10-14T12:00:00Z");
+    const all=selectDailyCatalogue({offers,now,store:"carrefour",
+      channel:"store",sort:"net",limit:10});
+    const budget=selectDailyCatalogue({offers,now,store:"carrefour",
+      channel:"store",sort:"net",maxSpend:3,limit:10});
+    return {ranked:all.extra.map(item=>item.id),
+      fullUpfront:all.extra.find(item=>item.id==="full-refund").upfrontCost,
+      fullNet:all.extra.find(item=>item.id==="full-refund").netAfterBenefit,
+      noPrice:all.extra.find(item=>item.id==="no-price").netAfterBenefit,
+      underThree:budget.extra.map(item=>item.id)};
+  });
+  assert.deepEqual(dailyNetCost,{
+    ranked:["full-refund","small-coupon","no-price"],
+    fullUpfront:5,fullNet:0,noPrice:null,underThree:["small-coupon"]
+  });
+  await page.locator("#dailySort").selectOption("net");
+  assert.match(await page.locator("#dailyStatus").innerText(),
+    /coût théorique après avantage/);
+  assert.match(await page.locator("#dailyView").innerText(),
+    /une cagnotte ou une ODR ne diminue pas l'argent à avancer/);
+  await assertNoHorizontalOverflow(page,"tri par coût après avantage");
   await page.locator("#dailySort").selectOption("percent");
     await assertNoHorizontalOverflow(page,"analyse du catalogue du jour");
   await page.screenshot({path:OUT+"/00-catalogue-du-jour.png",fullPage:true});
