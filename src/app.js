@@ -631,15 +631,26 @@ function renderDailyCatalogue(){
     ?digest.extra.map(renderPick).join("")
     :fallback("Aucun remboursement public suffisamment récent à proposer pour ce canal.");
   els.dailyCampaigns.innerHTML=digest.campaigns.length
-    ?digest.campaigns.map((item)=>`<article class="card daily-offer">
+    ?digest.campaigns.map((item)=>{
+      const illustrative=Number.isFinite(item.illustrativeBasketPercent)
+        ? `<p class="help"><strong>Plafond indicatif sur le lot : ${formatPercent(item.illustrativeBasketPercent)}</strong>
+            pour ${item.illustrativeQuantity} articles de même prix, si la réduction maximale annoncée s'applique.
+            Ce n'est ni une remise garantie, ni un taux sur votre panier réel.</p>`
+        : "";
+      const announcedPrice=Number.isFinite(item.advertisedPrice)
+        ? `<p class="help"><strong>Prix publicitaire : ${money.format(item.advertisedPrice)} / ${escapeHtml(item.priceUnit)}</strong>
+            · magasin, quantité et tarif final à confirmer.</p>` : "";
+      return `<article class="card daily-offer">
         <h4>${escapeHtml(item.title)}</h4>
         <p>${escapeHtml(item.claim)}</p>
+        ${illustrative}${announcedPrice}
         <p class="help">Annonce consultée le ${formatDate(item.verifiedAt)}
           · fin annoncée le ${formatDate(item.expiresAt)}.
           <strong>Aucun gain panier calculé.</strong></p>
         <a class="open" href="${escapeHtml(item.sourceUrl)}"
            target="_blank" rel="noopener noreferrer">Vérifier la campagne officielle</a>
-      </article>`).join("")
+      </article>`;
+    }).join("")
     :fallback("Aucune campagne datée et contrôlée depuis 7 jours pour ce canal. Les annonces trop anciennes sont masquées : consulte le catalogue officiel pour les promotions du jour.");
 }
 
