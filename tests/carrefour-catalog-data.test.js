@@ -98,7 +98,7 @@ test("aucun gain inventé à partir de pourcentages publicitaires ou prix isolé
   }
   const threeForTwo={...baseline,id:"three-for-two",title:"2+1 offert",
     claim:"Deux achetés et un offert sur une sélection",offerMechanism:"three-for-two",
-    advertisedMaxPercent:undefined};
+    advertisedMaxPercent:undefined,detailsUrl:undefined};
   const three=selectDailyCatalogue({campaigns:[threeForTwo],now,
     store:"carrefour",channel:"store"}).campaigns[0];
   assert.equal(three.illustrativeBasketPercent,33.33);
