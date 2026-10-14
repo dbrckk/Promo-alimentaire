@@ -1293,6 +1293,7 @@ try{
     // correctly prunes the production feed's expired entries.
     const ids=[
       "carrefour-public-lead-legumes-099-20261014",
+      "carrefour-public-lead-quotidien-moins-1-20261014",
       "carrefour-public-lead-bio-2-20261014",
       "carrefour-public-lead-poissonnerie-club-15-20261014"
     ];
@@ -1302,9 +1303,13 @@ try{
       {...base,id:ids[0],channels:["store","drive"],
         category:"fruits et légumes",title:"Fruits et légumes à 0,99 €",
         claim:"Prix publicitaire à vérifier"},
-      {...base,id:ids[1],channels:["store","drive"],category:"bio",
+      {...base,id:ids[1],channels:["store","drive"],category:"épicerie",
+        title:"Produits du quotidien à moins de 1 €",
+        claim:"Prix publicitaire à vérifier",
+        detailsUrl:"https://www.carrefour.fr/boutique/produits-1euro"},
+      {...base,id:ids[2],channels:["store","drive"],category:"bio",
         title:"Bio à moins de 2 €",claim:"Prix publicitaire à vérifier"},
-      {...base,id:ids[2],channels:["drive"],category:"alimentaire",
+      {...base,id:ids[3],channels:["drive"],category:"alimentaire",
         title:"Poissonnerie Club dès 15 €",minimumPurchase:15,
         claim:"Avantage Club dès 15 € à contrôler"}
     ];
@@ -1338,6 +1343,17 @@ try{
         c.id==="carrefour-bons-plans-famille-20261016"),
       fruitLead:store.campaigns.some((c)=>
         c.id==="carrefour-public-lead-legumes-099-20261014"),
+      essentialsLink:selectDailyCatalogue({
+        campaigns:fixtures.filter((c)=>c.id===ids[1]),now,
+        store:"carrefour",channel:"store"
+      }).campaigns[0]?.detailsUrl,
+      essentialsRejectFakeLink:selectDailyCatalogue({
+        campaigns:fixtures.filter((c)=>c.id===ids[1]).map((c)=>({
+          ...c,detailsUrl:"https://carrefour.invalid/faux"
+        })),now,store:"carrefour",channel:"store"
+      }).campaigns.length===0,
+      essentialsNoSavings:!store.campaigns.some((c)=>
+        c.id===ids[1] && ("savingPercent" in c || "savingAmount" in c)),
       fishDrive:drive.campaigns.some((c)=>
         c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
       fishBlockedAt3:!selectDailyCatalogue({campaigns:testCampaigns,
@@ -1357,7 +1373,10 @@ try{
     campaignLink:"https://www.carrefour.fr/boutique/promos-hebdomadaires",
     maliciousDeepLinkAccepted:false,
     fakeBasketSaving:false,driveFamily:true,inStoreFamily:false,
-    fruitLead:true,fishDrive:true,fishBlockedAt3:true,
+    fruitLead:true,
+    essentialsLink:"https://www.carrefour.fr/boutique/produits-1euro",
+    essentialsRejectFakeLink:true,essentialsNoSavings:true,
+    fishDrive:true,fishBlockedAt3:true,
     budgetUnknown:true,leadExpired:true
   });
   // Integrated Android browser audit: tier rates and fixed refunds must be
