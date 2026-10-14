@@ -1404,6 +1404,58 @@ try{
     fruitLead:true,fishDrive:true,fishBlockedAt3:true,
     budgetUnknown:true,leadExpired:true
   });
+  // Treat the current campaign directory as a source of verified text,
+  // never as proof of a particular one-euro checkout price. This remains
+  // deterministic even when a later nightly sync prunes 14-Oct records.
+  const dailyBudgetLeads=await page.evaluate(async()=>{
+    const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
+    const now=new Date("2026-10-14T12:00:00Z");
+    const base={store:"carrefour",category:"alimentaire",
+      channels:["store","drive"],sourceUrl:"https://www.carrefour.fr/offres-du-moment",
+      verifiedAt:"2026-10-14",startsAt:"2026-10-14",expiresAt:"2026-10-14",
+      claim:"Sélection officielle, articles précis non confirmés"};
+    const entries=[
+      {...base,id:"carrefour-public-lead-legumes-099-20261014",
+        category:"fruits et légumes",title:"Sélection à 0,99 €"},
+      {...base,id:"carrefour-public-lead-quotidien-1-20261014",
+        category:"épicerie",title:"Sélection de produits quotidiens à moins de 1 €",
+        detailsUrl:"https://www.carrefour.fr/boutique/produits-1euro"},
+      {...base,id:"carrefour-public-lead-bio-2-20261014",
+        category:"bio",title:"Sélection bio à moins de 2 €"},
+      {...base,id:"carrefour-bio-2eme-20261019",
+        title:"Bio : 60% sur le 2ème",claim:"jusqu'à 60% sur le 2ème",
+        advertisedMaxPercent:60,offerMechanism:"second-item",
+        expiresAt:"2026-10-19"}
+    ];
+    const chosen=selectDailyCatalogue({
+      campaigns:entries,now,store:"carrefour",channel:"store",
+      maxSpend:3,limit:3
+    }).campaigns;
+    const rejected=selectDailyCatalogue({
+      campaigns:[{...entries[1],detailsUrl:"https://example.invalid/x"}],
+      now,store:"carrefour",channel:"store"
+    }).campaigns;
+    return {
+      ids:chosen.map(x=>x.id),
+      link:chosen.find(x=>x.id===entries[1].id)?.detailsUrl,
+      anyInventedSaving:chosen.some(x=>"savingPercent" in x
+        || "savingAmount" in x || x.advertisedPrice!==null),
+      rejectsTamperedLink:rejected.length===0,
+      allGoneAtMidnight:selectDailyCatalogue({
+        campaigns:entries,now:new Date("2026-10-14T22:00:00Z"),
+        store:"carrefour",channel:"store",maxSpend:3
+      }).campaigns.every(x=>x.id!==entries[0].id && x.id!==entries[1].id
+        && x.id!==entries[2].id)
+    };
+  });
+  assert.deepEqual(dailyBudgetLeads,{
+    ids:["carrefour-public-lead-legumes-099-20261014",
+      "carrefour-public-lead-quotidien-1-20261014",
+      "carrefour-public-lead-bio-2-20261014"],
+    link:"https://www.carrefour.fr/boutique/produits-1euro",
+    anyInventedSaving:false,rejectsTamperedLink:true,
+    allGoneAtMidnight:true
+  });
   // Integrated Android browser audit: tier rates and fixed refunds must be
   // expressed for the minimum eligible LOT, not the maximum advertised tier.
   const dailyRateProof=await page.evaluate(async()=>{
