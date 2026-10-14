@@ -4,7 +4,7 @@ import {readFile} from "node:fs/promises";
 import {isValidGtin} from "../src/gtin.js";
 import {normalizeImportedOffer} from "../src/ingestion.js";
 import {selectDailyCatalogue} from "../src/daily-catalogue.js";
-import {confirmPublicDailyCampaign} from "../scripts/daily-campaign-evidence.mjs";
+import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads} from "../scripts/daily-campaign-evidence.mjs";
 
 const snapshot=JSON.parse(await readFile(
   new URL("../data/import/carrefour-promotions-auto.json",import.meta.url),"utf8"
@@ -116,4 +116,68 @@ test("campagne nouvelle ne renouvelle pas une publicité dont la fin est falsifi
   assert.equal(confirmPublicDailyCampaign(
     '<h2>Nos promos de la semaine</h2><p>Jusqu’au 19 octobre 2026</p>',
     entry,new Date("2026-10-14T12:00:00Z")),false);
+});
+
+test("détecter les nouveautés alimentaires du jour sans créer de prix EAN",()=>{
+  const page=`<section>
+    <img alt="Fruits et légumes à moins de 1 euro" />
+    <h3>Fruits et légumes à 0,99€</h3><p>En Hypermarché et en Drive</p>
+    <img alt="Bio à moins de 2 euros" />
+    <h3>Le Bio à moins de 2€</h3><p>En Hypermarché et en Drive.</p>
+    <img alt="34% d'économies Club dès 15€ d'achat sur la poissonnerie Exclu Drive" />
+    <h3>34% d'économies dès 15€ d'achat sur une sélection du rayon poissonnerie (hors promotion)</h3>
+    <p>Aujourd'hui uniquement</p>
+    <p>Exclusivement dans les Drive participants.</p>
+    </section>`;
+  const date=new Date("2026-10-14T12:00:00Z");
+  const leads=discoverCarrefourDailyLeads(page,date);
+  assert.deepEqual(leads.map((item)=>item.id),[
+    "carrefour-public-lead-legumes-099-20261014",
+    "carrefour-public-lead-bio-2-20261014",
+    "carrefour-public-lead-poissonnerie-club-15-20261014"
+  ]);
+  assert.ok(leads.every((item)=>item.verifiedAt==="2026-10-14"
+    && item.expiresAt==="2026-10-14"
+    && !("savingAmount" in item) && !("savingPercent" in item)
+    && !("autoStack" in item) && !("eans" in item)));
+  const inStore=selectDailyCatalogue({campaigns:leads,now:date,
+    store:"carrefour",channel:"store"});
+  assert.equal(inStore.campaigns.length,2);
+  assert.equal(inStore.campaigns.some((item)=>item.minimumPurchase===15),false);
+  const drive=selectDailyCatalogue({campaigns:leads,now:date,
+    store:"carrefour",channel:"drive"});
+  assert.equal(drive.campaigns.length,3);
+  assert.equal(drive.campaigns.find((item)=>item.minimumPurchase===15)?.advertisedMaxPercent,null);
+  const budget=selectDailyCatalogue({campaigns:leads,now:date,
+    store:"carrefour",channel:"drive",maxSpend:3});
+  assert.equal(budget.campaigns.length,2,
+    "Un avantage Club exigeant 15 € d'achat ne peut pas être un bon plan à 3 €");
+  assert.equal(selectDailyCatalogue({campaigns:leads,now:date,
+    store:"carrefour",channel:"drive",maxSpend:20}).campaigns.length,3);
+  const tomorrow=selectDailyCatalogue({campaigns:leads,
+    now:new Date("2026-10-14T22:00:00Z"),store:"carrefour",channel:"drive"});
+  assert.equal(tomorrow.campaigns.length,0);
+});
+
+test("aucune nouvelle fiche si preuve officielle absente ou programme hors alimentaire",()=>{
+  const date=new Date("2026-10-14T12:00:00Z");
+  const incomplete=`<img alt="Fruits et légumes à moins de 1 euro" />
+    <h3>Fruits et légumes à 0,99€</h3>
+    <img alt="Bio à moins de 2 euros"/>
+    <h3>Le Bio à moins de 2€</h3>
+    <img alt="34% d'économies Club dès 15€ d'achat sur la poissonnerie Exclu Drive"/>
+    <h3>34% d'économies dès 15€ d'achat sur une sélection du rayon poissonnerie (hors promotion)</h3>
+    <p>Valable prochainement</p>`;
+  assert.deepEqual(discoverCarrefourDailyLeads(incomplete,date),[]);
+  assert.deepEqual(discoverCarrefourDailyLeads(
+    "<html>Access denied CAPTCHA</html>",date),[]);
+  const falseLead={
+    id:"budget-invalid",store:"carrefour",channels:["drive"],category:"alimentaire",
+    title:"Bon plan en magasin",claim:"Aucune condition chiffrée",
+    startsAt:"2026-10-14",expiresAt:"2026-10-14",
+    verifiedAt:"2026-10-14",sourceUrl:"https://www.carrefour.fr/offres-du-moment",
+    minimumPurchase:15
+  };
+  assert.equal(selectDailyCatalogue({campaigns:[falseLead],now:date,
+    store:"carrefour",channel:"drive"}).campaigns.length,0);
 });
