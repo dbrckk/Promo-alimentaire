@@ -1,3 +1,11 @@
+### Promos du jour : coût après avantage sans confondre trésorerie et économie (14 octobre 2026)
+
+Dans l'onglet **Promos du jour**, le tri **Coût théorique le plus bas après avantage** compare le coût des lots pour lesquels **le prix initial et l'économie applicable à la quantité minimale sont tous deux documentés**. Le coût estimé après avantage s'affiche sur les fiches, mais reste un **scénario conditionnel** (référence éligible, bonne quantité, approbation du remboursement ou crédit fidélité).
+
+**Exemple de vigilance :** un produit à 5 € remboursé intégralement coûte théoriquement 0 € *après remboursement*, mais il faut encore pouvoir **payer 5 € au départ**. Le filtre « budget maximum par achat » conserve donc impérativement le montant initial : ce produit ne figure **pas** avec un budget de 3 €. Un taux sans prix connu ne se transforme jamais en lot gratuit ; une source non reconfirmée n'affiche aucun nouveau coût après avantage. Le tri et le calcul n'additionnent pas les promotions potentiellement incompatibles et n'établissent pas le prix local en caisse.
+
+Les vérifications existantes ont été étendues pour comparer les lots, exclure les prix absents, préserver les limites de trésorerie et vérifier le parcours Chrome Android.
+
 ### Catalogue du jour : pistes concrètes à vérifier même si la source n'a pas confirmé les offres (14 octobre 2026)
 
 L'onglet **Promos du jour** inclut désormais **À vérifier aujourd'hui — catalogue non reconfirmé**, en dessous des promotions encore vérifiées. Il présente uniquement les anciennes offres produit de l'enseigne **dans leur période initiale de validité**, pour le **magasin et le canal actuellement sélectionnés**, lorsque le contrôle source a réellement échoué. Les campagnes expirées, les promotions d'autres enseignes et les annonces sans preuve ne sont jamais réactivées.
