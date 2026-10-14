@@ -1355,10 +1355,12 @@ try{
       ...fixtures.map((entry)=>raw.campaigns.find((c)=>c.id===entry.id)||entry)
     ];
 
+    // Exercise ALL evidenced entries. The visible recommendation cap may
+    // change without hiding a source record or changing its validity.
     const store=selectDailyCatalogue({campaigns:testCampaigns,
-      now,store:"carrefour",channel:"store"});
+      now,store:"carrefour",channel:"store",limit:30});
     const drive=selectDailyCatalogue({campaigns:testCampaigns,
-      now,store:"carrefour",channel:"drive"});
+      now,store:"carrefour",channel:"drive",limit:30});
     const bio=store.campaigns.find((c)=>c.id==="carrefour-bio-2eme-20261019");
     const grape=store.campaigns.find((c)=>
       c.id==="carrefour-raisin-red-globe-20261015");
@@ -1383,10 +1385,10 @@ try{
       fishDrive:drive.campaigns.some((c)=>
         c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
       fishBlockedAt3:!selectDailyCatalogue({campaigns:testCampaigns,
-        now,store:"carrefour",channel:"drive",maxSpend:3}).campaigns.some((c)=>
+        now,store:"carrefour",channel:"drive",maxSpend:3,limit:30}).campaigns.some((c)=>
         c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
       budgetUnknown:selectDailyCatalogue({campaigns:testCampaigns,
-        now,store:"carrefour",channel:"drive",maxSpend:3}).campaigns.some((c)=>
+        now,store:"carrefour",channel:"drive",maxSpend:3,limit:30}).campaigns.some((c)=>
         c.id==="carrefour-public-lead-legumes-099-20261014"),
       leadExpired:!selectDailyCatalogue({campaigns:testCampaigns,
         now:new Date("2026-10-14T22:00:00Z"),
