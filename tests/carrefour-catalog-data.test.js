@@ -73,6 +73,15 @@ test("14 octobre : campagnes Carrefour classées au taux indicatif du LOT",()=>{
     store:"carrefour",channel:"drive"});
   assert.ok(drive.campaigns.some((entry)=>
     entry.id==="carrefour-bons-plans-famille-20261016"));
+  const lowCash=selectDailyCatalogue({campaigns:dailyCampaigns,now,
+    store:"carrefour",channel:"store",maxSpend:3,limit:3});
+  assert.deepEqual(lowCash.campaigns.map((entry)=>entry.id),[
+    "carrefour-public-lead-legumes-099-20261014",
+    "carrefour-public-lead-quotidien-moins-1-20261014",
+    "carrefour-public-lead-bio-2-20261014"
+  ],"Les petits budgets doivent voir en premier les pistes alimentaires peu chères");
+  assert.ok(lowCash.campaigns.every((entry)=>!Number.isFinite(entry.advertisedPrice)),
+    "Une annonce de sélection ne certifie pas un prix produit");
   const online=selectDailyCatalogue({campaigns:dailyCampaigns,now,
     store:"carrefour",channel:"online"});
   assert.equal(online.campaigns.length,1);
