@@ -523,7 +523,8 @@ function renderDailyCatalogue(){
     digest.extra.length+" remboursement(s)/coupon(s) et "+
     digest.campaigns.length+" campagne(s) officielle(s). "+ 
     "Classement : "+sortDescription+" ; "+budgetDescription+". "+
-    "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat."+
+    "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat. "+ 
+    "Les sélections publicitaires sans prix exact ne sont pas garanties dans le budget ; les seuils d'achat connus sont filtrés."+
     (unconfirmedRetailerCount
       ? " "+unconfirmedRetailerCount+" offre(s) enseigne non reconfirmée(s) volontairement exclue(s) des meilleures promotions."
       : "");
@@ -637,13 +638,19 @@ function renderDailyCatalogue(){
             pour ${item.illustrativeQuantity} articles de même prix, si la réduction maximale annoncée s'applique.
             Ce n'est ni une remise garantie, ni un taux sur votre panier réel.</p>`
         : "";
+      const purchaseThreshold=Number.isFinite(item.minimumPurchase)
+        ? `<p class="help"><strong>Minimum d'achat annoncé : ${money.format(item.minimumPurchase)}</strong>
+            sur la sélection éligible, sans garantie d'avantage fidélité.</p>` : "";
+      const noExactPrice=digest.maxSpend!==null
+        ? '<p class="help">Prix exact du lot non établi : cette piste n’est pas validée comme compatible avec le plafond choisi.</p>'
+        : "";
       const announcedPrice=Number.isFinite(item.advertisedPrice)
         ? `<p class="help"><strong>Prix publicitaire : ${money.format(item.advertisedPrice)} / ${escapeHtml(item.priceUnit)}</strong>
             · magasin, quantité et tarif final à confirmer.</p>` : "";
       return `<article class="card daily-offer">
         <h4>${escapeHtml(item.title)}</h4>
         <p>${escapeHtml(item.claim)}</p>
-        ${illustrative}${announcedPrice}
+        ${illustrative}${announcedPrice}${purchaseThreshold}${noExactPrice}
         <p class="help">Annonce consultée le ${formatDate(item.verifiedAt)}
           · fin annoncée le ${formatDate(item.expiresAt)}.
           <strong>Aucun gain panier calculé.</strong></p>

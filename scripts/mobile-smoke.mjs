@@ -1310,14 +1310,30 @@ try{
       driveFamily:drive.campaigns.some((c)=>
         c.id==="carrefour-bons-plans-famille-20261016"),
       inStoreFamily:store.campaigns.some((c)=>
-        c.id==="carrefour-bons-plans-famille-20261016")
+        c.id==="carrefour-bons-plans-famille-20261016"),
+      fruitLead:store.campaigns.some((c)=>
+        c.id==="carrefour-public-lead-legumes-099-20261014"),
+      fishDrive:drive.campaigns.some((c)=>
+        c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
+      fishBlockedAt3:!selectDailyCatalogue({campaigns:raw.campaigns,
+        now,store:"carrefour",channel:"drive",maxSpend:3}).campaigns.some((c)=>
+        c.id==="carrefour-public-lead-poissonnerie-club-15-20261014"),
+      budgetUnknown:selectDailyCatalogue({campaigns:raw.campaigns,
+        now,store:"carrefour",channel:"drive",maxSpend:3}).campaigns.some((c)=>
+        c.id==="carrefour-public-lead-legumes-099-20261014"),
+      leadExpired:!selectDailyCatalogue({campaigns:raw.campaigns,
+        now:new Date("2026-10-14T22:00:00Z"),
+        store:"carrefour",channel:"drive"}).campaigns.some((c)=>
+        c.id==="carrefour-public-lead-legumes-099-20261014")
     };
   });
   assert.deepEqual(dailyAdsSafety,{
     bioCeiling:30,bioFor:2,grapePrice:2.99,grapeUnit:"kg",
     campaignLink:"https://www.carrefour.fr/boutique/promos-hebdomadaires",
     maliciousDeepLinkAccepted:false,
-    fakeBasketSaving:false,driveFamily:true,inStoreFamily:false
+    fakeBasketSaving:false,driveFamily:true,inStoreFamily:false,
+    fruitLead:true,fishDrive:true,fishBlockedAt3:true,
+    budgetUnknown:true,leadExpired:true
   });
   // Integrated Android browser audit: tier rates and fixed refunds must be
   // expressed for the minimum eligible LOT, not the maximum advertised tier.

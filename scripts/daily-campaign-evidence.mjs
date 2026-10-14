@@ -110,3 +110,64 @@ export function confirmPublicDailyCampaign(html,campaign,now=new Date()){
   }
   return false;
 }
+
+
+// Short-lived discovery candidates are sourced ONLY from the exact public
+// Carrefour campaign page fetched in the daily action. These deliberately
+// avoid prices per product, SKU/EAN, guaranteed basket savings or stacking.
+// All candidates expire at the end of the observed French civil day unless
+// re-discovered on a subsequent public visit.
+const CARREFOUR_PUBLIC_URL="https://www.carrefour.fr/offres-du-moment";
+
+function hasLocalCampaignProof(text,{heading,precededBy,followedBy}){
+  const needle=norm(heading),prefix=norm(precededBy),suffix=norm(followedBy);
+  let index=0;
+  while((index=text.indexOf(needle,index))!==-1){
+    const left=text.slice(Math.max(0,index-230),index);
+    const right=text.slice(index+needle.length,index+needle.length+260);
+    if(left.includes(prefix) && right.includes(suffix)) return true;
+    index+=needle.length;
+  }
+  return false;
+}
+
+export function discoverCarrefourDailyLeads(html,now=new Date()){
+  const today=parisCivilDay(now);
+  if(!validDay(today)) return [];
+  const text=pageText(html);
+  if(text.length<150 || /access denied|captcha|connexion obligatoire/.test(text))
+    return [];
+  const make=(key,title,claim,category="alimentaire",channels=["store","drive"],
+    extra={})=>({
+    id:"carrefour-public-lead-"+key+"-"+today.replace(/-/g,""),
+    store:"carrefour",channels,category,title,claim,
+    startsAt:today,expiresAt:today,verifiedAt:today,
+    sourceUrl:CARREFOUR_PUBLIC_URL,...extra
+  });
+  const found=[];
+  if(hasLocalCampaignProof(text,{
+    heading:"Fruits et légumes à 0,99€",
+    precededBy:"Fruits et légumes à moins de 1 euro",
+    followedBy:"En Hypermarché et en Drive"
+  })) found.push(make("legumes-099",
+    "Sélection fruits et légumes : annonce à 0,99 €",
+    "L'enseigne affiche une sélection à 0,99 €. Produit, quantité, unité et prix dans le magasin choisi à contrôler avant achat.",
+    "fruits et légumes"));
+  if(hasLocalCampaignProof(text,{
+    heading:"Le Bio à moins de 2€",
+    precededBy:"Bio à moins de 2 euros",
+    followedBy:"En Hypermarché et en Drive"
+  })) found.push(make("bio-2",
+    "Produits Bio annoncés à moins de 2 €",
+    "Sélection Bio Carrefour à petit prix ; sans référence exacte, le montant et la quantité du produit ne sont pas confirmés.",
+    "bio"));
+  if(hasLocalCampaignProof(text,{
+    heading:"34% d'économies dès 15€ d'achat sur une sélection du rayon poissonnerie (hors promotion)",
+    precededBy:"34% d'économies Club dès 15€ d'achat sur la poissonnerie Exclu Drive",
+    followedBy:"Aujourd'hui uniquement Exclusivement dans les Drive participants"
+  })) found.push(make("poissonnerie-club-15",
+    "Poissonnerie : 34 % d'économies Club dès 15 €",
+    "Avantage Club annoncé dès 15 € sur une sélection hors promotions, uniquement aujourd'hui dans les Drives participants. Conditions fidélité et panier éligible à confirmer.",
+    "alimentaire",["drive"],{minimumPurchase:15}));
+  return found;
+}
