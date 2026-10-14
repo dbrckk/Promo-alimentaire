@@ -807,6 +807,12 @@ Pour éviter une lecture trompeuse des pourcentages publicitaires, le classement
 
 Chaque preuve fait l'objet d'une règle étroite associant campagne officielle, formulation, mécanisme et fin datée. Le synchroniseur ne reporte la date de preuve que si le contenu public permet de confirmer cette campagne précise. Sans nouvelle preuve, les campagnes disparaissent automatiquement de la sélection après sept jours français. La CI et le parcours Android Chrome vérifient les exclusions, le calcul sur le lot, les canaux et l'absence d'économie panier fabriquée.
 
+### Intégrité de la publication sur Android — 14 octobre 2026
+
+Le déploiement GitHub Pages ne se contente plus de vérifier le code HTTP, la présence du manifeste ou le SHA indiqué dans `deployment.json`. Après mise en ligne, `scripts/check-public-pages.mjs` compare l'empreinte **SHA-256 du contenu réel servi par le CDN** avec celle du commit validé par la CI pour les fichiers essentiels HTML/CSS/JavaScript, le service worker, les métadonnées de synchronisation, le catalogue quotidien et **tous les lots JSON listés dans le manifeste d'offres validé**. Un fichier manquant, modifié ou resté en cache depuis l'ancienne version fait échouer la publication.
+
+Cette vérification est distincte du parcours Chrome Android publié, qui contrôle l'expérience d'utilisation et le fonctionnement hors ligne. Elle ne garantit pas les prix en magasin ni la fraîcheur commerciale des offres : ceux-ci restent vérifiés séparément.
+
 ### Catalogue : découverte quotidienne des sélections à petit prix (14 octobre 2026)
 
 Le synchroniseur public `npm run sync:daily-catalogue -- --write` ne se limite plus à renouveler la preuve de campagnes préenregistrées : il analyse également les **rubriques alimentaires strictement identifiées** sur la page officielle `https://www.carrefour.fr/offres-du-moment`. Il peut retrouver les sélections **fruits et légumes à 0,99 €** et **Bio à moins de 2 €**, ainsi qu'une opération du jour **poissonnerie, 34 % d'économies Club dès 15 € en Drive** lorsqu'elle est exactement publiée. Chaque entrée réclame la présence proche de la bannière, du titre et de ses conditions. Sans preuve, aucune donnée n'est ajoutée. Les promotions ménagères génériques ou autres catégories non alimentaires ne sont pas importées comme nourriture.
