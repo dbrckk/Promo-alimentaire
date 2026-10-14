@@ -4,7 +4,7 @@ import {readFile} from "node:fs/promises";
 import {isValidGtin} from "../src/gtin.js";
 import {normalizeImportedOffer} from "../src/ingestion.js";
 import {selectDailyCatalogue} from "../src/daily-catalogue.js";
-import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads} from "../scripts/daily-campaign-evidence.mjs";
+import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,retainRecentDailyLeads} from "../scripts/daily-campaign-evidence.mjs";
 
 const snapshot=JSON.parse(await readFile(
   new URL("../data/import/carrefour-promotions-auto.json",import.meta.url),"utf8"
@@ -180,4 +180,26 @@ test("aucune nouvelle fiche si preuve officielle absente ou programme hors alime
   };
   assert.equal(selectDailyCatalogue({campaigns:[falseLead],now:date,
     store:"carrefour",channel:"drive"}).campaigns.length,0);
+});
+
+test("un refus HTTP 403 ne supprime pas une piste vérifiée le même jour",()=>{
+  const today="2026-10-14";
+  const lead=dailyCampaigns.find((x)=>x.id===
+    "carrefour-public-lead-legumes-099-20261014");
+  assert.ok(lead);
+  const retained=retainRecentDailyLeads([lead],today);
+  assert.deepEqual(retained,[lead]);
+  assert.equal(selectDailyCatalogue({campaigns:retained,
+    now:new Date("2026-10-14T21:59:59Z"),store:"carrefour",channel:"store"
+  }).campaigns.length,1);
+  assert.equal(selectDailyCatalogue({campaigns:retained,
+    now:new Date("2026-10-14T22:00:00Z"),store:"carrefour",channel:"store"
+  }).campaigns.length,0,
+    "Une offre de la veille ne revient pas même si elle reste archivée");
+  assert.equal(retainRecentDailyLeads([lead],"2026-10-20").length,1);
+  assert.equal(retainRecentDailyLeads([lead],"2026-10-22").length,0);
+  assert.equal(retainRecentDailyLeads([{...lead,verifiedAt:"2026-10-13"}],
+    today).length,0,"Pas de preuve d'une autre journée présentée comme preuve du jour");
+  assert.equal(retainRecentDailyLeads([{...lead,expiresAt:"2026-10-15"}],
+    today).length,0,"Aucune prolongation de campagne sans nouvelle preuve");
 });
