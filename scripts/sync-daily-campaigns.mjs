@@ -1,5 +1,5 @@
 import {readFile,writeFile} from "node:fs/promises";
-import {confirmPublicDailyCampaign} from "./daily-campaign-evidence.mjs";
+import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads} from "./daily-campaign-evidence.mjs";
 import {parisCivilDay} from "../src/ingestion.js";
 
 const destination=new URL("../data/daily-campaigns.json",import.meta.url);
@@ -52,14 +52,32 @@ const next=payload.campaigns.map((entry)=>{
   changed++;
   return {...entry,verifiedAt:today};
 });
+// Revisit the same public source once for tightly scoped, source-only
+// discovery leads. Each observed lead is dated TODAY and must not create a
+// shelf price or automatically eligible loyalty refund.
+const officialPage=pages.get("https://www.carrefour.fr/offres-du-moment");
+const discovered=officialPage
+  ?discoverCarrefourDailyLeads(officialPage,now) : [];
+const cutoff=new Date(today+"T12:00:00Z");
+cutoff.setUTCDate(cutoff.getUTCDate()-7);
+const oldest=cutoff.toISOString().slice(0,10);
+const historical=next.filter((entry)=>!String(entry.id).startsWith(
+  "carrefour-public-lead-"
+) || (entry.expiresAt>=oldest && entry.expiresAt<today));
+const newlyAdded=discovered.filter((entry)=>!historical.some((old)=>old.id===entry.id));
+const updated=[...historical,...newlyAdded];
+const discoveryChanged=JSON.stringify(updated)!==JSON.stringify(payload.campaigns);
+console.log("[daily] annonces petit budget/jour vérifiées sur la page publique : "+
+  discovered.length+" ; entrées nouvelles : "+newlyAdded.length);
+
 console.log("[daily] campagnes reconfirmées "+confirmed+"/"+payload.campaigns.length+
   " ; pages accessibles "+pages.size+"/"+sources.length+
   " ; dates réellement mises à jour "+changed);
-if(confirmed===0)
+if(confirmed===0 && discovered.length===0)
   console.log("::warning title=Catalogue du jour non reconfirmé::" +
     "Aucune preuve officielle récente ; conserver les anciennes dates et laisser la PWA les expirer.");
-if(write && changed){
-  payload.campaigns=next;
+if(write && (changed || discoveryChanged)){
+  payload.campaigns=updated;
   payload.checkedAt=now.toISOString();
   await writeFile(destination,JSON.stringify(payload,null,2)+"\n","utf8");
 }
