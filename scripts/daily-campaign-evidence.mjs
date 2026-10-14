@@ -50,6 +50,22 @@ const patterns={
   "carrefour-promos-semaine-20261012":{
     title:"nos promos de la semaine",before:"2+1 offert",after:"jusqu au 12 octobre 2026"
   },
+  "carrefour-bons-plans-famille-20261016":{
+    title:"bons plans famille",before:"50% sur le 2",
+    after:"jusqu au vendredi 16 octobre 2026",expires:"2026-10-16"
+  },
+  "carrefour-semaine-second-20261019":{
+    title:"nos promos de la semaine",before:"50% sur le 2",
+    after:"jusqu au 19 octobre 2026",expires:"2026-10-19"
+  },
+  "carrefour-raisin-red-globe-20261015":{
+    title:"raisin red globe",before:"le bon plan du moment",
+    after:"jusqu au 15 octobre 2026",expires:"2026-10-15"
+  },
+  "carrefour-semaine-gout-20261026":{
+    title:"semaine du gout",before:"30% sur le 2",
+    after:"jusqu au 26 octobre 2026",expires:"2026-10-26"
+  },
   "leclerc-quotidien-20261017":{
     title:"catalogue nos promos du moment",
     before:"votre catalogue digital",after:"du 06 10 2026 au 17 10 2026"
@@ -68,7 +84,7 @@ export function confirmPublicDailyCampaign(html,campaign,now=new Date()){
     || (campaign.startsAt && (!validDay(campaign.startsAt)
       || campaign.startsAt>today))) return false;
   const rule=patterns[campaign.id];
-  if(!rule) return false;
+  if(!rule || (rule.expires && campaign.expiresAt!==rule.expires)) return false;
   // The campaign id pins the expiration window; a generic page still
   // advertising the same category cannot silently extend an old selection.
   if(campaign.id==="carrefour-bio-2eme-20261019"

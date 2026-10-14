@@ -1280,6 +1280,45 @@ try{
     advertised:1,expired:0,fictitiousSaving:false,
     checkedWithinWeek:1,uncheckedMoreThanWeek:0,invalidAdvertisedRate:0
   });
+  // Read the real packaged catalogue (no fake retailer network response)
+  // at a frozen French calendar date: a "60% on the second" advert must
+  // become at most 30% on an equal-price lot, never a guaranteed saving.
+  const dailyAdsSafety=await page.evaluate(async()=>{
+    const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
+    const response=await fetch("./data/daily-campaigns.json");
+    const raw=await response.json();
+    const now=new Date("2026-10-14T12:00:00Z");
+    const store=selectDailyCatalogue({campaigns:raw.campaigns,
+      now,store:"carrefour",channel:"store"});
+    const drive=selectDailyCatalogue({campaigns:raw.campaigns,
+      now,store:"carrefour",channel:"drive"});
+    const bio=store.campaigns.find((c)=>c.id==="carrefour-bio-2eme-20261019");
+    const grape=store.campaigns.find((c)=>
+      c.id==="carrefour-raisin-red-globe-20261015");
+    return {
+      bioCeiling:bio?.illustrativeBasketPercent,
+      bioFor:bio?.illustrativeQuantity,
+      grapePrice:grape?.advertisedPrice,grapeUnit:grape?.priceUnit,
+      campaignLink:store.campaigns.find((c)=>
+        c.id==="carrefour-semaine-second-20261019")?.detailsUrl,
+      maliciousDeepLinkAccepted:selectDailyCatalogue({campaigns:[
+        {...raw.campaigns.find((c)=>c.id==="carrefour-semaine-second-20261019"),
+          detailsUrl:"https://www.carrefour.fr/edito/unrelated"}
+      ],now,store:"carrefour",channel:"store"}).campaigns.length>0,
+      fakeBasketSaving:store.campaigns.some((c)=>
+        "savingPercent" in c || "savingAmount" in c),
+      driveFamily:drive.campaigns.some((c)=>
+        c.id==="carrefour-bons-plans-famille-20261016"),
+      inStoreFamily:store.campaigns.some((c)=>
+        c.id==="carrefour-bons-plans-famille-20261016")
+    };
+  });
+  assert.deepEqual(dailyAdsSafety,{
+    bioCeiling:30,bioFor:2,grapePrice:2.99,grapeUnit:"kg",
+    campaignLink:"https://www.carrefour.fr/boutique/promos-hebdomadaires",
+    maliciousDeepLinkAccepted:false,
+    fakeBasketSaving:false,driveFamily:true,inStoreFamily:false
+  });
   // Integrated Android browser audit: tier rates and fixed refunds must be
   // expressed for the minimum eligible LOT, not the maximum advertised tier.
   const dailyRateProof=await page.evaluate(async()=>{

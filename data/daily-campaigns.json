@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-12T12:00:00Z",
+  "checkedAt": "2026-10-14T07:00:00Z",
   "kind": "public-campaign-discovery",
   "warning": "Campagnes officielles signalées, sans preuve de prix final ni cumul automatique. Nouvelle vérification du magasin requise.",
   "campaigns": [
@@ -16,8 +16,10 @@
       "advertisedMaxPercent": 60,
       "startsAt": "2026-10-12",
       "expiresAt": "2026-10-19",
-      "verifiedAt": "2026-10-12",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "offerMechanism": "second-item",
+      "detailsUrl": "https://www.carrefour.fr/r/bio-et-ecologie"
     },
     {
       "id": "carrefour-courses-en-ligne-20261108",
@@ -32,8 +34,9 @@
       "advertisedMaxPercent": 50,
       "startsAt": "2026-10-12",
       "expiresAt": "2026-11-08",
-      "verifiedAt": "2026-10-12",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "offerMechanism": "second-item"
     },
     {
       "id": "carrefour-promos-semaine-20261012",
@@ -63,6 +66,76 @@
       "expiresAt": "2026-10-17",
       "verifiedAt": "2026-10-12",
       "sourceUrl": "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637"
+    },
+    {
+      "id": "carrefour-bons-plans-famille-20261016",
+      "store": "carrefour",
+      "channels": [
+        "drive"
+      ],
+      "category": "alimentaire",
+      "title": "Bons plans famille : jusqu'à −50 % sur le 2e",
+      "claim": "Sélection Drive : jusqu'à 50 % sur le deuxième article éligible, jusqu'au 16 octobre. Le taux réel du lot dépend des produits et des conditions.",
+      "advertisedMaxPercent": 50,
+      "offerMechanism": "second-item",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-16",
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "detailsUrl": "https://www.carrefour.fr/evenements/le-coin-des-familles"
+    },
+    {
+      "id": "carrefour-semaine-second-20261019",
+      "store": "carrefour",
+      "channels": [
+        "store",
+        "drive"
+      ],
+      "category": "alimentaire",
+      "title": "Promos de la semaine : jusqu'à −50 % sur le 2e",
+      "claim": "Jusqu'à 50 % sur le deuxième article parmi la sélection de la semaine. Jusqu'au 19 octobre, hypermarchés et Drives participants.",
+      "advertisedMaxPercent": 50,
+      "offerMechanism": "second-item",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-19",
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "detailsUrl": "https://www.carrefour.fr/boutique/promos-hebdomadaires"
+    },
+    {
+      "id": "carrefour-raisin-red-globe-20261015",
+      "store": "carrefour",
+      "channels": [
+        "store",
+        "drive"
+      ],
+      "category": "fruits et légumes",
+      "title": "Raisin Red Globe : 2,99 € le kg",
+      "claim": "Prix publicitaire annoncé à 2,99 €/kg jusqu'au 15 octobre, en Carrefour Hypermarché, Carrefour Market ou Drive participants. Aucune remise en % ni prix de référence garanti.",
+      "advertisedPrice": 2.99,
+      "priceUnit": "kg",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-15",
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
+    },
+    {
+      "id": "carrefour-semaine-gout-20261026",
+      "store": "carrefour",
+      "channels": [
+        "store",
+        "drive"
+      ],
+      "category": "alimentaire",
+      "title": "Semaine du goût : jusqu'à −30 % sur le 2e",
+      "claim": "Opération raclette Carrefour annoncée jusqu'au 26 octobre : jusqu'à −30 % sur le deuxième produit selon la sélection. Magasins et Drives participants.",
+      "advertisedMaxPercent": 30,
+      "offerMechanism": "second-item",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-26",
+      "verifiedAt": "2026-10-14",
+      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
+      "detailsUrl": "https://www.carrefour.fr/evenements/semaine-du-gout"
     }
   ]
 }

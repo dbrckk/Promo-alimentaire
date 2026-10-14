@@ -3,6 +3,19 @@ import {filterOffers,isOfferWithinShoppingScope,effectivePercent} from "./domain
 import {effectiveRetailerPromoPercent} from "./retailer-promo.js";
 import {effectiveOfferPercent,estimateOfferSaving,requiredQuantity} from "./matching.js";
 
+// Campaign detail links are distinct from the official evidence page:
+// a landing page can show a product selection without proving the advertised
+// discount for a specific EAN. Only allow verified, pinned retailer paths.
+const CAMPAIGN_DETAILS=new Map([
+  ["carrefour-bio-2eme-20261019","https://www.carrefour.fr/r/bio-et-ecologie"],
+  ["carrefour-bons-plans-famille-20261016",
+    "https://www.carrefour.fr/evenements/le-coin-des-familles"],
+  ["carrefour-semaine-second-20261019",
+    "https://www.carrefour.fr/boutique/promos-hebdomadaires"],
+  ["carrefour-semaine-gout-20261026",
+    "https://www.carrefour.fr/evenements/semaine-du-gout"]
+]);
+
 // Daily suggestions are NOT an additional price database. The imported
 // retailer/manufacturer offers have already passed the ingestion validators.
 // A campaign is editorial source discovery, never a priced or stackable offer.
@@ -27,6 +40,29 @@ function safeCampaign(raw,today,store,channel){
       && (!Number.isFinite(raw.advertisedMaxPercent)
         || raw.advertisedMaxPercent<0 || raw.advertisedMaxPercent>100))
   ) return null;
+  // A ceiling advertised on the *second* article is not a discount on
+  // the entire two-item purchase. Even under the favourable equal-price
+  // assumption, the rate on the lot is half of the second-item discount.
+  // This is an illustration, NOT a product saving or a basket deduction.
+  const mechanism=raw.offerMechanism ?? null;
+  if(mechanism!==null && mechanism!=="second-item" && mechanism!=="three-for-two")
+    return null;
+  if(mechanism==="second-item"
+    && (!Number.isFinite(raw.advertisedMaxPercent)
+      || raw.advertisedMaxPercent<=0
+      || !/(?:2(?:e|ème|eme|ième)|deuxi[eè]me)/i.test(raw.title+" "+raw.claim)))
+    return null;
+  if(mechanism==="three-for-two"
+    && (raw.advertisedMaxPercent!==undefined
+      || !/(?:2\s*\+\s*1|deux achet[eé]s)/i.test(raw.title+" "+raw.claim)))
+    return null;
+  const advertisedPrice=raw.advertisedPrice===undefined ? null : raw.advertisedPrice;
+  if(advertisedPrice!==null
+    && (!Number.isFinite(advertisedPrice) || advertisedPrice<=0
+      || advertisedPrice>1000 || !["kg","pièce"].includes(raw.priceUnit)
+      || !raw.title.includes(advertisedPrice.toFixed(2).replace(".",","))))
+    return null;
+  if(advertisedPrice===null && raw.priceUnit!==undefined) return null;
   try {
     const target=new URL(raw.sourceUrl);
     const allowed=store==="carrefour"
@@ -35,12 +71,23 @@ function safeCampaign(raw,today,store,channel){
     if(target.protocol!=="https:" || !allowed
       || target.username || target.password || target.search || target.hash) return null;
   }catch{return null;}
+  if(raw.detailsUrl!==undefined
+    && (typeof raw.detailsUrl!=="string"
+      || CAMPAIGN_DETAILS.get(raw.id)!==raw.detailsUrl)) return null;
   return {
     id:raw.id,title:raw.title,claim:raw.claim,sourceUrl:raw.sourceUrl,
+    detailsUrl:raw.detailsUrl || null,
     verifiedAt:raw.verifiedAt,expiresAt:raw.expiresAt,
     advertisedMaxPercent:Number.isFinite(raw.advertisedMaxPercent)
       ? raw.advertisedMaxPercent : null,
-    status:"campaign-only",category:raw.category || "alimentaire"
+    status:"campaign-only",category:raw.category || "alimentaire",
+    offerMechanism:mechanism,advertisedPrice,
+    priceUnit:advertisedPrice!==null?raw.priceUnit:null,
+    illustrativeBasketPercent:mechanism==="second-item"
+      ? Math.round(raw.advertisedMaxPercent*50)/100
+      : mechanism==="three-for-two" ? Math.round(100/3*100)/100 : null,
+    illustrativeQuantity:mechanism==="second-item" ? 2
+      : mechanism==="three-for-two" ? 3 : null
   };
 }
 function validDate(value){
@@ -210,7 +257,13 @@ export function selectDailyCatalogue({
   const discovery=(Array.isArray(campaigns)?campaigns:[])
     .map((raw)=>safeCampaign(raw,today,store,channel)).filter(Boolean)
     .filter((entry)=>!seen.has(entry.id) && Boolean(seen.add(entry.id)))
-    .sort((a,b)=>(b.advertisedMaxPercent??-1)-(a.advertisedMaxPercent??-1))
+    // Rank by illustrative full-lot ceiling rather than advertising the
+    // second item's headline percentage as if it applied to the basket.
+    .sort((a,b)=>(b.illustrativeBasketPercent??-1)
+      -(a.illustrativeBasketPercent??-1)
+      || Number(b.advertisedPrice!==null)-Number(a.advertisedPrice!==null)
+      || a.expiresAt.localeCompare(b.expiresAt)
+      || a.title.localeCompare(b.title,"fr"))
     .slice(0,safeLimit);
   return {today,store,channel,retailer,extra,campaigns:discovery,highlights,
     // Explicitly excluded from highlights, merchant "verified" cards and
