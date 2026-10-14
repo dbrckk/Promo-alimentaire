@@ -68,7 +68,7 @@ async function inspectDeployment(){
   const localWorker=await readFile(new URL("../sw.js",import.meta.url),"utf8");
   const staticList=localWorker.match(/const\s+STATIC_ASSETS\s*=\s*\[([\s\S]*?)\]/)?.[1];
   assert.ok(staticList,"Service worker's static asset list is missing.");
-  const staticAssets=[...staticList.matchAll(/["'](\\.\\/[^"']+)["']/g)]
+  const staticAssets=[...staticList.matchAll(/["'](\.\/[^"']+)["']/g)]
     .map((item)=>item[1]);
   assert.ok(staticAssets.length>=25,"Unexpectedly few PWA offline assets.");
   const assets=new Set([
