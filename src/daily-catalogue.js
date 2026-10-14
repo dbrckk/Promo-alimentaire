@@ -63,6 +63,14 @@ function safeCampaign(raw,today,store,channel){
       || !raw.title.includes(advertisedPrice.toFixed(2).replace(".",","))))
     return null;
   if(advertisedPrice===null && raw.priceUnit!==undefined) return null;
+  // Some loyalty benefits require a minimum checkout spend. A campaign
+  // requiring 15 € must never appear as affordable under a 3 € cash limit.
+  const minimumPurchase=raw.minimumPurchase===undefined
+    ? null :raw.minimumPurchase;
+  if(minimumPurchase!==null && (!Number.isFinite(minimumPurchase)
+    || minimumPurchase<=0 || minimumPurchase>1000
+    || !new RegExp(String(minimumPurchase).replace(".","[,.]")+"\\\\s*€?").test(
+      raw.claim+" "+raw.title))) return null;
   try {
     const target=new URL(raw.sourceUrl);
     const allowed=store==="carrefour"
@@ -81,7 +89,7 @@ function safeCampaign(raw,today,store,channel){
     advertisedMaxPercent:Number.isFinite(raw.advertisedMaxPercent)
       ? raw.advertisedMaxPercent : null,
     status:"campaign-only",category:raw.category || "alimentaire",
-    offerMechanism:mechanism,advertisedPrice,
+    offerMechanism:mechanism,advertisedPrice,minimumPurchase,
     priceUnit:advertisedPrice!==null?raw.priceUnit:null,
     illustrativeBasketPercent:mechanism==="second-item"
       ? Math.round(raw.advertisedMaxPercent*50)/100
@@ -256,6 +264,8 @@ export function selectDailyCatalogue({
   const seen=new Set();
   const discovery=(Array.isArray(campaigns)?campaigns:[])
     .map((raw)=>safeCampaign(raw,today,store,channel)).filter(Boolean)
+    .filter((entry)=>budget===null || entry.minimumPurchase===null
+      || entry.minimumPurchase<=budget)
     .filter((entry)=>!seen.has(entry.id) && Boolean(seen.add(entry.id)))
     // Rank by illustrative full-lot ceiling rather than advertising the
     // second item's headline percentage as if it applied to the basket.
