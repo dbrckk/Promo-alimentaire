@@ -1300,6 +1300,8 @@ try{
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
   assert.equal(observedGeoRequests.length,0,
     "No location may be transmitted without explicit opt-in");
+  assert.equal(await page.locator('#observedSort option[value="distance"]').isDisabled(),true,
+    "Distance sort requires explicit proximity activation");
   await context.grantPermissions(["geolocation"]);
   await context.setGeolocation({
     latitude:46.7832,longitude:4.8539,accuracy:150
