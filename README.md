@@ -4,6 +4,10 @@ Les relevés récents sont désormais dédupliqués par **identifiant de magasin
 
 Le parcours d'intégration Chrome Android couvre les magasins de même nom/code postal, les doublons du même lieu, les identifiants absents et contradictoires. Aucun nouveau test unitaire n'est ajouté.
 
+### Adresse du point de vente sur les réductions Open Prices (15 octobre 2026)
+
+Lorsque le relevé public comprend le nom de la rue et le numéro du magasin, la carte de remise observée les indique. À défaut, elle affiche l'identifiant de point de vente Open Prices **uniquement s'il est cohérent** entre `location_id` et `location.id` ; sinon, elle précise qu'aucune adresse exacte n'est disponible. L'identifiant est informatif, non une garantie de disponibilité. Les libellés de rue externes sont traités comme des données non fiables et affichés en texte échappé. Les observations d'établissements distincts restent indépendantes conformément à la correction #128.
+
 ### Recherche de promotions autour d’un code postal sans GPS (15 octobre 2026)
 
 Dans **Promos du jour → Réductions observées**, saisir un code postal puis appuyer sur **Chercher autour du code postal** pour interroger le [référentiel officiel des communes françaises](https://geo.api.gouv.fr/decoupage-administratif/communes). Cette fonctionnalité n’active **jamais** la géolocalisation du téléphone. Si le code postal correspond à plusieurs communes, l’utilisateur doit en choisir une : l’application ne devine pas sa commune.
