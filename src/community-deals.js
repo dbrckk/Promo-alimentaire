@@ -186,3 +186,56 @@ export async function fetchObservedDiscounts({
     mode:nearby?"nearby":"national",
     source:"Open Prices / Open Food Facts · ODbL"};
 }
+
+
+/**
+ * Public French municipality centres provide an explicitly approximate
+ * search origin without requesting device geolocation. A postal code may
+ * identify several towns: return all valid choices instead of guessing one.
+ * No result is stored persistently or mixed with the user's GPS position.
+ */
+export async function lookupPostalCodeCommunes(postcode,{
+  fetchImpl=fetch,signal=null
+}={}){
+  const code=String(postcode).trim();
+  if(!/^\d{5}$/.test(code)){
+    throw new Error("Saisir un code postal de cinq chiffres.");
+  }
+  const params=new URLSearchParams({
+    codePostal:code,fields:"nom,code,centre,population,codesPostaux",
+    format:"json"
+  });
+  const response=await fetchImpl(
+    "https://geo.api.gouv.fr/communes?"+params.toString(),
+    {headers:{Accept:"application/json"},signal,redirect:"error"}
+  );
+  if(!response.ok) throw new Error("Référentiel officiel indisponible (HTTP "+response.status+").");
+  const rows=await response.json();
+  if(!Array.isArray(rows) || rows.length>200){
+    throw new Error("Réponse du référentiel géographique invalide.");
+  }
+  const result=[],seen=new Set();
+  for(const row of rows){
+    const coords=row?.centre?.coordinates;
+    const id=String(row?.code||"");
+    const name=String(row?.nom||"").trim();
+    if(!Array.isArray(coords) || coords.length!==2
+      || typeof coords[0]!=="number" || typeof coords[1]!=="number"
+      || !Number.isFinite(coords[0]) || !Number.isFinite(coords[1])
+      || Math.abs(coords[0])>180 || Math.abs(coords[1])>90
+      || !/^[0-9A-Z]{5}$/.test(id) || name.length<2 || name.length>100
+      || !Array.isArray(row.codesPostaux)
+      || !row.codesPostaux.includes(code) || seen.has(id)) continue;
+    seen.add(id);
+    result.push({
+      code:id,nom:name,
+      // Municipality centre, not a person or exact retail address.
+      latitude:Math.round(coords[1]*1000)/1000,
+      longitude:Math.round(coords[0]*1000)/1000,
+      population:Number.isInteger(row.population)&&row.population>=0
+        ?row.population:0
+    });
+  }
+  return result.sort((a,b)=>b.population-a.population
+    || a.nom.localeCompare(b.nom,"fr") || a.code.localeCompare(b.code));
+}

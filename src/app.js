@@ -1,7 +1,7 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import {selectDailyCatalogue,dailyCampaignRefreshNotice} from "./daily-catalogue.js";
-import {fetchObservedDiscounts,selectObservedDiscounts} from "./community-deals.js";
+import {fetchObservedDiscounts,selectObservedDiscounts,lookupPostalCodeCommunes} from "./community-deals.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, selectBestRecentPrice } from "./open-data.js";
@@ -87,6 +87,9 @@ const els = {
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
   observedPostcode:document.querySelector("#observedPostcode"),
+  observedByPostcode:document.querySelector("#observedByPostcode"),
+  observedPostalCommuneField:document.querySelector("#observedPostalCommuneField"),
+  observedPostalCommune:document.querySelector("#observedPostalCommune"),
   observedSort:document.querySelector("#observedSort"),
   observedRadius:document.querySelector("#observedRadius"),
   observedNearby:document.querySelector("#observedNearby"),
@@ -212,7 +215,10 @@ const state = {
 const communityState={store:null,records:[],status:"idle",checkedAt:null,
   incomplete:false,total:null,token:0,controller:null,checkedDay:null,
   checkedSearchKey:null,coords:null,radiusKm:25,geoPending:false,
-  geoError:"",positionRequestToken:0};
+  geoError:"",positionRequestToken:0,
+  postalOrigin:false,postalLocationLabel:"",
+  postcodeCandidates:[],postcodeCandidateZip:"",
+  postcodePending:false,postcodeLookupToken:0,postcodeController:null};
 
 // Shared by both retailer lookups. Any change of product/filters aborts
 // obsolete network traffic instead of merely discarding its eventual reply.
@@ -442,7 +448,22 @@ els.listRadiusSelect.addEventListener("change",async()=>{
 els.closeScan.addEventListener("click",()=>els.scanDialog.close());
 els.scanDialog.addEventListener("close",stopScanner);
 
-els.observedPostcode.addEventListener("input",()=>renderCommunityObservations());
+els.observedPostcode.addEventListener("input",()=>{
+  // Editing the postal code invalidates any earlier commune chooser and
+  // prevents a delayed response from applying a different postal code.
+  communityState.postcodeLookupToken++;
+  communityState.postcodeController?.abort();
+  communityState.postcodePending=false;
+  communityState.postcodeCandidates=[];
+  renderCommunityObservations();
+});
+els.observedByPostcode.addEventListener("click",()=>void searchPostalCodeCentre());
+els.observedPostalCommune.addEventListener("change",()=>{
+  const selected=communityState.postcodeCandidates.find(
+    (item)=>item.code===els.observedPostalCommune.value
+  );
+  if(selected) usePostalCommune(selected,communityState.postcodeCandidateZip);
+});
 els.observedSort.addEventListener("change",()=>renderCommunityObservations());
 els.observedRadius.addEventListener("change",()=>{
   communityState.radiusKm=Number(els.observedRadius.value);
@@ -549,10 +570,86 @@ function invalidateCommunityObservations(){
   communityState.total=null;
   renderCommunityObservations();
 }
+function usePostalCommune(place,postcode){
+  if(!place || !/^\d{5}$/.test(postcode)) return;
+  // Cancel pending GPS callbacks and never persist the centre in localStorage.
+  communityState.positionRequestToken++;
+  communityState.geoPending=false;
+  communityState.coords={latitude:place.latitude,longitude:place.longitude};
+  communityState.postalOrigin=true;
+  communityState.postalLocationLabel=place.nom+" ("+postcode+")";
+  communityState.postcodeCandidates=[];
+  communityState.postcodeCandidateZip="";
+  communityState.geoError="";
+  // A postal-code exact filter must not exclude shops in adjacent towns.
+  els.observedPostcode.value="";
+  invalidateCommunityObservations();
+  if(state.tab==="daily" && state.channel==="store")
+    void refreshCommunityObservations(true);
+}
+async function searchPostalCodeCentre(){
+  if(state.channel!=="store") return;
+  const postcode=els.observedPostcode.value.trim();
+  if(!/^\d{5}$/.test(postcode)){
+    communityState.geoError="Saisir un code postal de cinq chiffres avant de lancer la recherche.";
+    renderCommunityObservations();return;
+  }
+  // A postal-code search never accesses navigator.geolocation.
+  communityState.positionRequestToken++;
+  communityState.geoPending=false;
+  communityState.postcodeController?.abort();
+  const controller=new AbortController();
+  const token=++communityState.postcodeLookupToken;
+  communityState.postcodeController=controller;
+  communityState.postcodePending=true;
+  communityState.postcodeCandidates=[];
+  communityState.geoError="";
+  renderCommunityObservations();
+  const timer=setTimeout(()=>controller.abort(),9000);
+  try{
+    const places=await lookupPostalCodeCommunes(postcode,{
+      signal:controller.signal
+    });
+    if(token!==communityState.postcodeLookupToken || controller.signal.aborted) return;
+    if(!places.length) throw new Error("Aucune commune avec un centre valide pour ce code postal.");
+    if(places.length===1){
+      usePostalCommune(places[0],postcode);
+    }else{
+      communityState.postcodeCandidates=places;
+      communityState.postcodeCandidateZip=postcode;
+      els.observedPostalCommune.replaceChildren(
+        new Option("Choisir une commune…","")
+      );
+      for(const place of places){
+        els.observedPostalCommune.add(new Option(place.nom,place.code));
+      }
+      communityState.geoError=places.length+
+        " communes correspondent à "+postcode+". Choisir la bonne commune pour démarrer la recherche.";
+    }
+  }catch(error){
+    if(token!==communityState.postcodeLookupToken) return;
+    communityState.postcodeCandidates=[];
+    communityState.geoError=controller.signal.aborted
+      ?"Recherche du code postal interrompue : réessayer."
+      :String(error?.message||"Recherche du code postal indisponible.");
+  }finally{
+    clearTimeout(timer);
+    if(token===communityState.postcodeLookupToken){
+      communityState.postcodePending=false;
+      communityState.postcodeController=null;
+      renderCommunityObservations();
+    }
+  }
+}
 function toggleCommunityNearby(){
   // The browser asks for position only after a deliberate tap on this
   // control, never on load, tab navigation or a normal refresh.
   const requestId=++communityState.positionRequestToken;
+  // A manual postal search is independent from permission-based GPS.
+  communityState.postcodeLookupToken++;
+  communityState.postcodeController?.abort();
+  communityState.postcodePending=false;
+  communityState.postcodeCandidates=[];
   if(communityState.geoPending){
     communityState.geoPending=false;
     communityState.geoError="";
@@ -561,6 +658,8 @@ function toggleCommunityNearby(){
   }
   if(communityState.coords){
     communityState.coords=null;
+    communityState.postalOrigin=false;
+    communityState.postalLocationLabel="";
     communityState.geoError="";
     invalidateCommunityObservations();
     if(state.tab==="daily" && state.channel==="store")
@@ -592,6 +691,8 @@ function toggleCommunityNearby(){
       latitude:Math.round(latitude*1000)/1000,
       longitude:Math.round(longitude*1000)/1000
     };
+    communityState.postalOrigin=false;
+    communityState.postalLocationLabel="";
     // A postcode is an exact filter on already fetched receipts. Keeping it
     // enabled here would accidentally hide nearby stores in adjacent towns.
     els.observedPostcode.value="";
@@ -607,6 +708,16 @@ function toggleCommunityNearby(){
 function renderCommunityObservations(){
   if(!els.observedStatus) return;
   const near=Boolean(communityState.coords);
+  const distanceOption=els.observedSort.querySelector('option[value="distance"]');
+  distanceOption.disabled=!near;
+  if(!near && els.observedSort.value==="distance") els.observedSort.value="percent";
+  els.observedByPostcode.textContent=communityState.postcodePending
+    ?"Recherche des communes…" : "Chercher autour du code postal";
+  els.observedByPostcode.disabled=communityState.postcodePending
+    || state.channel!=="store";
+  els.observedPostalCommuneField.classList.toggle(
+    "hidden",communityState.postcodeCandidates.length<2
+  );
   els.observedNearby.textContent=communityState.geoPending
     ? "Annuler la demande de position"
     :near?"Désactiver la proximité":"Chercher près de moi";
@@ -615,13 +726,21 @@ function renderCommunityObservations(){
   els.observedNearby.disabled=state.channel!=="store" && !near
     && !communityState.geoPending;
   els.observedRadius.value=String(communityState.radiusKm);
-  els.observedGeoNote.textContent=communityState.geoPending
-    ? "Demande de position en cours. Annuler est possible sans activer la recherche locale."
-    :near
-      ? "Recherche dans un rayon de "+communityState.radiusKm+
-        " km. Position arrondie à environ 100 m, transmise uniquement à Open Prices pendant cette recherche, jamais enregistrée. Désactiver la proximité pour l’effacer."
-      :communityState.geoError ||
-        "Position demandée seulement après un appui explicite ; aucune coordonnée conservée. Le code postal seul filtre les relevés nationaux récupérés, sans élargir la recherche API.";
+  els.observedGeoNote.textContent=communityState.postcodePending
+    ? "Lecture du référentiel public des communes, sans GPS du téléphone."
+    :communityState.postcodeCandidates.length>1
+      ?communityState.geoError
+      :near && communityState.postalOrigin
+        ? "Recherche dans un rayon de "+communityState.radiusKm+
+          " km autour du centre approximatif de "+communityState.postalLocationLabel+
+          ". Il ne s'agit PAS de votre position. Le centre public est transmis à Open Prices pour cette recherche, sans sauvegarde."
+        :communityState.geoPending
+          ? "Demande de position en cours. Annuler est possible sans activer la recherche locale."
+          :near
+            ? "Recherche dans un rayon de "+communityState.radiusKm+
+              " km. Position arrondie à environ 100 m, transmise uniquement à Open Prices pendant cette recherche, jamais enregistrée. Désactiver la proximité pour l’effacer."
+            :communityState.geoError ||
+              "GPS uniquement sur demande ; sinon saisissez un code postal puis choisissez la commune. Un simple code postal sans recherche locale filtre seulement les relevés déjà récupérés.";
   if(state.channel!=="store"){
     els.observedStatus.textContent="Les relevés Open Prices concernent les magasins physiques, pas les Drives ni la livraison.";
     els.observedDeals.innerHTML="";
@@ -663,7 +782,10 @@ function renderCommunityObservations(){
   const warning=communityState.incomplete
     ?" Échantillon limité ou partiellement accessible : recherche non exhaustive.":"";
   const scope=communityState.coords
-    ?"dans un rayon de "+communityState.radiusKm+" km (position approximative)"
+    ?communityState.postalOrigin
+      ?"dans un rayon de "+communityState.radiusKm+
+        " km depuis le centre de "+communityState.postalLocationLabel
+      :"dans un rayon de "+communityState.radiusKm+" km (position approximative)"
     :zip?"code postal "+zip+" parmi les relevés nationaux":"échantillon national";
   els.observedStatus.textContent=picks.length+" relevé(s) correspondant aux filtres · consultation "+
     checked+" · "+scope+"."+

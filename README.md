@@ -1,3 +1,11 @@
+### Recherche de promotions autour d’un code postal sans GPS (15 octobre 2026)
+
+Dans **Promos du jour → Réductions observées**, saisir un code postal puis appuyer sur **Chercher autour du code postal** pour interroger le [référentiel officiel des communes françaises](https://geo.api.gouv.fr/decoupage-administratif/communes). Cette fonctionnalité n’active **jamais** la géolocalisation du téléphone. Si le code postal correspond à plusieurs communes, l’utilisateur doit en choisir une : l’application ne devine pas sa commune.
+
+Le centre **approximatif de la commune choisie**, arrondi à trois décimales, devient uniquement l’origine d’une recherche Open Prices à 5, 10, 25 ou 50 km. Ce n’est **ni l’adresse de l’utilisateur, ni sa position précise, ni un magasin garanti**. Les métadonnées Open Prices doivent ensuite fournir des coordonnées et des prix prouvés ; chaque distance est contrôlée localement avant affichage. Le référentiel géographique, le réseau ou les relevés peuvent être indisponibles ou incomplets ; dans ce cas, l’application n’invente aucune offre. La simple saisie d’un code postal conserve l’ancien mode de filtre exact des résultats nationaux ; le bouton déclenche explicitement la recherche locale. Les coordonnées du centre restent uniquement en mémoire jusqu’à désactivation.
+
+Le parcours Android existant vérifie l’absence de permission GPS, le choix obligatoire lorsque plusieurs communes partagent un code postal, la validation du référentiel, la transmission de coordonnées publiques arrondies, le nettoyage du centre et le repli national. Aucune donnée communautaire n’est ajoutée aux promotions confirmées ni aux cumuls panier.
+
 ## Sources de secours quand Carrefour bloque la synchronisation (15 octobre 2026)
 
 L’onglet **Promos du jour** donne maintenant accès aux **prospectus Bonial datés** pour Carrefour et E.Leclerc, avec une adresse qui suit le magasin choisi. Cela reste une **consultation manuelle de catalogues** : Bonial ne prouve ni un tarif local, ni l’éligibilité à une remise, ni un remboursement cumulable. La collecte automatisée de Carrefour reste officiellement indisponible lorsqu’elle renvoie HTTP 403 ; l’application ne contourne pas ce refus et ne réactive pas d’anciennes fiches.
