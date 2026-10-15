@@ -530,9 +530,11 @@ function renderDailyCatalogue(){
       : "https://www.leclercdrive.fr/";
   els.dailyOfficialLink.href=source;
   // Public editorial catalogue backup; no price is imported from this page.
-  els.dailyAlternativeLink.href=state.store==="carrefour"
-    ? "https://www.bonial.fr/Enseignes/Carrefour"
-    : "https://www.bonial.fr/Enseignes/E-Leclerc";
+  if(els.dailyAlternativeLink){
+    els.dailyAlternativeLink.href=state.store==="carrefour"
+      ? "https://www.bonial.fr/Enseignes/Carrefour"
+      : "https://www.bonial.fr/Enseignes/E-Leclerc";
+  }
   if(els.dailyFreshnessStatus) els.dailyFreshnessStatus.textContent=
     dailyCampaignRefreshNotice({checkedAt:state.dailyFeedCheckedAt,
       lastAttemptAt:state.dailyFeedLastAttemptAt,
