@@ -1319,6 +1319,8 @@ try{
   assert.equal(await outletMaps.first().getAttribute("href"),
     "https://www.openstreetmap.org/?mlat=46.78000&mlon=4.85000#map=17/46.78000/4.85000");
   assert.equal(await outletMaps.first().getAttribute("target"),"_blank");
+  assert.match(await outletMaps.first().getAttribute("rel"),/noopener noreferrer/,
+    "An external map must not receive the app's referrer or tab access");
   assert.match(await page.locator("#observedDeals").innerText(),
     /Voir le magasin indiqué sur OpenStreetMap/);
   assert.equal(await page.locator("#observedAgeDays").inputValue(),"7");
@@ -1380,6 +1382,10 @@ try{
   assert.match(await page.locator("#observedDeals").innerText(),/km/);
   assert.deepEqual(observedGeoRequests.at(-1),
     {lat:"46.783",lon:"4.854",radius:"10"});
+  assert.equal(await page.locator(
+    '#observedDeals a[href^="https://www.openstreetmap.org/"]').first().getAttribute("href"),
+    "https://www.openstreetmap.org/?mlat=46.78000&mlon=4.85000#map=17/46.78000/4.85000",
+    "The external marker contains shop coordinates, never the enabled phone's GPS coordinates");
   assert.equal(await page.locator("#observedNearby").getAttribute("aria-pressed"),"true");
   await page.locator("#observedSort").selectOption("distance");
   assert.match(await page.locator("#observedDeals").innerText(),/km/);
