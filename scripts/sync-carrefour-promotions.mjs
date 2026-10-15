@@ -1,11 +1,12 @@
 import { readFile,writeFile } from "node:fs/promises";
-import { verifyCarrefourPromotionPage } from "../src/adapters/carrefour-promotions.js";
-import {isOfferActive} from "../src/ingestion.js";
+import {verifyCarrefourPromotionPage,isAllowedCarrefourProductUrl} from "../src/adapters/carrefour-promotions.js";
+import {isOfferActive,parisCivilDay} from "../src/ingestion.js";
 import {writeSourceSyncStatus} from "./source-sync-status.mjs";
 
 const SNAPSHOT_URL=new URL("../data/import/carrefour-promotions-auto.json",import.meta.url);
 const write=process.argv.includes("--write");
-const today=new Date().toISOString().slice(0,10);
+const current=new Date();
+const today=parisCivilDay(current);
 const nextReview=addDays(today,2);
 
 const offers=JSON.parse(await readFile(SNAPSHOT_URL,"utf8"));
@@ -16,16 +17,30 @@ let changed=0;
 let unavailable=0;
 let skippedExpired=0;
 let skippedAccessDenied=0;
+let unsafeUrls=0;
 let accessDenied=false;
-const current=new Date();
-const eligibleCount=offers.filter((offer)=>isOfferActive(offer,current)).length;
+const confirmedExternalIds=[];
+// A missed daily run must not cause permanent starvation: reviewAfter
+// gates customer-facing offers, NOT attempts to collect new evidence.
+// Explicit advertised expiry and start dates remain authoritative.
+const canReconfirm=(offer)=>isOfferActive({...offer,reviewAfter:undefined},current);
+const eligibleCount=offers.filter(canReconfirm).length;
 const next=[];
 
 for(const offer of offers){
-  // Old campaigns must not be reconfirmed or repeatedly queried after their
-  // review deadline; keep them unchanged so the archive remains auditable.
-  if(!isOfferActive(offer,current)){
+  // An expired advertised campaign must never be revived, but an overdue
+  // review may be reconsidered ONLY if today's official page proves the
+  // original exact SKU, before/after prices and discount together.
+  if(!canReconfirm(offer)){
     skippedExpired++;
+    next.push(offer);
+    continue;
+  }
+  // Validate the destination before fetching anything to avoid untrusted
+  // URL requests from imported data, including redirects and lookalikes.
+  if(!isAllowedCarrefourProductUrl(offer.sourceUrl,offer.eans)){
+    unsafeUrls++;
+    console.warn("[carrefour] URL officielle/EAN invalide · "+offer.title);
     next.push(offer);
     continue;
   }
@@ -42,7 +57,7 @@ for(const offer of offers){
         Accept:"text/html,application/xhtml+xml",
         "User-Agent":"PromoAlimentaire/0.1 public-carrefour-promo-verifier"
       },
-      redirect:"follow",
+      redirect:"error",
       signal:AbortSignal.timeout(15000)
     });
     if(!response.ok) throw new Error("HTTP "+response.status);
@@ -61,6 +76,7 @@ for(const offer of offers){
     }
 
     confirmed+=1;
+    if(typeof offer.externalId==="string") confirmedExternalIds.push(offer.externalId);
     const refreshed={
       ...offer,
       verifiedAt:today,
@@ -86,6 +102,7 @@ console.log(
   " · indisponibles="+unavailable+
   " · expirées ignorées="+skippedExpired+
   " · accès refusé (requêtes évitées)="+skippedAccessDenied+
+  " · URLs invalides (non consultées)="+unsafeUrls+
   " · mises à jour="+changed
 );
 
@@ -97,16 +114,17 @@ await writeSourceSyncStatus("carrefour",{
   status:eligibleCount>0 && confirmed===eligibleCount?"updated"
     : confirmed===0?"unavailable":"partial",
   reason:eligibleCount===0
-    ? "Aucune promotion Carrefour à revalider : "+skippedExpired+" ancienne(s) fiche(s) expirée(s). Découvrir de nouvelles offres nécessite une source publique accessible."
+    ? "Aucune référence Carrefour encore dans sa période annoncée à revalider : "+skippedExpired+" archive(s). De nouvelles fiches exigent une source publique accessible."
     : accessDenied
       ? "HTTP 401/403 : accès public aux fiches Carrefour refusé ; arrêt des requêtes suivantes sans contournement ("+skippedAccessDenied+" évitées)."
       : confirmed===eligibleCount
-        ? "Toutes les campagnes encore valides ont conservé leurs preuves EAN et tarifaires."
+        ? "Toutes les fiches encore dans leur période ont été reconfirmées avec EAN et prix."
         : confirmed===0
-          ? "Aucune promotion complète reconfirmée sur "+eligibleCount+" fiche(s) encore dans leur période."
+          ? "Aucune promotion complète reconfirmée sur "+eligibleCount+" fiche(s) à recontrôler ("+unsafeUrls+" URL(s) refusée(s))."
           : "Seulement "+confirmed+"/"+eligibleCount+" promotions non expirées ont été reconfirmées.",
   extractedCount:confirmed,
-  previousSnapshotCount:offers.length
+  previousSnapshotCount:offers.length,
+  confirmedExternalIds
 },{write});
 
 function addDays(iso,days){

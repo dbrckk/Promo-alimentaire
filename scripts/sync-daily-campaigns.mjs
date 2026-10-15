@@ -41,8 +41,8 @@ for(const url of sources){
   }catch(error){
     const reason=String(error?.message||error);
     sourceChecks[url]={status:"unavailable",
-      reason:/HTTP (401|403|429)\\b/.test(reason)
-        ? "HTTP "+reason.match(/HTTP (401|403|429)\\b/)[1]
+      reason:/HTTP (401|403|429)\b/.test(reason)
+        ? "HTTP "+reason.match(/HTTP (401|403|429)\b/)[1]
         : "Source indisponible"};
     console.warn("[daily] page indisponible : "+url+" · "+
       reason.slice(0,180));

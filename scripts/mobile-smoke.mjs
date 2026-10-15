@@ -1651,6 +1651,36 @@ try{
   assert.equal(await page.locator("#dailyRetailer .daily-offer").count(),
     initialRetailerCount,
     "Lever le budget restaure exactement les offres encore vérifiées");
+  // End-to-end browser guard for the Carrefour scheduled recheck: an
+  // overdue review may trigger a new evidence REQUEST, never a stale offer
+  // in the UI, and expired advertising periods remain irrevocably blocked.
+  const carrefourRecheck=await page.evaluate(async()=>{
+    const {isOfferActive}=await import("./src/ingestion.js");
+    const {isAllowedCarrefourProductUrl}=await import(
+      "./src/adapters/carrefour-promotions.js");
+    const now=new Date("2026-10-15T12:00:00Z");
+    const item={verifiedAt:"2026-10-07",reviewAfter:"2026-10-09",
+      startsAt:"2026-10-07",expiresAt:"2026-10-19",
+      eans:["3038359913242"],
+      sourceUrl:"https://www.carrefour.fr/p/pates-fusilli-fermes-et-genereuses-panzani-3038359913242"};
+    return {
+      expiredReviewIsNotDisplayed:isOfferActive(item,now),
+      canRequestFreshProof:isOfferActive({...item,reviewAfter:undefined},now),
+      expiredAdvertIsNotReopened:isOfferActive({
+        ...item,reviewAfter:undefined,expiresAt:"2026-10-14"},now),
+      officialUrl:isAllowedCarrefourProductUrl(item.sourceUrl,item.eans),
+      counterfeitHost:isAllowedCarrefourProductUrl(
+        item.sourceUrl.replace("www.carrefour.fr","www.carrefour.fr.evil.example"),
+        item.eans),
+      unrelatedEan:isAllowedCarrefourProductUrl(item.sourceUrl,["3038359913297"]),
+      queryInjected:isAllowedCarrefourProductUrl(item.sourceUrl+"?target=other",item.eans)
+    };
+  });
+  assert.deepEqual(carrefourRecheck,{
+    expiredReviewIsNotDisplayed:false,canRequestFreshProof:true,
+    expiredAdvertIsNotReopened:false,officialUrl:true,
+    counterfeitHost:false,unrelatedEan:false,queryInjected:false
+  });
   // Deterministic Android integration uses seeded product evidence rather
   // than relying on live retailer confirmations, which may expire overnight.
   const dailySafety=await page.evaluate(async()=>{
