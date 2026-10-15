@@ -44,7 +44,7 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
       "Le filtre de nom Open Prices actuellement défaillant masquerait toutes les observations");
     const observation=(id,store,locationId,price,regular,code)=>({
       id,product_code:code,type:"PRODUCT",price,price_without_discount:regular,
-      price_is_discounted:true,discount_type:"SALE",price_per:"UNIT",
+      price_is_discounted:true,discount_type:"SALE",price_per:null,
       currency:"EUR",date:RECENT_RECEIPT_DATE,location_id:locationId,
       proof_id:id+100,proof:{id:id+100,type:"PRICE_TAG"},
       product:{code,source:"off",product_name:"Pâtes alimentaires témoin",
