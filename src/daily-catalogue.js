@@ -319,14 +319,17 @@ export function selectFoodRefundOpportunities({
       ...normalizePick(offer),
       reviewAfter:offer.reviewAfter||null,
       merchantExpiry:offer.expiresAt||null,
+      requiresUnlock:offer.requiresUnlock===true,
+      unlockConditions:typeof offer.unlockConditions==="string"
+        ?offer.unlockConditions.slice(0,240):"",
       conditions:typeof offer.conditions==="string"
         ?offer.conditions.slice(0,340):"",
       // Never infer a product shelf price or advance-cash budget.
       upfrontKnown:Number.isFinite(offer.basePrice)&&offer.basePrice>0
     }))
-    .filter((item)=>Number.isFinite(item.savingAmount)
-      && item.savingAmount>0 || Number.isFinite(item.savingPercent)
-      && item.savingPercent>0);
+    .filter((item)=>(Number.isFinite(item.savingAmount)
+      && item.savingAmount>0) || (Number.isFinite(item.savingPercent)
+      && item.savingPercent>0));
   const compareAmounts=(a,b)=>{
     const fixedA=Number.isFinite(a.savingAmount);
     const fixedB=Number.isFinite(b.savingAmount);
