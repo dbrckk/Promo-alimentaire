@@ -1268,6 +1268,53 @@ try{
   // retailer advertisement that would fabricate a checkout price.
   await page.locator('[data-tab="daily"]').click();
   await page.locator("#dailyStatus").waitFor({state:"visible"});
+  // Live-shaped public Open Prices responses, routed only inside this
+  // integration browser. A community discount is not a Carrefour catalogue
+  // promise and is never silently imported as a basket deduction.
+  await page.locator("#observedDeals .daily-offer").first().waitFor({timeout:8000});
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),2,
+    "Carrefour presents only recent OFF food receipts with real before/after prices");
+  assert.match(await page.locator("#observedDeals").innerText(),/0,99.*1,59/s);
+  assert.doesNotMatch(await page.locator("#observedDeals").innerText(),/Alcool/);
+  await page.locator("#observedPostcode").fill("71100");
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),1,
+    "Postcode filter applies only to the actual store on the receipt");
+  await page.locator("#observedPostcode").fill("71x00");
+  assert.match(await page.locator("#observedStatus").innerText(),/cinq chiffres/);
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),0);
+  await page.locator("#observedPostcode").fill("");
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
+  const observationGate=await page.evaluate(async()=>{
+    const {normalizeObservedDiscount}=await import("./src/community-deals.js");
+    const base={
+      id:9001,type:"PRODUCT",product_code:"3038359913242",
+      price:1,price_without_discount:2,price_is_discounted:true,
+      discount_type:"SALE",currency:"EUR",price_per:"UNIT",
+      date:new Date(Date.now()-86400000).toISOString().slice(0,10),
+      proof_id:101,product:{code:"3038359913242",source:"off",
+        product_name:"Pâtes",categories_tags:["en:pastas"]},
+      location:{osm_brand:"Carrefour",osm_name:"Carrefour test",
+        osm_address_postcode:"71100"}
+    };
+    const valid=normalizeObservedDiscount(base,{store:"carrefour"});
+    return {
+      valid:Boolean(valid),source:valid?.sourceUrl,
+      discountWithoutReference:normalizeObservedDiscount({
+        ...base,price_without_discount:null},{store:"carrefour"})===null,
+      loyaltyRejected:normalizeObservedDiscount({
+        ...base,discount_type:"LOYALTY_PROGRAM"},{store:"carrefour"})===null,
+      noProofRejected:normalizeObservedDiscount({
+        ...base,proof_id:null},{store:"carrefour"})===null,
+      wrongMerchantRejected:normalizeObservedDiscount({
+        ...base,location:{osm_brand:"E.Leclerc",osm_name:"E.Leclerc test",
+          osm_address_postcode:"71100"}},{store:"carrefour"})===null
+    };
+  });
+  assert.deepEqual(observationGate,{
+    valid:true,source:"https://prices.openfoodfacts.org/prices/9001",
+    discountWithoutReference:true,loyaltyRejected:true,
+    noProofRejected:true,wrongMerchantRejected:true
+  });
   assert.match(await page.locator("#dailyStatus").innerText(),
     /Sélection au .*Carrefour.*magasin/);
   assert.match(await page.locator("#dailyRetailer").innerText(),
