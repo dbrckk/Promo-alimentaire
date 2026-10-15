@@ -1,3 +1,11 @@
+### Prix alimentaires précis dans les prospectus du jour (15 octobre 2026)
+
+L'onglet **Promos du jour** propose désormais une zone « Prix alimentaires repérés dans les annonces du jour », distincte des campagnes qui annoncent un pourcentage maximal sur le deuxième article. Elle privilégie un **produit alimentaire nommé**, assorti d'un **prix affiché**, d'une **unité (€/kg ou €/pièce)**, d'une **période validée** et d'un **lien vers la page de l'enseigne**. Exemple effectivement relevé sur Carrefour le 14 octobre : **raisin Red Globe à 2,99 €/kg**, campagne annoncée jusqu'au 15 octobre 2026, à vérifier auprès du point de vente participant.
+
+Le moteur garde ces prix visibles indépendamment du nombre de publicités « jusqu'à −50 % » classées en premier. Le contrôle du jour et du canal est fait au calendrier de Paris. Le nombre de cartes reste limité, avec une vérification dans Chrome Android. La zone se vide si aucun prix chiffré nommé ne possède une preuve encore valide.
+
+**Important :** un prix au kilo n'est pas un coût de lot, une comparaison de prix barrés, un tarif garanti en caisse, un montant réellement abordable avec 3 € ou une économie calculée. Les prix signalés ne sont pas ajoutés au panier, aux TOP 3 de remises vérifiées, aux coupons cumulables, ni à l'optimiseur. Le filtre de budget ne transforme pas le prix d'une unité de mesure en coût de l'achat complet.
+
 ### Petit budget : recommandations alimentaires du jour, priorité aux prix annoncés bas (14 octobre 2026)
 
 La sélection **Promos du jour** de Carrefour combine désormais les prospectus alimentaires en cours de validité et la découverte officielle de prix bas. Avec le plafond 3/5/10/20 €, les pistes éditoriales **fruits et légumes annoncés à 0,99 €**, **produits du quotidien annoncés sous 1 €**, puis **Bio annoncé sous 2 €** sont remontées dans cet ordre, avant les publicités qui affichent un fort pourcentage sur le deuxième article. Les prix de ces sélections ne prouvent **aucun article précisément disponible ni aucun montant en caisse** : ce sont des pistes de vérification et elles ne figurent pas dans les gains chiffrés ou achats garantis.
