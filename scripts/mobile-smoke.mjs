@@ -1566,6 +1566,8 @@ try{
     "Les meilleures opportunités restent limitées à trois");
   assert.equal(await page.locator("#dailyHighlights .daily-actionable").count(),
     initialHighlightCount,"Chaque recommandation a un prix et un avantage expliqués");
+  assert.equal(await page.locator("#dailyHighlights .daily-actionable > .daily-offer").count(),
+    initialHighlightCount,"Les trois suggestions doivent présenter leurs cartes source");
   if(initialHighlightCount){
     assert.match(await page.locator("#dailyHighlights").innerText(),
       /à avancer.*avantage potentiel/is);
