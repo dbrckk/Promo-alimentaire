@@ -227,5 +227,19 @@
       "verifiedAt": "2026-10-14",
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     }
-  ]
+  ],
+  "lastAttemptAt": "2026-10-15T10:57:16.274Z",
+  "sourceChecks": {
+    "https://www.carrefour.fr/catalogue/carrefour": {
+      "status": "unavailable",
+      "reason": "Source indisponible"
+    },
+    "https://www.carrefour.fr/offres-du-moment": {
+      "status": "unavailable",
+      "reason": "Source indisponible"
+    },
+    "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637": {
+      "status": "available"
+    }
+  }
 }
