@@ -3,7 +3,7 @@
 // path with the exact GTIN; redirects, queries and lookalike hosts are refused.
 export function isAllowedCarrefourProductUrl(sourceUrl,eans=[]){
   if(!Array.isArray(eans) || !eans.some((ean)=>
-    typeof ean==="string" && /^(?:\\d{8}|\\d{12,14})$/.test(ean))) return false;
+    typeof ean==="string" && /^(?:\d{8}|\d{12,14})$/.test(ean))) return false;
   try{
     const url=new URL(sourceUrl);
     return url.protocol==="https:"
@@ -11,7 +11,7 @@ export function isAllowedCarrefourProductUrl(sourceUrl,eans=[]){
       && !url.username && !url.password && !url.search && !url.hash
       && url.pathname.startsWith("/p/")
       && eans.some((ean)=>typeof ean==="string"
-        && /^(?:\\d{8}|\\d{12,14})$/.test(ean)
+        && /^(?:\d{8}|\d{12,14})$/.test(ean)
         && url.pathname.endsWith("-"+ean));
   }catch{return false;}
 }
