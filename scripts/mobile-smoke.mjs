@@ -1564,6 +1564,37 @@ try{
   const initialHighlightCount=await page.locator("#dailyHighlights .daily-offer").count();
   assert.ok(initialHighlightCount<=3,
     "Les meilleures opportunités restent limitées à trois");
+  assert.equal(await page.locator("#dailyHighlights .daily-actionable").count(),
+    initialHighlightCount,"Chaque recommandation a un prix et un avantage expliqués");
+  if(initialHighlightCount){
+    assert.match(await page.locator("#dailyHighlights").innerText(),
+      /à avancer.*avantage potentiel/is);
+    assert.doesNotMatch(await page.locator("#dailyHighlights").innerText(),
+      /Prix initial du lot non documenté/i);
+  }
+  // Android runs the real recommendation selector rather than trusting
+  // attractive headline percentages with no known checkout cost.
+  const dailyActionable=await page.evaluate(async()=>{
+    const {pickActionableDailyDeals}=await import("./src/daily-catalogue.js");
+    const make=(id,category,upfrontCost,savingAmount,savingPercent)=>({
+      id,title:id,category,upfrontCost,savingAmount,savingPercent,
+      minQuantity:2,hasExactEan:id==="pates"
+    });
+    const picks=[
+      make("pates","épicerie",1.98,0.67,34),
+      make("soupe","épicerie",1.99,0.65,33),
+      make("legumes","fruits et légumes",2.30,0.46,20),
+      make("pub sans prix","épicerie",null,4,90),
+      {...make("ancien","produits laitiers",2,0.8,40),
+        needsReconfirmation:true}
+    ];
+    return pickActionableDailyDeals(picks,{sort:"percent",limit:2})
+      .map(x=>({id:x.id,price:x.upfrontCost,rate:x.savingPercent}));
+  });
+  assert.deepEqual(dailyActionable,[
+    {id:"pates",price:1.98,rate:34},
+    {id:"legumes",price:2.30,rate:20}
+  ]);
   if(initialRetailerCount===0){
     assert.match(await page.locator("#dailyRetailer").innerText(),
       /Aucune promotion produit.*preuve active exploitable/i,
