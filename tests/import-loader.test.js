@@ -772,7 +772,9 @@ test("catalogue quotidien : vraies meilleures économies et budget payé avant r
   const standard=selectDailyCatalogue({offers,store:"leclerc",
     channel:"store",now:at});
   assert.deepEqual(standard.highlights.map(x=>x.id),
-    ["unknown-cost","big-saver","multi"]);
+    ["big-saver","multi","less-cheap"],
+    "Une offre sans prix initial connu ne peut être l'un des trois achats recommandés");
+  assert.ok(!standard.highlights.some((x)=>x.id==="unknown-cost"));
   assert.equal(standard.retailer.find(x=>x.id==="unknown-cost").upfrontCost,null);
   const multi=standard.retailer.find(x=>x.id==="multi");
   assert.equal(multi.minQuantity,2);
@@ -890,7 +892,10 @@ test("source partiellement vérifiée : 9 bonnes offres restent visibles, la 10e
     offers:loadedShopmium,store:"carrefour",channel:"store",now:checkAt
   });
   assert.equal(daily.affordableCandidates,45);
-  assert.equal(daily.highlights.length,3);
+  assert.equal(daily.highlights.length,0,
+    "Sans aucun prix de caisse connu, 45 coupons ne sont pas 45 achats conseillés");
+  assert.equal(daily.extra.length,8,
+    "Les coupons encore valides doivent rester visibles en liste consultable");
   assert.equal(daily.extra.some((offer)=>offer.id===shopmium[45].id),false);
   assert.equal(sourceRefreshImpact(shopmium,{
     shopmium:{...partialShopmium.shopmium,confirmedExternalIds:undefined}
