@@ -93,14 +93,15 @@ export async function fetchCommunityDiscounts({
     currency:"EUR",type:"PRODUCT",price_is_discounted:"true",
     "date__gte":dayMinus(now,7),"order_by":"-date",size:"100"
   });
-  // Without GPS, search only named retailer stores rather than sampling
-  // arbitrary retailers across France. With GPS, prioritize locality.
+  // The documented location__osm_name__contains filter currently
+  // returns ZERO even for brands present in public global results (verified
+  // against Netto, Carrefour and Leclerc on 15 Oct 2026). Query the bounded
+  // recent discounted feed and validate retailer identity LOCALLY instead.
+  // With opted-in GPS, the API's geographic filter further bounds results.
   if(location){
     params.set("lat",String(location.latitude));
     params.set("lon",String(location.longitude));
     params.set("radius_km",String(radius));
-  }else{
-    params.set("location__osm_name__contains",NAMES[store]);
   }
   const bound=Math.min(Math.max(Math.trunc(maxPages)||2,1),2);
   const all=new Map();
