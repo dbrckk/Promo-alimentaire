@@ -87,6 +87,9 @@ const els = {
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
   observedPostcode:document.querySelector("#observedPostcode"),
+  observedRadius:document.querySelector("#observedRadius"),
+  observedNearby:document.querySelector("#observedNearby"),
+  observedGeoNote:document.querySelector("#observedGeoNote"),
   observedRefresh:document.querySelector("#observedRefresh"),
   observedStatus:document.querySelector("#observedStatus"),
   observedDeals:document.querySelector("#observedDeals"),
@@ -206,7 +209,9 @@ const state = {
 // Community observations are independent of the merchant promotion importer.
 // Never turn them into automatically stackable product or basket offers.
 const communityState={store:null,records:[],status:"idle",checkedAt:null,
-  incomplete:false,total:null,token:0,controller:null,checkedDay:null};
+  incomplete:false,total:null,token:0,controller:null,checkedDay:null,
+  checkedSearchKey:null,coords:null,radiusKm:25,geoPending:false,
+  geoError:"",positionRequestToken:0};
 
 // Shared by both retailer lookups. Any change of product/filters aborts
 // obsolete network traffic instead of merely discarding its eventual reply.
@@ -245,6 +250,8 @@ els.manualPriceDate.addEventListener("focus",()=>{
 els.datasetDate.textContent=`Catalogue de référence : ${formatDate(DATASET_DATE)} · chargement des offres publiques…`;
 
 els.store.addEventListener("change",async()=>{
+  communityState.positionRequestToken++;
+  communityState.geoPending=false;
   invalidateCommunityObservations();
   invalidateExactSkuComparison();
   state.store=els.store.value;
@@ -257,6 +264,8 @@ els.store.addEventListener("change",async()=>{
   if(state.tab==="daily") void refreshCommunityObservations();
 });
 els.channel.addEventListener("change",()=>{
+  communityState.positionRequestToken++;
+  communityState.geoPending=false;
   invalidateCommunityObservations();
   invalidateExactSkuComparison();
   cancelBasketPriceRefresh();
@@ -433,6 +442,15 @@ els.closeScan.addEventListener("click",()=>els.scanDialog.close());
 els.scanDialog.addEventListener("close",stopScanner);
 
 els.observedPostcode.addEventListener("input",()=>renderCommunityObservations());
+els.observedRadius.addEventListener("change",()=>{
+  communityState.radiusKm=Number(els.observedRadius.value);
+  if(communityState.coords){
+    invalidateCommunityObservations();
+    if(state.tab==="daily" && state.channel==="store")
+      void refreshCommunityObservations(true);
+  }else renderCommunityObservations();
+});
+els.observedNearby.addEventListener("click",toggleCommunityNearby);
 els.observedRefresh.addEventListener("click",()=>void refreshCommunityObservations(true));
 els.tabs.forEach((button)=>button.addEventListener("click",()=>setTab(button.dataset.tab)));
 
@@ -524,12 +542,84 @@ function invalidateCommunityObservations(){
   communityState.store=null;
   communityState.checkedAt=null;
   communityState.checkedDay=null;
+  communityState.checkedSearchKey=null;
   communityState.incomplete=false;
   communityState.total=null;
   renderCommunityObservations();
 }
+function toggleCommunityNearby(){
+  // The browser asks for position only after a deliberate tap on this
+  // control, never on load, tab navigation or a normal refresh.
+  const requestId=++communityState.positionRequestToken;
+  if(communityState.geoPending){
+    communityState.geoPending=false;
+    communityState.geoError="";
+    renderCommunityObservations();
+    return;
+  }
+  if(communityState.coords){
+    communityState.coords=null;
+    communityState.geoError="";
+    invalidateCommunityObservations();
+    if(state.tab==="daily" && state.channel==="store")
+      void refreshCommunityObservations(true);
+    return;
+  }
+  if(state.channel!=="store") return;
+  if(!navigator.geolocation){
+    communityState.geoError="La position n’est pas disponible sur cet appareil.";
+    renderCommunityObservations();return;
+  }
+  communityState.geoPending=true;
+  communityState.geoError="";
+  renderCommunityObservations();
+  navigator.geolocation.getCurrentPosition((position)=>{
+    if(requestId!==communityState.positionRequestToken) return;
+    communityState.geoPending=false;
+    if(state.channel!=="store") return;
+    const latitude=position?.coords?.latitude;
+    const longitude=position?.coords?.longitude;
+    if(!Number.isFinite(latitude)||!Number.isFinite(longitude)
+      || latitude < -90 || latitude > 90
+      || longitude < -180 || longitude > 180){
+      communityState.geoError="Position invalide : recherche nationale conservée.";
+      renderCommunityObservations();return;
+    }
+    // Approx. 100 m granularity, session memory only, never localStorage.
+    communityState.coords={
+      latitude:Math.round(latitude*1000)/1000,
+      longitude:Math.round(longitude*1000)/1000
+    };
+    // A postcode is an exact filter on already fetched receipts. Keeping it
+    // enabled here would accidentally hide nearby stores in adjacent towns.
+    els.observedPostcode.value="";
+    invalidateCommunityObservations();
+    if(state.tab==="daily") void refreshCommunityObservations(true);
+  },()=>{
+    if(requestId!==communityState.positionRequestToken) return;
+    communityState.geoPending=false;
+    communityState.geoError="Localisation refusée ou indisponible. La recherche nationale reste accessible.";
+    renderCommunityObservations();
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+}
 function renderCommunityObservations(){
   if(!els.observedStatus) return;
+  const near=Boolean(communityState.coords);
+  els.observedNearby.textContent=communityState.geoPending
+    ? "Annuler la demande de position"
+    :near?"Désactiver la proximité":"Chercher près de moi";
+  els.observedNearby.setAttribute("aria-pressed",String(near));
+  els.observedNearby.classList.toggle("active",near);
+  els.observedNearby.disabled=state.channel!=="store" && !near
+    && !communityState.geoPending;
+  els.observedRadius.value=String(communityState.radiusKm);
+  els.observedGeoNote.textContent=communityState.geoPending
+    ? "Demande de position en cours. Annuler est possible sans activer la recherche locale."
+    :near
+      ? "Recherche dans un rayon de "+communityState.radiusKm+
+        " km. Position arrondie à environ 100 m, transmise uniquement à Open Prices pendant cette recherche, jamais enregistrée. Désactiver la proximité pour l’effacer."
+      :communityState.geoError ||
+        "Position demandée seulement après un appui explicite ; aucune coordonnée conservée. Le code postal seul filtre les relevés nationaux récupérés, sans élargir la recherche API.";
   if(state.channel!=="store"){
     els.observedStatus.textContent="Les relevés Open Prices concernent les magasins physiques, pas les Drives ni la livraison.";
     els.observedDeals.innerHTML="";
@@ -566,15 +656,20 @@ function renderCommunityObservations(){
     ?parisCivilDay(new Date(communityState.checkedAt)):"date inconnue";
   const warning=communityState.incomplete
     ?" Échantillon limité ou partiellement accessible : recherche non exhaustive.":"";
+  const scope=communityState.coords
+    ?"dans un rayon de "+communityState.radiusKm+" km (position approximative)"
+    :zip?"code postal "+zip+" parmi les relevés nationaux":"échantillon national";
   els.observedStatus.textContent=picks.length+" relevé(s) correspondant aux filtres · consultation "+
-    checked+" · "+(zip?"code postal "+zip:"toute la France")+"."+
+    checked+" · "+scope+"."+
     warning+" Prix local et disponibilité actuelle à reconfirmer avant achat.";
   els.observedDeals.innerHTML=picks.length
     ?picks.map((item)=>`<article class="card daily-offer">
       <div class="card-head"><div>
         <h4>${escapeHtml(item.title)}</h4>
         <div class="source">${escapeHtml(item.storeName)} · ${escapeHtml(item.postcode)}
-          ${item.city?" · "+escapeHtml(item.city):""}</div>
+          ${item.city?" · "+escapeHtml(item.city):""}
+          ${Number.isFinite(item.distanceKm)
+            ?" · "+item.distanceKm.toLocaleString("fr-FR")+" km":""}</div>
       </div><span class="badge">${formatPercent(item.savingPercent)} observés</span></div>
       <p><strong>${money.format(item.price)} constatés</strong>
         au lieu de ${money.format(item.regularPrice)} ·
@@ -592,8 +687,14 @@ async function refreshCommunityObservations(force=false){
     renderCommunityObservations();return;
   }
   const today=parisCivilDay(new Date());
+  const nearby=communityState.coords;
+  const searchKey=nearby
+    ?state.store+"|nearby|"+nearby.latitude+"|"+nearby.longitude+
+      "|"+communityState.radiusKm
+    :state.store+"|national";
   if(!force && communityState.store===state.store &&
     communityState.checkedDay===today &&
+    communityState.checkedSearchKey===searchKey &&
     (communityState.status==="done" || communityState.status==="loading")){
     renderCommunityObservations();return;
   }
@@ -602,13 +703,15 @@ async function refreshCommunityObservations(force=false){
   const token=++communityState.token;
   communityState.controller=controller;
   communityState.store=state.store;
+  communityState.checkedSearchKey=searchKey;
   communityState.status="loading";
   communityState.records=[];
   renderCommunityObservations();
   const timeout=setTimeout(()=>controller.abort(),12000);
   try{
     const result=await fetchObservedDiscounts({
-      store:state.store,signal:controller.signal
+      store:state.store,signal:controller.signal,
+      coords:nearby,radiusKm:communityState.radiusKm
     });
     if(token!==communityState.token || controller.signal.aborted) return;
     communityState.records=result.records;

@@ -176,15 +176,30 @@
         <p class="help">Relevés communautaires avec prix observé, prix habituel, date, magasin et justificatif. Ils ne prouvent pas qu'une promotion est encore disponible aujourd'hui. Magasin physique uniquement. Données ouvertes sous licence ODbL.</p>
         <div class="daily-filters">
           <div class="field">
-            <label for="observedPostcode">Code postal (facultatif, filtre local)</label>
+            <label for="observedPostcode">Code postal (filtre exact des relevés récupérés)</label>
             <input id="observedPostcode" inputmode="numeric" maxlength="5"
               pattern="[0-9]{5}" autocomplete="postal-code" placeholder="Ex. 71100" />
+          </div>
+          <div class="field">
+            <label for="observedRadius">Rayon de recherche</label>
+            <select id="observedRadius">
+              <option value="5">5 km</option>
+              <option value="10">10 km</option>
+              <option value="25" selected>25 km</option>
+              <option value="50">50 km</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="observedNearby">Localiser uniquement à ma demande</label>
+            <button id="observedNearby" class="secondary" type="button"
+              aria-pressed="false">Chercher près de moi</button>
           </div>
           <div class="field">
             <label for="observedRefresh">Relevés récents (7 jours maximum)</label>
             <button id="observedRefresh" class="secondary" type="button">Actualiser les relevés</button>
           </div>
         </div>
+        <p id="observedGeoNote" class="help" aria-live="polite">La position n'est demandée qu'en appuyant sur « Chercher près de moi ». Si autorisée, elle est arrondie à environ 100 mètres puis transmise uniquement à l’API Open Prices pour la recherche. Aucune coordonnée n’est enregistrée ; désactive la proximité pour l’effacer.</p>
         <p id="observedStatus" class="help" role="status" aria-live="polite">Ouvrir cet onglet pour consulter les relevés récents.</p>
         <div id="observedDeals" class="grid" aria-live="polite"></div>
         <p class="help">Source : <a href="https://prices.openfoodfacts.org/" target="_blank" rel="noopener noreferrer">Open Prices / Open Food Facts</a> (ODbL). La recherche est limitée aux observations les plus récentes : une absence de résultat n'indique pas une absence de promotion. Les économies ne s'ajoutent pas automatiquement au panier.</p>
