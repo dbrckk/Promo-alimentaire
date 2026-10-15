@@ -796,6 +796,10 @@ function renderCommunityObservations(){
         <h4>${escapeHtml(item.title)}</h4>
         <div class="source">${escapeHtml(item.storeName)} · ${escapeHtml(item.postcode)}
           ${item.city?" · "+escapeHtml(item.city):""}
+          ${item.storeStreet?" · "+escapeHtml(item.storeStreet)
+            :Number.isSafeInteger(item.locationId)
+              ?" · Lieu Open Prices n° "+item.locationId
+              :" · Adresse exacte non précisée"}
           ${Number.isFinite(item.distanceKm)
             ?" · "+item.distanceKm.toLocaleString("fr-FR")+" km":""}</div>
       </div><span class="badge">${formatPercent(item.savingPercent)} observés</span></div>
