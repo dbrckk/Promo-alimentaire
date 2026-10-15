@@ -159,3 +159,11 @@ Les références réellement importées depuis les autres fournisseurs restent c
 ## Promotions exploitables du catalogue du jour (15 octobre 2026)
 
 `pickActionableDailyDeals` dans `src/daily-catalogue.js` opère **après** la normalisation, le filtrage des offres non expirées, l'exclusion des incidents source et l'évaluation des remises sur la quantité minimale. Les trois premiers produits doivent tous disposer d'un prix initial de lot positif et fini, d'une économie en euros positive et inférieure ou égale au montant avancé, et d'un pourcentage sur le lot positif. Les slogans de campagne, les taux maximum sur une seconde unité, les montants sans prix de caisse et les historiques à reconfirmer en sont exclus. Pour conserver la pertinence alimentaire, la liste privilégie différentes catégories lorsque plusieurs références sont documentées. Le tri choisi est appliqué aux résultats et le filtrage budget porte sur **l'argent avancé**, jamais sur le coût net après ODR ou Tickets de fidélité. Les listes annexes conservent les offres moins bien documentées avec leurs réserves.
+
+## Analyse du jour : plafond par lot et message fiable (15 octobre 2026)
+
+Dans l'onglet **Promos du jour**, le plafond de 3, 5, 10 ou 20 € filtre **chaque lot éligible** sur son prix initial connu avant cagnotte ou remboursement. Il ne représente pas le budget total des trois suggestions : plusieurs achats distincts peuvent exiger davantage de trésorerie.
+
+Le message de synthèse s'appuie désormais sur `digest.highlights` (produits ayant à la fois un prix d'achat minimum et une économie chiffrée), au lieu d'annoncer systématiquement qu'aucun montant n'est connu dès qu'un filtre budget est sélectionné. S'il existe une recommandation chiffrée, elle est signalée comme candidate à reconfirmer ; sinon, la synthèse distingue les annonces non chiffrées des produits achetables. Le parcours d'intégration Chrome Android existant vérifie ces deux cas, sans nouveau test unitaire.
+
+Cette correction n'ajoute aucune remise, ne transforme aucun prix historique en prix courant et n'affirme pas qu'un cashback est reçu en caisse. Le cache PWA a été incrémenté pour diffuser la correction aux installations hors ligne.
