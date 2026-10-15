@@ -388,6 +388,37 @@ export function selectSavedFoodRefunds({
   return {total:ids.length,available,unavailableCount:ids.length-available.length};
 }
 
+/**
+ * Text-only shopping-time verification list. Never assert that a refund is
+ * activated, stackable, payable or affordable. Do not export hidden/expired
+ * bookmarks or any device location or local checkout-price history.
+ */
+export function formatSavedFoodRefundChecklist(items,{store="carrefour"}={}){
+  const entries=Array.isArray(items)?items.slice(0,40):[];
+  const shop=store==="leclerc"?"E.Leclerc":"Carrefour";
+  const lines=[
+    "Remboursements alimentaires à vérifier — "+shop,
+    "Liste indicative, aucun remboursement garanti.",
+    "Avant achat : vérifier EAN, magasin, dates, activation, exclusions, ticket et cumul."
+  ];
+  for(const [index,item] of entries.entries()){
+    if(!item || typeof item.title!=="string" || typeof item.sourceUrl!=="string") continue;
+    // Keep each item on one line and do not include arbitrary URLs.
+    const title=item.title.replace(/[\r\n\t]+/g," ").trim().slice(0,180);
+    const provider=String(item.provider||"Source").replace(/[\r\n\t]+/g," ").trim().slice(0,80);
+    let url;
+    try{
+      const parsed=new URL(item.sourceUrl);
+      if(parsed.protocol!=="https:" || parsed.username || parsed.password) continue;
+      url=parsed.href;
+    }catch{continue;}
+    if(!title) continue;
+    lines.push((index+1)+". "+title+" ("+provider+")");
+    lines.push("Conditions officielles : "+url);
+  }
+  return lines.join("\n");
+}
+
 export function selectDailyCatalogue({
   offers=[],campaigns=[],store="carrefour",channel="store",now=new Date(),
   limit=8,sort="percent",maxSpend=null
