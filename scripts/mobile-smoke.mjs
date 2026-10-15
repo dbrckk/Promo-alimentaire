@@ -1725,7 +1725,7 @@ try{
   assert.match(await page.locator("#dailyStatus").innerText(),
     /coût théorique après avantage/);
   assert.match(await page.locator("#dailyView").innerText(),
-    /une cagnotte ou une ODR ne diminue pas l'argent à avancer/);
+    /il faut avancer le prix total en caisse/i);
   await assertNoHorizontalOverflow(page,"tri par coût après avantage");
   await page.locator("#dailySort").selectOption("percent");
     await assertNoHorizontalOverflow(page,"analyse du catalogue du jour");
