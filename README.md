@@ -1,3 +1,9 @@
+### Repérer le magasin observé sur une carte ouverte (15 octobre 2026)
+
+Les cartes **Promos du jour → Réductions observées** affichent désormais un lien facultatif **« Voir le magasin indiqué sur OpenStreetMap »** lorsque le relevé fournit **un identifiant cohérent de magasin** et **des coordonnées publiques valides**. Ce lien ouvre un repère sur OpenStreetMap sans demander de permission GPS et sans transmettre la position personnelle de l’utilisateur ; les coordonnées utilisées proviennent exclusivement de la fiche publique du magasin sur Open Prices. Quand l'identifiant est absent, contradictoire, ou que les coordonnées sont absentes, invalides ou correspondent à (0, 0), le lien n'est pas affiché. Le repère est **indicatif** : la position et l’activité du magasin doivent être reconfirmées avant déplacement, tout comme les prix et promotions.
+
+Les contrôles d’intégration Chrome Android existants vérifient le repère, l’ouverture externe sûre, la non-divulgation de coordonnées personnelles et les cas de données de localisation erronées ; aucun nouveau test unitaire n'est créé.
+
 ### Filtre de fraîcheur des réductions Open Prices (15 octobre 2026)
 
 Dans **Promos du jour → Réductions observées**, les utilisateurs peuvent sélectionner des relevés **datés d’aujourd’hui**, des **3 derniers jours calendaires** ou des **7 derniers jours calendaires** (valeur par défaut), et les classer du **plus récent au plus ancien**. La date Open Prices est un **jour civil** sans heure de ticket : le filtre s’appuie sur le calendrier Europe/Paris, y compris près de minuit, et ne prétend pas connaître les dernières 24 heures exactes. Le tri par pourcentage, économie en euros, prix ou proximité reste disponible.

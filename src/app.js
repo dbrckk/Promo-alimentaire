@@ -816,8 +816,14 @@ function renderCommunityObservations(){
       <p class="help">Relevé du ${formatDate(item.date)} · code EAN
         ${escapeHtml(item.code)} · remise observée dans ce magasin uniquement.
         Ne garantit ni promotion toujours active, ni stock, ni cumul en caisse.</p>
-      <a class="open" href="${escapeHtml(item.sourceUrl)}"
-        target="_blank" rel="noopener noreferrer">Voir le relevé et sa preuve</a>
+      <div class="daily-links">
+        <a class="open" href="${escapeHtml(item.sourceUrl)}"
+          target="_blank" rel="noopener noreferrer">Voir le relevé et sa preuve</a>
+        ${item.storeMapUrl
+          ?`<a class="open" href="${escapeHtml(item.storeMapUrl)}"
+            target="_blank" rel="noopener noreferrer">Voir le magasin indiqué sur OpenStreetMap</a>`
+          :""}
+      </div>
     </article>`).join("")
     :'<p class="panel help">Aucun relevé de réduction correspondant à ces critères parmi les observations récupérées. Cela ne prouve pas qu’aucune offre ne soit disponible en magasin.</p>';
 }

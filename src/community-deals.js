@@ -67,6 +67,16 @@ export function normalizeObservedDiscount(raw,{
     addressPart(sourceLocation.osm_address_housenumber,16),
     addressPart(sourceLocation.osm_address_street,120)
   ].filter(Boolean).join(" ").slice(0,140);
+  // A coordinate alone does not establish which physical shop was visited.
+  // Only expose a public shop marker when the outlet identity is consistent.
+  // Never include the phone's GPS position or the municipality search centre.
+  const locationId=verifiedOutletId(raw);
+  const lat=observation.locationLat,lon=observation.locationLon;
+  const storeMapUrl=locationId!==null
+    && Number.isFinite(lat) && Number.isFinite(lon)
+    && !(lat===0 && lon===0)
+    ?`https://www.openstreetmap.org/?mlat=${lat.toFixed(5)}&mlon=${lon.toFixed(5)}#map=17/${lat.toFixed(5)}/${lon.toFixed(5)}`
+    :null;
   if(!sourceUrl || !Number.isSafeInteger(proofId) || proofId<1
     || !title || title.length>180 || !isFreshObservation(observation,maxAgeDays,now)
     || !isUnambiguousRetailer(observation.retailerText,store)
@@ -85,7 +95,7 @@ export function normalizeObservedDiscount(raw,{
   return {
     id:observation.id,code,title:title.slice(0,180),
     store,storeName:String(observation.storeName).slice(0,100),
-    locationId:verifiedOutletId(raw),storeStreet,
+    locationId,storeStreet,storeMapUrl,
     postcode:observation.postcode,city:String(observation.city).slice(0,80),
     date:observation.date,sourceUrl,
     distanceKm:nearby?observation.distanceKm:null,

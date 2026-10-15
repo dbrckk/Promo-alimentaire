@@ -1313,6 +1313,16 @@ try{
     "Source-provided street is displayed to identify the specific outlet");
   assert.match(await page.locator("#observedDeals").innerText(),/Lieu Open Prices n°/,
     "A verified outlet identifier distinguishes stores when the street is unavailable");
+  const outletMaps=page.locator('#observedDeals a[href^="https://www.openstreetmap.org/"]');
+  assert.equal(await outletMaps.count(),2,
+    "Only the two independently identified Carrefour outlets have map markers");
+  assert.equal(await outletMaps.first().getAttribute("href"),
+    "https://www.openstreetmap.org/?mlat=46.78000&mlon=4.85000#map=17/46.78000/4.85000");
+  assert.equal(await outletMaps.first().getAttribute("target"),"_blank");
+  assert.match(await outletMaps.first().getAttribute("rel"),/noopener noreferrer/,
+    "An external map must not receive the app's referrer or tab access");
+  assert.match(await page.locator("#observedDeals").innerText(),
+    /Voir le magasin indiqué sur OpenStreetMap/);
   assert.equal(await page.locator("#observedAgeDays").inputValue(),"7");
   await page.locator("#observedAgeDays").selectOption("1");
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),0,
@@ -1372,6 +1382,10 @@ try{
   assert.match(await page.locator("#observedDeals").innerText(),/km/);
   assert.deepEqual(observedGeoRequests.at(-1),
     {lat:"46.783",lon:"4.854",radius:"10"});
+  assert.equal(await page.locator(
+    '#observedDeals a[href^="https://www.openstreetmap.org/"]').first().getAttribute("href"),
+    "https://www.openstreetmap.org/?mlat=46.78000&mlon=4.85000#map=17/46.78000/4.85000",
+    "The external marker contains shop coordinates, never the enabled phone's GPS coordinates");
   assert.equal(await page.locator("#observedNearby").getAttribute("aria-pressed"),"true");
   await page.locator("#observedSort").selectOption("distance");
   assert.match(await page.locator("#observedDeals").innerText(),/km/);
@@ -1455,8 +1469,25 @@ try{
         osm_address_postcode:"71100"}
     };
     const valid=normalizeObservedDiscount(base,{store:"carrefour"});
+    const mapped=normalizeObservedDiscount({...base,location_id:42,
+      location:{...base.location,id:42,osm_lat:46.7832,osm_lon:4.8539}
+    },{store:"carrefour"});
+    const conflicting=normalizeObservedDiscount({...base,location_id:42,
+      location:{...base.location,id:99,osm_lat:46.7832,osm_lon:4.8539}
+    },{store:"carrefour"});
+    const invalidPosition=normalizeObservedDiscount({...base,location_id:42,
+      location:{...base.location,id:42,osm_lat:200,osm_lon:4.8539}
+    },{store:"carrefour"});
+    const nullIsland=normalizeObservedDiscount({...base,location_id:42,
+      location:{...base.location,id:42,osm_lat:0,osm_lon:0}
+    },{store:"carrefour"});
     return {
       valid:Boolean(valid),source:valid?.sourceUrl,
+      mapWithoutOutlet:valid?.storeMapUrl??null,
+      map:mapped?.storeMapUrl,
+      unsafeMapRejected:conflicting?.storeMapUrl===null
+        && invalidPosition?.storeMapUrl===null
+        && nullIsland?.storeMapUrl===null,
       discountWithoutReference:normalizeObservedDiscount({
         ...base,price_without_discount:null},{store:"carrefour"})===null,
       loyaltyRejected:normalizeObservedDiscount({
@@ -1470,6 +1501,9 @@ try{
   });
   assert.deepEqual(observationGate,{
     valid:true,source:"https://prices.openfoodfacts.org/prices/9001",
+    mapWithoutOutlet:null,
+    map:"https://www.openstreetmap.org/?mlat=46.78320&mlon=4.85390#map=17/46.78320/4.85390",
+    unsafeMapRejected:true,
     discountWithoutReference:true,loyaltyRejected:true,
     noProofRejected:true,wrongMerchantRejected:true
   });
