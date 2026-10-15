@@ -125,7 +125,7 @@ export function selectObservedDiscounts(records,{
 function observedOutletKey(raw,item){
   const ids=[raw?.location_id,raw?.location?.id]
     .filter((value)=>value!==null && value!==undefined);
-  const valid=(value)=>/^[1-9]\\d{0,15}$/.test(String(value))
+  const valid=(value)=>/^[1-9]\d{0,15}$/.test(String(value))
     && Number.isSafeInteger(Number(value));
   if(ids.length && ids.every(valid)
     && ids.every((id)=>Number(id)===Number(ids[0]))){
