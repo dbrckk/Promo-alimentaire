@@ -10,6 +10,7 @@ on:
       - "sw.js"
       - "manifest.webmanifest"
       - "scripts/mobile-smoke.mjs"
+      - "scripts/check-community-source.mjs"
       - ".github/workflows/mobile-smoke.yml"
 
 permissions:
