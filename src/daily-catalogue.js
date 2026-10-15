@@ -350,6 +350,44 @@ export function selectFoodRefundOpportunities({
   return {total:scoped.length,items:scoped.slice(0,count),sort:ranking};
 }
 
+// This shortlist contains only identifiers. It never stores unverified
+// merchant claims, checkout prices or geographical coordinates. A saved ID
+// cannot revalidate a refund after its review window has elapsed.
+const SAVED_REFUND_ID=/^(?:coupon-network|shopmium)-[a-z0-9][a-z0-9._:-]{0,170}$/i;
+export function normalizeSavedFoodRefundIds(raw){
+  let values=raw;
+  if(typeof raw==="string"){
+    if(raw.length>12000) return [];
+    try{values=JSON.parse(raw);}catch{return [];}
+  }
+  if(!Array.isArray(values)) return [];
+  const seen=new Set();
+  const result=[];
+  for(const value of values){
+    if(typeof value!=="string" || !SAVED_REFUND_ID.test(value)
+      || seen.has(value)) continue;
+    seen.add(value);
+    result.push(value);
+    if(result.length===40) break;
+  }
+  return result;
+}
+
+/** Resolve favourites against current source evidence and current store/channel.
+ * Unknown/expired source IDs stay visible only as a count, never as deals.
+ */
+export function selectSavedFoodRefunds({
+  savedIds=[],offers=[],store="carrefour",channel="store",now=new Date()
+}={}){
+  const ids=normalizeSavedFoodRefundIds(savedIds);
+  const live=selectFoodRefundOpportunities({
+    offers,store,channel,now,limit:240
+  }).items;
+  const matching=new Map(live.map((offer)=>[offer.id,offer]));
+  const available=ids.map((id)=>matching.get(id)).filter(Boolean);
+  return {total:ids.length,available,unavailableCount:ids.length-available.length};
+}
+
 export function selectDailyCatalogue({
   offers=[],campaigns=[],store="carrefour",channel="store",now=new Date(),
   limit=8,sort="percent",maxSpend=null
