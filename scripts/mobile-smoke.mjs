@@ -1406,6 +1406,46 @@ try{
     return {noInvalidPlaces:bad.length===0,rejected};
   });
   assert.deepEqual(postalDataSafety,{noInvalidPlaces:true,rejected:true});
+  // Real-browser integration: same merchant name and postcode do NOT prove
+  // two receipts belong to the same outlet. Only trusted location IDs do.
+  const outletAttribution=await page.evaluate(async()=>{
+    const {fetchObservedDiscounts}=await import("./src/community-deals.js");
+    const day=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    const location={osm_name:"Carrefour Centre",osm_brand:"Carrefour",
+      osm_address_postcode:"71100",osm_address_city:"Chalon-sur-Saône",
+      osm_address_street:"Rue des Halles",osm_address_housenumber:"2"};
+    const base={id:9501,type:"PRODUCT",product_code:"3038359913242",
+      price:1,price_without_discount:2,price_is_discounted:true,
+      discount_type:"SALE",currency:"EUR",price_per:"UNIT",
+      date:day,proof_id:555,product:{code:"3038359913242",source:"off",
+        product_name:"Pâtes test",categories_tags:["en:pastas"]},location};
+    const items=[
+      {...base,location_id:101,id:9501,price:1},
+      {...base,location_id:102,id:9502,price:1.2},
+      {...base,location_id:101,id:9503,price:1.3},
+      {...base,location_id:null,id:9504,price:1.4},
+      {...base,location_id:null,id:9505,price:1.5}
+    ];
+    const fetchImpl=async()=>({ok:true,json:async()=>({
+      items,total:items.length,pages:1
+    })});
+    const result=await fetchObservedDiscounts({
+      store:"carrefour",fetchImpl,maxPages:1
+    });
+    const outlets=result.records.filter(x=>x.locationId!==null)
+      .map(x=>({locationId:x.locationId,price:x.price}))
+      .sort((a,b)=>a.locationId-b.locationId);
+    return {
+      count:result.records.length,outlets,
+      unlocated:result.records.filter(x=>x.locationId===null).length,
+      street:result.records[0]?.storeStreet
+    };
+  });
+  assert.deepEqual(outletAttribution,{
+    count:4,outlets:[
+      {locationId:101,price:1.3},{locationId:102,price:1.2}
+    ],unlocated:2,street:"2 Rue des Halles"
+  },"Distinct stores with identical labels and postcodes must not overwrite each other");
   const observationGate=await page.evaluate(async()=>{
     const {normalizeObservedDiscount}=await import("./src/community-deals.js");
     const base={
