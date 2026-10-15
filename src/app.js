@@ -1,6 +1,7 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import {selectDailyCatalogue,dailyCampaignRefreshNotice} from "./daily-catalogue.js";
+import {createCommunityFeed} from "./community-ui.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, selectBestRecentPrice } from "./open-data.js";
@@ -197,6 +198,13 @@ const state = {
   skuCompareToken:0
 };
 
+const communityFeed=createCommunityFeed({
+  getStore:()=>state.store,getChannel:()=>state.channel,
+  getSort:()=>state.dailySort,
+  getBudget:()=>state.dailyMaxSpend==="all"?null:Number(state.dailyMaxSpend),
+  getRadius:()=>state.radiusKm
+});
+
 // Shared by both retailer lookups. Any change of product/filters aborts
 // obsolete network traffic instead of merely discarding its eventual reply.
 let skuComparisonController=null;
@@ -236,9 +244,11 @@ els.datasetDate.textContent=`Catalogue de référence : ${formatDate(DATASET_DAT
 els.store.addEventListener("change",async()=>{
   invalidateExactSkuComparison();
   state.store=els.store.value;
+  communityFeed.invalidate({clearCoords:true});
   localStorage.setItem("promo-store",state.store);
   els.manualPriceStore.value=state.store;
   render();
+  if(state.tab==="daily") communityFeed.load();
   renderOptimizer();
   if(state.product) renderProductOffers(state.product,state.priceObservations);
   if(state.productCode) await refreshPrices(state.productCode);
@@ -247,8 +257,10 @@ els.channel.addEventListener("change",()=>{
   invalidateExactSkuComparison();
   cancelBasketPriceRefresh();
   state.channel=els.channel.value;
+  communityFeed.invalidate({clearCoords:true});
   localStorage.setItem("promo-channel",state.channel);
   render();
+  if(state.tab==="daily") communityFeed.load();
   renderSourceHealth();
   renderOptimizer();
   renderShoppingList();
@@ -422,7 +434,10 @@ function setTab(tab){
   els.tabs.forEach((button)=>button.classList.toggle("active",button.dataset.tab===tab));
   for(const [name,view] of Object.entries(views)) view.classList.toggle("hidden",name!==tab);
   if(tab==="list") renderShoppingList();
-  if(tab==="daily") renderDailyCatalogue();
+  if(tab==="daily"){
+    renderDailyCatalogue();
+    communityFeed.load();
+  }
 }
 
 function render(){
@@ -716,6 +731,7 @@ function renderDailyCatalogue(){
       </article>`;
     }).join("")
     :fallback("Aucune campagne datée et contrôlée depuis 7 jours pour ce canal. Les annonces trop anciennes sont masquées : consulte le catalogue officiel pour les promotions du jour.");
+  communityFeed.render();
 }
 
 async function hydrateDailyCampaigns(){
