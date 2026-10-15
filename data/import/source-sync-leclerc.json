@@ -2,7 +2,7 @@
   "sources": {
     "leclerc": {
       "status": "updated",
-      "checkedAt": "2026-10-14T11:59:55.585Z",
+      "checkedAt": "2026-10-15T11:36:29.591Z",
       "reason": "Toutes les promotions encore dans leur période ont été reconfirmées (HTML=0, rendu public=10).",
       "extractedCount": 10,
       "previousSnapshotCount": 13,
