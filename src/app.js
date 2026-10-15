@@ -85,6 +85,7 @@ const els = {
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
+  dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
   observedPostcode:document.querySelector("#observedPostcode"),
   observedRefresh:document.querySelector("#observedRefresh"),
   observedStatus:document.querySelector("#observedStatus"),
