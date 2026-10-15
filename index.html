@@ -252,6 +252,35 @@
         <p class="help">Opportunités classées séparément : activation, référence exacte, ticket et conditions de cumul à vérifier.</p>
         <div id="dailyExtras" class="grid" aria-live="polite"></div>
       </section>
+      <section class="daily-group" aria-label="Catalogue des remboursements alimentaires">
+        <h3>Catalogue des remboursements alimentaires à vérifier</h3>
+        <p class="help">Parcours des offres publiquement relevées chez Shopmium et Coupon Network, au-delà des 12 premières recommandations. Fiches datées et classées alimentaires, avec montant annoncé et lien officiel. <strong>Il faut vérifier l'activation, le bon produit, les quantités, le ticket, le magasin et les règles de cumul avant achat.</strong> Le prix à avancer est souvent inconnu : ce catalogue reste accessible même avec un plafond budgétaire, mais aucune offre n'est déclarée abordable sans prix en caisse.</p>
+        <div class="daily-filters">
+          <div class="field">
+            <label for="foodRefundSearch">Produit ou marque à rembourser</label>
+            <input id="foodRefundSearch" type="search" maxlength="90"
+              autocomplete="off" placeholder="Ex. pâtes, lait, café" />
+          </div>
+          <div class="field">
+            <label for="foodRefundProvider">Service de remboursement</label>
+            <select id="foodRefundProvider">
+              <option value="all">Shopmium et Coupon Network</option>
+              <option value="coupon-network">Coupon Network</option>
+              <option value="shopmium">Shopmium</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="foodRefundSort">Ordre des offres</label>
+            <select id="foodRefundSort">
+              <option value="amount">Euros annoncés d'abord, puis taux</option>
+              <option value="recent">Sources les plus récemment relevées</option>
+            </select>
+          </div>
+        </div>
+        <p id="foodRefundStatus" class="help" role="status" aria-live="polite"></p>
+        <div id="foodRefundDeals" class="grid" aria-live="polite"></div>
+        <button id="foodRefundMore" type="button" class="secondary hidden">Afficher 24 autres offres</button>
+      </section>
       <section class="daily-group">
         <h3>Prospectus alimentaires et sélections du jour à consulter</h3>
         <p class="help">Lecture quotidienne des catalogues alimentaires publics et sélections petit budget. Liens, périodes et plafonds annoncés : ce ne sont pas des prix locaux ni des économies panier garanties.</p>

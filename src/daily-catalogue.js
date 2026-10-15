@@ -261,6 +261,95 @@ function affordable(item,maxSpend){
     && item.upfrontCost<=maxSpend);
 }
 
+// Explore the FULL dated, conditional food-refund inventory rather than only
+// the first twelve budget-ranked daily recommendations. Source evidence is
+// not a confirmed checkout price, local availability or a paid refund.
+const FOOD_REFUND_CATEGORIES=new Set([
+  "alimentaire","épicerie","traiteur","bio","fruits et légumes"
+]);
+const REFUND_SOURCE_HOSTS={
+  "coupon-network":new Set([
+    "www.couponnetwork.fr","prod-cn-offers.couponnetwork.fr"
+  ]),
+  shopmium:new Set(["offers.shopmium.com"])
+};
+function knownRefundSource(offer){
+  const hosts=REFUND_SOURCE_HOSTS[offer?.providerId];
+  if(!hosts) return false;
+  try{
+    const url=new URL(offer.sourceUrl);
+    return url.protocol==="https:" && !url.username && !url.password
+      && hosts.has(url.hostname);
+  }catch{return false;}
+}
+function foldRefundQuery(value){
+  return String(value??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLocaleLowerCase("fr");
+}
+/**
+ * Only dated, currently reviewable manufacturer refunds with explicit food
+ * classification and official source links. The cash budget cannot filter
+ * an unknown shelf price; do not claim any candidate is affordable.
+ */
+export function selectFoodRefundOpportunities({
+  offers=[],store="carrefour",channel="store",now=new Date(),
+  provider="all",search="",sort="amount",limit=24
+}={}){
+  const count=Number.isInteger(limit)?Math.max(1,Math.min(limit,240)):24;
+  const selectedProvider=Object.hasOwn(REFUND_SOURCE_HOSTS,provider)
+    ?provider:"all";
+  const needle=foldRefundQuery(search).trim().slice(0,90);
+  const active=filterActiveOffers(Array.isArray(offers)?offers:[],new Date(now))
+    .filter((offer)=>offer.scope==="produit"
+      && offer.mechanism==="manufacturer_refund"
+      && FOOD_REFUND_CATEGORIES.has(offer.category)
+      && !offer.sourceSyncWarning
+      && typeof offer.verifiedAt==="string"
+      && Boolean(offer.reviewAfter || offer.expiresAt)
+      && knownRefundSource(offer)
+      && isOfferWithinShoppingScope(offer));
+  const scoped=filterOffers(active,{store,channel,search:""})
+    .filter((offer)=>selectedProvider==="all"
+      || offer.providerId===selectedProvider)
+    .filter((offer)=>!needle || foldRefundQuery([
+      offer.title,offer.provider,offer.conditions,
+      ...(Array.isArray(offer.referenceNames)?offer.referenceNames:[])
+    ].join(" ")).includes(needle))
+    .map((offer)=>({
+      ...normalizePick(offer),
+      reviewAfter:offer.reviewAfter||null,
+      merchantExpiry:offer.expiresAt||null,
+      requiresUnlock:offer.requiresUnlock===true,
+      unlockConditions:typeof offer.unlockConditions==="string"
+        ?offer.unlockConditions.slice(0,240):"",
+      conditions:typeof offer.conditions==="string"
+        ?offer.conditions.slice(0,340):"",
+      // Never infer a product shelf price or advance-cash budget.
+      upfrontKnown:Number.isFinite(offer.basePrice)&&offer.basePrice>0
+    }))
+    .filter((item)=>(Number.isFinite(item.savingAmount)
+      && item.savingAmount>0) || (Number.isFinite(item.savingPercent)
+      && item.savingPercent>0));
+  const compareAmounts=(a,b)=>{
+    const fixedA=Number.isFinite(a.savingAmount);
+    const fixedB=Number.isFinite(b.savingAmount);
+    // A fixed number of euros and a percentage are incomparable without a
+    // price: keep euro-denominated offers together, then percentage offers.
+    if(fixedA!==fixedB) return fixedA?-1:1;
+    if(fixedA && a.savingAmount!==b.savingAmount)
+      return b.savingAmount-a.savingAmount;
+    return (b.savingPercent??-1)-(a.savingPercent??-1);
+  };
+  const ranking=sort==="recent"?"recent":"amount";
+  scoped.sort((a,b)=>ranking==="recent"
+    ?b.verifiedAt.localeCompare(a.verifiedAt)
+      || compareAmounts(a,b) || a.title.localeCompare(b.title,"fr")
+    :compareAmounts(a,b)
+      || b.verifiedAt.localeCompare(a.verifiedAt)
+      || a.title.localeCompare(b.title,"fr"));
+  return {total:scoped.length,items:scoped.slice(0,count),sort:ranking};
+}
+
 export function selectDailyCatalogue({
   offers=[],campaigns=[],store="carrefour",channel="store",now=new Date(),
   limit=8,sort="percent",maxSpend=null
