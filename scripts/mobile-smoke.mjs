@@ -1354,7 +1354,7 @@ try{
         unlockConditions:"Deux autres offres à effectuer."
       }),
       make("expired","coupon-network","Bonduelle - Carottes périmées",
-        {reviewAfter:"2026-10-14"}),
+        {verifiedAt:"2026-10-01",reviewAfter:"2026-10-07"}),
       make("wrong-channel","shopmium","Yaourt en ligne",{
         channels:["online"],savingAmount:undefined,savingPercent:35
       }),
