@@ -1,3 +1,9 @@
+### Davantage de relevés alimentaires publics, sans inventer d'offres (15 octobre 2026)
+
+La découverte des prix remisés Open Prices explore désormais **jusqu’à 6 pages de 100 relevés** au lieu de 3, dans la même fenêtre de sept jours. Les relevés sont toujours vérifiés individuellement : enseigne, produit Open Food Facts, catégorie alimentaire, prix avant/après, preuve, date et lieu. Les catégories explicitement non alimentaires (hygiène, shampoing, électronique, jouets, vêtements, etc.) sont rejetées, même si elles possèdent un code-barres. Une limite de 600 relevés mondiaux peut rester insuffisante : les résultats incomplets sont signalés et **aucun résultat ne garantit une remise actuellement disponible**. L'augmentation de la pagination peut rallonger le chargement en connexion mobile ; le bouton d'actualisation reste manuel et les requêtes sont annulables.
+
+Le parcours d'intégration Android existant vérifie les relevés présents sur une page tardive, la borne maximale, le maintien du filtre alimentaire et le signalement de couverture incomplète. Aucun fichier de test unitaire ajouté.
+
 ### Favoris de remboursements alimentaires, à contrôler avant achat (15 octobre 2026)
 
 Le catalogue des remboursements de l'onglet **Promos du jour** dispose d'un bouton **« Ajouter à ma liste »** pour chaque fiche alimentaire publiée chez Shopmium ou Coupon Network. Une section **« Ma liste de remboursements à vérifier »** conserve volontairement jusqu'à 40 identifiants d'offres dans le stockage local du navigateur Android. Aucun prix, remise, historique de localisation, code-barres ou détail de compte n'est envoyé ni conservé dans ce stockage.
