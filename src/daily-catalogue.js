@@ -216,6 +216,44 @@ function orderOffers(a,b,sort="percent"){
   return String(a.title).localeCompare(String(b.title),"fr");
 }
 
+// A promotional headline is not an actionable price comparison. Keep the
+// first three recommendations for actual priced, dated product records:
+// the minimum eligible purchase quantity, money advanced, and computed euro
+// benefit must all be known. Unknown prices remain discoverable in the
+// dedicated retailer and coupon lists, never as a "best buy".
+export function pickActionableDailyDeals(picks,{sort="percent",limit=3}={}){
+  const safeLimit=Number.isInteger(limit)?Math.max(1,Math.min(10,limit)):3;
+  const ranking=["percent","euros","budget","net"].includes(sort)?sort:"percent";
+  const priced=(Array.isArray(picks)?picks:[])
+    .filter((item)=>item && typeof item.id==="string"
+      && Number.isFinite(item.upfrontCost) && item.upfrontCost>0
+      && Number.isFinite(item.savingAmount) && item.savingAmount>0
+      && item.savingAmount<=item.upfrontCost
+      && Number.isFinite(item.savingPercent) && item.savingPercent>0
+      && Number.isInteger(item.minQuantity) && item.minQuantity>0
+      && item.needsReconfirmation!==true)
+    .sort((a,b)=>orderOffers(a,b,ranking)
+      || Number(b.hasExactEan)-Number(a.hasExactEan));
+  // Prefer different food groups if there are equally useful opportunities:
+  // first take the strongest, then the best of each not-yet-selected category,
+  // finally complete the shortlist. Never sum non-stackable benefits.
+  const selected=[];
+  const ids=new Set();
+  const categories=new Set();
+  const add=(item)=>{
+    if(ids.has(item.id) || selected.length>=safeLimit) return;
+    selected.push(item);
+    ids.add(item.id);
+    categories.add(item.category || "alimentaire");
+  };
+  if(priced.length) add(priced[0]);
+  for(const item of priced){
+    if(!categories.has(item.category || "alimentaire")) add(item);
+  }
+  for(const item of priced) add(item);
+  return selected.sort((a,b)=>orderOffers(a,b,ranking));
+}
+
 // No item can be declared affordable without a reference price for the
 // exact minimum quantity; coupons requiring upfront payment count in full.
 function affordable(item,maxSpend){
@@ -280,11 +318,7 @@ export function selectDailyCatalogue({
     .sort((a,b)=>orderOffers(a,b,ranking)).slice(0,safeLimit);
   // Highlights are genuine dated product candidates only, deduplicated,
   // not speculative campaign maxima or inferred basket stacking savings.
-  const highlights=[...picks]
-    .filter((item)=>(Number.isFinite(item.savingPercent)
-        && item.savingPercent>0)
-      || (Number.isFinite(item.savingAmount) && item.savingAmount>0))
-    .sort((a,b)=>orderOffers(a,b,ranking)).slice(0,3);
+  const highlights=pickActionableDailyDeals(picks,{sort:ranking,limit:3});
   const seen=new Set();
   // A small budget should first show low-priced food *leads*, not bury
   // them behind large headline percentages for unspecified product sets.
