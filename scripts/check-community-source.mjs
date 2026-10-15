@@ -75,6 +75,16 @@ for(const [label,criteria] of [
       /carrefour|leclerc/i.test([
         item.location?.osm_brand,item.location?.osm_name,item.location?.osm_display_name
       ].join(" ")));
+    if(label==="global-7d") console.log("[diagnostic] "+JSON.stringify(
+      matching.slice(0,12).map(x=>({
+        retailer:x.location?.osm_name,brand:x.location?.osm_brand,
+        id:x.id,discount:x.discount_type,
+        price:x.price,regular:x.price_without_discount,
+        pricePer:x.price_per,proof:x.proof?.type,proofId:x.proof_id,
+        source:x.product?.source,code:x.product_code,
+        date:x.date,food:x.product?.categories_tags?.slice(0,2)
+      }))
+    ));
     console.log("[distribution] "+label+" HTTP "+response.status+
       " total="+String(data.total)+" retailerMatch="+matching.length+
       " firstStores="+items.slice(0,10)
