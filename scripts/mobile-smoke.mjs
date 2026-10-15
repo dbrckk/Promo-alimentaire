@@ -1369,6 +1369,8 @@ try{
   await page.locator("#observedByPostcode").click();
   await page.locator("#observedPostalCommuneField").waitFor({state:"visible",timeout:8000});
   assert.deepEqual(observedPostalLookups,["71100"]);
+  assert.equal(await page.locator("#observedNearby").getAttribute("aria-pressed"),"false",
+    "Looking up a postcode never enables device GPS or silently changes the search origin");
   assert.equal(await page.locator("#observedPostalCommune option").count(),3,
     "An ambiguous postcode requires an explicit commune selection");
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),1,
