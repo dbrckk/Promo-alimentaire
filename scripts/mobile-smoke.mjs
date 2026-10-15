@@ -1437,6 +1437,47 @@ try{
     discountWithoutReference:true,loyaltyRejected:true,
     noProofRejected:true,wrongMerchantRejected:true
   });
+  // Same EAN, same chain label and postcode do not establish the same
+  // outlet. Keep different known shop IDs, preserve unknown identities,
+  // and retain the conservative higher same-day checkout price per shop.
+  const outletIdentity=await page.evaluate(async()=>{
+    const {fetchObservedDiscounts}=await import("./src/community-deals.js");
+    const make=(id,outlet,price)=>{
+      const location={
+        osm_brand:"Carrefour",osm_name:"Carrefour République",
+        osm_address_postcode:"71100",osm_address_city:"Chalon-sur-Saône"
+      };
+      if(outlet!==null) location.id=outlet;
+      return {
+        id,location,...(outlet===null?{}:{location_id:outlet}),
+        type:"PRODUCT",product_code:"3038359913242",
+        price,price_without_discount:1.99,price_is_discounted:true,
+        discount_type:"SALE",currency:"EUR",price_per:"UNIT",
+        date:"2026-10-14",proof_id:id+100,
+        product:{code:"3038359913242",source:"off",
+          product_name:"Pâtes",categories_tags:["en:pastas"]}
+      };
+    };
+    const rows=[
+      make(9001,101,0.95),make(9002,102,0.80),
+      make(9003,101,0.90),make(9004,101,1.10),
+      make(9005,null,0.75),make(9006,null,0.70),
+      {...make(9007,101,0.60),location_id:202}
+    ];
+    const result=await fetchObservedDiscounts({
+      store:"carrefour",now:new Date("2026-10-15T12:00:00Z"),
+      fetchImpl:async()=>({ok:true,json:async()=>({
+        items:rows,pages:1,total:rows.length
+      })})
+    });
+    return {
+      ids:result.records.map((row)=>row.id).sort((a,b)=>a-b),
+      conservativePrice:result.records.find((row)=>row.id===9004)?.price
+    };
+  });
+  assert.deepEqual(outletIdentity,{
+    ids:[9002,9004,9005,9006,9007],conservativePrice:1.1
+  },"Distinct physical stores must not lose their individual price observations");
   assert.match(await page.locator("#dailyStatus").innerText(),
     /Sélection au .*Carrefour.*magasin/);
   assert.match(await page.locator("#dailyRetailer").innerText(),

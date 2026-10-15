@@ -116,6 +116,24 @@ export function selectObservedDiscounts(records,{
     .slice(0,safeLimit);
 }
 
+/**
+ * A chain label plus postcode does not identify one outlet: several shops
+ * can share both. Only the Open Prices location ID identifies receipts from
+ * the same physical place. Where it is absent or contradictory, preserve
+ * separate receipt IDs instead of discarding another shop's observed price.
+ */
+function observedOutletKey(raw,item){
+  const ids=[raw?.location_id,raw?.location?.id]
+    .filter((value)=>value!==null && value!==undefined);
+  const valid=(value)=>/^[1-9]\d{0,15}$/.test(String(value))
+    && Number.isSafeInteger(Number(value));
+  if(ids.length && ids.every(valid)
+    && ids.every((id)=>Number(id)===Number(ids[0]))){
+    return "outlet:"+Number(ids[0]);
+  }
+  return "receipt:"+String(item.id);
+}
+
 export async function fetchObservedDiscounts({
   store="carrefour",now=new Date(),maxAgeDays=7,
   fetchImpl=fetch,signal=null,maxPages=3,
@@ -164,7 +182,7 @@ export async function fetchObservedDiscounts({
       const item=normalizeObservedDiscount(raw,{store,now,maxAgeDays,
         coords:nearby,radiusKm});
       if(!item) continue;
-      const key=item.code+"|"+item.storeName+"|"+item.postcode;
+      const key=item.code+"|"+observedOutletKey(raw,item);
       const prior=dedup.get(key);
       // Same SKU in the same outlet: newer observation first; on the
       // same day, prefer the higher checkout price conservatively.

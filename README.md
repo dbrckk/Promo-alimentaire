@@ -1,3 +1,9 @@
+### Identité réelle du magasin pour les réductions Open Prices (15 octobre 2026)
+
+Les relevés récents sont désormais dédupliqués par **identifiant de magasin Open Prices**, lorsqu'il est cohérent entre les champs de la source. Deux magasins peuvent partager le même nom de chaîne, la même enseigne et le même code postal : l'ancien rapprochement par nom et code postal pouvait supprimer silencieusement l'un de leurs relevés pour un même EAN. Sans identifiant fiable, chaque justificatif reste distinct plutôt que d'affirmer à tort qu'il provient du même point de vente. Plusieurs relevés d'un même produit dans un **même magasin identifié** conservent le jour le plus récent, puis le prix constaté le plus élevé lorsque les dates coïncident. Les observations ne constituent toujours ni une promotion garantie aujourd'hui, ni un gain cumulable dans le panier.
+
+Le parcours d'intégration Chrome Android couvre les magasins de même nom/code postal, les doublons du même lieu, les identifiants absents et contradictoires. Aucun nouveau test unitaire n'est ajouté.
+
 ### Recherche de promotions autour d’un code postal sans GPS (15 octobre 2026)
 
 Dans **Promos du jour → Réductions observées**, saisir un code postal puis appuyer sur **Chercher autour du code postal** pour interroger le [référentiel officiel des communes françaises](https://geo.api.gouv.fr/decoupage-administratif/communes). Cette fonctionnalité n’active **jamais** la géolocalisation du téléphone. Si le code postal correspond à plusieurs communes, l’utilisateur doit en choisir une : l’application ne devine pas sa commune.
