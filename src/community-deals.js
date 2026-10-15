@@ -43,7 +43,7 @@ export function normalizeObservedDiscount(raw,{store,now=new Date(),maxAgeDays=7
   if(!sourceUrl || !Number.isSafeInteger(proofId) || proofId<1
     || !title || title.length>180 || !isFreshObservation(observation,maxAgeDays,now)
     || !isUnambiguousRetailer(observation.retailerText,store)
-    || !/^\\d{5}$/.test(String(observation.postcode||""))
+    || !/^\d{5}$/.test(String(observation.postcode||""))
     || !Number.isFinite(observation.price) || observation.price<=0
     || !Number.isFinite(observation.priceWithoutDiscount)
     || observation.priceWithoutDiscount<=observation.price
@@ -74,7 +74,7 @@ export function selectObservedDiscounts(records,{
   postcode="",sort="percent",maxSpend=null,limit=15
 }={}){
   const zip=String(postcode).trim();
-  if(zip && !/^\\d{5}$/.test(zip)) throw new Error("Code postal : cinq chiffres requis.");
+  if(zip && !/^\d{5}$/.test(zip)) throw new Error("Code postal : cinq chiffres requis.");
   const ceiling=maxSpend===null ? null : Number(maxSpend);
   const safeLimit=Number.isInteger(limit)?Math.min(Math.max(limit,1),30):15;
   const comparator=(a,b)=>{
