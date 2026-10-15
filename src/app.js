@@ -656,15 +656,20 @@ function renderCommunityObservations(){
     ?parisCivilDay(new Date(communityState.checkedAt)):"date inconnue";
   const warning=communityState.incomplete
     ?" Échantillon limité ou partiellement accessible : recherche non exhaustive.":"";
+  const scope=communityState.coords
+    ?"dans un rayon de "+communityState.radiusKm+" km (position approximative)"
+    :zip?"code postal "+zip+" parmi les relevés nationaux":"échantillon national";
   els.observedStatus.textContent=picks.length+" relevé(s) correspondant aux filtres · consultation "+
-    checked+" · "+(zip?"code postal "+zip:"toute la France")+"."+
+    checked+" · "+scope+"."+
     warning+" Prix local et disponibilité actuelle à reconfirmer avant achat.";
   els.observedDeals.innerHTML=picks.length
     ?picks.map((item)=>`<article class="card daily-offer">
       <div class="card-head"><div>
         <h4>${escapeHtml(item.title)}</h4>
         <div class="source">${escapeHtml(item.storeName)} · ${escapeHtml(item.postcode)}
-          ${item.city?" · "+escapeHtml(item.city):""}</div>
+          ${item.city?" · "+escapeHtml(item.city):""}
+          ${Number.isFinite(item.distanceKm)
+            ?" · "+item.distanceKm.toLocaleString("fr-FR")+" km":""}</div>
       </div><span class="badge">${formatPercent(item.savingPercent)} observés</span></div>
       <p><strong>${money.format(item.price)} constatés</strong>
         au lieu de ${money.format(item.regularPrice)} ·
@@ -682,8 +687,14 @@ async function refreshCommunityObservations(force=false){
     renderCommunityObservations();return;
   }
   const today=parisCivilDay(new Date());
+  const nearby=communityState.coords;
+  const searchKey=nearby
+    ?state.store+"|nearby|"+nearby.latitude+"|"+nearby.longitude+
+      "|"+communityState.radiusKm
+    :state.store+"|national";
   if(!force && communityState.store===state.store &&
     communityState.checkedDay===today &&
+    communityState.checkedSearchKey===searchKey &&
     (communityState.status==="done" || communityState.status==="loading")){
     renderCommunityObservations();return;
   }
@@ -692,13 +703,15 @@ async function refreshCommunityObservations(force=false){
   const token=++communityState.token;
   communityState.controller=controller;
   communityState.store=state.store;
+  communityState.checkedSearchKey=searchKey;
   communityState.status="loading";
   communityState.records=[];
   renderCommunityObservations();
   const timeout=setTimeout(()=>controller.abort(),12000);
   try{
     const result=await fetchObservedDiscounts({
-      store:state.store,signal:controller.signal
+      store:state.store,signal:controller.signal,
+      coords:nearby,radiusKm:communityState.radiusKm
     });
     if(token!==communityState.token || controller.signal.aborted) return;
     communityState.records=result.records;
