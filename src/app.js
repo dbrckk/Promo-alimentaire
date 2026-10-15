@@ -1,6 +1,7 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import {selectDailyCatalogue,dailyCampaignRefreshNotice} from "./daily-catalogue.js";
+import {fetchObservedDiscounts,selectObservedDiscounts} from "./community-deals.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, selectBestRecentPrice } from "./open-data.js";
@@ -84,6 +85,10 @@ const els = {
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
+  observedPostcode:document.querySelector("#observedPostcode"),
+  observedRefresh:document.querySelector("#observedRefresh"),
+  observedStatus:document.querySelector("#observedStatus"),
+  observedDeals:document.querySelector("#observedDeals"),
   providers:document.querySelector("#providers"),
   sourceScope:document.querySelector("#sourceScope"),
   sourceSearch:document.querySelector("#sourceSearch"),
@@ -197,6 +202,11 @@ const state = {
   skuCompareToken:0
 };
 
+// Community observations are independent of the merchant promotion importer.
+// Never turn them into automatically stackable product or basket offers.
+const communityState={store:null,records:[],status:"idle",checkedAt:null,
+  incomplete:false,total:null,token:0,controller:null,checkedDay:null};
+
 // Shared by both retailer lookups. Any change of product/filters aborts
 // obsolete network traffic instead of merely discarding its eventual reply.
 let skuComparisonController=null;
@@ -234,6 +244,7 @@ els.manualPriceDate.addEventListener("focus",()=>{
 els.datasetDate.textContent=`Catalogue de référence : ${formatDate(DATASET_DATE)} · chargement des offres publiques…`;
 
 els.store.addEventListener("change",async()=>{
+  invalidateCommunityObservations();
   invalidateExactSkuComparison();
   state.store=els.store.value;
   localStorage.setItem("promo-store",state.store);
@@ -242,8 +253,10 @@ els.store.addEventListener("change",async()=>{
   renderOptimizer();
   if(state.product) renderProductOffers(state.product,state.priceObservations);
   if(state.productCode) await refreshPrices(state.productCode);
+  if(state.tab==="daily") void refreshCommunityObservations();
 });
 els.channel.addEventListener("change",()=>{
+  invalidateCommunityObservations();
   invalidateExactSkuComparison();
   cancelBasketPriceRefresh();
   state.channel=els.channel.value;
@@ -253,6 +266,7 @@ els.channel.addEventListener("change",()=>{
   renderOptimizer();
   renderShoppingList();
   if(state.product) renderProductOffers(state.product,state.priceObservations);
+  if(state.tab==="daily") void refreshCommunityObservations();
 });
 els.carrefourLoyalty.addEventListener("change",()=>updateLoyaltyProfile("carrefour",els.carrefourLoyalty.value));
 els.leclercLoyalty.addEventListener("change",()=>updateLoyaltyProfile("leclerc",els.leclercLoyalty.value));
@@ -265,11 +279,13 @@ els.dailySort.addEventListener("change",()=>{
   state.dailySort=els.dailySort.value;
   localStorage.setItem("promo-daily-sort",state.dailySort);
   renderDailyCatalogue();
+  renderCommunityObservations();
 });
 els.dailyMaxSpend.addEventListener("change",()=>{
   state.dailyMaxSpend=els.dailyMaxSpend.value;
   localStorage.setItem("promo-daily-budget",state.dailyMaxSpend);
   renderDailyCatalogue();
+  renderCommunityObservations();
 });
 els.search.addEventListener("input",()=>{
   state.search=els.search.value;
@@ -415,6 +431,8 @@ els.listRadiusSelect.addEventListener("change",async()=>{
 els.closeScan.addEventListener("click",()=>els.scanDialog.close());
 els.scanDialog.addEventListener("close",stopScanner);
 
+els.observedPostcode.addEventListener("input",()=>renderCommunityObservations());
+els.observedRefresh.addEventListener("click",()=>void refreshCommunityObservations(true));
 els.tabs.forEach((button)=>button.addEventListener("click",()=>setTab(button.dataset.tab)));
 
 function setTab(tab){
@@ -422,7 +440,11 @@ function setTab(tab){
   els.tabs.forEach((button)=>button.classList.toggle("active",button.dataset.tab===tab));
   for(const [name,view] of Object.entries(views)) view.classList.toggle("hidden",name!==tab);
   if(tab==="list") renderShoppingList();
-  if(tab==="daily") renderDailyCatalogue();
+  if(tab==="daily"){
+    renderDailyCatalogue();
+    renderCommunityObservations();
+    void refreshCommunityObservations();
+  }
 }
 
 function render(){
@@ -490,6 +512,121 @@ function render(){
   ].join("");
   renderListCount();
   renderDailyCatalogue();
+}
+
+function invalidateCommunityObservations(){
+  communityState.controller?.abort();
+  communityState.controller=null;
+  communityState.token++;
+  communityState.records=[];
+  communityState.status="idle";
+  communityState.store=null;
+  communityState.checkedAt=null;
+  communityState.checkedDay=null;
+  communityState.incomplete=false;
+  communityState.total=null;
+  renderCommunityObservations();
+}
+function renderCommunityObservations(){
+  if(!els.observedStatus) return;
+  if(state.channel!=="store"){
+    els.observedStatus.textContent="Les relevés Open Prices concernent les magasins physiques, pas les Drives ni la livraison.";
+    els.observedDeals.innerHTML="";
+    els.observedRefresh.disabled=true;
+    return;
+  }
+  els.observedRefresh.disabled=communityState.status==="loading";
+  const zip=els.observedPostcode.value.trim();
+  if(zip && !/^\d{5}$/.test(zip)){
+    els.observedStatus.textContent="Saisir exactement cinq chiffres, ou laisser le code postal vide pour une recherche nationale.";
+    els.observedDeals.innerHTML="";
+    return;
+  }
+  if(communityState.status==="loading"){
+    els.observedStatus.textContent="Recherche de relevés communautaires récents en cours…";
+    els.observedDeals.innerHTML="";
+    return;
+  }
+  if(communityState.status==="error"){
+    els.observedStatus.textContent="Open Prices est momentanément inaccessible. Aucun ancien relevé n'est présenté comme actuel. Réessayez.";
+    els.observedDeals.innerHTML="";
+    return;
+  }
+  if(communityState.status!=="done" || communityState.store!==state.store){
+    els.observedStatus.textContent="La consultation recherche les relevés publiés pour cette enseigne.";
+    els.observedDeals.innerHTML="";
+    return;
+  }
+  const budget=state.dailyMaxSpend==="all"?null:Number(state.dailyMaxSpend);
+  const picks=selectObservedDiscounts(communityState.records,{
+    postcode:zip,sort:state.dailySort,maxSpend:budget,limit:15
+  });
+  const checked=communityState.checkedAt
+    ?parisCivilDay(new Date(communityState.checkedAt)):"date inconnue";
+  const warning=communityState.incomplete
+    ?" Échantillon limité ou partiellement accessible : recherche non exhaustive.":"";
+  els.observedStatus.textContent=picks.length+" relevé(s) correspondant aux filtres · consultation "+
+    checked+" · "+(zip?"code postal "+zip:"toute la France")+"."+
+    warning+" Prix local et disponibilité actuelle à reconfirmer avant achat.";
+  els.observedDeals.innerHTML=picks.length
+    ?picks.map((item)=>`<article class="card daily-offer">
+      <div class="card-head"><div>
+        <h4>${escapeHtml(item.title)}</h4>
+        <div class="source">${escapeHtml(item.storeName)} · ${escapeHtml(item.postcode)}
+          ${item.city?" · "+escapeHtml(item.city):""}</div>
+      </div><span class="badge">${formatPercent(item.savingPercent)} observés</span></div>
+      <p><strong>${money.format(item.price)} constatés</strong>
+        au lieu de ${money.format(item.regularPrice)} ·
+        écart ${money.format(item.savingAmount)} sur une unité.</p>
+      <p class="help">Relevé du ${formatDate(item.date)} · code EAN
+        ${escapeHtml(item.code)} · remise observée dans ce magasin uniquement.
+        Ne garantit ni promotion toujours active, ni stock, ni cumul en caisse.</p>
+      <a class="open" href="${escapeHtml(item.sourceUrl)}"
+        target="_blank" rel="noopener noreferrer">Voir le relevé et sa preuve</a>
+    </article>`).join("")
+    :'<p class="panel help">Aucun relevé de réduction correspondant à ces critères parmi les observations récupérées. Cela ne prouve pas qu’aucune offre ne soit disponible en magasin.</p>';
+}
+async function refreshCommunityObservations(force=false){
+  if(!els.observedStatus || state.channel!=="store"){
+    renderCommunityObservations();return;
+  }
+  const today=parisCivilDay(new Date());
+  if(!force && communityState.store===state.store &&
+    communityState.checkedDay===today &&
+    (communityState.status==="done" || communityState.status==="loading")){
+    renderCommunityObservations();return;
+  }
+  communityState.controller?.abort();
+  const controller=new AbortController();
+  const token=++communityState.token;
+  communityState.controller=controller;
+  communityState.store=state.store;
+  communityState.status="loading";
+  communityState.records=[];
+  renderCommunityObservations();
+  const timeout=setTimeout(()=>controller.abort(),12000);
+  try{
+    const result=await fetchObservedDiscounts({
+      store:state.store,signal:controller.signal
+    });
+    if(token!==communityState.token || controller.signal.aborted) return;
+    communityState.records=result.records;
+    communityState.checkedAt=result.checkedAt;
+    communityState.checkedDay=today;
+    communityState.incomplete=result.incomplete;
+    communityState.total=result.total;
+    communityState.status="done";
+  }catch(error){
+    if(token!==communityState.token) return;
+    communityState.status="error";
+    console.warn("[open-prices] relevés indisponibles : "+error.message);
+  }finally{
+    clearTimeout(timeout);
+    if(token===communityState.token){
+      communityState.controller=null;
+      renderCommunityObservations();
+    }
+  }
 }
 
 function renderDailyCatalogue(){
