@@ -85,6 +85,7 @@ const els = {
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
+  dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
   providers:document.querySelector("#providers"),
   sourceScope:document.querySelector("#sourceScope"),
   sourceSearch:document.querySelector("#sourceSearch"),
@@ -528,6 +529,10 @@ function renderDailyCatalogue(){
     : state.channel==="store" ? "https://www.e.leclerc/prospectus"
       : "https://www.leclercdrive.fr/";
   els.dailyOfficialLink.href=source;
+  // Public editorial catalogue backup; no price is imported from this page.
+  els.dailyAlternativeLink.href=state.store==="carrefour"
+    ? "https://www.bonial.fr/Enseignes/Carrefour"
+    : "https://www.bonial.fr/Enseignes/E-Leclerc";
   if(els.dailyFreshnessStatus) els.dailyFreshnessStatus.textContent=
     dailyCampaignRefreshNotice({checkedAt:state.dailyFeedCheckedAt,
       lastAttemptAt:state.dailyFeedLastAttemptAt,
