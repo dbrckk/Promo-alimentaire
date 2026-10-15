@@ -295,7 +295,7 @@ export function selectDailyCatalogue({
     if(/^carrefour-public-lead-bio-2-\d{8}$/.test(item.id)) return 1;
     return 0;
   };
-  const discovery=(Array.isArray(campaigns)?campaigns:[])
+  const campaignCandidates=(Array.isArray(campaigns)?campaigns:[])
     .map((raw)=>safeCampaign(raw,today,store,channel)).filter(Boolean)
     .filter((entry)=>budget===null || entry.minimumPurchase===null
       || entry.minimumPurchase<=budget)
@@ -308,14 +308,17 @@ export function selectDailyCatalogue({
       -(a.illustrativeBasketPercent??-1)
       || Number(b.advertisedPrice!==null)-Number(a.advertisedPrice!==null)
       || a.expiresAt.localeCompare(b.expiresAt)
-      || a.title.localeCompare(b.title,"fr"))
-    .slice(0,safeLimit);
+      || a.title.localeCompare(b.title,"fr"));
+  // The price-sighting shortlist is independent of the general marketing
+  // campaign limit. A high maximum headline percentage must not bury a
+  // known €/kg food price, including when the UI asks for only one item.
+  const discovery=campaignCandidates.slice(0,safeLimit);
   // A named produce advertisement with a stated unit price is more useful
   // for a tight food budget than a generic "% on the 2nd item" banner.
   // These are editorial observations only: €/kg is NOT the price of a
   // basket of unknown weight, and no former/reference price is documented.
   // No EAN, cashback, affordability verdict or inferred savings are created.
-  const priceSpots=discovery
+  const priceSpots=campaignCandidates
     .filter((item)=>Number.isFinite(item.advertisedPrice)
       && ["kg","pièce"].includes(item.priceUnit)
       && item.offerMechanism===null
