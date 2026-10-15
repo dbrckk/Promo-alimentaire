@@ -100,13 +100,21 @@ export function normalizeObservedDiscount(raw,{
 }
 
 export function selectObservedDiscounts(records,{
-  postcode="",sort="percent",maxSpend=null,limit=15
+  postcode="",sort="percent",maxSpend=null,limit=15,
+  maxCalendarDays=null,now=new Date()
 }={}){
   const zip=String(postcode).trim();
   if(zip && !/^\d{5}$/.test(zip)) throw new Error("Code postal : cinq chiffres requis.");
   const ceiling=maxSpend===null ? null : Number(maxSpend);
   const safeLimit=Number.isInteger(limit)?Math.min(Math.max(limit,1),30):15;
+  // Open Prices supplies a calendar date, not a receipt time. Filter by
+  // Europe/Paris civil days instead of inventing 24-hour precision.
+  const maxDays=[1,3,7].includes(maxCalendarDays)?maxCalendarDays:null;
+  const currentDay=maxDays===null?null:parisCivilDay(new Date(now));
+  const currentUtcDay=currentDay?Date.parse(currentDay+"T00:00:00Z"):NaN;
   const comparator=(a,b)=>{
+    if(sort==="recent") return b.date.localeCompare(a.date)
+      || b.savingPercent-a.savingPercent || b.savingAmount-a.savingAmount;
     if(sort==="distance"){
       const da=Number.isFinite(a.distanceKm)?a.distanceKm:Infinity;
       const db=Number.isFinite(b.distanceKm)?b.distanceKm:Infinity;
@@ -118,6 +126,13 @@ export function selectObservedDiscounts(records,{
   };
   return (Array.isArray(records)?records:[])
     .filter((r)=>!zip || r.postcode===zip)
+    .filter((r)=>{
+      if(maxDays===null) return true;
+      if(typeof r.date!=="string" || !/^\d{4}-\d{2}-\d{2}$/.test(r.date)) return false;
+      const receiptDay=Date.parse(r.date+"T00:00:00Z");
+      const elapsed=(currentUtcDay-receiptDay)/DAY_MS;
+      return Number.isInteger(elapsed) && elapsed>=0 && elapsed<maxDays;
+    })
     .filter((r)=>ceiling===null || Number.isFinite(ceiling)
       && ceiling>0 && r.price<=ceiling)
     .sort((a,b)=>comparator(a,b) || b.date.localeCompare(a.date)
