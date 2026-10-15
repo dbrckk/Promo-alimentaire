@@ -176,9 +176,19 @@
         <p class="help">Relevés communautaires avec prix observé, prix habituel, date, magasin et justificatif. Ils ne prouvent pas qu'une promotion est encore disponible aujourd'hui. Magasin physique uniquement. Données ouvertes sous licence ODbL.</p>
         <div class="daily-filters">
           <div class="field">
-            <label for="observedPostcode">Code postal (filtre exact des relevés récupérés)</label>
+            <label for="observedPostcode">Code postal (filtrer ou chercher autour d’une commune)</label>
             <input id="observedPostcode" inputmode="numeric" maxlength="5"
               pattern="[0-9]{5}" autocomplete="postal-code" placeholder="Ex. 71100" />
+          </div>
+          <div class="field">
+            <label for="observedByPostcode">Recherche locale sans GPS</label>
+            <button id="observedByPostcode" class="secondary" type="button">Chercher autour du code postal</button>
+          </div>
+          <div id="observedPostalCommuneField" class="field hidden">
+            <label for="observedPostalCommune">Plusieurs communes : sélectionner la bonne</label>
+            <select id="observedPostalCommune">
+              <option value="">Choisir une commune…</option>
+            </select>
           </div>
           <div class="field">
             <label for="observedRadius">Rayon de recherche</label>
@@ -200,7 +210,7 @@
               <option value="percent">Meilleur pourcentage</option>
               <option value="euros">Plus d’euros économisés</option>
               <option value="budget">Prix le plus bas</option>
-              <option value="distance">Magasin le plus proche (position requise)</option>
+              <option value="distance" disabled>Magasin le plus proche (recherche locale requise)</option>
             </select>
           </div>
           <div class="field">
