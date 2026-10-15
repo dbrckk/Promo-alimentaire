@@ -1448,16 +1448,16 @@ try{
       savedIds:parsed,
       offers:[
         make("valid","2026-10-22"),
-        make("expired","2026-10-14"),
+        make("expired","2026-10-16"),
         make("other","2026-10-22",["leclerc"])
       ],
-      store:"carrefour",channel:"store",now:new Date("2026-10-15T12:00:00Z")
+      store:"carrefour",channel:"store",now:new Date("2026-10-17T12:00:00Z")
     });
     const unavailable=selectSavedFoodRefunds({
       savedIds:["shopmium-valid"],
       offers:[{...make("valid","2026-10-22"),
         sourceSyncWarning:{status:"unavailable"}}],
-      store:"carrefour",channel:"store",now:new Date("2026-10-15T12:00:00Z")
+      store:"carrefour",channel:"store",now:new Date("2026-10-17T12:00:00Z")
     });
     return {
       parsed,invalid:normalizeSavedFoodRefundIds("{bad"),
