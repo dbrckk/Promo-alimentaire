@@ -1353,6 +1353,7 @@ try{
   await page.locator("#foodRefundProvider").selectOption("all");
   await page.locator("#foodRefundSort").selectOption("recent");
   await page.locator("#foodRefundSort").selectOption("amount");
+  // Keep the copy action under the existing Android journey: no new unit test files.
   const refundExportSafety=await page.evaluate(async()=>{
     const {formatSavedFoodRefundChecklist}=await import("./src/daily-catalogue.js");
     const sample=[
