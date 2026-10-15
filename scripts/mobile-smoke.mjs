@@ -1301,6 +1301,29 @@ try{
   // A full food-refund explorer must remain usable even with an unknown
   // checkout price and a strict shopping budget. No invented savings.
   assert.ok(await page.locator("#foodRefundStatus").isVisible());
+  assert.ok(await page.locator("#foodRefundSavedStatus").isVisible(),
+    "The refund checklist stays separate from the guaranteed basket");
+  assert.match(await page.locator("#foodRefundSavedStatus").innerText(),
+    /Aucun remboursement enregistré/);
+  const firstRefundSave=page.locator("#foodRefundDeals button[data-food-refund-id]").first();
+  if(await firstRefundSave.count()){
+    const savedId=await firstRefundSave.getAttribute("data-food-refund-id");
+    await firstRefundSave.click();
+    assert.match(await page.locator("#foodRefundSavedStatus").innerText(),/1 favori/);
+    assert.equal(await page.locator("#foodRefundSaved .daily-offer").count(),1);
+    assert.deepEqual(await page.evaluate(()=>JSON.parse(
+      localStorage.getItem("promo-food-refund-saved-v1"))),[savedId],
+    "Only the source ID is saved; no GPS, source price or refund claim");
+    await page.locator('[data-tab="offers"]').click();
+    await page.locator('[data-tab="daily"]').click();
+    assert.equal(await page.locator("#foodRefundSaved .daily-offer").count(),1,
+      "The current refund checklist persists across Android navigation");
+    await page.locator('#foodRefundSaved button[data-food-refund-id]').first().click();
+    assert.match(await page.locator("#foodRefundSavedStatus").innerText(),
+      /Aucun remboursement enregistré/);
+    assert.deepEqual(await page.evaluate(()=>JSON.parse(
+      localStorage.getItem("promo-food-refund-saved-v1"))),[]);
+  }
   const beforeRefundBudget=await page.locator("#foodRefundStatus").innerText();
   await page.locator("#dailyMaxSpend").selectOption("3");
   assert.equal(await page.locator("#foodRefundStatus").innerText(),
@@ -1401,6 +1424,54 @@ try{
     unlock:true,unlockText:"Deux autres offres à effectuer.",
     limited:[29,24],expanded:[29,29]
   },"Only still-reviewable, explicitly food-classified official refund leads may appear; no budget or cashback promise is inferred");
+  const savedRefundSafety=await page.evaluate(async()=>{
+    const {normalizeImportedOffer}=await import("./src/ingestion.js");
+    const {normalizeSavedFoodRefundIds,selectSavedFoodRefunds}=
+      await import("./src/daily-catalogue.js");
+    const make=(name,reviewAfter,stores=["carrefour"])=>{
+      const source=normalizeImportedOffer({
+        providerId:"shopmium",externalId:name,title:"Pâtes "+name,
+        sourceUrl:"https://offers.shopmium.com/fr/n/fixture-"+name,
+        stores,channels:["store"],category:"alimentaire",
+        mechanism:"manufacturer_refund",scope:"produit",
+        verifiedAt:"2026-10-15",reviewAfter,
+        savingAmount:0.50
+      });
+      if(!source.ok) throw new Error(source.errors.join(", "));
+      return source.value;
+    };
+    const parsed=normalizeSavedFoodRefundIds(JSON.stringify([
+      "shopmium-valid","shopmium-valid","coupon-network-other",
+      "javascript:alert(1)",42,"shopmium-expired"
+    ]));
+    const selected=selectSavedFoodRefunds({
+      savedIds:parsed,
+      offers:[
+        make("valid","2026-10-22"),
+        make("expired","2026-10-14"),
+        make("other","2026-10-22",["leclerc"])
+      ],
+      store:"carrefour",channel:"store",now:new Date("2026-10-15T12:00:00Z")
+    });
+    const unavailable=selectSavedFoodRefunds({
+      savedIds:["shopmium-valid"],
+      offers:[{...make("valid","2026-10-22"),
+        sourceSyncWarning:{status:"unavailable"}}],
+      store:"carrefour",channel:"store",now:new Date("2026-10-15T12:00:00Z")
+    });
+    return {
+      parsed,invalid:normalizeSavedFoodRefundIds("{bad"),
+      oversized:normalizeSavedFoodRefundIds("x".repeat(12001)),
+      selected:selected.available.map((item)=>item.id),
+      total:selected.total,unavailable:selected.unavailableCount,
+      sourceOutage:unavailable.unavailableCount
+    };
+  });
+  assert.deepEqual(savedRefundSafety,{
+    parsed:["shopmium-valid","coupon-network-other","shopmium-expired"],
+    invalid:[],oversized:[],
+    selected:["shopmium-valid"],total:3,unavailable:2,sourceOutage:1
+  },"Saved IDs must never reinstate expired, unavailable or store-ineligible refunds");
   assert.equal(await page.locator("#dailyAlternativeLink").getAttribute("href"),
     "https://www.bonial.fr/Enseignes/Carrefour",
     "Un accès aux prospectus datés reste disponible quand Carrefour bloque les robots");
