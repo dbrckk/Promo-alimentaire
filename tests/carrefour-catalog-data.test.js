@@ -66,6 +66,26 @@ test("14 octobre : campagnes Carrefour classées au taux indicatif du LOT",()=>{
   assert.equal(weekly.illustrativeBasketPercent,25);
   assert.equal(grape.advertisedPrice,2.99);
   assert.equal(grape.priceUnit,"kg");
+  // Unlike a vague maximum marketing rate, a named €/kg food spot is
+  // actionable as a unit-price observation, but never a priced whole basket.
+  assert.deepEqual(store.priceSpots.map((item)=>item.id),
+    ["carrefour-raisin-red-globe-20261015"]);
+  assert.equal(store.priceSpots[0].advertisedPrice,2.99);
+  assert.equal("upfrontCost" in store.priceSpots[0],false);
+  assert.equal("savingAmount" in store.priceSpots[0],false);
+  const lowBudget=selectDailyCatalogue({campaigns:dailyCampaigns,now,
+    store:"carrefour",channel:"store",maxSpend:3,limit:1});
+  assert.equal(lowBudget.priceSpots[0].priceUnit,"kg",
+    "Même une seule carte générale ne doit masquer un prix de fruit nommé");
+  assert.equal("affordable" in lowBudget.priceSpots[0],false,
+    "2,99 €/kg ne prouve jamais qu'un achat de poids inconnu coûte 2,99 €");
+  assert.equal(selectDailyCatalogue({campaigns:dailyCampaigns,
+    now:new Date("2026-10-15T22:00:00Z"),store:"carrefour",
+    channel:"store"}).priceSpots.length,0,
+    "Prix expiré dès minuit civil Paris (16 octobre)");
+  assert.equal(selectDailyCatalogue({campaigns:dailyCampaigns,now,
+    store:"leclerc",channel:"store"}).priceSpots.length,0,
+    "Ne jamais attribuer un prix Carrefour à E.Leclerc");
   assert.equal("savingAmount" in grape,false);
   assert.equal("savingPercent" in grape,false);
   assert.ok(ids.indexOf(bio.id)<ids.indexOf(weekly.id));
