@@ -19,6 +19,7 @@ const context=await browser.newContext({
 const page=await context.newPage();
 const jsErrors=[];
 const failedLocal=[];
+const observedGeoRequests=[];
 page.on("pageerror",(error)=>jsErrors.push(error.stack || error.message));
 page.on("response",(response)=>{
   if(response.url().startsWith(BASE) && response.status()>=400){
@@ -42,6 +43,12 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
     assert.equal(query.has("location__osm_name__contains"),false,
       "Le filtre enseigne Open Prices retourne des pages vides pour des magasins pourtant présents : filtrer localement");
     const date=RECENT_RECEIPT_DATE;
+    if(query.has("lat") || query.has("lon") || query.has("radius_km")){
+      observedGeoRequests.push({
+        lat:query.get("lat"),lon:query.get("lon"),
+        radius:query.get("radius_km")
+      });
+    }
     const make=(id,code,brand,name,postal,price,regular,category="en:pastas")=>({
       id,product_code:code,price,price_without_discount:regular,
       price_is_discounted:true,discount_type:"SALE",
@@ -51,7 +58,9 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
         categories_tags:[category]},
       location_id:id+100,location:{id:id+100,osm_brand:brand,
         osm_name:brand+" "+name,osm_address_postcode:postal,
-        osm_address_city:"Chalon-sur-Saône"}
+        osm_address_city:name==="Dijon"?"Dijon":"Chalon-sur-Saône",
+        osm_lat:name==="Dijon"?47.322:46.78,
+        osm_lon:name==="Dijon"?5.041:4.85}
     });
     return route.fulfill({status:200,contentType:"application/json",
       body:JSON.stringify({total:4,pages:1,items:[
@@ -1289,6 +1298,36 @@ try{
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),0);
   await page.locator("#observedPostcode").fill("");
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
+  assert.equal(observedGeoRequests.length,0,
+    "No location may be transmitted without explicit opt-in");
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({
+    latitude:46.7832,longitude:4.8539,accuracy:150
+  });
+  await page.locator("#observedRadius").selectOption("10");
+  await page.locator("#observedPostcode").fill("21000");
+  await page.locator("#observedNearby").click();
+  await page.waitForFunction(()=>
+    document.querySelector("#observedStatus")?.textContent?.includes(
+      "dans un rayon de 10 km"),null,{timeout:10000});
+  assert.equal(await page.locator("#observedPostcode").inputValue(),"",
+    "Proximity clears the exact postcode filter rather than hiding neighboring shops");
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),1,
+    "A distant Carrefour observation must be excluded client-side even when the API returns it");
+  assert.match(await page.locator("#observedDeals").innerText(),/km/);
+  assert.deepEqual(observedGeoRequests.at(-1),
+    {lat:"46.783",lon:"4.854",radius:"10"});
+  assert.equal(await page.locator("#observedNearby").getAttribute("aria-pressed"),"true");
+  // Switching off discards coordinates immediately and retries without them.
+  await page.locator("#observedNearby").click();
+  await page.waitForFunction(()=>
+    document.querySelector("#observedStatus")?.textContent?.includes(
+      "échantillon national"),null,{timeout:10000});
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
+  assert.equal(await page.locator("#observedNearby").getAttribute("aria-pressed"),"false");
+  assert.deepEqual(await page.evaluate(()=>Object.keys(localStorage)
+    .filter((key)=>/observed.*(?:coord|latitude|longitude|position)/i.test(key))),[]);
+  await context.clearPermissions();
   const observationGate=await page.evaluate(async()=>{
     const {normalizeObservedDiscount}=await import("./src/community-deals.js");
     const base={
