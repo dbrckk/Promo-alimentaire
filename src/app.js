@@ -536,7 +536,10 @@ function renderDailyCatalogue(){
     "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat. "+ 
     "Les sélections publicitaires sans prix exact ne sont pas garanties dans le budget ; les seuils d'achat connus sont filtrés. "+
     (digest.maxSpend!==null
-      ? "Pistes alimentaires économiques mises en avant, mais aucun prix précis sous ce plafond n'est confirmé. "
+      ? (digest.highlights.length
+        ? digest.highlights.length+" promotion(s) chiffrée(s) à examiner sous ce plafond par lot. "
+        : "Aucune promotion dont le prix initial du lot et l'économie potentielle sont calculables sous ce plafond. ")+
+        "Attention : le plafond est appliqué à chaque lot, pas à la somme des recommandations. "
       : "")+
     (unconfirmedRetailerCount
       ? " "+unconfirmedRetailerCount+" offre(s) enseigne non reconfirmée(s) volontairement exclue(s) des meilleures promotions."
