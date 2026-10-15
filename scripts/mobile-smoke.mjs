@@ -1624,6 +1624,16 @@ try{
   });
   await page.locator("#store").selectOption("leclerc");
   assert.match(await page.locator("#dailyStatus").innerText(),/E.Leclerc/);
+  await page.locator("#observedDeals .daily-offer").first().waitFor({timeout:8000});
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),1,
+    "Aucun relevé Carrefour ne peut rester présent après passage à E.Leclerc");
+  assert.match(await page.locator("#observedDeals").innerText(),/E.Leclerc/);
+  await page.locator("#channel").selectOption("drive");
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),0,
+    "Une étiquette de magasin ne prouve pas un prix Drive");
+  assert.match(await page.locator("#observedStatus").innerText(),/magasins physiques/);
+  await page.locator("#channel").selectOption("store");
+  await page.locator("#observedDeals .daily-offer").first().waitFor({timeout:8000});
   assert.equal(await page.locator("#dailyOfficialLink").getAttribute("href"),
     "https://www.e.leclerc/prospectus");
   // The actual public catalogue can legitimately have ZERO verified offers
