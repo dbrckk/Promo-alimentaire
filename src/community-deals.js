@@ -105,8 +105,11 @@ export async function fetchObservedDiscounts({
     if(signal?.aborted) throw new DOMException("Recherche annulée","AbortError");
     const query=new URLSearchParams({
       currency:"EUR",type:"PRODUCT",price_is_discounted:"true",
-      date__gte:cutoff,order_by:"-date",size:"100",page:String(page),
-      location__osm_name__contains:LABELS[store]
+      date__gte:cutoff,order_by:"-date",size:"100",page:String(page)
+      // The Open Prices location-name filter has returned empty pages for
+      // retailers present in global results. Filter retailer identity locally
+      // with isUnambiguousRetailer after bounded public API retrieval.
+      // Country/postcode and store coverage remain incomplete.
     });
     let body;
     try{
