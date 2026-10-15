@@ -443,6 +443,7 @@ els.closeScan.addEventListener("click",()=>els.scanDialog.close());
 els.scanDialog.addEventListener("close",stopScanner);
 
 els.observedPostcode.addEventListener("input",()=>renderCommunityObservations());
+els.observedSort.addEventListener("change",()=>renderCommunityObservations());
 els.observedRadius.addEventListener("change",()=>{
   communityState.radiusKm=Number(els.observedRadius.value);
   if(communityState.coords){
