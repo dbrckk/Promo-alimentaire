@@ -1311,6 +1311,19 @@ try{
     await firstRefundSave.click();
     assert.match(await page.locator("#foodRefundSavedStatus").innerText(),/1 favori/);
     assert.equal(await page.locator("#foodRefundSaved .daily-offer").count(),1);
+    assert.equal(await page.locator("#foodRefundCopy").isEnabled(),true);
+    await page.evaluate(()=>{
+      Object.defineProperty(navigator,"clipboard",{
+        configurable:true,value:{writeText:async(text)=>{window.__copiedRefundChecklist=text;}}
+      });
+    });
+    await page.locator("#foodRefundCopy").click();
+    const copied=await page.evaluate(()=>window.__copiedRefundChecklist);
+    assert.match(copied,/Remboursements alimentaires à vérifier/);
+    assert.match(copied,/Aucun remboursement garanti/);
+    assert.match(copied,/Conditions officielles : https:\/\//);
+    assert.doesNotMatch(copied,/46\.78|longitude|latitude|GPS|prix en caisse : \d/);
+    assert.match(await page.locator("#foodRefundSavedStatus").innerText(),/Liste copiée/);
     assert.deepEqual(await page.evaluate(()=>JSON.parse(
       localStorage.getItem("promo-food-refund-saved-v1"))),[savedId],
     "Only the source ID is saved; no GPS, source price or refund claim");
@@ -1321,6 +1334,7 @@ try{
     await page.locator('#foodRefundSaved button[data-food-refund-id]').first().click();
     assert.match(await page.locator("#foodRefundSavedStatus").innerText(),
       /Aucun remboursement enregistré/);
+    assert.equal(await page.locator("#foodRefundCopy").isDisabled(),true);
     assert.deepEqual(await page.evaluate(()=>JSON.parse(
       localStorage.getItem("promo-food-refund-saved-v1"))),[]);
   }
@@ -1339,6 +1353,18 @@ try{
   await page.locator("#foodRefundProvider").selectOption("all");
   await page.locator("#foodRefundSort").selectOption("recent");
   await page.locator("#foodRefundSort").selectOption("amount");
+  const refundExportSafety=await page.evaluate(async()=>{
+    const {formatSavedFoodRefundChecklist}=await import("./src/daily-catalogue.js");
+    const sample=[
+      {title:"Produit A\\nBon",provider:"Shopmium",sourceUrl:"https://www.shopmium.com/fr/"},
+      {title:"Douteux",provider:"Source",sourceUrl:"javascript:alert(1)"},
+      {title:"Mot de passe",provider:"Source",sourceUrl:"https://user:pass@example.com/"}
+    ];
+    return formatSavedFoodRefundChecklist(sample,{store:"leclerc"});
+  });
+  assert.match(refundExportSafety,/E.Leclerc/);
+  assert.match(refundExportSafety,/Produit A Bon/);
+  assert.doesNotMatch(refundExportSafety,/Douteux|Mot de passe|javascript:|user:pass/);
   const foodRefundSafety=await page.evaluate(async()=>{
     const {normalizeImportedOffer}=await import("./src/ingestion.js");
     const {selectFoodRefundOpportunities}=await import("./src/daily-catalogue.js");
