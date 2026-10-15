@@ -91,6 +91,7 @@ const els = {
   observedPostalCommuneField:document.querySelector("#observedPostalCommuneField"),
   observedPostalCommune:document.querySelector("#observedPostalCommune"),
   observedSort:document.querySelector("#observedSort"),
+  observedAgeDays:document.querySelector("#observedAgeDays"),
   observedRadius:document.querySelector("#observedRadius"),
   observedNearby:document.querySelector("#observedNearby"),
   observedGeoNote:document.querySelector("#observedGeoNote"),
@@ -465,6 +466,7 @@ els.observedPostalCommune.addEventListener("change",()=>{
   if(selected) usePostalCommune(selected,communityState.postcodeCandidateZip);
 });
 els.observedSort.addEventListener("change",()=>renderCommunityObservations());
+els.observedAgeDays.addEventListener("change",()=>renderCommunityObservations());
 els.observedRadius.addEventListener("change",()=>{
   communityState.radiusKm=Number(els.observedRadius.value);
   if(communityState.coords){
@@ -774,8 +776,10 @@ function renderCommunityObservations(){
   const observedSort=requestedSort==="distance" && !near?"percent":requestedSort;
   els.observedSort.querySelector('option[value="distance"]').disabled=!near;
   if(requestedSort==="distance" && !near) els.observedSort.value="percent";
+  const ageDays=Number(els.observedAgeDays.value);
   const picks=selectObservedDiscounts(communityState.records,{
-    postcode:zip,sort:observedSort,maxSpend:budget,limit:15
+    postcode:zip,sort:observedSort,maxSpend:budget,limit:15,
+    maxCalendarDays:ageDays,now:new Date()
   });
   const checked=communityState.checkedAt
     ?parisCivilDay(new Date(communityState.checkedAt)):"date inconnue";
@@ -787,8 +791,11 @@ function renderCommunityObservations(){
         " km depuis le centre de "+communityState.postalLocationLabel
       :"dans un rayon de "+communityState.radiusKm+" km (position approximative)"
     :zip?"code postal "+zip+" parmi les relevés nationaux":"échantillon national";
-  els.observedStatus.textContent=picks.length+" relevé(s) correspondant aux filtres · consultation "+
-    checked+" · "+scope+"."+
+  const period=ageDays===1?"datés d’aujourd’hui"
+    :ageDays===3?"datés des 3 derniers jours calendaires"
+      :"datés des 7 derniers jours calendaires";
+  els.observedStatus.textContent=picks.length+" relevé(s) correspondant aux filtres · "+
+    period+" · consultation "+checked+" · "+scope+"."+
     warning+" Prix local et disponibilité actuelle à reconfirmer avant achat.";
   els.observedDeals.innerHTML=picks.length
     ?picks.map((item)=>`<article class="card daily-offer">

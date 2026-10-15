@@ -1,3 +1,9 @@
+### Filtre de fraîcheur des réductions Open Prices (15 octobre 2026)
+
+Dans **Promos du jour → Réductions observées**, les utilisateurs peuvent sélectionner des relevés **datés d’aujourd’hui**, des **3 derniers jours calendaires** ou des **7 derniers jours calendaires** (valeur par défaut), et les classer du **plus récent au plus ancien**. La date Open Prices est un **jour civil** sans heure de ticket : le filtre s’appuie sur le calendrier Europe/Paris, y compris près de minuit, et ne prétend pas connaître les dernières 24 heures exactes. Le tri par pourcentage, économie en euros, prix ou proximité reste disponible.
+
+Le filtrage est local, n’émet pas de requêtes supplémentaires, et ne transforme aucun relevé en promotion garantie ou remboursement cumulable. La limite existante de collecte Open Prices (7 jours et 300 enregistrements par requête) reste applicable : une absence de résultat ne prouve pas l’absence de promotion. Le parcours d’intégration Chrome Android existant couvre les changements de période et le basculement de jour civil à Paris, sans nouveau fichier de test unitaire.
+
 ### Identité réelle du magasin pour les réductions Open Prices (15 octobre 2026)
 
 Les relevés récents sont désormais dédupliqués par **identifiant de magasin Open Prices**, lorsqu'il est cohérent entre les champs de la source. Deux magasins peuvent partager le même nom de chaîne, la même enseigne et le même code postal : l'ancien rapprochement par nom et code postal pouvait supprimer silencieusement l'un de leurs relevés pour un même EAN. Sans identifiant fiable, chaque justificatif reste distinct plutôt que d'affirmer à tort qu'il provient du même point de vente. Plusieurs relevés d'un même produit dans un **même magasin identifié** conservent le jour le plus récent, puis le prix constaté le plus élevé lorsque les dates coïncident. Les observations ne constituent toujours ni une promotion garantie aujourd'hui, ni un gain cumulable dans le panier.
