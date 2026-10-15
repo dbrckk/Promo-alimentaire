@@ -1,3 +1,7 @@
+### Fiabilité des magasins dans les réductions observées (15 octobre 2026)
+
+Deux magasins Carrefour ou E.Leclerc peuvent partager le même nom et le même code postal. Les observations Open Prices sont désormais regroupées **uniquement si elles présentent le même identifiant de point de vente**, pour une même référence produit. Sans identifiant de point de vente vérifiable, chaque justificatif reste distinct plutôt que d’inventer une correspondance de magasin. Lorsque le relevé contient une adresse de rue, celle-ci figure dans la carte ; sinon, la carte affiche l’identifiant Open Prices du lieu ou indique que l’adresse exacte est inconnue. Cette identification ne prouve pas que la remise est encore active. Le parcours Android existant vérifie les collisions entre enseignes homonymes et la règle conservatrice entre relevés d’un même point de vente.
+
 ### Recherche de promotions autour d’un code postal sans GPS (15 octobre 2026)
 
 Dans **Promos du jour → Réductions observées**, saisir un code postal puis appuyer sur **Chercher autour du code postal** pour interroger le [référentiel officiel des communes françaises](https://geo.api.gouv.fr/decoupage-administratif/communes). Cette fonctionnalité n’active **jamais** la géolocalisation du téléphone. Si le code postal correspond à plusieurs communes, l’utilisateur doit en choisir une : l’application ne devine pas sa commune.
