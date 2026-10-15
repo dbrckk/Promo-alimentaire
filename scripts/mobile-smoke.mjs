@@ -1356,7 +1356,7 @@ try{
   const refundExportSafety=await page.evaluate(async()=>{
     const {formatSavedFoodRefundChecklist}=await import("./src/daily-catalogue.js");
     const sample=[
-      {title:"Produit A\\nBon",provider:"Shopmium",sourceUrl:"https://www.shopmium.com/fr/"},
+      {title:"Produit A\nBon",provider:"Shopmium",sourceUrl:"https://www.shopmium.com/fr/"},
       {title:"Douteux",provider:"Source",sourceUrl:"javascript:alert(1)"},
       {title:"Mot de passe",provider:"Source",sourceUrl:"https://user:pass@example.com/"}
     ];
