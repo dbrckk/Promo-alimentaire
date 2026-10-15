@@ -274,3 +274,18 @@ export function discoverCarrefourFoodBrochures(html,now=new Date()){
   }
   return results;
 }
+
+// Permanent official entrypoints. Without these, expiry of the last stored
+// campaign would permanently stop the source from discovering new campaigns.
+export const CARREFOUR_DAILY_INDEX="https://www.carrefour.fr/catalogue/carrefour";
+export const CARREFOUR_DAILY_CAMPAIGNS="https://www.carrefour.fr/offres-du-moment";
+export function dailyCampaignSourceUrls(campaigns=[],today){
+  return [...new Set([
+    CARREFOUR_DAILY_INDEX,CARREFOUR_DAILY_CAMPAIGNS,
+    ...(Array.isArray(campaigns)?campaigns:[])
+      .filter((entry)=>typeof entry?.sourceUrl==="string"
+        && validDay(entry.expiresAt) && validDay(today)
+        && entry.expiresAt>=today)
+      .map((entry)=>entry.sourceUrl)
+  ])];
+}
