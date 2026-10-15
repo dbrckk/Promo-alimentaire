@@ -76,6 +76,8 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
       location_id:id+100,location:{id:id+100,osm_brand:brand,
         osm_name:brand+" "+name,osm_address_postcode:postal,
         osm_address_city:name==="Dijon"?"Dijon":"Chalon-sur-Saône",
+        osm_address_street:name==="Chalon"?"Rue du Centre":null,
+        osm_address_housenumber:name==="Chalon"?"2":null,
         osm_lat:name==="Dijon"?47.322:46.78,
         osm_lon:name==="Dijon"?5.041:4.85}
     });
@@ -1307,6 +1309,10 @@ try{
     "Carrefour presents only recent OFF food receipts with real before/after prices");
   assert.match(await page.locator("#observedDeals").innerText(),/0,99.*1,59/s);
   assert.doesNotMatch(await page.locator("#observedDeals").innerText(),/Alcool/);
+  assert.match(await page.locator("#observedDeals").innerText(),/2 Rue du Centre/,
+    "Source-provided street is displayed to identify the specific outlet");
+  assert.match(await page.locator("#observedDeals").innerText(),/Lieu Open Prices n°/,
+    "A verified outlet identifier distinguishes stores when the street is unavailable");
   await page.locator("#observedPostcode").fill("71100");
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),1,
     "Postcode filter applies only to the actual store on the receipt");
@@ -1472,11 +1478,16 @@ try{
     });
     return {
       ids:result.records.map((row)=>row.id).sort((a,b)=>a-b),
-      conservativePrice:result.records.find((row)=>row.id===9004)?.price
+      conservativePrice:result.records.find((row)=>row.id===9004)?.price,
+      knownIds:result.records.filter((row)=>row.id===9002||row.id===9004)
+        .map((row)=>row.locationId).sort((a,b)=>a-b),
+      unknownIds:result.records.filter((row)=>row.id===9005||row.id===9006||row.id===9007)
+        .map((row)=>row.locationId)
     };
   });
   assert.deepEqual(outletIdentity,{
-    ids:[9002,9004,9005,9006,9007],conservativePrice:1.1
+    ids:[9002,9004,9005,9006,9007],conservativePrice:1.1,
+    knownIds:[101,102],unknownIds:[null,null,null]
   },"Distinct physical stores must not lose their individual price observations");
   assert.match(await page.locator("#dailyStatus").innerText(),
     /Sélection au .*Carrefour.*magasin/);
