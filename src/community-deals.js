@@ -59,6 +59,21 @@ export function normalizeObservedDiscount(raw,{
   const sourceUrl=priceObservationPublicUrl(observation.id);
   const proofId=Number(raw.proof_id);
   const title=String(product.product_name || raw.product_name || "").trim();
+  // A retailer label and postcode cannot identify one physical outlet:
+  // several same-chain shops can share both. Use Open Prices' location ID,
+  // and fall back to the individual receipt when that ID is absent.
+  const locationIdText=String(observation.locationId??"");
+  const locationId=/^[1-9]\d{0,15}$/.test(locationIdText)
+    && Number.isSafeInteger(Number(locationIdText))
+    ?Number(locationIdText):null;
+  const sourceLocation=raw.location && typeof raw.location==="object"
+    ?raw.location:{};
+  const addressPart=(value,limit)=>typeof value==="string"
+    && value.length<=limit ? value.trim():"";
+  const storeStreet=[
+    addressPart(sourceLocation.osm_address_housenumber,16),
+    addressPart(sourceLocation.osm_address_street,120)
+  ].filter(Boolean).join(" ").slice(0,140);
   if(!sourceUrl || !Number.isSafeInteger(proofId) || proofId<1
     || !title || title.length>180 || !isFreshObservation(observation,maxAgeDays,now)
     || !isUnambiguousRetailer(observation.retailerText,store)
@@ -77,6 +92,7 @@ export function normalizeObservedDiscount(raw,{
   return {
     id:observation.id,code,title:title.slice(0,180),
     store,storeName:String(observation.storeName).slice(0,100),
+    locationId,storeStreet,
     postcode:observation.postcode,city:String(observation.city).slice(0,80),
     date:observation.date,sourceUrl,
     distanceKm:nearby?observation.distanceKm:null,
@@ -164,8 +180,14 @@ export async function fetchObservedDiscounts({
       const item=normalizeObservedDiscount(raw,{store,now,maxAgeDays,
         coords:nearby,radiusKm});
       if(!item) continue;
-      const key=item.code+"|"+item.storeName+"|"+item.postcode;
+      const outletKey=item.locationId===null
+        ?"receipt:"+item.id
+        :"outlet:"+item.locationId;
+      const key=item.code+"|"+outletKey;
       const prior=dedup.get(key);
+      // Only merge records with the same proven outlet ID. Without one,
+      // preserve separate receipt evidence rather than falsely treating
+      // same-name shops in one postcode as a single place.
       // Same SKU in the same outlet: newer observation first; on the
       // same day, prefer the higher checkout price conservatively.
       if(!prior || item.date>prior.date
