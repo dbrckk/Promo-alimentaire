@@ -1250,6 +1250,45 @@ try{
     /Sélection au .*Carrefour.*magasin/);
   assert.match(await page.locator("#dailyRetailer").innerText(),
     /Aucune promotion|Contrôler la source/);
+  // Mobile contract: a named produce price has its own evidence card,
+  // must survive a tight catalogue card limit and disappear after French
+  // midnight without implying the whole-weight basket is affordable.
+  const sourcedFoodSpot=await page.evaluate(async()=>{
+    const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
+    const now=new Date("2026-10-15T12:00:00Z");
+    const grape={
+      id:"carrefour-raisin-red-globe-20261015",
+      store:"carrefour",channels:["store","drive"],
+      category:"fruits et légumes",title:"Raisin Red Globe : 2,99 € le kg",
+      claim:"Raisin à 2,99 € le kg dans les magasins participants",
+      advertisedPrice:2.99,priceUnit:"kg",verifiedAt:"2026-10-14",
+      startsAt:"2026-10-14",expiresAt:"2026-10-15",
+      sourceUrl:"https://www.carrefour.fr/offres-du-moment"
+    };
+    const generic={...grape,id:"bigger-advert",
+      title:"Promos jusqu'à 60% sur le 2e",claim:"60% sur le deuxième",
+      advertisedMaxPercent:60,advertisedPrice:undefined,
+      priceUnit:undefined,offerMechanism:"second-item",category:"bio"};
+    const options={campaigns:[generic,grape],store:"carrefour",
+      channel:"store",now,maxSpend:3,limit:1};
+    const observed=selectDailyCatalogue(options);
+    const tomorrow=selectDailyCatalogue({...options,
+      now:new Date("2026-10-15T22:00:00Z")});
+    const otherStore=selectDailyCatalogue({...options,store:"leclerc"});
+    return {id:observed.priceSpots[0]?.id,
+      unit:observed.priceSpots[0]?.priceUnit,
+      price:observed.priceSpots[0]?.advertisedPrice,
+      basketSaving:observed.priceSpots[0]?.savingAmount??null,
+      cost:observed.priceSpots[0]?.upfrontCost??null,
+      tomorrow:tomorrow.priceSpots.length,
+      otherStore:otherStore.priceSpots.length,
+      htmlSection:!!document.querySelector("#dailyPriceSpots")};
+  });
+  assert.deepEqual(sourcedFoodSpot,{
+    id:"carrefour-raisin-red-globe-20261015",
+    unit:"kg",price:2.99,basketSaving:null,cost:null,
+    tomorrow:0,otherStore:0,htmlSection:true
+  });
   // A real current food-brochure record is source discovery only: do not
   // turn the range printed on the official catalogue index into a checkout
   // discount, SKU, or price usable by the basket optimiser.
