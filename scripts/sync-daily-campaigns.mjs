@@ -1,5 +1,5 @@
 import {readFile,writeFile} from "node:fs/promises";
-import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,discoverCarrefourFoodBrochures,retainRecentDailyLeads} from "./daily-campaign-evidence.mjs";
+import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,discoverCarrefourFoodBrochures,retainRecentDailyLeads,dailyCampaignSourceUrls} from "./daily-campaign-evidence.mjs";
 import {parisCivilDay} from "../src/ingestion.js";
 
 const destination=new URL("../data/daily-campaigns.json",import.meta.url);
@@ -9,15 +9,11 @@ const today=parisCivilDay(now);
 const payload=JSON.parse(await readFile(destination,"utf8"));
 if(!Array.isArray(payload.campaigns)) throw Error("Campagnes publiques invalides");
 const FOOD_BROCHURE_INDEX="https://www.carrefour.fr/catalogue/carrefour";
-const sources=[...new Set([
-  // Always inspect the current public food catalogue: future editions have
-  // new dates and cannot be discovered solely from archived campaign URLs.
-  FOOD_BROCHURE_INDEX,
-  ...payload.campaigns
-    .filter((c)=>typeof c?.sourceUrl==="string" && c.expiresAt>=today)
-    .map((c)=>c.sourceUrl)
-])];
+// The two official Carrefour entrypoints are permanent even after all
+// archived campaigns expire, otherwise future food promotions disappear.
+const sources=dailyCampaignSourceUrls(payload.campaigns,today);
 const pages=new Map();
+const sourceChecks={};
 for(const url of sources){
   try{
     const parsed=new URL(url);
@@ -41,9 +37,15 @@ for(const url of sources){
     const html=await response.text();
     if(html.length<200) throw Error("contenu public trop court");
     pages.set(url,html);
+    sourceChecks[url]={status:"available"};
   }catch(error){
+    const reason=String(error?.message||error);
+    sourceChecks[url]={status:"unavailable",
+      reason:/HTTP (401|403|429)\\b/.test(reason)
+        ? "HTTP "+reason.match(/HTTP (401|403|429)\\b/)[1]
+        : "Source indisponible"};
     console.warn("[daily] page indisponible : "+url+" · "+
-      String(error?.message||error).slice(0,180));
+      reason.slice(0,180));
   }
 }
 let confirmed=0;
@@ -83,8 +85,20 @@ console.log("[daily] campagnes reconfirmées "+confirmed+"/"+payload.campaigns.l
 if(confirmed===0 && discovered.length===0)
   console.log("::warning title=Catalogue du jour non reconfirmé::" +
     "Aucune preuve officielle récente ; conserver les anciennes dates et laisser la PWA les expirer.");
-if(write && (changed || discoveryChanged)){
+// The last ATTEMPT must be visible even when the public merchant refuses
+// access. Do not refresh checkedAt merely because expired leads were pruned:
+// no new source evidence was obtained in that situation.
+const priorAttemptDay=payload.lastAttemptAt
+  && Number.isFinite(Date.parse(payload.lastAttemptAt))
+  ?parisCivilDay(new Date(payload.lastAttemptAt)):null;
+const statusChanged=JSON.stringify(payload.sourceChecks||{})!==JSON.stringify(sourceChecks);
+const provenToday=confirmed>0 || discovered.length>0;
+if(write && (changed || discoveryChanged || statusChanged || priorAttemptDay!==today)){
   payload.campaigns=updated;
-  payload.checkedAt=now.toISOString();
+  if(provenToday) payload.checkedAt=now.toISOString();
+  payload.lastAttemptAt=now.toISOString();
+  payload.sourceChecks=sourceChecks;
   await writeFile(destination,JSON.stringify(payload,null,2)+"\n","utf8");
+  console.log("[daily] Dernière tentative enregistrée ; preuve "+
+    (provenToday?"mise à jour":"inchangée, campagnes non prolongées")+".");
 }
