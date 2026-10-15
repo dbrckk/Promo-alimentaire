@@ -85,6 +85,7 @@ const els = {
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
+  dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
   observedPostcode:document.querySelector("#observedPostcode"),
   observedRefresh:document.querySelector("#observedRefresh"),
   observedStatus:document.querySelector("#observedStatus"),
@@ -650,6 +651,14 @@ function renderDailyCatalogue(){
     : state.channel==="store" ? "https://www.e.leclerc/prospectus"
       : "https://www.leclercdrive.fr/";
   els.dailyOfficialLink.href=source;
+  // Bonial's public dated flyers remain usable as a manual reference even
+  // if automated Carrefour catalogue requests fail with HTTP 403.
+  // Browsing them never refreshes evidence for an unverified product.
+  if(els.dailyAlternativeLink){
+    els.dailyAlternativeLink.href=state.store==="carrefour"
+      ? "https://www.bonial.fr/Enseignes/Carrefour"
+      : "https://www.bonial.fr/Enseignes/E-Leclerc";
+  }
   if(els.dailyFreshnessStatus) els.dailyFreshnessStatus.textContent=
     dailyCampaignRefreshNotice({checkedAt:state.dailyFeedCheckedAt,
       lastAttemptAt:state.dailyFeedLastAttemptAt,
