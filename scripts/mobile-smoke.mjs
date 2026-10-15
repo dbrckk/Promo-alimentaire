@@ -20,6 +20,7 @@ const page=await context.newPage();
 const jsErrors=[];
 const failedLocal=[];
 const observedGeoRequests=[];
+const observedPostalLookups=[];
 page.on("pageerror",(error)=>jsErrors.push(error.stack || error.message));
 page.on("response",(response)=>{
   if(response.url().startsWith(BASE) && response.status()>=400){
@@ -36,6 +37,22 @@ await page.route("https://world.openfoodfacts.org/**",(route)=>{
       categories_tags:["en:spreads"]
     }})
   });
+});
+await page.route("https://geo.api.gouv.fr/**",(route)=>{
+  const url=new URL(route.request().url());
+  const zip=url.searchParams.get("codePostal");
+  observedPostalLookups.push(zip);
+  assert.equal(url.searchParams.get("format"),"json");
+  assert.match(url.searchParams.get("fields"),/centre/);
+  const rows=zip==="71100" ? [
+    {code:"71076",nom:"Chalon-sur-Saône",population:45000,
+      codesPostaux:["71100"],centre:{type:"Point",coordinates:[4.8539,46.7832]}},
+    {code:"71445",nom:"Saint-Marcel",population:6200,
+      codesPostaux:["71100"],centre:{type:"Point",coordinates:[4.893,46.77]}},
+    {code:"71999",nom:"Fausse commune",population:999999,
+      codesPostaux:["99999"],centre:{type:"Point",coordinates:[2.3,48.8]}}
+  ] : [];
+  return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(rows)});
 });
 await page.route("https://prices.openfoodfacts.org/**",(route)=>{
   const query=new URL(route.request().url()).searchParams;
@@ -1346,6 +1363,47 @@ try{
   assert.deepEqual(await page.evaluate(()=>Object.keys(localStorage)
     .filter((key)=>/observed.*(?:coord|latitude|longitude|position)/i.test(key))),[]);
   await context.clearPermissions();
+  // No device GPS permission: the official directory supplies only a
+  // publicly known commune centre, not the current personal position.
+  await page.locator("#observedPostcode").fill("71100");
+  await page.locator("#observedByPostcode").click();
+  await page.locator("#observedPostalCommuneField").waitFor({state:"visible",timeout:8000});
+  assert.deepEqual(observedPostalLookups,["71100"]);
+  assert.equal(await page.locator("#observedPostalCommune option").count(),3,
+    "An ambiguous postcode requires an explicit commune selection");
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),1,
+    "The optional commune selector must never invent additional discounts");
+  await page.locator("#observedPostalCommune").selectOption("71076");
+  await page.waitForFunction(()=>
+    document.querySelector("#observedStatus")?.textContent?.includes(
+      "centre de Chalon-sur-Saône (71100)"),null,{timeout:10000});
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),1);
+  assert.deepEqual(observedGeoRequests.at(-1),
+    {lat:"46.783",lon:"4.854",radius:"10"});
+  assert.match(await page.locator("#observedGeoNote").innerText(),/PAS de votre position/);
+  assert.equal(await page.locator("#observedPostcode").inputValue(),"");
+  assert.equal(await page.locator("#observedPostalCommuneField").isVisible(),false);
+  await page.locator("#observedNearby").click();
+  await page.waitForFunction(()=>
+    document.querySelector("#observedStatus")?.textContent?.includes(
+      "échantillon national"),null,{timeout:10000});
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
+  assert.equal(await page.locator('#observedSort option[value="distance"]').isDisabled(),true);
+  assert.deepEqual(await page.evaluate(()=>Object.keys(localStorage)
+    .filter((key)=>/observed.*(?:coord|latitude|longitude|position|commune)/i.test(key))),[]);
+  const postalDataSafety=await page.evaluate(async()=>{
+    const {lookupPostalCodeCommunes}=await import("./src/community-deals.js");
+    const makeFetch=(items)=>async()=>({ok:true,json:async()=>items});
+    const bad=await lookupPostalCodeCommunes("71100",{fetchImpl:makeFetch([
+      {code:"71999",nom:"Faux",centre:{coordinates:[4.8,46.8]},codesPostaux:["99999"]},
+      {code:"71076",nom:"Données incomplètes",centre:{coordinates:[4.8,200]},codesPostaux:["71100"]}
+    ])});
+    let rejected=false;
+    try{await lookupPostalCodeCommunes("7x100",{fetchImpl:makeFetch([])});}
+    catch{rejected=true;}
+    return {noInvalidPlaces:bad.length===0,rejected};
+  });
+  assert.deepEqual(postalDataSafety,{noInvalidPlaces:true,rejected:true});
   const observationGate=await page.evaluate(async()=>{
     const {normalizeObservedDiscount}=await import("./src/community-deals.js");
     const base={
