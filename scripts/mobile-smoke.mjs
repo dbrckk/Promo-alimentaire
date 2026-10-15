@@ -1340,6 +1340,9 @@ try{
       "échantillon national"),null,{timeout:10000});
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
   assert.equal(await page.locator("#observedNearby").getAttribute("aria-pressed"),"false");
+  assert.equal(await page.locator("#observedSort").inputValue(),"percent",
+    "Removing proximity resets distance sort without retaining location");
+  assert.equal(await page.locator('#observedSort option[value="distance"]').isDisabled(),true);
   assert.deepEqual(await page.evaluate(()=>Object.keys(localStorage)
     .filter((key)=>/observed.*(?:coord|latitude|longitude|position)/i.test(key))),[]);
   await context.clearPermissions();
