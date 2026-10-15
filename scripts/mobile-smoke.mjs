@@ -39,11 +39,13 @@ await page.route("https://world.openfoodfacts.org/**",(route)=>{
 await page.route("https://prices.openfoodfacts.org/**",(route)=>{
   const query=new URL(route.request().url()).searchParams;
   if(query.get("price_is_discounted")==="true"){
+    assert.equal(query.has("location__osm_name__contains"),false,
+      "Le filtre enseigne Open Prices retourne des pages vides pour des magasins pourtant présents : filtrer localement");
     const date=RECENT_RECEIPT_DATE;
     const make=(id,code,brand,name,postal,price,regular,category="en:pastas")=>({
       id,product_code:code,price,price_without_discount:regular,
       price_is_discounted:true,discount_type:"SALE",
-      currency:"EUR",price_per:"UNIT",type:"PRODUCT",date,
+      currency:"EUR",price_per:null,type:"PRODUCT",date,
       proof_id:id+200,proof:{type:"PRICE_TAG"},
       product:{code,source:"off",product_name:"Pâtes "+name,
         categories_tags:[category]},
@@ -1268,6 +1270,9 @@ try{
   // retailer advertisement that would fabricate a checkout price.
   await page.locator('[data-tab="daily"]').click();
   await page.locator("#dailyStatus").waitFor({state:"visible"});
+  assert.equal(await page.locator("#dailyAlternativeLink").getAttribute("href"),
+    "https://www.bonial.fr/Enseignes/Carrefour",
+    "Un accès aux prospectus datés reste disponible quand Carrefour bloque les robots");
   // Live-shaped public Open Prices responses, routed only inside this
   // integration browser. A community discount is not a Carrefour catalogue
   // promise and is never silently imported as a basket deduction.
@@ -1636,6 +1641,8 @@ try{
   await page.locator("#observedDeals .daily-offer").first().waitFor({timeout:8000});
   assert.equal(await page.locator("#dailyOfficialLink").getAttribute("href"),
     "https://www.e.leclerc/prospectus");
+  assert.equal(await page.locator("#dailyAlternativeLink").getAttribute("href"),
+    "https://www.bonial.fr/Enseignes/E-Leclerc");
   // The actual public catalogue can legitimately have ZERO verified offers
   // after a source refresh fails. Live deployment must not fail merely
   // because an unreliable provider has been hidden for safety.
