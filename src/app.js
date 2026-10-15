@@ -1,6 +1,6 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
-import {selectDailyCatalogue,dailyCampaignRefreshNotice} from "./daily-catalogue.js";
+import {selectDailyCatalogue,selectFoodRefundOpportunities,dailyCampaignRefreshNotice} from "./daily-catalogue.js";
 import {fetchObservedDiscounts,selectObservedDiscounts,lookupPostalCodeCommunes} from "./community-deals.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
@@ -82,6 +82,12 @@ const els = {
   dailyRetailer:document.querySelector("#dailyRetailer"),
   dailyUnconfirmed:document.querySelector("#dailyUnconfirmed"),
   dailyExtras:document.querySelector("#dailyExtras"),
+  foodRefundSearch:document.querySelector("#foodRefundSearch"),
+  foodRefundProvider:document.querySelector("#foodRefundProvider"),
+  foodRefundSort:document.querySelector("#foodRefundSort"),
+  foodRefundStatus:document.querySelector("#foodRefundStatus"),
+  foodRefundDeals:document.querySelector("#foodRefundDeals"),
+  foodRefundMore:document.querySelector("#foodRefundMore"),
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
@@ -211,6 +217,9 @@ const state = {
   skuCompareToken:0
 };
 
+// Refund discovery is read-only and intentionally not stored in localStorage.
+const foodRefundState={limit:24};
+
 // Community observations are independent of the merchant promotion importer.
 // Never turn them into automatically stackable product or basket offers.
 const communityState={store:null,records:[],status:"idle",checkedAt:null,
@@ -298,6 +307,22 @@ els.dailySort.addEventListener("change",()=>{
   localStorage.setItem("promo-daily-sort",state.dailySort);
   renderDailyCatalogue();
   renderCommunityObservations();
+});
+els.foodRefundSearch.addEventListener("input",()=>{
+  foodRefundState.limit=24;
+  renderFoodRefundExplorer();
+});
+els.foodRefundProvider.addEventListener("change",()=>{
+  foodRefundState.limit=24;
+  renderFoodRefundExplorer();
+});
+els.foodRefundSort.addEventListener("change",()=>{
+  foodRefundState.limit=24;
+  renderFoodRefundExplorer();
+});
+els.foodRefundMore.addEventListener("click",()=>{
+  foodRefundState.limit=Math.min(240,foodRefundState.limit+24);
+  renderFoodRefundExplorer();
 });
 els.dailyMaxSpend.addEventListener("change",()=>{
   state.dailyMaxSpend=els.dailyMaxSpend.value;
@@ -1110,6 +1135,66 @@ function renderDailyCatalogue(){
       </article>`;
     }).join("")
     :fallback("Aucune campagne datée et contrôlée depuis 7 jours pour ce canal. Les annonces trop anciennes sont masquées : consulte le catalogue officiel pour les promotions du jour.");
+  renderFoodRefundExplorer();
+}
+
+// The public manufacturers' refund inventory is independent of daily
+// affordability ranking: an unknown checkout price must remain UNKNOWN.
+function renderFoodRefundExplorer(){
+  if(!els.foodRefundDeals) return;
+  const selected=selectFoodRefundOpportunities({
+    offers:resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile),
+    store:state.store,channel:state.channel,
+    now:new Date(),provider:els.foodRefundProvider.value,
+    search:els.foodRefundSearch.value,sort:els.foodRefundSort.value,
+    limit:foodRefundState.limit
+  });
+  const shown=selected.items.length;
+  els.foodRefundStatus.textContent=shown+" sur "+selected.total+
+    " remboursement(s) alimentaire(s) candidat(s) correspondant aux critères. "+
+    "Données de source encore dans leur fenêtre de vérification, pas de disponibilité ni de remboursement garantis. "+
+    "Le plafond de dépenses principal n'est pas appliqué : le prix d'achat doit être vérifié.";
+  els.foodRefundDeals.innerHTML=shown
+    ?selected.items.map((item)=>{
+      const nominal=Number.isFinite(item.savingAmount)
+        ?money.format(item.savingAmount)+" de remboursement annoncé"
+        :Number.isFinite(item.savingPercent)
+          ?formatPercent(item.savingPercent)+" de remboursement annoncé"
+          :"Remboursement à confirmer";
+      const price=Number.isFinite(item.upfrontCost)&&item.upfrontCost>0
+        ?"Ancien prix de référence du lot : "+money.format(item.upfrontCost)+
+          " (prix réel en caisse non garanti)."
+        :"Prix du lot à avancer inconnu ; budget et gain net non calculables.";
+      const quantity="Minimum "+item.minQuantity+" article(s) de la gamme éligible.";
+      const deadline=item.merchantExpiry
+        ?"Fin annoncée : "+formatDate(item.merchantExpiry)+". "
+        :"";
+      const review=item.reviewAfter
+        ?"Prochaine limite de vérification des données : "+
+          formatDate(item.reviewAfter)+". ":"";
+      return `<article class="card daily-offer">
+        <div class="card-head"><div>
+          <h4>${escapeHtml(item.title)}</h4>
+          <div class="source">${escapeHtml(item.provider)}</div>
+        </div><span class="badge">À confirmer</span></div>
+        <p><strong>${escapeHtml(nominal)}</strong></p>
+        <p class="help">${escapeHtml(quantity)}
+          ${item.hasExactEan?"EAN sourcé ; éligibilité à confirmer.":"EAN exact et variantes à contrôler."}
+          ${escapeHtml(price)}</p>
+        ${item.conditions?`<p class="help">${escapeHtml(item.conditions)}</p>`:""}
+        <p class="help">Source relevée le ${formatDate(item.verifiedAt)}.
+          ${escapeHtml(deadline+review)}
+          Activation, ticket, exclusions et cumul à vérifier auprès du service.
+          Aucun remboursement n'est déduit du panier.</p>
+        <a class="open" href="${escapeHtml(item.sourceUrl)}"
+          target="_blank" rel="noopener noreferrer">Vérifier les conditions officielles</a>
+      </article>`;
+    }).join("")
+    :'<p class="panel help">Aucun remboursement alimentaire actuellement documenté pour ces filtres. Essayez une autre enseigne, un autre canal ou un mot-clé différent. Cette absence ne prouve pas qu’aucune offre existe.</p>';
+  els.foodRefundMore.classList.toggle("hidden",shown>=selected.total);
+  els.foodRefundMore.disabled=shown>=selected.total;
+  if(shown<selected.total) els.foodRefundMore.textContent=
+    "Afficher "+Math.min(24,selected.total-shown)+" autres offres";
 }
 
 async function hydrateDailyCampaigns(){
