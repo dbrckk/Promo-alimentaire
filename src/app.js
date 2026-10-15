@@ -75,6 +75,7 @@ const els = {
   offers:document.querySelector("#offers"),
   dailyStatus:document.querySelector("#dailyStatus"),
   dailyHighlights:document.querySelector("#dailyHighlights"),
+  dailyPriceSpots:document.querySelector("#dailyPriceSpots"),
   dailySort:document.querySelector("#dailySort"),
   dailyMaxSpend:document.querySelector("#dailyMaxSpend"),
   dailyRetailer:document.querySelector("#dailyRetailer"),
@@ -521,7 +522,8 @@ function renderDailyCatalogue(){
     " · "+storeLabel(state.store)+" · "+
     (state.channel==="store"?"magasin":state.channel==="drive"?"Drive":"en ligne")+
     " · "+digest.retailer.length+" offre(s) enseigne, "+
-    digest.extra.length+" remboursement(s)/coupon(s) et "+
+    digest.extra.length+" remboursement(s)/coupon(s), "+
+    digest.priceSpots.length+" prix alimentaires précis et "+
     digest.campaigns.length+" campagne(s) officielle(s). "+ 
     "Classement : "+sortDescription+" ; "+budgetDescription+". "+
     "Campagnes vérifiées depuis 7 jours au maximum ; sources et gains à reconfirmer avant achat. "+ 
@@ -589,6 +591,24 @@ function renderDailyCatalogue(){
     :fallback(digest.maxSpend===null
       ?"Aucune économie chiffrée active sur un produit pour ce canal."
       :"Aucune offre avec prix initial documenté dans le budget choisi. Augmentez le plafond pour voir les références éligibles.");
+  els.dailyPriceSpots.innerHTML=digest.priceSpots.length
+    ?digest.priceSpots.map((item)=>`<article class="card daily-offer daily-price-spot">
+      <div class="card-head"><h4>${escapeHtml(item.title)}</h4>
+        <span class="badge">Annonce magasin</span></div>
+      <p><strong>Prix annoncé : ${money.format(item.advertisedPrice)} /
+        ${escapeHtml(item.priceUnit)}</strong></p>
+      <p class="help">Annonce relevée le ${formatDate(item.verifiedAt)} ·
+        valable selon annonce jusqu'au ${formatDate(item.expiresAt)}.
+        Produit, quantité, poids et prix dans le magasin choisi à vérifier.
+        <strong>Pas de pourcentage d'économie calculé.</strong>
+        ${digest.maxSpend!==null
+          ?"Le prix unitaire ne prouve pas que l'achat complet respecte votre budget."
+          :""}
+      </p>
+      <a class="open" href="${escapeHtml(item.sourceUrl)}"
+        target="_blank" rel="noopener noreferrer">Vérifier le prix officiel</a>
+    </article>`).join("")
+    :fallback("Aucun prix alimentaire chiffré pour un produit nommé n'a été vérifié dans les campagnes datées de ce magasin et de ce canal.");
   els.dailyRetailer.innerHTML=digest.retailer.length
     ?digest.retailer.map(renderPick).join("")
     :fallback("Aucune promotion produit de cette enseigne n'a de preuve active exploitable pour ce canal. "+
@@ -641,8 +661,12 @@ function renderDailyCatalogue(){
   els.dailyExtras.innerHTML=digest.extra.length
     ?digest.extra.map(renderPick).join("")
     :fallback("Aucun remboursement public suffisamment récent à proposer pour ce canal.");
-  els.dailyCampaigns.innerHTML=digest.campaigns.length
-    ?digest.campaigns.map((item)=>{
+  // The same priced food stays in the dedicated evidence section, not
+  // repeated among generic second-item marketing campaigns below.
+  const generalCampaigns=digest.campaigns.filter((item)=>
+    !digest.priceSpots.some((priced)=>priced.id===item.id));
+  els.dailyCampaigns.innerHTML=generalCampaigns.length
+    ?generalCampaigns.map((item)=>{
       const illustrative=Number.isFinite(item.illustrativeBasketPercent)
         ? `<p class="help"><strong>Plafond indicatif sur le lot : ${formatPercent(item.illustrativeBasketPercent)}</strong>
             pour ${item.illustrativeQuantity} articles de même prix, si la réduction maximale annoncée s'applique.
