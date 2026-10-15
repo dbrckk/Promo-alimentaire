@@ -87,6 +87,7 @@ const els = {
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
   observedPostcode:document.querySelector("#observedPostcode"),
+  observedSort:document.querySelector("#observedSort"),
   observedRadius:document.querySelector("#observedRadius"),
   observedNearby:document.querySelector("#observedNearby"),
   observedGeoNote:document.querySelector("#observedGeoNote"),
@@ -442,6 +443,7 @@ els.closeScan.addEventListener("click",()=>els.scanDialog.close());
 els.scanDialog.addEventListener("close",stopScanner);
 
 els.observedPostcode.addEventListener("input",()=>renderCommunityObservations());
+els.observedSort.addEventListener("change",()=>renderCommunityObservations());
 els.observedRadius.addEventListener("change",()=>{
   communityState.radiusKm=Number(els.observedRadius.value);
   if(communityState.coords){
@@ -649,8 +651,12 @@ function renderCommunityObservations(){
     return;
   }
   const budget=state.dailyMaxSpend==="all"?null:Number(state.dailyMaxSpend);
+  const requestedSort=els.observedSort.value;
+  const observedSort=requestedSort==="distance" && !near?"percent":requestedSort;
+  els.observedSort.querySelector('option[value="distance"]').disabled=!near;
+  if(requestedSort==="distance" && !near) els.observedSort.value="percent";
   const picks=selectObservedDiscounts(communityState.records,{
-    postcode:zip,sort:state.dailySort,maxSpend:budget,limit:15
+    postcode:zip,sort:observedSort,maxSpend:budget,limit:15
   });
   const checked=communityState.checkedAt
     ?parisCivilDay(new Date(communityState.checkedAt)):"date inconnue";

@@ -1300,6 +1300,8 @@ try{
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
   assert.equal(observedGeoRequests.length,0,
     "No location may be transmitted without explicit opt-in");
+  assert.equal(await page.locator('#observedSort option[value="distance"]').isDisabled(),true,
+    "Distance sort requires explicit proximity activation");
   await context.grantPermissions(["geolocation"]);
   await context.setGeolocation({
     latitude:46.7832,longitude:4.8539,accuracy:150
@@ -1318,6 +1320,19 @@ try{
   assert.deepEqual(observedGeoRequests.at(-1),
     {lat:"46.783",lon:"4.854",radius:"10"});
   assert.equal(await page.locator("#observedNearby").getAttribute("aria-pressed"),"true");
+  await page.locator("#observedSort").selectOption("distance");
+  assert.match(await page.locator("#observedDeals").innerText(),/km/);
+  const distanceSort=await page.evaluate(async()=>{
+    const {selectObservedDiscounts}=await import("./src/community-deals.js");
+    const records=[
+      {code:"1",date:"2026-10-15",distanceKm:9,savingPercent:80,savingAmount:8},
+      {code:"2",date:"2026-10-15",distanceKm:1,savingPercent:5,savingAmount:0.2},
+      {code:"3",date:"2026-10-15",distanceKm:3,savingPercent:25,savingAmount:1}
+    ];
+    return selectObservedDiscounts(records,{sort:"distance"}).map(x=>x.code);
+  });
+  assert.deepEqual(distanceSort,["2","3","1"],
+    "Nearby observations sort by measured distance, not by advertised percentage");
   // Switching off discards coordinates immediately and retries without them.
   await page.locator("#observedNearby").click();
   await page.waitForFunction(()=>
@@ -1325,6 +1340,9 @@ try{
       "échantillon national"),null,{timeout:10000});
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
   assert.equal(await page.locator("#observedNearby").getAttribute("aria-pressed"),"false");
+  assert.equal(await page.locator("#observedSort").inputValue(),"percent",
+    "Removing proximity resets distance sort without retaining location");
+  assert.equal(await page.locator('#observedSort option[value="distance"]').isDisabled(),true);
   assert.deepEqual(await page.evaluate(()=>Object.keys(localStorage)
     .filter((key)=>/observed.*(?:coord|latitude|longitude|position)/i.test(key))),[]);
   await context.clearPermissions();

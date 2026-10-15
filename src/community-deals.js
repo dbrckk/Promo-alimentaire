@@ -98,6 +98,11 @@ export function selectObservedDiscounts(records,{
   const ceiling=maxSpend===null ? null : Number(maxSpend);
   const safeLimit=Number.isInteger(limit)?Math.min(Math.max(limit,1),30):15;
   const comparator=(a,b)=>{
+    if(sort==="distance"){
+      const da=Number.isFinite(a.distanceKm)?a.distanceKm:Infinity;
+      const db=Number.isFinite(b.distanceKm)?b.distanceKm:Infinity;
+      return da-db || b.savingPercent-a.savingPercent || b.savingAmount-a.savingAmount;
+    }
     if(sort==="euros") return b.savingAmount-a.savingAmount || b.savingPercent-a.savingPercent;
     if(sort==="budget" || sort==="net") return a.price-b.price || b.savingPercent-a.savingPercent;
     return b.savingPercent-a.savingPercent || b.savingAmount-a.savingAmount;
