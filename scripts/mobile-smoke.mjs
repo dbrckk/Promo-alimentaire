@@ -37,7 +37,29 @@ await page.route("https://world.openfoodfacts.org/**",(route)=>{
   });
 });
 await page.route("https://prices.openfoodfacts.org/**",(route)=>{
-  const code=new URL(route.request().url()).searchParams.get("product_code");
+  const query=new URL(route.request().url()).searchParams;
+  if(query.get("price_is_discounted")==="true"){
+    const date=RECENT_RECEIPT_DATE;
+    const make=(id,code,brand,name,postal,price,regular,category="en:pastas")=>({
+      id,product_code:code,price,price_without_discount:regular,
+      price_is_discounted:true,discount_type:"SALE",
+      currency:"EUR",price_per:"UNIT",type:"PRODUCT",date,
+      proof_id:id+200,proof:{type:"PRICE_TAG"},
+      product:{code,source:"off",product_name:"Pâtes "+name,
+        categories_tags:[category]},
+      location_id:id+100,location:{id:id+100,osm_brand:brand,
+        osm_name:brand+" "+name,osm_address_postcode:postal,
+        osm_address_city:"Chalon-sur-Saône"}
+    });
+    return route.fulfill({status:200,contentType:"application/json",
+      body:JSON.stringify({total:4,pages:1,items:[
+        make(511,"3038359913242","Carrefour","Chalon","71100",0.99,1.59),
+        make(512,"3038359913273","Carrefour","Dijon","21000",1.50,2.10),
+        make(513,"3038359913297","E.Leclerc","Chalon","71100",1.29,1.99),
+        make(514,"3038359913242","Carrefour","Alcool","71100",1.00,3.00,"en:alcoholic-beverages")
+      ]})});
+  }
+  const code=query.get("product_code");
   route.fulfill({
     status:200,contentType:"application/json",
     body:JSON.stringify({total:2,items:[
