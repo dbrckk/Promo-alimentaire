@@ -38,7 +38,12 @@ export function normalizeCommunityDiscount(item,{
     || item.price_is_discounted!==true
     || !ACCEPTED_DISCOUNTS.has(item.discount_type)
     || item.duplicate_of!==null && item.duplicate_of!==undefined
-    || item.currency!=="EUR" || item.price_per!=="UNIT"
+    || item.currency!=="EUR"
+    // Open Prices represents a default unit price with price_per:null.
+    // Its existing normalization maps that to UNIT. Refuse only a stated
+    // non-unit measure, rather than dropping ordinary EAN-labelled items.
+    || item.price_per!==null && item.price_per!==undefined
+      && item.price_per!=="UNIT"
     || !Number.isSafeInteger(item.id) || item.id<=0
     || !priceObservationPublicUrl(item.id)) return null;
   const code=String(item.product_code || item.product?.code || "");
