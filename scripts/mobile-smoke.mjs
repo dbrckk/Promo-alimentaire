@@ -1298,6 +1298,109 @@ try{
   // retailer advertisement that would fabricate a checkout price.
   await page.locator('[data-tab="daily"]').click();
   await page.locator("#dailyStatus").waitFor({state:"visible"});
+  // A full food-refund explorer must remain usable even with an unknown
+  // checkout price and a strict shopping budget. No invented savings.
+  assert.ok(await page.locator("#foodRefundStatus").isVisible());
+  const beforeRefundBudget=await page.locator("#foodRefundStatus").innerText();
+  await page.locator("#dailyMaxSpend").selectOption("3");
+  assert.equal(await page.locator("#foodRefundStatus").innerText(),
+    beforeRefundBudget,
+    "An unknown product price cannot make a conditional refund 'affordable', but must not erase source discovery");
+  await page.locator("#dailyMaxSpend").selectOption("all");
+  await page.locator("#foodRefundSearch").fill("article absolument introuvable 98989");
+  assert.match(await page.locator("#foodRefundStatus").innerText(),/^0 sur 0/);
+  assert.equal(await page.locator("#foodRefundDeals a").count(),0);
+  await page.locator("#foodRefundSearch").fill("");
+  await page.locator("#foodRefundProvider").selectOption("shopmium");
+  assert.match(await page.locator("#foodRefundStatus").innerText(),/Shopmium|remboursement/i);
+  await page.locator("#foodRefundProvider").selectOption("all");
+  await page.locator("#foodRefundSort").selectOption("recent");
+  await page.locator("#foodRefundSort").selectOption("amount");
+  const foodRefundSafety=await page.evaluate(async()=>{
+    const {normalizeImportedOffer}=await import("./src/ingestion.js");
+    const {selectFoodRefundOpportunities}=await import("./src/daily-catalogue.js");
+    const now=new Date("2026-10-15T12:00:00Z");
+    const make=(id,providerId,title,other={})=>{
+      const validated=normalizeImportedOffer({
+        providerId,externalId:id,title,
+        provider:providerId==="shopmium"?"Shopmium":"Coupon Network",
+        sourceUrl:providerId==="shopmium"
+          ?"https://offers.shopmium.com/fr/n/offre-fixture"
+          :"https://prod-cn-offers.couponnetwork.fr/",
+        stores:["all"],channels:["store"],category:providerId==="shopmium"
+          ?"alimentaire":"autre",
+        mechanism:"manufacturer_refund",scope:"produit",
+        verifiedAt:"2026-10-15",reviewAfter:"2026-10-22",
+        savingAmount:0.65,
+        ...other
+      });
+      if(!validated.ok) throw new Error(validated.errors.join(" | "));
+      return validated.value;
+    };
+    const records=[
+      make("food","coupon-network","Bonduelle - Carottes râpées"),
+      make("detergent","coupon-network","Sun - Capsules lave-vaisselle",
+        {savingAmount:5}),
+      make("alcohol","coupon-network","Ballantine's - Whisky",
+        {savingAmount:7}),
+      make("unknown","coupon-network","Produit inconnu",
+        {savingAmount:9}),
+      make("pasta","shopmium","Pâtes alimentaires",{
+        savingAmount:undefined,savingPercent:30,minPurchaseQty:2,
+        quantityTiers:[{minQty:2,maxQty:2,savingPercent:20}]
+      }),
+      make("unlock","shopmium","Yaourt à débloquer",{
+        savingAmount:undefined,savingPercent:100,requiresUnlock:true,
+        unlockConditions:"Deux autres offres à effectuer."
+      }),
+      make("expired","coupon-network","Bonduelle - Carottes périmées",
+        {reviewAfter:"2026-10-14"}),
+      make("wrong-channel","shopmium","Yaourt en ligne",{
+        channels:["online"],savingAmount:undefined,savingPercent:35
+      }),
+      make("external-url","coupon-network","Bonduelle - Carottes piégées",{
+        sourceUrl:"https://example.org/offers",savingAmount:9
+      }),
+      {...make("sync-failed","coupon-network","Bonduelle - Carottes anciennes"),
+        sourceSyncWarning:{status:"unavailable"}}
+    ];
+    const all=selectFoodRefundOpportunities({
+      offers:records,store:"carrefour",channel:"store",now,limit:24
+    });
+    const shopmium=selectFoodRefundOpportunities({
+      offers:records,store:"carrefour",channel:"store",now,
+      provider:"shopmium",search:"PATES"
+    });
+    const unlock=all.items.find((item)=>item.id==="shopmium-unlock");
+    const bulk=Array.from({length:29},(_,i)=>make(
+      "more-"+i,"coupon-network","Bonduelle - Carottes "+i,{
+        savingAmount:Math.round((0.1+i*0.01)*100)/100
+      }));
+    const limited=selectFoodRefundOpportunities({
+      offers:bulk,store:"carrefour",channel:"store",now
+    });
+    const expanded=selectFoodRefundOpportunities({
+      offers:bulk,store:"carrefour",channel:"store",now,limit:48
+    });
+    return {
+      ids:all.items.map((item)=>item.id),total:all.total,
+      fixedFirst:all.items[0]?.savingAmount===0.65,
+      pasta:shopmium.items.map((item)=>({
+        id:item.id,qty:item.minQuantity,percent:item.savingPercent,
+        upfront:item.upfrontCost
+      })),
+      unlock:unlock?.requiresUnlock,unlockText:unlock?.unlockConditions,
+      limited:[limited.total,limited.items.length],
+      expanded:[expanded.total,expanded.items.length]
+    };
+  });
+  assert.deepEqual(foodRefundSafety,{
+    ids:["coupon-network-food","shopmium-unlock","shopmium-pasta"],total:3,
+    fixedFirst:true,
+    pasta:[{id:"shopmium-pasta",qty:2,percent:20,upfront:null}],
+    unlock:true,unlockText:"Deux autres offres à effectuer.",
+    limited:[29,24],expanded:[29,29]
+  },"Only still-reviewable, explicitly food-classified official refund leads may appear; no budget or cashback promise is inferred");
   assert.equal(await page.locator("#dailyAlternativeLink").getAttribute("href"),
     "https://www.bonial.fr/Enseignes/Carrefour",
     "Un accès aux prospectus datés reste disponible quand Carrefour bloque les robots");
