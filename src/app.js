@@ -1181,6 +1181,10 @@ function renderFoodRefundExplorer(){
         <p class="help">${escapeHtml(quantity)}
           ${item.hasExactEan?"EAN sourcé ; éligibilité à confirmer.":"EAN exact et variantes à contrôler."}
           ${escapeHtml(price)}</p>
+        ${item.requiresUnlock
+          ?`<p class="help"><strong>Offre à débloquer avant achat :</strong>
+            ${escapeHtml(item.unlockConditions||"Vérifier les prérequis dans l'application du fournisseur.")}</p>`
+          :""}
         ${item.conditions?`<p class="help">${escapeHtml(item.conditions)}</p>`:""}
         <p class="help">Source relevée le ${formatDate(item.verifiedAt)}.
           ${escapeHtml(deadline+review)}
