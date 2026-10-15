@@ -52,3 +52,34 @@ for(const [label,query] of probes){
     console.log("[coverage] "+label+" failed="+String(error.message||error).slice(0,100));
   }
 }
+
+
+// Inspect the distribution of real discounted rows, and test whether the
+// documented location-name filter is populated in this public dataset.
+for(const [label,criteria] of [
+  ["known-name-filter",{location__osm_name__contains:"Netto"}],
+  ["lowercase-carrefour",{location__osm_name__contains:"carrefour"}],
+  ["global-7d",{"date__gte":"2026-10-08"}]
+]){
+  const params=new URLSearchParams({
+    currency:"EUR",type:"PRODUCT",price_is_discounted:"true",size:"100",
+    order_by:"-date",...criteria
+  });
+  try{
+    const response=await fetch("https://prices.openfoodfacts.org/api/v1/prices?"+params,{
+      headers:{Accept:"application/json"},signal:AbortSignal.timeout(10000)
+    });
+    const data=await response.json();
+    const items=Array.isArray(data.items)?data.items:[];
+    const matching=items.filter(item=>
+      /carrefour|leclerc/i.test([
+        item.location?.osm_brand,item.location?.osm_name,item.location?.osm_display_name
+      ].join(" ")));
+    console.log("[distribution] "+label+" HTTP "+response.status+
+      " total="+String(data.total)+" retailerMatch="+matching.length+
+      " firstStores="+items.slice(0,10)
+        .map(x=>String(x.location?.osm_name||x.location?.osm_brand||"-").slice(0,35)).join("; "));
+  }catch(err){
+    console.log("[distribution] "+label+" failed "+String(err.message||err).slice(0,110));
+  }
+}
