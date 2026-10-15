@@ -16,6 +16,10 @@ export function createCommunityFeed({getStore,getChannel,getSort,getBudget,getRa
   const container=document.querySelector("#communityDeals");
   const refreshButton=document.querySelector("#communityRefresh");
   const nearbyButton=document.querySelector("#communityNearby");
+  // An installed PWA can briefly serve an older HTML shell during an update.
+  if(!summary || !container || !refreshButton || !nearbyButton){
+    return {render(){},load(){},invalidate(){}};
+  }
   let controller=null,token=0,coords=null,key=null,checkedAt=0;
   let records=[],incomplete=false,loading=false,error=null;
 
