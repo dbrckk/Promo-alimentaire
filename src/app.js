@@ -2,7 +2,7 @@ import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import {
   selectDailyCatalogue,selectFoodRefundOpportunities,selectSavedFoodRefunds,
-  normalizeSavedFoodRefundIds,dailyCampaignRefreshNotice
+  normalizeSavedFoodRefundIds,formatSavedFoodRefundChecklist,dailyCampaignRefreshNotice
 } from "./daily-catalogue.js";
 import {fetchObservedDiscounts,selectObservedDiscounts,lookupPostalCodeCommunes} from "./community-deals.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
@@ -99,6 +99,7 @@ const els = {
   foodRefundMore:document.querySelector("#foodRefundMore"),
   foodRefundSavedStatus:document.querySelector("#foodRefundSavedStatus"),
   foodRefundSaved:document.querySelector("#foodRefundSaved"),
+  foodRefundCopy:document.querySelector("#foodRefundCopy"),
   foodRefundPrune:document.querySelector("#foodRefundPrune"),
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
@@ -335,6 +336,25 @@ els.foodRefundSort.addEventListener("change",()=>{
 });
 els.foodRefundDeals.addEventListener("click",handleFoodRefundSavedClick);
 els.foodRefundSaved.addEventListener("click",handleFoodRefundSavedClick);
+els.foodRefundCopy.addEventListener("click",async()=>{
+  const saved=selectSavedFoodRefunds({
+    savedIds:savedFoodRefundIds,
+    offers:resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile),
+    store:state.store,channel:state.channel,now:new Date()
+  });
+  if(!saved.available.length) return;
+  const checklist=formatSavedFoodRefundChecklist(saved.available,{store:state.store});
+  try{
+    if(!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
+    await navigator.clipboard.writeText(checklist);
+    els.foodRefundSavedStatus.textContent=
+      "Liste copiée : "+saved.available.length+
+      " offre(s) à revérifier. Aucun remboursement ni prix en caisse garanti.";
+  }catch{
+    els.foodRefundSavedStatus.textContent=
+      "Copie impossible : autorisez le presse-papiers dans le navigateur ou utilisez les liens officiels.";
+  }
+});
 els.foodRefundPrune.addEventListener("click",()=>{
   const current=selectSavedFoodRefunds({
     savedIds:savedFoodRefundIds,
@@ -1235,6 +1255,7 @@ function renderFoodRefundExplorer(){
       </div>
     </article>`).join("")
     :'<p class="panel help">Sélectionne « Ajouter à ma liste » dans les offres ci-dessous. Les favoris qui ont expiré ou ne sont plus valables pour ce canal ne s’affichent pas comme actifs.</p>';
+  els.foodRefundCopy.disabled=saved.available.length===0;
   els.foodRefundPrune.classList.toggle("hidden",saved.unavailableCount===0);
   els.foodRefundPrune.disabled=saved.unavailableCount===0;
   els.foodRefundStatus.textContent=shown+" sur "+selected.total+
