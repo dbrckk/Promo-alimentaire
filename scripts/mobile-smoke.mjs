@@ -1250,6 +1250,28 @@ try{
     /Sélection au .*Carrefour.*magasin/);
   assert.match(await page.locator("#dailyRetailer").innerText(),
     /Aucune promotion|Contrôler la source/);
+  assert.ok(await page.locator("#dailyFreshnessStatus").isVisible(),
+    "Le catalogue mobile doit indiquer l'état réel de la collecte publique");
+  assert.match(await page.locator("#dailyFreshnessStatus").innerText(),
+    /contrôle automatique|lecture|catalogue/i);
+  const sourceEvidence=await page.evaluate(async()=>{
+    const {dailyCampaignRefreshNotice}=await import("./src/daily-catalogue.js");
+    const now=new Date("2026-10-15T12:00:00Z");
+    const feed={checkedAt:"2026-10-14T09:00:00Z",
+      lastAttemptAt:"2026-10-15T07:47:00Z",
+      sourceChecks:{
+        "https://www.carrefour.fr/offres-du-moment":{status:"unavailable"},
+        "https://www.carrefour.fr/catalogue/carrefour":{status:"unavailable"}
+      }};
+    return {
+      denied:dailyCampaignRefreshNotice(feed,"carrefour",now),
+      previous:dailyCampaignRefreshNotice({...feed,
+        lastAttemptAt:"2026-10-14T07:47:00Z"},"carrefour",now)
+    };
+  });
+  assert.match(sourceEvidence.denied,/indisponible.*2026-10-15/i);
+  assert.match(sourceEvidence.denied,/2026-10-14/);
+  assert.match(sourceEvidence.previous,/aucun contrôle automatique/i);
   // Mobile contract: a named produce price has its own evidence card,
   // must survive a tight catalogue card limit and disappear after French
   // midnight without implying the whole-weight basket is affordable.

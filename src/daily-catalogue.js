@@ -337,3 +337,43 @@ export function selectDailyCatalogue({
     affordableCandidates:picks.length,
     exactRetailerCount:retailer.filter((item)=>item.hasExactEan).length};
 }
+
+// The advertised campaign's expiry is not the time of the last successful
+// scrape. A green scheduled workflow may have received HTTP 403; make that
+// gap visible in the Android UI without changing any individual offer proof.
+export function dailyCampaignRefreshNotice(feed={},store="carrefour",now=new Date()){
+  const today=parisCivilDay(new Date(now));
+  const attempt=Date.parse(feed?.lastAttemptAt||"");
+  const latest=Date.parse(feed?.checkedAt||"");
+  const attemptedDay=Number.isFinite(attempt) && attempt<=new Date(now).getTime()
+    ?parisCivilDay(new Date(attempt)):null;
+  const proofDay=Number.isFinite(latest) && latest<=new Date(now).getTime()
+    ?parisCivilDay(new Date(latest)):null;
+  const vendor=store==="leclerc"?"E.Leclerc":"Carrefour";
+  const proofText=proofDay
+    ? "Dernière preuve de campagne collectée : "+proofDay+"."
+    : "Aucune preuve de campagne récente confirmée.";
+  if(attemptedDay!==today)
+    return "Aucun contrôle automatique des catalogues du jour enregistré pour "+
+      today+". "+proofText+" Ouvrez le prospectus officiel pour vérifier les offres.";
+  const checks=Object.entries(feed?.sourceChecks||{})
+    .filter(([url,value])=>(store==="leclerc"
+      ?url.startsWith("https://nos-catalogues-promos-v2.e.leclerc/catalog/")
+      :["https://www.carrefour.fr/offres-du-moment",
+         "https://www.carrefour.fr/catalogue/carrefour"].includes(url))
+      && ["available","unavailable"].includes(value?.status))
+    .map(([,value])=>value.status);
+  if(!checks.length)
+    return vendor+" : aucune lecture de source officielle enregistrée aujourd'hui. "+
+      proofText+" Vérifiez le catalogue manuellement.";
+  if(checks.every((status)=>status==="unavailable"))
+    return vendor+" : lecture automatique du catalogue indisponible aujourd'hui ("+
+      today+"). "+proofText+
+      " Les anciennes annonces ne sont pas des promotions reconfirmées.";
+  if(checks.includes("unavailable"))
+    return vendor+" : lecture partielle des sources officielles aujourd'hui ("+
+      today+"). "+proofText+
+      " Certaines opérations restent à vérifier manuellement.";
+  return vendor+" : page(s) officielles consultée(s) aujourd'hui ("+today+
+    "), sans garantie de prix local. "+proofText;
+}

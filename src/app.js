@@ -1,6 +1,6 @@
 import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
-import {selectDailyCatalogue} from "./daily-catalogue.js";
+import {selectDailyCatalogue,dailyCampaignRefreshNotice} from "./daily-catalogue.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, selectBestRecentPrice } from "./open-data.js";
@@ -82,6 +82,7 @@ const els = {
   dailyUnconfirmed:document.querySelector("#dailyUnconfirmed"),
   dailyExtras:document.querySelector("#dailyExtras"),
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
+  dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   providers:document.querySelector("#providers"),
   sourceScope:document.querySelector("#sourceScope"),
@@ -190,6 +191,8 @@ const state = {
   sourceHealth:[],
   dailyCampaigns:[],
   dailyFeedCheckedAt:null,
+  dailyFeedLastAttemptAt:null,
+  dailySourceChecks:{},
   lookupToken:0,
   skuCompareToken:0
 };
@@ -510,6 +513,10 @@ function renderDailyCatalogue(){
     : state.channel==="store" ? "https://www.e.leclerc/prospectus"
       : "https://www.leclercdrive.fr/";
   els.dailyOfficialLink.href=source;
+  if(els.dailyFreshnessStatus) els.dailyFreshnessStatus.textContent=
+    dailyCampaignRefreshNotice({checkedAt:state.dailyFeedCheckedAt,
+      lastAttemptAt:state.dailyFeedLastAttemptAt,
+      sourceChecks:state.dailySourceChecks},state.store,today);
   const budgetDescription=digest.maxSpend===null?"sans plafond connu"
     :"budget initial de "+money.format(digest.maxSpend)+" maximum par lot";
   const sortDescription={
@@ -708,9 +715,14 @@ async function hydrateDailyCampaigns(){
     const data=await response.json();
     state.dailyCampaigns=Array.isArray(data?.campaigns)?data.campaigns:[];
     state.dailyFeedCheckedAt=data?.checkedAt || null;
+    state.dailyFeedLastAttemptAt=data?.lastAttemptAt || null;
+    state.dailySourceChecks=data?.sourceChecks && typeof data.sourceChecks==="object"
+      && !Array.isArray(data.sourceChecks) ? data.sourceChecks:{};
   }catch{
     state.dailyCampaigns=[];
     state.dailyFeedCheckedAt=null;
+    state.dailyFeedLastAttemptAt=null;
+    state.dailySourceChecks={};
   }
   renderDailyCatalogue();
 }
