@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {validateImportBatch} from "../src/ingestion.js";
-import {selectDailyCatalogue} from "../src/daily-catalogue.js";
+import {selectDailyCatalogue,pickActionableDailyDeals} from "../src/daily-catalogue.js";
 
 const offers=JSON.parse(
   await readFile(new URL("../data/import/leclerc-catalog-2026-10-07.json",import.meta.url),"utf8")
@@ -114,4 +114,49 @@ test("huit nouveaux produits alimentaires gardent le prix réel, le lot et le li
     "Un lot de trois à 2,50 € pièce coûte 7,50 € avant remboursement");
   assert.equal(affordable.some(x=>x.title.includes("Gullón")),false,
     "Une remise sur le deuxième ne rend pas le lot à 4,78 € abordable sous 3 €");
+});
+
+test("15 octobre : seules les promos avec prix et économie calculables ressortent",()=>{
+  const normalized=validateImportBatch(offers).normalized;
+  const list=selectDailyCatalogue({offers:normalized,store:"leclerc",
+    channel:"store",now:new Date("2026-10-15T12:00:00Z"),
+    sort:"budget",maxSpend:3,limit:30});
+  assert.ok(list.highlights.length>0,
+    "Le catalogue public E.Leclerc contient des offres datées et chiffrées");
+  assert.ok(list.highlights.every((item)=>Number.isFinite(item.upfrontCost)
+    && item.upfrontCost>0 && item.upfrontCost<=3
+    && Number.isFinite(item.savingAmount) && item.savingAmount>0
+    && Number.isFinite(item.savingPercent) && item.savingPercent>0
+    && item.savingAmount<=item.upfrontCost));
+  assert.ok(list.highlights.some((item)=>item.title.includes("Ramen Nissin")));
+  assert.ok(list.highlights.some((item)=>item.title.includes("Côté Table")));
+  // The same genuine product can remain a lower-priority catalogue item.
+  assert.ok(list.retailer.some((item)=>item.title.includes("Ramen Nissin")));
+  const coupons=selectDailyCatalogue({offers:normalized,store:"leclerc",
+    channel:"store",now:new Date("2026-10-15T12:00:00Z"),
+    sort:"budget",maxSpend:null,limit:30});
+  assert.ok(coupons.highlights.every((item)=>item.upfrontCost>0));
+});
+
+test("trois recommandations diversifiées, sans réduction sur prix inconnu",()=>{
+  const mk=(id,category,upfrontCost,savingAmount,rate,extra={})=>({
+    id,title:id,category,upfrontCost,savingAmount,
+    savingPercent:rate,minQuantity:1,hasExactEan:false,...extra
+  });
+  const ranked=[
+    mk("lait", "produits laitiers",2,1,50,{hasExactEan:true}),
+    mk("fromage","produits laitiers",2.20,1.05,47.72),
+    mk("pain","boulangerie",2.50,1.10,44),
+    mk("legumes","fruits et légumes",1.99,0.8,40.20),
+    mk("prix absent","épicerie",null,1,80),
+    mk("remise absente","bio",1.40,null,70),
+    mk("prix perime","épicerie",3,1.5,50,{needsReconfirmation:true}),
+    mk("cout insuffisant","épicerie",1,1.20,50)
+  ];
+  const selected=pickActionableDailyDeals(ranked,{sort:"percent",limit:3});
+  assert.deepEqual(selected.map((x)=>x.id),["lait","pain","legumes"]);
+  assert.ok(selected.every((x)=>x.upfrontCost>=x.savingAmount));
+  assert.deepEqual(pickActionableDailyDeals(ranked,{sort:"budget",limit:2})
+    .map(x=>x.id),["legumes","lait"]);
+  assert.deepEqual(pickActionableDailyDeals([],{}),[]);
 });

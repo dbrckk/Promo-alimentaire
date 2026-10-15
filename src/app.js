@@ -594,10 +594,19 @@ function renderDailyCatalogue(){
   };
   const fallback=(title)=>`<p class="panel help">${escapeHtml(title)}</p>`;
   els.dailyHighlights.innerHTML=digest.highlights.length
-    ?digest.highlights.map(renderPick).join("")
+    ?digest.highlights.map((item)=>`<div class="daily-actionable">
+      <p class="help"><strong>À examiner :</strong>
+        ${formatPercent(item.savingPercent)} sur ${item.minQuantity}
+        article(s) · ${money.format(item.upfrontCost)} à avancer ·
+        ${money.format(item.savingAmount)} d'avantage potentiel.
+        ${item.hasExactEan
+          ?"EAN documenté ; prix local à vérifier."
+          :"Gamme éligible et magasin à confirmer."}
+      </p>${renderPick(item)}
+    </div>`).join("")
     :fallback(digest.maxSpend===null
-      ?"Aucune économie chiffrée active sur un produit pour ce canal."
-      :"Aucune offre avec prix initial documenté dans le budget choisi. Augmentez le plafond pour voir les références éligibles.");
+      ?"Aucun produit n'a à la fois un prix initial du lot documenté et une économie calculable aujourd'hui pour ce canal. Les coupons sans prix fiable sont listés plus bas, sans être présentés comme de bonnes affaires chiffrées."
+      :"Aucune promotion dont le prix initial ET l'économie sont calculables dans ce budget. Les annonces sans tarif complet restent des pistes, pas des achats validés.");
   els.dailyPriceSpots.innerHTML=digest.priceSpots.length
     ?digest.priceSpots.map((item)=>`<article class="card daily-offer daily-price-spot">
       <div class="card-head"><h4>${escapeHtml(item.title)}</h4>
