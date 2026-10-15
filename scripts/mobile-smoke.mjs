@@ -37,7 +37,27 @@ await page.route("https://world.openfoodfacts.org/**",(route)=>{
   });
 });
 await page.route("https://prices.openfoodfacts.org/**",(route)=>{
-  const code=new URL(route.request().url()).searchParams.get("product_code");
+  const query=new URL(route.request().url()).searchParams;
+  const code=query.get("product_code");
+  if(!code && query.get("price_is_discounted")==="true"){
+    const observation=(id,store,locationId,price,regular,code)=>({
+      id,product_code:code,type:"PRODUCT",price,price_without_discount:regular,
+      price_is_discounted:true,discount_type:"SALE",price_per:"UNIT",
+      currency:"EUR",date:RECENT_RECEIPT_DATE,location_id:locationId,
+      proof_id:id+100,proof:{id:id+100,type:"PRICE_TAG"},
+      product:{code,source:"off",product_name:"Pâtes alimentaires témoin",
+        categories_tags:["en:pastas"]},
+      location:{id:locationId,osm_brand:store,osm_name:store+" Lyon",
+        osm_lat:45.76,osm_lon:4.84,osm_address_city:"Lyon"}
+    });
+    return route.fulfill({
+      status:200,contentType:"application/json",
+      body:JSON.stringify({total:2,page:1,pages:1,items:[
+        observation(9001,"Carrefour",42,2.49,3.99,"3038359913242"),
+        observation(9002,"E.Leclerc",99,3.19,4.19,"3038359913242")
+      ]})
+    });
+  }
   route.fulfill({
     status:200,contentType:"application/json",
     body:JSON.stringify({total:2,items:[
@@ -1246,6 +1266,21 @@ try{
   // retailer advertisement that would fabricate a checkout price.
   await page.locator('[data-tab="daily"]').click();
   await page.locator("#dailyStatus").waitFor({state:"visible"});
+  // Real Android-sized UI invokes the public API adapter (mocked network only).
+  // Price observations remain separate from catalog promotions and do not
+  // silently stack into guaranteed basket savings.
+  await page.locator("#communityDeals .daily-offer").first()
+    .waitFor({state:"visible",timeout:12000});
+  assert.equal(await page.locator("#communityDeals .daily-offer").count(),1,
+    "Seule l'enseigne sélectionnée doit afficher ses observations Open Prices");
+  assert.match(await page.locator("#communityDeals").innerText(),/2,49/);
+  assert.match(await page.locator("#communityDeals").innerText(),
+    /ne pas cumuler automatiquement/i);
+  assert.match(await page.locator("#communityStatus").innerText(),
+    /échantillon national/);
+  await page.locator("#dailyMaxSpend").selectOption("3");
+  assert.equal(await page.locator("#communityDeals .daily-offer").count(),1);
+  await page.locator("#dailyMaxSpend").selectOption("all");
   assert.match(await page.locator("#dailyStatus").innerText(),
     /Sélection au .*Carrefour.*magasin/);
   assert.match(await page.locator("#dailyRetailer").innerText(),
