@@ -310,7 +310,23 @@ export function selectDailyCatalogue({
       || a.expiresAt.localeCompare(b.expiresAt)
       || a.title.localeCompare(b.title,"fr"))
     .slice(0,safeLimit);
-  return {today,store,channel,retailer,extra,campaigns:discovery,highlights,
+  // A named produce advertisement with a stated unit price is more useful
+  // for a tight food budget than a generic "% on the 2nd item" banner.
+  // These are editorial observations only: €/kg is NOT the price of a
+  // basket of unknown weight, and no former/reference price is documented.
+  // No EAN, cashback, affordability verdict or inferred savings are created.
+  const priceSpots=discovery
+    .filter((item)=>Number.isFinite(item.advertisedPrice)
+      && ["kg","pièce"].includes(item.priceUnit)
+      && item.offerMechanism===null
+      && item.advertisedMaxPercent===null
+      && item.category==="fruits et légumes")
+    .sort((a,b)=>a.priceUnit.localeCompare(b.priceUnit,"fr")
+      || a.advertisedPrice-b.advertisedPrice
+      || a.title.localeCompare(b.title,"fr"))
+    .slice(0,safeLimit);
+  return {today,store,channel,retailer,extra,campaigns:discovery,
+    priceSpots,highlights,
     // Explicitly excluded from highlights, merchant "verified" cards and
     // any basket savings. This is a bounded verification-only shortlist.
     unconfirmed,unconfirmedRetailerCount:pendingPicks.length,
