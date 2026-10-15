@@ -40,6 +40,8 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
   const query=new URL(route.request().url()).searchParams;
   const code=query.get("product_code");
   if(!code && query.get("price_is_discounted")==="true"){
+    assert.equal(query.has("location__osm_name__contains"),false,
+      "Le filtre de nom Open Prices actuellement défaillant masquerait toutes les observations");
     const observation=(id,store,locationId,price,regular,code)=>({
       id,product_code:code,type:"PRODUCT",price,price_without_discount:regular,
       price_is_discounted:true,discount_type:"SALE",price_per:"UNIT",
