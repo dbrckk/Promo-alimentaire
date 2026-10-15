@@ -170,6 +170,24 @@
         <p class="help">Uniquement des offres alimentaires dont le prix initial du lot minimum ET les économies en euros sont documentés. Sélection diversifiée par catégorie, classée selon ton tri. Les autres coupons restent consultables plus bas, mais leur coût réel ne peut pas être deviné. Une réduction, une cagnotte ou un remboursement restent conditionnels : il faut avancer le prix total en caisse et vérifier le magasin, l'EAN et le cumul.</p>
         <div id="dailyHighlights" class="grid" aria-live="polite"></div>
       </section>
+      <section class="daily-group" aria-label="Réductions alimentaires observées">
+        <h3>Réductions observées en magasin — Open Prices</h3>
+        <p class="help">Relevés communautaires avec prix observé, prix habituel, date, magasin et justificatif. Ils ne prouvent pas qu'une promotion est encore disponible aujourd'hui. Magasin physique uniquement. Données ouvertes sous licence ODbL.</p>
+        <div class="daily-filters">
+          <div class="field">
+            <label for="observedPostcode">Code postal (facultatif, filtre local)</label>
+            <input id="observedPostcode" inputmode="numeric" maxlength="5"
+              pattern="[0-9]{5}" autocomplete="postal-code" placeholder="Ex. 71100" />
+          </div>
+          <div class="field">
+            <label for="observedRefresh">Relevés récents (7 jours maximum)</label>
+            <button id="observedRefresh" class="secondary" type="button">Actualiser les relevés</button>
+          </div>
+        </div>
+        <p id="observedStatus" class="help" role="status" aria-live="polite">Ouvrir cet onglet pour consulter les relevés récents.</p>
+        <div id="observedDeals" class="grid" aria-live="polite"></div>
+        <p class="help">Source : <a href="https://prices.openfoodfacts.org/" target="_blank" rel="noopener noreferrer">Open Prices / Open Food Facts</a> (ODbL). La recherche est limitée aux observations les plus récentes : une absence de résultat n'indique pas une absence de promotion. Les économies ne s'ajoutent pas automatiquement au panier.</p>
+      </section>
       <section class="daily-group" aria-label="Prix alimentaires précis dans les campagnes">
         <h3>Prix alimentaires repérés dans les annonces du jour</h3>
         <p class="help">Seulement les produits nommés, avec un prix et une unité explicitement annoncés par l'enseigne. Les prix au kilo ne prédisent pas le montant à payer sans connaître le poids. Ce ne sont ni des remises chiffrées ni des prix garantis dans ton magasin.</p>
