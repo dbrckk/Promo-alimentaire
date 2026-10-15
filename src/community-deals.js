@@ -59,6 +59,14 @@ export function normalizeObservedDiscount(raw,{
   const sourceUrl=priceObservationPublicUrl(observation.id);
   const proofId=Number(raw.proof_id);
   const title=String(product.product_name || raw.product_name || "").trim();
+  const sourceLocation=raw.location && typeof raw.location==="object"
+    && !Array.isArray(raw.location) ?raw.location:{};
+  const addressPart=(value,limit)=>typeof value==="string"
+    && value.length<=limit ?value.trim():"";
+  const storeStreet=[
+    addressPart(sourceLocation.osm_address_housenumber,16),
+    addressPart(sourceLocation.osm_address_street,120)
+  ].filter(Boolean).join(" ").slice(0,140);
   if(!sourceUrl || !Number.isSafeInteger(proofId) || proofId<1
     || !title || title.length>180 || !isFreshObservation(observation,maxAgeDays,now)
     || !isUnambiguousRetailer(observation.retailerText,store)
@@ -77,6 +85,7 @@ export function normalizeObservedDiscount(raw,{
   return {
     id:observation.id,code,title:title.slice(0,180),
     store,storeName:String(observation.storeName).slice(0,100),
+    locationId:verifiedOutletId(raw),storeStreet,
     postcode:observation.postcode,city:String(observation.city).slice(0,80),
     date:observation.date,sourceUrl,
     distanceKm:nearby?observation.distanceKm:null,
@@ -122,16 +131,18 @@ export function selectObservedDiscounts(records,{
  * the same physical place. Where it is absent or contradictory, preserve
  * separate receipt IDs instead of discarding another shop's observed price.
  */
-function observedOutletKey(raw,item){
+function verifiedOutletId(raw){
   const ids=[raw?.location_id,raw?.location?.id]
     .filter((value)=>value!==null && value!==undefined);
   const valid=(value)=>/^[1-9]\d{0,15}$/.test(String(value))
     && Number.isSafeInteger(Number(value));
-  if(ids.length && ids.every(valid)
-    && ids.every((id)=>Number(id)===Number(ids[0]))){
-    return "outlet:"+Number(ids[0]);
-  }
-  return "receipt:"+String(item.id);
+  return ids.length && ids.every(valid)
+    && ids.every((id)=>Number(id)===Number(ids[0]))
+    ?Number(ids[0]):null;
+}
+function observedOutletKey(raw,item){
+  const outletId=verifiedOutletId(raw);
+  return outletId===null?"receipt:"+String(item.id):"outlet:"+outletId;
 }
 
 export async function fetchObservedDiscounts({
