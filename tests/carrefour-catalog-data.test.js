@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
 import {isValidGtin} from "../src/gtin.js";
 import {normalizeImportedOffer} from "../src/ingestion.js";
-import {selectDailyCatalogue} from "../src/daily-catalogue.js";
-import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,discoverCarrefourFoodBrochures,retainRecentDailyLeads} from "../scripts/daily-campaign-evidence.mjs";
+import {selectDailyCatalogue,dailyCampaignRefreshNotice} from "../src/daily-catalogue.js";
+import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,discoverCarrefourFoodBrochures,retainRecentDailyLeads,dailyCampaignSourceUrls} from "../scripts/daily-campaign-evidence.mjs";
 
 const snapshot=JSON.parse(await readFile(
   new URL("../data/import/carrefour-promotions-auto.json",import.meta.url),"utf8"
@@ -378,4 +378,57 @@ test("petits budgets : nouveautés Carrefour visibles en premier sans prix de ca
     store:"carrefour",channel:"store",maxSpend:3
   });
   assert.equal(expired.campaigns.length,0);
+});
+
+test("les deux portes d'entrée Carrefour sont contrôlées même après expiration de toutes les anciennes campagnes",()=>{
+  const urls=dailyCampaignSourceUrls([
+    {sourceUrl:"https://www.carrefour.fr/offres-du-moment",
+      expiresAt:"2026-10-14"},
+    {sourceUrl:"https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637",
+      expiresAt:"2026-10-17"}
+  ],"2026-10-15");
+  assert.deepEqual(urls,[
+    "https://www.carrefour.fr/catalogue/carrefour",
+    "https://www.carrefour.fr/offres-du-moment",
+    "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637"
+  ]);
+  assert.deepEqual(dailyCampaignSourceUrls([],"2026-11-15"),urls.slice(0,2));
+  assert.deepEqual(dailyCampaignSourceUrls([
+    {sourceUrl:"https://example.com/old",expiresAt:"not-a-day"},
+    {sourceUrl:"https://example.com/expired",expiresAt:"2026-10-12"}
+  ],"2026-10-15"),urls.slice(0,2));
+});
+
+test("Android distingue une preuve datée d'une collecte Carrefour refusée le jour même",()=>{
+  const now=new Date("2026-10-15T12:00:00Z");
+  const base={
+    checkedAt:"2026-10-14T09:13:29Z",
+    lastAttemptAt:"2026-10-15T08:00:00Z"
+  };
+  const blocked=dailyCampaignRefreshNotice({...base,sourceChecks:{
+    "https://www.carrefour.fr/catalogue/carrefour":{status:"unavailable",reason:"HTTP 403"},
+    "https://www.carrefour.fr/offres-du-moment":{status:"unavailable",reason:"HTTP 403"}
+  }},"carrefour",now);
+  assert.match(blocked,/lecture automatique.*indisponible/i);
+  assert.match(blocked,/2026-10-14/);
+  assert.doesNotMatch(blocked,/consultée.*aujourd'hui/i);
+  const partial=dailyCampaignRefreshNotice({...base,sourceChecks:{
+    "https://www.carrefour.fr/catalogue/carrefour":{status:"unavailable"},
+    "https://www.carrefour.fr/offres-du-moment":{status:"available"}
+  }},"carrefour",now);
+  assert.match(partial,/partielle/i);
+  const available=dailyCampaignRefreshNotice({...base,sourceChecks:{
+    "https://www.carrefour.fr/catalogue/carrefour":{status:"available"},
+    "https://www.carrefour.fr/offres-du-moment":{status:"available"}
+  }},"carrefour",now);
+  assert.match(available,/sans garantie de prix local/i);
+  const old=dailyCampaignRefreshNotice({...base,
+    lastAttemptAt:"2026-10-14T09:00:00Z"},"carrefour",now);
+  assert.match(old,/aucun contrôle automatique.*2026-10-15/i);
+  const missing=dailyCampaignRefreshNotice({},"leclerc",now);
+  assert.match(missing,/aucun contrôle automatique/i);
+  const wrongVendor=dailyCampaignRefreshNotice({...base,sourceChecks:{
+    "https://www.carrefour.fr/catalogue/carrefour":{status:"available"}
+  }},"leclerc",now);
+  assert.match(wrongVendor,/aucune lecture de source officielle/i);
 });
