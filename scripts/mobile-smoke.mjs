@@ -1763,6 +1763,53 @@ try{
       .getAttribute("href"),"https://www.carrefour.fr/catalogue/carrefour");
   }
 
+  // Android: the dedicated cashback catalogue exposes all eligible
+  // manufacturer leads, but never treats unknown shelf prices as free.
+  const foodRefundExplorer=await page.evaluate(async()=>{
+    const {selectFoodRefundOpportunities}=await import("./src/daily-catalogue.js");
+    const base={scope:"produit",mechanism:"manufacturer_refund",
+      category:"alimentaire",stores:["carrefour"],channels:["store"],
+      verifiedAt:"2026-10-15",reviewAfter:"2026-10-18",
+      sourceUrl:"https://www.couponnetwork.fr/offres",
+      providerId:"coupon-network",provider:"Coupon Network",
+      savingAmount:1.25,savingPercent:null,basePrice:null,
+      minPurchaseQty:1,conditions:"Activer avant achat"};
+    const offers=Array.from({length:35},(_,i)=>({
+      ...base,id:"refund-"+i,title:"Lait et pâtes "+i,
+      savingAmount:1.25+i/100
+    }));
+    offers.push({...base,id:"fake-nonfood",category:"entretien",savingAmount:9});
+    offers.push({...base,id:"fake-link",sourceUrl:"https://couponnetwork.fr.evil.example/a",
+      savingAmount:10});
+    offers.push({...base,id:"expired",reviewAfter:"2026-10-14",savingAmount:8});
+    offers.push({...base,id:"other-store",stores:["leclerc"],savingAmount:7});
+    offers.push({...base,id:"unrelated",mechanism:"loyalty",savingAmount:7});
+    const now=new Date("2026-10-15T12:00:00Z");
+    const full=selectFoodRefundOpportunities({offers,now,limit:24});
+    const more=selectFoodRefundOpportunities({offers,now,limit:48});
+    const search=selectFoodRefundOpportunities({offers,now,search:"PÂTES 3"});
+    const wrong=selectFoodRefundOpportunities({offers,now,store:"leclerc"});
+    const future=selectFoodRefundOpportunities({offers,
+      now:new Date("2026-10-19T12:00:00Z")});
+    return {total:full.total,first:full.items.length,
+      expanded:more.items.length,
+      highest:full.items[0]?.savingAmount,
+      unknownCash:full.items[0]?.upfrontCost??null,
+      searchCount:search.total,wrongCount:wrong.total,
+      futureCount:future.total,
+      html:!!document.querySelector("#foodRefundSearch")
+        && !!document.querySelector("#foodRefundDeals")
+        && !!document.querySelector("#foodRefundMore")};
+  });
+  assert.deepEqual(foodRefundExplorer,{
+    total:35,first:24,expanded:35,highest:1.59,unknownCash:null,
+    searchCount:6,wrongCount:1,futureCount:0,html:true
+  });
+  await page.locator("#foodRefundSearch").fill("lait");
+  assert.match(await page.locator("#foodRefundStatus").innerText(),
+    /remboursement/);
+  await page.locator("#foodRefundSearch").fill("");
+
   const dailyCampaignProof=await page.evaluate(async()=>{
     const {selectDailyCatalogue}=await import("./src/daily-catalogue.js");
     const sample={id:"sample-campaign",store:"carrefour",channels:["store"],
