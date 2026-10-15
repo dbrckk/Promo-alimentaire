@@ -1,3 +1,21 @@
+// Apply this check BEFORE any network request, not only after parsing the
+// response. Product evidence must come from a pinned HTTPS retailer product
+// path with the exact GTIN; redirects, queries and lookalike hosts are refused.
+export function isAllowedCarrefourProductUrl(sourceUrl,eans=[]){
+  if(!Array.isArray(eans) || !eans.some((ean)=>
+    typeof ean==="string" && /^(?:\\d{8}|\\d{12,14})$/.test(ean))) return false;
+  try{
+    const url=new URL(sourceUrl);
+    return url.protocol==="https:"
+      && ["www.carrefour.fr","carrefour.fr"].includes(url.hostname.toLowerCase())
+      && !url.username && !url.password && !url.search && !url.hash
+      && url.pathname.startsWith("/p/")
+      && eans.some((ean)=>typeof ean==="string"
+        && /^(?:\\d{8}|\\d{12,14})$/.test(ean)
+        && url.pathname.endsWith("-"+ean));
+  }catch{return false;}
+}
+
 export function verifyCarrefourPromotionPage(html,offer,{
   sourceUrl=offer?.sourceUrl || ""
 }={}){
@@ -11,16 +29,7 @@ export function verifyCarrefourPromotionPage(html,offer,{
   if(!productHeading) reasons.push("titre de la fiche produit absent");
 
   const eans=(offer?.eans || []).map((value)=>String(value).replace(/\D/g,"")).filter(Boolean);
-  let officialProductPage=false;
-  try{
-    const target=new URL(sourceUrl);
-    const host=target.hostname.toLowerCase();
-    officialProductPage=["carrefour.fr","www.carrefour.fr"].includes(host)
-      && target.protocol==="https:" && target.pathname.startsWith("/p/")
-      && eans.some((ean)=>target.pathname.endsWith("-"+ean));
-  }catch{
-    officialProductPage=false;
-  }
+  const officialProductPage=isAllowedCarrefourProductUrl(sourceUrl,eans);
   if(!eans.length){
     reasons.push("EAN exact absent de l'offre");
   }else if(!officialProductPage){
