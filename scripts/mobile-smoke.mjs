@@ -1313,6 +1313,36 @@ try{
     "Source-provided street is displayed to identify the specific outlet");
   assert.match(await page.locator("#observedDeals").innerText(),/Lieu Open Prices n°/,
     "A verified outlet identifier distinguishes stores when the street is unavailable");
+  assert.equal(await page.locator("#observedAgeDays").inputValue(),"7");
+  await page.locator("#observedAgeDays").selectOption("1");
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),0,
+    "A yesterday-dated observation cannot masquerade as observed today");
+  await page.locator("#observedAgeDays").selectOption("3");
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),2,
+    "A three-calendar-day period should include yesterday's real receipts");
+  await page.locator("#observedSort").selectOption("recent");
+  assert.equal(await page.locator("#observedDeals .daily-offer").count(),2);
+  assert.match(await page.locator("#observedStatus").innerText(),/3 derniers jours calendaires/);
+  const receiptRecency=await page.evaluate(async()=>{
+    const {selectObservedDiscounts}=await import("./src/community-deals.js");
+    const sample=[
+      {code:"old",date:"2026-10-13",savingPercent:90,savingAmount:9,price:1},
+      {code:"yesterday",date:"2026-10-15",savingPercent:80,savingAmount:8,price:2},
+      {code:"today",date:"2026-10-16",savingPercent:5,savingAmount:0.5,price:3},
+      {code:"future",date:"2026-10-17",savingPercent:95,savingAmount:9,price:2}
+    ];
+    const now=new Date("2026-10-15T22:30:00Z"); // 16 October in Paris
+    return {
+      three:selectObservedDiscounts(sample,{sort:"recent",maxCalendarDays:3,now})
+        .map((record)=>record.code),
+      one:selectObservedDiscounts(sample,{sort:"recent",maxCalendarDays:1,now})
+        .map((record)=>record.code)
+    };
+  });
+  assert.deepEqual(receiptRecency,{three:["today","yesterday"],one:["today"]},
+    "Open Prices supplies civil receipt dates: respect Paris midnight and reject future dates");
+  await page.locator("#observedSort").selectOption("percent");
+  await page.locator("#observedAgeDays").selectOption("7");
   await page.locator("#observedPostcode").fill("71100");
   assert.equal(await page.locator("#observedDeals .daily-offer").count(),1,
     "Postcode filter applies only to the actual store on the receipt");
