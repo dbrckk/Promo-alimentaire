@@ -87,6 +87,9 @@ const els = {
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
   observedPostcode:document.querySelector("#observedPostcode"),
+  observedRadius:document.querySelector("#observedRadius"),
+  observedNearby:document.querySelector("#observedNearby"),
+  observedGeoNote:document.querySelector("#observedGeoNote"),
   observedRefresh:document.querySelector("#observedRefresh"),
   observedStatus:document.querySelector("#observedStatus"),
   observedDeals:document.querySelector("#observedDeals"),
@@ -206,7 +209,9 @@ const state = {
 // Community observations are independent of the merchant promotion importer.
 // Never turn them into automatically stackable product or basket offers.
 const communityState={store:null,records:[],status:"idle",checkedAt:null,
-  incomplete:false,total:null,token:0,controller:null,checkedDay:null};
+  incomplete:false,total:null,token:0,controller:null,checkedDay:null,
+  checkedSearchKey:null,coords:null,radiusKm:25,geoPending:false,
+  geoError:"",positionRequestToken:0};
 
 // Shared by both retailer lookups. Any change of product/filters aborts
 // obsolete network traffic instead of merely discarding its eventual reply.
@@ -245,6 +250,8 @@ els.manualPriceDate.addEventListener("focus",()=>{
 els.datasetDate.textContent=`Catalogue de référence : ${formatDate(DATASET_DATE)} · chargement des offres publiques…`;
 
 els.store.addEventListener("change",async()=>{
+  communityState.positionRequestToken++;
+  communityState.geoPending=false;
   invalidateCommunityObservations();
   invalidateExactSkuComparison();
   state.store=els.store.value;
@@ -257,6 +264,8 @@ els.store.addEventListener("change",async()=>{
   if(state.tab==="daily") void refreshCommunityObservations();
 });
 els.channel.addEventListener("change",()=>{
+  communityState.positionRequestToken++;
+  communityState.geoPending=false;
   invalidateCommunityObservations();
   invalidateExactSkuComparison();
   cancelBasketPriceRefresh();
@@ -433,6 +442,15 @@ els.closeScan.addEventListener("click",()=>els.scanDialog.close());
 els.scanDialog.addEventListener("close",stopScanner);
 
 els.observedPostcode.addEventListener("input",()=>renderCommunityObservations());
+els.observedRadius.addEventListener("change",()=>{
+  communityState.radiusKm=Number(els.observedRadius.value);
+  if(communityState.coords){
+    invalidateCommunityObservations();
+    if(state.tab==="daily" && state.channel==="store")
+      void refreshCommunityObservations(true);
+  }else renderCommunityObservations();
+});
+els.observedNearby.addEventListener("click",toggleCommunityNearby);
 els.observedRefresh.addEventListener("click",()=>void refreshCommunityObservations(true));
 els.tabs.forEach((button)=>button.addEventListener("click",()=>setTab(button.dataset.tab)));
 
@@ -524,6 +542,7 @@ function invalidateCommunityObservations(){
   communityState.store=null;
   communityState.checkedAt=null;
   communityState.checkedDay=null;
+  communityState.checkedSearchKey=null;
   communityState.incomplete=false;
   communityState.total=null;
   renderCommunityObservations();
