@@ -547,8 +547,79 @@ function invalidateCommunityObservations(){
   communityState.total=null;
   renderCommunityObservations();
 }
+function toggleCommunityNearby(){
+  // The browser asks for position only after a deliberate tap on this
+  // control, never on load, tab navigation or a normal refresh.
+  const requestId=++communityState.positionRequestToken;
+  if(communityState.geoPending){
+    communityState.geoPending=false;
+    communityState.geoError="";
+    renderCommunityObservations();
+    return;
+  }
+  if(communityState.coords){
+    communityState.coords=null;
+    communityState.geoError="";
+    invalidateCommunityObservations();
+    if(state.tab==="daily" && state.channel==="store")
+      void refreshCommunityObservations(true);
+    return;
+  }
+  if(state.channel!=="store") return;
+  if(!navigator.geolocation){
+    communityState.geoError="La position n’est pas disponible sur cet appareil.";
+    renderCommunityObservations();return;
+  }
+  communityState.geoPending=true;
+  communityState.geoError="";
+  renderCommunityObservations();
+  navigator.geolocation.getCurrentPosition((position)=>{
+    if(requestId!==communityState.positionRequestToken) return;
+    communityState.geoPending=false;
+    if(state.channel!=="store") return;
+    const latitude=position?.coords?.latitude;
+    const longitude=position?.coords?.longitude;
+    if(!Number.isFinite(latitude)||!Number.isFinite(longitude)
+      || latitude < -90 || latitude > 90
+      || longitude < -180 || longitude > 180){
+      communityState.geoError="Position invalide : recherche nationale conservée.";
+      renderCommunityObservations();return;
+    }
+    // Approx. 100 m granularity, session memory only, never localStorage.
+    communityState.coords={
+      latitude:Math.round(latitude*1000)/1000,
+      longitude:Math.round(longitude*1000)/1000
+    };
+    // A postcode is an exact filter on already fetched receipts. Keeping it
+    // enabled here would accidentally hide nearby stores in adjacent towns.
+    els.observedPostcode.value="";
+    invalidateCommunityObservations();
+    if(state.tab==="daily") void refreshCommunityObservations(true);
+  },()=>{
+    if(requestId!==communityState.positionRequestToken) return;
+    communityState.geoPending=false;
+    communityState.geoError="Localisation refusée ou indisponible. La recherche nationale reste accessible.";
+    renderCommunityObservations();
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+}
 function renderCommunityObservations(){
   if(!els.observedStatus) return;
+  const near=Boolean(communityState.coords);
+  els.observedNearby.textContent=communityState.geoPending
+    ? "Annuler la demande de position"
+    :near?"Désactiver la proximité":"Chercher près de moi";
+  els.observedNearby.setAttribute("aria-pressed",String(near));
+  els.observedNearby.classList.toggle("active",near);
+  els.observedNearby.disabled=state.channel!=="store" && !near
+    && !communityState.geoPending;
+  els.observedRadius.value=String(communityState.radiusKm);
+  els.observedGeoNote.textContent=communityState.geoPending
+    ? "Demande de position en cours. Annuler est possible sans activer la recherche locale."
+    :near
+      ? "Recherche dans un rayon de "+communityState.radiusKm+
+        " km. Position arrondie à environ 100 m, transmise uniquement à Open Prices pendant cette recherche, jamais enregistrée. Désactiver la proximité pour l’effacer."
+      :communityState.geoError ||
+        "Position demandée seulement après un appui explicite ; aucune coordonnée conservée. Le code postal seul filtre les relevés nationaux récupérés, sans élargir la recherche API.";
   if(state.channel!=="store"){
     els.observedStatus.textContent="Les relevés Open Prices concernent les magasins physiques, pas les Drives ni la livraison.";
     els.observedDeals.innerHTML="";
