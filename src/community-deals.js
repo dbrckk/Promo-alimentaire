@@ -8,7 +8,9 @@ import {
 const SOURCE="https://prices.openfoodfacts.org/api/v1/prices";
 const LABELS={carrefour:"Carrefour",leclerc:"Leclerc"};
 const DISCOUNT_TYPES=new Set(["SALE","SEASONAL","EXPIRES_SOON"]);
-const NON_FOOD=/alcohol|beer|wine|spirit|liqueur|pet.food|animal.feed|tobacco|household|cleaning|detergent|cosmetic|hygiene/i;
+// OFF tags are hierarchical and not always classified as "food". Exclude
+// explicit non-food families even when a product has additional generic tags.
+const NON_FOOD=/alcohol|beer|wine|spirit|liqueur|pet.food|animal.feed|tobacco|household|cleaning|detergent|cosmetic|hygiene|personal.care|beauty|make.up|shampoo|soap|toothpaste|electronics|electrical.appliance|batteries|clothing|footwear|toys|stationery|automotive|gardening|insecticide/i;
 const DAY_MS=86400000;
 
 function dateMinusDays(now,days){
@@ -172,13 +174,13 @@ function observedOutletKey(raw,item){
 
 export async function fetchObservedDiscounts({
   store="carrefour",now=new Date(),maxAgeDays=7,
-  fetchImpl=fetch,signal=null,maxPages=3,
+  fetchImpl=fetch,signal=null,maxPages=6,
   coords=null,radiusKm=25
 }={}){
   supportedStore(store);
   const nearby=nearbySearch(coords,radiusKm);
   const cutoff=dateMinusDays(now,Math.min(7,Math.max(1,maxAgeDays)));
-  const safePages=Number.isInteger(maxPages)?Math.max(1,Math.min(maxPages,3)):3;
+  const safePages=Number.isInteger(maxPages)?Math.max(1,Math.min(maxPages,6)):6;
   const records=[];
   const dedup=new Map();
   let total=null,pagesFetched=0,partial=false,moreAvailable=false;
@@ -234,7 +236,7 @@ export async function fetchObservedDiscounts({
   records.push(...dedup.values());
   return {records,checkedAt:new Date(now).toISOString(),
     total,partial,moreAvailable, pagesFetched,cutoff,
-    // The API is community sourced and capped at 300 recent observations
+    // The API is community sourced and capped at 600 recent observations
     // per query. Even local geo-filtered coverage may be incomplete.
     incomplete:partial||moreAvailable,
     mode:nearby?"nearby":"national",
