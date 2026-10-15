@@ -444,3 +444,8 @@ footer{width:min(1100px,100%);margin:auto;padding:6px 18px 30px;color:var(--mute
    daily savings: historical figures never imply a current shelf price. */
 .daily-unconfirmed{border-style:dashed;border-color:var(--line)}
 .daily-unconfirmed .badge{align-self:start}
+
+/* Daily recommended lots: explanation remains visually attached to its proof card. */
+.daily-actionable{min-width:0;display:grid;align-content:start;gap:8px}
+.daily-actionable>.help{margin:0;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);line-height:1.5}
+.daily-actionable>.daily-offer{min-width:0}
