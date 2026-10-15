@@ -165,6 +165,17 @@
           <a id="dailyOfficialLink" class="open" href="https://www.carrefour.fr/offres-du-moment" rel="noopener noreferrer" target="_blank">Voir le catalogue officiel</a>
         </div>
       </div>
+      <section class="daily-group" aria-label="Prix remisés observés par la communauté">
+        <h3>Prix remisés observés chez {""}Carrefour / E.Leclerc</h3>
+        <p class="help">Alternative publique lorsque le catalogue officiel est inaccessible : observations Open Prices des sept derniers jours. Le prix normal et le prix réduit ont été relevés ensemble, mais <strong>cela ne garantit ni la promotion aujourd'hui, ni son application dans ton magasin.</strong> Sélection non exhaustive, sans cumul avec les offres ci-dessous.</p>
+        <div class="daily-links">
+          <button class="secondary" id="communityRefresh" type="button">Actualiser les relevés</button>
+          <button class="secondary" id="communityNearby" type="button">Chercher près de moi (25 km)</button>
+        </div>
+        <p class="help" id="communityStatus" aria-live="polite">Ouvre cet onglet pour consulter les relevés publics disponibles.</p>
+        <div class="grid" id="communityDeals" aria-live="polite"></div>
+        <p class="help">Source : <a href="https://prices.openfoodfacts.org/" target="_blank" rel="noopener noreferrer">Open Prices</a> (ODbL). Les résultats proviennent de tickets ou d'étiquettes, pas du catalogue officiel.</p>
+      </section>
       <section class="daily-group">
         <h3>Les 3 promotions chiffrées à regarder en premier</h3>
         <p class="help">Uniquement des offres alimentaires dont le prix initial du lot minimum ET les économies en euros sont documentés. Sélection diversifiée par catégorie, classée selon ton tri. Les autres coupons restent consultables plus bas, mais leur coût réel ne peut pas être deviné. Une réduction, une cagnotte ou un remboursement restent conditionnels : il faut avancer le prix total en caisse et vérifier le magasin, l'EAN et le cumul.</p>
