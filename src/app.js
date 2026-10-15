@@ -87,6 +87,7 @@ const els = {
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
   observedPostcode:document.querySelector("#observedPostcode"),
+  observedSort:document.querySelector("#observedSort"),
   observedRadius:document.querySelector("#observedRadius"),
   observedNearby:document.querySelector("#observedNearby"),
   observedGeoNote:document.querySelector("#observedGeoNote"),
