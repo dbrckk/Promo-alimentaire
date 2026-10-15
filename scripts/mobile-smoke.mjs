@@ -1684,7 +1684,7 @@ try{
       store:"carrefour",now:new Date("2026-10-15T12:00:00Z"),
       maxPages:2,
       fetchImpl:async(url)=>({ok:true,json:async()=>({
-        items:[],pages:8,total:800
+        items:Array.from({length:100},(_,i)=>({id:i})),pages:8,total:800
       })})
     });
     return {
