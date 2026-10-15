@@ -1656,6 +1656,57 @@ try{
     ids:[9002,9004,9005,9006,9007],conservativePrice:1.1,
     knownIds:[101,102],unknownIds:[null,null,null]
   },"Distinct physical stores must not lose their individual price observations");
+  const widerDiscovery=await page.evaluate(async()=>{
+    const {fetchObservedDiscounts,normalizeObservedDiscount}
+      =await import("./src/community-deals.js");
+    const source={
+      id:9200,type:"PRODUCT",product_code:"3038359913242",
+      price:0.99,price_without_discount:1.59,price_is_discounted:true,
+      discount_type:"SALE",currency:"EUR",price_per:"UNIT",
+      date:"2026-10-15",proof_id:9220,
+      product:{code:"3038359913242",source:"off",
+        product_name:"Pâtes",categories_tags:["en:pastas"]},
+      location:{id:101,osm_brand:"Carrefour",osm_name:"Carrefour",
+        osm_address_postcode:"71100"}
+    };
+    const pages=[];
+    const results=await fetchObservedDiscounts({
+      store:"carrefour",now:new Date("2026-10-15T12:00:00Z"),
+      fetchImpl:async(url)=>{
+        const page=Number(new URL(url).searchParams.get("page"));
+        pages.push(page);
+        return {ok:true,json:async()=>({
+          items:page===5?[source]:[],pages:8,total:800
+        })};
+      }
+    });
+    const restricted=await fetchObservedDiscounts({
+      store:"carrefour",now:new Date("2026-10-15T12:00:00Z"),
+      maxPages:2,
+      fetchImpl:async(url)=>({ok:true,json:async()=>({
+        items:[],pages:8,total:800
+      })})
+    });
+    return {
+      pages,found:results.records.map((item)=>item.id),
+      incomplete:results.incomplete,pagesFetched:results.pagesFetched,
+      restrictedPages:restricted.pagesFetched,
+      food:normalizeObservedDiscount(source,{store:"carrefour",
+        now:new Date("2026-10-15T12:00:00Z")})!==null,
+      shampooRejected:normalizeObservedDiscount({...source,
+        product:{...source.product,categories_tags:["en:shampoos"]}},
+        {store:"carrefour",now:new Date("2026-10-15T12:00:00Z")})===null,
+      electronicsRejected:normalizeObservedDiscount({...source,
+        product:{...source.product,categories_tags:["en:electronics"]}},
+        {store:"carrefour",now:new Date("2026-10-15T12:00:00Z")})===null
+    };
+  });
+  assert.deepEqual(widerDiscovery,{
+    pages:[1,2,3,4,5,6],found:[9200],incomplete:true,
+    pagesFetched:6,restrictedPages:2,food:true,
+    shampooRejected:true,electronicsRejected:true
+  },"Bounded wider discovery must find later receipts without mislabelling non-food");
+
   assert.match(await page.locator("#dailyStatus").innerText(),
     /Sélection au .*Carrefour.*magasin/);
   assert.match(await page.locator("#dailyRetailer").innerText(),
