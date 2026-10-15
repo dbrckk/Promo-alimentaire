@@ -1627,9 +1627,16 @@ try{
   assert.equal(await page.locator("#dailyUnconfirmed .daily-unconfirmed").count(),0,
     "Le prix d'un ancien catalogue ne démontre pas qu'un article respecte le budget");
   assert.match(await page.locator("#dailyStatus").innerText(),/budget initial de 3,00/);
-  assert.match(await page.locator("#dailyStatus").innerText(),
-    /Pistes alimentaires économiques mises en avant, mais aucun prix précis/,
-    "La priorité petit budget doit préciser qu'il s'agit de pistes, pas de prix prouvés");
+  const budgetStatus=await page.locator("#dailyStatus").innerText();
+  const budgetHighlights=await page.locator("#dailyHighlights .daily-actionable").count();
+  if(budgetHighlights){
+    assert.match(budgetStatus,/promotion\(s\) chiffrée\(s\) à examiner sous ce plafond/);
+    assert.doesNotMatch(budgetStatus,/Aucune promotion dont le prix initial/);
+  }else{
+    assert.match(budgetStatus,/Aucune promotion dont le prix initial du lot/);
+  }
+  assert.match(budgetStatus,/plafond est appliqué à chaque lot, pas à la somme/,
+    "Un plafond par lot ne doit jamais laisser croire à un budget pour les trois achats");
   const underBudgetCount=await page.locator("#dailyRetailer .daily-offer").count();
   assert.ok(underBudgetCount<=initialRetailerCount,
     "Un plafond ne doit jamais faire apparaître des promotions supplémentaires");
