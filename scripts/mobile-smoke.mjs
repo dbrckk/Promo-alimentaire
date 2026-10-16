@@ -1596,7 +1596,7 @@ try{
     const now=new Date("2026-10-16T12:00:00Z");
     const offer={
       id:"receipt-freshness",title:"Remboursement témoin",
-      scope:"produit",provider:"Marque test",providerId:"shopmium",
+      scope:"produit",provider:"Marque test",providerId:"manufacturer-test",
       mechanism:"manufacturer_refund",eans:[code],
       stores:["carrefour"],channels:["store"],savingPercent:20
     };
