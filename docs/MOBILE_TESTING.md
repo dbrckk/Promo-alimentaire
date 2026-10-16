@@ -1,3 +1,7 @@
+## Variante UPC/EAN et fraîcheur du comparateur
+
+Le parcours Chrome Android vérifie que la comparaison des enseignes recherche un EAN-13 équivalent quand le UPC-A ne fournit qu'un prix de 12 jours, même si celui-ci reste affichable dans l'historique. Une fiche produit ordinaire conserve le seuil de 30 jours et ne télécharge pas ces variantes. Si une première variante ne contient qu'un relevé de 11 jours, la seconde variante GTIN-14 est aussi consultée. Les correspondances reposent sur le contrôle GS1 et non sur la similarité des noms de produits.
+
 ## Magasins réellement comparés et emplacement public
 
 Ouvrir **Produit**, scanner le même EAN pour Carrefour et E.Leclerc puis comparer. Lorsque la paire a des coordonnées Open Prices vérifiables, sous « Relevés retenus pour la comparaison locale », vérifier deux cartes montrant l'enseigne, le prix, la date, le lieu, la distance à vol d'oiseau le cas échéant, et un lien vers le marqueur du magasin sur OpenStreetMap. Aucun centre de commune ni GPS personnel ne doit figurer dans l'URL. Sans coordonnées, afficher une absence de position cartographique vérifiable, **jamais un marqueur inventé**.
