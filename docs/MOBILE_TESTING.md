@@ -1,3 +1,9 @@
+## Magasins réellement comparés et emplacement public
+
+Ouvrir **Produit**, scanner le même EAN pour Carrefour et E.Leclerc puis comparer. Lorsque la paire a des coordonnées Open Prices vérifiables, sous « Relevés retenus pour la comparaison locale », vérifier deux cartes montrant l'enseigne, le prix, la date, le lieu, la distance à vol d'oiseau le cas échéant, et un lien vers le marqueur du magasin sur OpenStreetMap. Aucun centre de commune ni GPS personnel ne doit figurer dans l'URL. Sans coordonnées, afficher une absence de position cartographique vérifiable, **jamais un marqueur inventé**.
+
+Le scénario Playwright **Pixel 7 existant** vérifie deux marqueurs d'enseignes distincts, les coordonnées de lien, les valeurs malformées et l'ordre de préférence de deux couples de magasins à la même date. La fraîcheur des tickets reste prioritaire à la proximité, et les tests 320/360/393 px continuent d'interdire le débordement horizontal.
+
 ## Comparaison par code postal (sans autorisation GPS)
 
 Dans **Produit**, entrer un code postal dans le formulaire **Comparer les magasins d'un secteur sans GPS**. Si plusieurs communes partagent ce code, sélectionner la localité explicitement. Choisir 5, 10, 25 ou 50 km, scanner/saisir l'EAN puis lancer le comparateur. La zone affichée doit indiquer un centre de commune approximatif, le rayon choisi, et **aucun prix ne doit venir d'un relevé situé hors rayon**. Changer le code, le rayon ou la commune doit effacer l'ancienne comparaison ; l'option Effacer supprime toute recherche locale. Les modes Drive/livraison continuent de refuser les prix magasin.
