@@ -408,20 +408,18 @@ export function formatSavedFoodRefundChecklist(items,{store="carrefour"}={}){
     "Liste indicative, aucun remboursement garanti.",
     "Avant achat : vérifier EAN, magasin, dates, activation, exclusions, ticket et cumul."
   ];
-  for(const [index,item] of entries.entries()){
-    if(!item || typeof item.title!=="string" || typeof item.sourceUrl!=="string") continue;
-    // Keep each item on one line and do not include arbitrary URLs.
+  let number=0;
+  for(const item of entries){
+    if(!item || typeof item.title!=="string" || typeof item.sourceUrl!=="string"
+      || !knownRefundSource(item)) continue;
+    // Clipboard export is a separate trust boundary, not an arbitrary
+    // HTTPS-link exporter. Validate the official host again at copy time.
     const title=item.title.replace(/[\r\n\t]+/g," ").trim().slice(0,180);
-    const provider=String(item.provider||"Source").replace(/[\r\n\t]+/g," ").trim().slice(0,80);
-    let url;
-    try{
-      const parsed=new URL(item.sourceUrl);
-      if(parsed.protocol!=="https:" || parsed.username || parsed.password) continue;
-      url=parsed.href;
-    }catch{continue;}
     if(!title) continue;
-    lines.push((index+1)+". "+title+" ("+provider+")");
-    lines.push("Conditions officielles : "+url);
+    const provider=item.providerId==="shopmium"?"Shopmium":"Coupon Network";
+    number++;
+    lines.push(number+". "+title+" ("+provider+")");
+    lines.push("Conditions officielles : "+new URL(item.sourceUrl).href);
   }
   return lines.join("\n");
 }
