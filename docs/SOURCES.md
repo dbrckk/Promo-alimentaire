@@ -1,3 +1,9 @@
+## Montants indicatifs des offres détectées sur la fiche produit (16 octobre 2026)
+
+Pour chiffrer un gain candidat, **Produit → Offres compatibles détectées** doit disposer d'un prix Open Prices `COMMUNITY` : GTIN exact, enseigne actuelle, EUR par unité, observation normale (pas déjà remisée) datée de 7 jours au plus. Les observations situées hors rayon (s'il est demandé) ou dénuées de coordonnées vérifiables ne peuvent pas servir. Les montants sont également supprimés pour une simple correspondance de marque, une synchronisation officielle non reconfirmée, une condition de magasin/prix/fidélité non validée ou une remise distributeur à vérifier en caisse. La fiche du produit n'utilise jamais des relevés magasin physiques pour le canal Drive/livraison. Les relevés de plus de 7 jours restent dans l'historique, sans servir à une économie calculée.
+
+Même un montant potentiellement affiché ne prouve ni le stock, ni l'éligibilité réelle au remboursement, ni le cumul avec d'autres avantages. Le tableau de conditions et les liens de provenance doivent être consultés avant d'acheter.
+
 ## Pagination des preuves Open Prices selon la destination des prix (16 octobre 2026)
 
 Les pages de l'API Open Prices sont limitées aux premières pages accessibles ; l'absence de relevé récent ne garantit jamais l'absence de ce produit en magasin. Pour les comparaisons par EAN entre Carrefour et E.Leclerc, **seuls les relevés de 7 jours maximum comptent dans le seuil d'arrêt** après une page. Un relevé de 12 jours peut rester affiché comme prix ancien, mais ne remplit pas ce seuil et ne doit pas arrêter la pagination lorsqu'une autre page est annoncée. Les recherches produit ordinaires utilisent toujours un seuil de 30 jours. Aucun champ nouveau, contournement de l'API ou lecture illimitée n'est nécessaire.
