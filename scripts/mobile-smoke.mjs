@@ -160,6 +160,75 @@ try{
     document.querySelector("#datasetDate")?.textContent?.includes("offre(s) importée(s) active(s)"),
     null,{timeout:12000}
   );
+  // Pixel 7 interaction: a permission prompt is asynchronous and cannot
+  // be aborted by the web Geolocation API itself. Cancelling in the PRODUCT
+  // tab or LIST tab must invalidate late success/error callbacks and never
+  // silently re-enable nearby prices or transmit a GPS position.
+  await page.locator('[data-tab="product"]').click();
+  await page.evaluate(()=>{
+    window.__nearbyGeoRequests=[];
+    Object.defineProperty(navigator,"geolocation",{
+      configurable:true,
+      value:{getCurrentPosition(success,error,options){
+        window.__nearbyGeoRequests.push({success,error,options});
+      }}
+    });
+  });
+  await page.locator("#nearbyButton").click();
+  assert.equal(await page.locator("#nearbyButton").innerText(),"Annuler la localisation");
+  assert.equal(await page.locator("#nearbyButton").getAttribute("aria-busy"),"true");
+  assert.equal(await page.locator("#nearbyButton").getAttribute("aria-pressed"),"false");
+  assert.equal(await page.evaluate(()=>window.__nearbyGeoRequests.length),1);
+  await page.locator('[data-tab="list"]').click();
+  assert.equal(await page.locator("#listNearbyButton").innerText(),"Annuler la localisation");
+  await page.locator("#listNearbyButton").click();
+  assert.equal(await page.locator("#listNearbyButton").innerText(),"Autour de moi");
+  assert.equal(await page.locator("#listNearbyButton").getAttribute("aria-busy"),"false");
+  await page.evaluate(()=>{
+    window.__nearbyGeoRequests[0].success({
+      coords:{latitude:46.7832,longitude:4.8539}
+    });
+  });
+  assert.equal(await page.locator("#listNearbyButton").innerText(),"Autour de moi",
+    "An old delayed GPS success must never re-enable geolocation after cancel");
+  assert.equal(await page.locator("#listNearbyButton").getAttribute("aria-pressed"),"false");
+  await page.locator("#listNearbyButton").click();
+  assert.equal(await page.evaluate(()=>window.__nearbyGeoRequests.length),2);
+  await page.evaluate(()=>{
+    window.__nearbyGeoRequests[1].success({
+      coords:{latitude:46.7832,longitude:4.8539}
+    });
+  });
+  await page.waitForFunction(()=>
+    document.querySelector("#listNearbyButton")?.textContent
+      ?.includes("À moins de 25 km"),null,{timeout:10000});
+  assert.equal(await page.locator("#listNearbyButton").getAttribute("aria-pressed"),"true");
+  await page.locator('[data-tab="product"]').click();
+  await page.locator("#nearbyButton").click();
+  assert.equal(await page.locator("#nearbyButton").getAttribute("aria-pressed"),"false");
+  assert.equal(await page.locator("#nearbyButton").innerText(),"Autour de moi");
+  await page.locator("#nearbyButton").click();
+  await page.evaluate(()=>{
+    window.__nearbyGeoRequests[2].error(new Error("permission refused"));
+  });
+  assert.equal(await page.locator("#nearbyButton").innerText(),"Autour de moi");
+  assert.match(await page.locator("#productStatus").innerText(),/Position non disponible/);
+  await page.locator("#nearbyButton").click();
+  await page.evaluate(()=>{
+    window.__nearbyGeoRequests[3].success({
+      coords:{latitude:"46.7832",longitude:4.8539}
+    });
+  });
+  assert.equal(await page.locator("#nearbyButton").getAttribute("aria-pressed"),"false",
+    "Only finite numeric browser coordinates may activate proximity");
+  assert.match(await page.locator("#productStatus").innerText(),/Position invalide/);
+  await page.evaluate(()=>{
+    delete navigator.geolocation;
+    delete window.__nearbyGeoRequests;
+  });
+  await page.locator('[data-tab="offers"]').click();
+  await assertNoHorizontalOverflow(page,"annulation des permissions GPS sur mobile");
+
   // Public catalogue JSON can claim autoStackWhenEligible=true despite
   // lacking proof. A loyalty-card selection must not turn such a product
   // or basket rule into an immediate/guaranteed deduction. A separately
