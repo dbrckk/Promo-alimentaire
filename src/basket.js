@@ -1,6 +1,6 @@
 import { findProductOffers, estimateOfferSaving } from "./matching.js";
 import {isOfferActive} from "./ingestion.js";
-import { observationAgeDays, parsePriceEvidenceDate, selectBestRecentPrice } from "./open-data.js";
+import { isFreshObservation, observationAgeDays, parsePriceEvidenceDate, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { roundMoney } from "./domain.js";
 import { findBundleCandidates } from "./bundle.js";
@@ -93,14 +93,17 @@ export function evaluateBasketStore(items,{
       && assessCouponNetworkCompatibility(best,offer).eligible
     );
     const priceAgeDays=observationAgeDays(best,now);
-    const retailerPriceRecent=priceAgeDays!==null && priceAgeDays<=7;
+    // Displayed whole-day ages are rounded down. A price observed 7 days
+    // and 12 hours ago is already too old for automatic deductions.
+    const retailerPriceRecent=isFreshObservation(best,7,now);
     const retailerPromoAgeWarning=!retailerPriceRecent
       && eligibleMatches.some(({offer})=>offer.mechanism==="retailer_promo");
-    const guaranteedProductOffers=(manualPrice ? [] : eligibleMatches)
-      .filter(({match,offer})=>
-        match.exact && offer.autoStack===true
-        && (offer.mechanism!=="retailer_promo" || retailerPriceRecent)
-      )
+    // Any automatic deduction based on an observed shelf price needs
+    // fresh evidence, including ODR and loyalty offers, not just retailer
+    // promotions. Older receipts remain useful for indicative budgeting.
+    const guaranteedProductOffers=(manualPrice || !retailerPriceRecent
+      ? [] : eligibleMatches)
+      .filter(({match,offer})=>match.exact && offer.autoStack===true)
       .map(({offer})=>{
         if(!offer.promoFormula) return offer;
         const exactSaving=estimateOfferSaving(best.price,offer,quantity);
@@ -172,6 +175,9 @@ export function evaluateBasketStore(items,{
       alreadyRetailDiscounted,
       retailerPromoPriceConflict,
       retailerPromoAgeWarning,
+      productBenefitAgeWarning:!retailerPriceRecent && eligibleMatches.some(
+        ({offer})=>offer.autoStack===true
+      ),
       incompatibleCouponCount,
       appliedOffers:lineOptimization.selected,
       finalCost:lineOptimization.finalCost,
@@ -203,9 +209,15 @@ export function evaluateBasketStore(items,{
   const oldestPriceAgeExactDays=exactAges.length===pricedLines.length
     && exactAges.length>0 && exactAges.every((age)=>Number.isFinite(age)&&age>=0)
     ? Math.max(...exactAges) : null;
+  // A basket-wide discount estimated from a historical subtotal must
+  // not be presented as an automatic/verified amount. The offer itself
+  // remains visible as a candidate pending real checkout confirmation.
+  const basketBaseRecent=oldestPriceAgeExactDays!==null
+    && oldestPriceAgeExactDays<=7;
   const basketOffers=resolvedOffers
     .filter((offer)=>offer.scope==="panier")
-    .map((offer)=>manualPriceCount>0 ? {...offer,autoStack:false} : offer);
+    .map((offer)=>manualPriceCount>0 || !basketBaseRecent
+      ? {...offer,autoStack:false} : offer);
   const basketOptimization=productAdjustedSubtotal>0
     ? optimizeStack(productAdjustedSubtotal,basketOffers,{store,channel})
     : {finalCost:0,totalSaving:0,selected:[],considered:[],savingPercent:0};

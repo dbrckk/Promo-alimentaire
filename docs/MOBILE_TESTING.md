@@ -1,3 +1,9 @@
+## Panier Android : prix UPC/EAN et garde-fou des sept jours
+
+Sur une liste contenant un UPC-A valide, l'actualisation consulte les variantes EAN-13/GTIN-14 uniquement si aucun relevé du même produit ne satisfait les **sept derniers jours**. Les recherches Carrefour et Leclerc partagent les pages Open Prices, sans mélanger les enseignes. Le statut affiche les variantes tentées et les relevés supplémentaires récupérés. Si un prix de huit jours reste affiché comme contexte, **aucun remboursement ni coupon ne doit être déduit automatiquement de ce prix** ; un prix de 7 jours et quelques heures est également trop ancien, même si l'interface indique « 7 jours révolus ».
+
+Le test Pixel 7 vérifie avec des réponses HTTP simulées : preuve ancienne UPC, deux preuves récentes EAN du même produit (magasins distincts), prix d'un autre GTIN rejeté, deux URL de justificatifs vérifiables, deux appels réseau uniques et aucune réduction automatique sur prix ancien. Ne pas confondre cette validation avec les prix actuels en magasin.
+
 ## Annulation de la géolocalisation du produit ou du panier
 
 Dans **Produit**, appuyer sur **Autour de moi** : tant que l'autorisation attend, le bouton doit afficher **Annuler la localisation**. Aller dans **Liste de courses** et l'utiliser pour annuler ; une réponse GPS retardée ne doit pas activer le mode local. Une nouvelle demande valide doit activer la proximité, puis un second appui la désactiver et supprimer la position utilisée. Les coordonnées invalides ou les erreurs de permission ne doivent pas laisser le mode actif. Le contrôle Android automatisé simule les réponses différées, sans requérir de véritable position GPS.

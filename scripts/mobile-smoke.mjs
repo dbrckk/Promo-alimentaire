@@ -4230,6 +4230,115 @@ try{
   assert.ok(observedPostalLookups.filter((zip)=>zip==="71100").length>=2);
   await assertNoHorizontalOverflow(page,"comparaison code postal sans GPS");
 
+  // Full Android shopping-list regression: the entered UPC-A has only a
+  // 12-day-old receipt. Its checksum-equivalent EAN-13 has fresh prices
+  // at two distinct real-looking shops. The basket must recover the EAN
+  // once over the network (shared by both retailer consumers), not mix a
+  // different SKU, and show the recovered price with its original proof.
+  const basketAliasCalls=[];
+  const upcCode="036000291452",eanCode="0036000291452";
+  const basketAliasRoute=async(route)=>{
+    const query=new URL(route.request().url()).searchParams;
+    const code=query.get("product_code");
+    if(code!==upcCode && code!==eanCode) return route.fallback();
+    basketAliasCalls.push(code);
+    assert.equal(query.get("kind"),"COMMUNITY");
+    assert.equal(query.get("duplicate_of__isnull"),"true");
+    const older=new Date(Date.now()-12*86400000).toISOString().slice(0,10);
+    const raw=(id,code,price,retailer,offset,date)=>({
+      id,product_code:code,price,date,kind:"COMMUNITY",type:"PRODUCT",
+      currency:"EUR",price_per:"UNIT",
+      location_id:id+100,
+      location:{id:id+100,osm_brand:retailer,osm_name:retailer+" Chalon",
+        osm_lat:46.78+offset,osm_lon:4.85+offset,
+        osm_address_postcode:"71100",osm_address_city:"Chalon-sur-Saône"}
+    });
+    const items=code===upcCode
+      ?[raw(901,upcCode,9.99,"Carrefour",0,older)]
+      :[
+        raw(902,eanCode,2.69,"Carrefour",0,RECENT_RECEIPT_DATE),
+        raw(903,eanCode,3.29,"E.Leclerc",0.002,RECENT_RECEIPT_DATE),
+        // A valid but unrelated GTIN must never enter the basket.
+        raw(904,"4006381333931",0.01,"Carrefour",0,RECENT_RECEIPT_DATE)
+      ];
+    return route.fulfill({status:200,contentType:"application/json",
+      body:JSON.stringify({items,pages:1,total:items.length})});
+  };
+  await page.route("https://prices.openfoodfacts.org/**",basketAliasRoute);
+  await page.evaluate((code)=>{
+    localStorage.setItem("promo-shopping-list-v1",JSON.stringify([
+      {product:{code,name:"Produit alias panier",brands:"Marque témoin",
+        quantity:"1 paquet"},quantity:1}
+    ]));
+    localStorage.removeItem("promo-manual-prices-v1");
+  },upcCode);
+  await page.reload({waitUntil:"domcontentloaded"});
+  await page.locator("#channel").selectOption("store");
+  await page.locator('[data-tab="list"]').click();
+  assert.match(await page.locator("#shoppingListItems").innerText(),
+    /Produit alias panier/);
+  basketAliasCalls.length=0;
+  await page.locator("#refreshList").click();
+  await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,
+    null,{timeout:25000});
+  assert.deepEqual(basketAliasCalls,[upcCode,eanCode],
+    "The basket must query the shared UPC and fresh equivalent EAN only once each");
+  const aliasBasket=await page.locator("#basketComparison").innerText();
+  assert.match(aliasBasket,/2,69/,"Fresh Carrefour alias receipt must reach basket");
+  assert.match(aliasBasket,/3,29/,"Fresh Leclerc alias receipt must reach basket");
+  assert.doesNotMatch(aliasBasket,/9,99/,
+    "A stale original-code receipt must not override the fresh equivalent");
+  const aliasStatus=await page.locator("#listStatus").innerText();
+  assert.match(aliasStatus,/variantes UPC\/EAN\/GTIN/);
+  assert.match(aliasStatus,/2 couple\(s\) produit-enseigne/);
+  const receipts=await page.locator(
+    '#basketComparison .basket-price-source a[href^="https://prices.openfoodfacts.org/prices/"]'
+  ).evaluateAll((nodes)=>nodes.map((node)=>node.getAttribute("href")));
+  assert.ok(receipts.includes("https://prices.openfoodfacts.org/prices/902"));
+  assert.ok(receipts.includes("https://prices.openfoodfacts.org/prices/903"));
+  await page.unroute("https://prices.openfoodfacts.org/**",basketAliasRoute);
+  // A basket receipt dated exactly seven whole displayed days ago may
+  // already be too old by several hours. Never auto-deduct a manufacturer
+  // refund or a basket gift-card discount from that stale subtotal. The
+  // theoretical product candidate remains visible, explicitly unconfirmed.
+  const exactBasketFreshness=await page.evaluate(async()=>{
+    const {evaluateBasketStore}=await import("./src/basket.js");
+    const product={code:"3017624010701",name:"Article témoin",brands:"Marque"};
+    const offers=[
+      {id:"odr-freshness",scope:"produit",stores:["carrefour"],
+        eans:[product.code],savingAmount:2,autoStack:true,
+        stackGroup:"manufacturer",mechanism:"odr",benefitTiming:"refund"},
+      {id:"gift-freshness",scope:"panier",stores:["carrefour"],
+        channels:["store"],savingPercent:10,autoStack:true,
+        mechanism:"gift_card",stackGroup:"payment"}
+    ];
+    const now=new Date("2026-10-08T12:00:00Z");
+    const run=(date)=>evaluateBasketStore([{product,quantity:1}],{
+      store:"carrefour",channel:"store",
+      priceByCode:{[product.code]:[{
+        id:927,productCode:product.code,price:10,date,
+        retailerText:"Carrefour",pricePer:"UNIT",currency:"EUR"
+      }]},
+      offers,now
+    });
+    const stale=run("2026-10-01"),fresh=run("2026-10-07");
+    return {
+      staleTotal:stale.finalCost,staleGuaranteed:stale.guaranteedSaving,
+      stalePossible:stale.potentialProductSaving,
+      staleWarning:stale.lines[0].productBenefitAgeWarning,
+      staleAge:stale.lines[0].priceAgeDays,
+      freshTotal:fresh.finalCost,
+      freshGuaranteed:fresh.guaranteedSaving,
+      freshWarning:fresh.lines[0].productBenefitAgeWarning
+    };
+  });
+  assert.deepEqual(exactBasketFreshness,{
+    staleTotal:10,staleGuaranteed:0,stalePossible:2,
+    staleWarning:true,staleAge:7,
+    freshTotal:7.2,freshGuaranteed:2.8,freshWarning:false
+  });
+  await assertNoHorizontalOverflow(page,"panier UPC/EAN de prix récupérés");
+
   for(const width of [360,320]){
     await page.setViewportSize({width,height:750});
     await assertNoHorizontalOverflow(page,"largeur "+width+"px");
