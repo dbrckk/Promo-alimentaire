@@ -4367,7 +4367,7 @@ try{
   await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,
     null,{timeout:25000});
   assert.ok(basketAreaRequests.some((entry)=>entry.code===upcCode
-    && entry.lat==="46.7832" && entry.lon==="4.8539" && entry.radius==="25"),
+    && entry.lat==="46.783" && entry.lon==="4.854" && entry.radius==="25"),
     "The actual basket request must use the selected Chalon commune centre");
   const geoBasket=await page.locator("#basketComparison").innerText();
   assert.match(geoBasket,/Panier local : Chalon-sur-Saône.*25 km/);
@@ -4381,7 +4381,7 @@ try{
   await page.locator("#refreshList").click();
   await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,
     null,{timeout:25000});
-  assert.ok(basketAreaRequests.some((entry)=>entry.lat==="46.7832"
+  assert.ok(basketAreaRequests.some((entry)=>entry.lat==="46.783"
     && entry.radius==="5"),"The updated 5 km radius must reach Open Prices");
   await page.locator("#basketAreaPostcode").fill("99999");
   assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/2,69/,
