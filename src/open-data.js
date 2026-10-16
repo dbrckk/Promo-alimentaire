@@ -100,8 +100,8 @@ export function createSharedPriceFetch(fetchImpl=fetch){
 /**
  * Open Prices filters product_code by its exact representation. A UPC-A can
  * be entered as UPC-12, EAN-13 (one leading zero) or GTIN-14 (two zeros).
- * Ask for equivalent codes only as a bounded fallback when a retailer has
- * NO observations under the original code. Never fuzzy-match descriptions.
+ * Ask for equivalent codes only as a bounded fallback when the retailer has
+ * no recent observation under the original code. Never fuzzy-match names.
  */
 function equivalentLongGtins(code,canonical){
   if(code.length<12) return [];
@@ -251,7 +251,8 @@ export async function fetchPricesByBarcode(value,{
   // their historical request budget. A comparison can opt in for UPC/EAN
   // variants without fetching irrelevant aliases for normal EAN-13 codes.
   let aliasQueries=0,aliasRecovered=false;
-  if(alternateGtins===true && observations.length===0){
+  if(alternateGtins===true
+    && !observations.some((item)=>isFreshObservation(item,30))){
     for(const alias of equivalentLongGtins(code,canonicalQuery)){
       if(signal?.aborted) throw new DOMException("Recherche annulée","AbortError");
       aliasQueries++;
