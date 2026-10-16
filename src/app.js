@@ -140,6 +140,14 @@ const els = {
   scanButton:document.querySelector("#scanButton"),
   compareExactSku:document.querySelector("#compareExactSku"),
   exactSkuQuantity:document.querySelector("#exactSkuQuantity"),
+  exactSkuAreaForm:document.querySelector("#exactSkuAreaForm"),
+  exactSkuAreaPostcode:document.querySelector("#exactSkuAreaPostcode"),
+  exactSkuAreaSearch:document.querySelector("#exactSkuAreaSearch"),
+  exactSkuAreaCommuneField:document.querySelector("#exactSkuAreaCommuneField"),
+  exactSkuAreaCommune:document.querySelector("#exactSkuAreaCommune"),
+  exactSkuAreaRadius:document.querySelector("#exactSkuAreaRadius"),
+  exactSkuAreaClear:document.querySelector("#exactSkuAreaClear"),
+  exactSkuAreaStatus:document.querySelector("#exactSkuAreaStatus"),
   exactSkuComparison:document.querySelector("#exactSkuComparison"),
   nearbyButton:document.querySelector("#nearbyButton"),
   radiusSelect:document.querySelector("#radiusSelect"),
@@ -255,6 +263,12 @@ const communityState={store:null,records:[],status:"idle",checkedAt:null,
 // Shared by both retailer lookups. Any change of product/filters aborts
 // obsolete network traffic instead of merely discarding its eventual reply.
 let skuComparisonController=null;
+// A municipality centre is a requested search origin, not the user's GPS.
+// Keep the chosen place transient and independent of basket/community prices.
+const comparisonArea={
+  commune:null,postcode:"",radiusKm:25,candidates:[],pendingZip:"",
+  controller:null,lookupToken:0
+};
 const EXACT_SKU_TIMEOUT_MS=18000;
 let productLookupController=null;
 let productLookupTimeout=null;
@@ -474,6 +488,39 @@ els.cancelBarcodeLookup.addEventListener("click",()=>{
 });
 els.scanButton.addEventListener("click",startScanner);
 els.compareExactSku.addEventListener("click",()=>compareCurrentExactSku());
+els.exactSkuAreaForm.addEventListener("submit",(event)=>{
+  event.preventDefault();
+  void searchComparisonAreaPostcode();
+});
+els.exactSkuAreaPostcode.addEventListener("input",()=>{
+  clearComparisonArea(false);
+  els.exactSkuAreaStatus.textContent=
+    "Code postal modifié : le précédent secteur n'est plus appliqué. Cherchez la commune avant de comparer localement.";
+});
+els.exactSkuAreaCommune.addEventListener("change",()=>{
+  const value=els.exactSkuAreaCommune.value;
+  const selected=comparisonArea.candidates.find((place)=>place.code===value);
+  if(selected && comparisonArea.pendingZip===els.exactSkuAreaPostcode.value.trim()){
+    applyComparisonArea(selected,comparisonArea.pendingZip);
+  }else{
+    comparisonArea.commune=null;
+    invalidateExactSkuComparison();
+    els.exactSkuAreaStatus.textContent="Sélectionnez explicitement une commune.";
+  }
+});
+els.exactSkuAreaRadius.addEventListener("change",()=>{
+  const radius=Number(els.exactSkuAreaRadius.value);
+  if(![5,10,25,50].includes(radius)) return;
+  comparisonArea.radiusKm=radius;
+  invalidateExactSkuComparison();
+  if(comparisonArea.commune){
+    els.exactSkuAreaStatus.textContent="Secteur choisi : "+
+      comparisonArea.commune.nom+" ("+comparisonArea.postcode+
+      "), rayon "+radius+" km autour du centre communal approximatif. "+
+      "Appuyez sur « Comparer cet EAN » pour actualiser les relevés.";
+  }
+});
+els.exactSkuAreaClear.addEventListener("click",()=>clearComparisonArea(true));
 els.exactSkuQuantity.addEventListener("input",invalidateExactSkuComparison);
 els.exactSkuComparison.addEventListener("click",(event)=>{
   if(event.target.closest('[data-action="cancel-exact-sku"]')){
@@ -1767,6 +1814,98 @@ async function refreshPrices(code){
   }
 }
 
+// A postal code may cover several towns. Never silently pick the most
+// populous municipality: comparison geography must reflect explicit choice.
+function clearComparisonArea(clearInput=true){
+  ++comparisonArea.lookupToken;
+  comparisonArea.controller?.abort();
+  comparisonArea.controller=null;
+  comparisonArea.commune=null;
+  comparisonArea.postcode="";
+  comparisonArea.candidates=[];
+  comparisonArea.pendingZip="";
+  els.exactSkuAreaSearch.disabled=false;
+  els.exactSkuAreaCommuneField.classList.add("hidden");
+  els.exactSkuAreaCommune.replaceChildren(new Option("Choisir une commune…",""));
+  if(clearInput) els.exactSkuAreaPostcode.value="";
+  invalidateExactSkuComparison();
+  if(clearInput){
+    els.exactSkuAreaStatus.textContent="Secteur effacé. "+
+      (state.nearbyEnabled && state.coords
+        ?"La comparaison utilisera la position GPS déjà activée, sauf désactivation de « Autour de moi »."
+        :"La prochaine comparaison pourra examiner des magasins ailleurs en France.");
+  }
+}
+
+function applyComparisonArea(place,postcode){
+  // Only validated public municipality data can become an origin.
+  if(!/^[0-9]{5}$/.test(postcode) || !/^[0-9A-Z]{5}$/.test(place?.code||"")
+    || !Number.isFinite(place.latitude) || !Number.isFinite(place.longitude)
+    || Math.abs(place.latitude)>90 || Math.abs(place.longitude)>180
+    || typeof place.nom!=="string" || place.nom.length>100) return;
+  comparisonArea.commune={
+    code:place.code,nom:place.nom,
+    latitude:place.latitude,longitude:place.longitude
+  };
+  comparisonArea.postcode=postcode;
+  comparisonArea.candidates=[];
+  comparisonArea.pendingZip="";
+  els.exactSkuAreaCommuneField.classList.add("hidden");
+  invalidateExactSkuComparison();
+  els.exactSkuAreaStatus.textContent=
+    "Secteur choisi : "+place.nom+" ("+postcode+"), rayon "+
+    comparisonArea.radiusKm+" km autour du centre communal approximatif. "+
+    "Le GPS n'a pas été demandé. Appuyez sur « Comparer cet EAN ».";
+}
+
+async function searchComparisonAreaPostcode(){
+  const postcode=els.exactSkuAreaPostcode.value.trim();
+  clearComparisonArea(false);
+  if(!/^[0-9]{5}$/.test(postcode)){
+    els.exactSkuAreaStatus.textContent="Saisir un code postal valide de cinq chiffres.";
+    return;
+  }
+  const token=++comparisonArea.lookupToken;
+  const controller=new AbortController();
+  comparisonArea.controller=controller;
+  els.exactSkuAreaSearch.disabled=true;
+  els.exactSkuAreaStatus.textContent="Recherche des communes du code postal "+postcode+"…";
+  const timer=setTimeout(()=>controller.abort(),9000);
+  try{
+    const places=await lookupPostalCodeCommunes(postcode,{signal:controller.signal});
+    if(token!==comparisonArea.lookupToken || controller.signal.aborted
+      || els.exactSkuAreaPostcode.value.trim()!==postcode) return;
+    if(!places.length){
+      els.exactSkuAreaStatus.textContent=
+        "Aucune commune identifiée pour ce code postal. La comparaison reste non localisée.";
+    }else if(places.length===1){
+      applyComparisonArea(places[0],postcode);
+    }else{
+      comparisonArea.candidates=places;
+      comparisonArea.pendingZip=postcode;
+      els.exactSkuAreaCommune.replaceChildren(new Option("Choisir une commune…",""));
+      for(const place of places){
+        els.exactSkuAreaCommune.add(new Option(place.nom,place.code));
+      }
+      els.exactSkuAreaCommuneField.classList.remove("hidden");
+      els.exactSkuAreaStatus.textContent=places.length+
+        " communes possibles pour "+postcode+
+        ". Choisissez la bonne ; aucun secteur n'est appliqué avant votre choix.";
+    }
+  }catch(error){
+    if(token!==comparisonArea.lookupToken) return;
+    els.exactSkuAreaStatus.textContent=controller.signal.aborted
+      ?"Recherche des communes interrompue. Réessayez."
+      :"Référentiel des communes indisponible : aucun secteur n'a été appliqué.";
+  }finally{
+    clearTimeout(timer);
+    if(token===comparisonArea.lookupToken){
+      comparisonArea.controller=null;
+      els.exactSkuAreaSearch.disabled=false;
+    }
+  }
+}
+
 function invalidateExactSkuComparison(){
   skuComparisonController?.abort();
   skuComparisonController=null;
@@ -1818,7 +1957,23 @@ async function compareCurrentExactSku({deep=false}={}){
       }</p>
       <button type="button" class="secondary" data-action="cancel-exact-sku">Annuler la recherche</button>
     </div>`;
-  const options=priceQueryOptions();
+  const locality=comparisonArea.commune;
+  // The manual municipality search overrides GPS only for this two-retailer
+  // comparison. Never use a postcode alone as geographic coordinates.
+  const options=locality ? {
+    coords:{latitude:locality.latitude,longitude:locality.longitude},
+    radiusKm:comparisonArea.radiusKm
+  } : priceQueryOptions();
+  const areaNote=locality
+    ? "Secteur demandé : "+locality.nom+" ("+comparisonArea.postcode+
+      "), rayon "+comparisonArea.radiusKm+
+      " km autour du centre communal approximatif ; chaque relevé est "+
+      "contrôlé localement dans ce rayon."
+    : state.nearbyEnabled && state.coords
+      ? "Recherche dans un rayon de "+state.radiusKm+
+        " km autour de la position GPS autorisée."
+      : "Aucun secteur choisi : les deux magasins des relevés comparés "+
+        "doivent être proches entre eux, mais peuvent se trouver n'importe où en France.";
   const stores=["carrefour","leclerc"];
   const controller=new AbortController();
   skuComparisonController=controller;
@@ -1875,7 +2030,7 @@ async function compareCurrentExactSku({deep=false}={}){
   const comparison=compareExactSku(normalizedProduct,candidates,observations,{
     channel,quantity,now:new Date(),coverageByStore
   });
-  els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors,{deep});
+  els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors,{deep,areaNote});
 }
 
 function openPricesReceiptLink(observation,label){
@@ -1885,7 +2040,7 @@ function openPricesReceiptLink(observation,label){
     : "";
 }
 
-function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
+function renderExactSkuComparison(result,errors=new Set(),{deep=false,areaNote=""}={}){
   if(result.status!=="ok"){
     return '<div class="panel price-source">Impossible de comparer : code GTIN ou quantité invalide.</div>';
   }
@@ -2026,6 +2181,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
       ${comparedSourceLinks ? `Relevés comparés : ${comparedSourceLinks}.` : ""}</p>` : "";
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
+    ${areaNote ? `<p class="help exact-sku-area-note">${escapeHtml(areaNote)}</p>` : ""}
     <p>Identité GTIN ${escapeHtml(result.gtin)} · Quantité : ${escapeHtml(quantityLabel)} · ${escapeHtml(best)}</p>
     ${pairedDetails}
     <p>Comparaison seulement si les relevés sont récents (7 jours maximum), espacés de 3 jours au plus, et géographiquement proches : coordonnées à 15 km maximum, ou à défaut même commune et même code postal. Prix Open Prices communautaires : disponibilité, remise et cumul non garantis.</p>

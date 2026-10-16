@@ -333,6 +333,36 @@
             <option value="50">50 km</option>
           </select>
         </form>
+        <form id="exactSkuAreaForm" class="panel exact-sku-area" autocomplete="off"
+          aria-label="Limiter la comparaison de prix à une commune">
+          <h3>Comparer les magasins d'un secteur sans GPS</h3>
+          <p class="help">Par défaut, les relevés peuvent provenir de toute la France. Sélectionnez une commune et un rayon pour limiter les comparaisons Carrefour et E.Leclerc à ce secteur. Le centre de commune est approximatif, pas votre position exacte.</p>
+          <div class="exact-sku-area-fields">
+            <div class="field">
+              <label for="exactSkuAreaPostcode">Code postal du secteur</label>
+              <input id="exactSkuAreaPostcode" inputmode="numeric" maxlength="5"
+                pattern="[0-9]{5}" autocomplete="postal-code" placeholder="Ex. 71100" />
+            </div>
+            <button id="exactSkuAreaSearch" class="secondary" type="submit">Trouver la commune</button>
+            <div id="exactSkuAreaCommuneField" class="field hidden">
+              <label for="exactSkuAreaCommune">Préciser la commune</label>
+              <select id="exactSkuAreaCommune">
+                <option value="">Choisir une commune…</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="exactSkuAreaRadius">Rayon autour de son centre</label>
+              <select id="exactSkuAreaRadius">
+                <option value="5">5 km</option>
+                <option value="10">10 km</option>
+                <option value="25" selected>25 km</option>
+                <option value="50">50 km</option>
+              </select>
+            </div>
+            <button id="exactSkuAreaClear" class="secondary" type="button">Effacer le secteur</button>
+          </div>
+          <p id="exactSkuAreaStatus" class="help" role="status" aria-live="polite">Aucun secteur choisi : une comparaison peut concerner des magasins ailleurs en France. Utilisez le code postal ci-dessus ou le bouton « Autour de moi » si vous autorisez le GPS.</p>
+        </form>
         <button id="cancelBarcodeLookup" class="secondary hidden product-lookup-cancel" type="button">Annuler la recherche du produit</button>
         <p class="help">« Autour de moi » utilise ta position uniquement pour la requête Open Prices en cours. Elle n'est pas enregistrée par l'application.</p>
         <div id="productStatus" class="status" aria-live="polite"></div>

@@ -1,3 +1,9 @@
+## Comparaison par code postal (sans autorisation GPS)
+
+Dans **Produit**, entrer un code postal dans le formulaire **Comparer les magasins d'un secteur sans GPS**. Si plusieurs communes partagent ce code, sélectionner la localité explicitement. Choisir 5, 10, 25 ou 50 km, scanner/saisir l'EAN puis lancer le comparateur. La zone affichée doit indiquer un centre de commune approximatif, le rayon choisi, et **aucun prix ne doit venir d'un relevé situé hors rayon**. Changer le code, le rayon ou la commune doit effacer l'ancienne comparaison ; l'option Effacer supprime toute recherche locale. Les modes Drive/livraison continuent de refuser les prix magasin.
+
+Le smoke Pixel 7 du projet émule plusieurs communes françaises pour `71100`, vérifie les paramètres Open Prices transmis, les annulations et les limites géographiques. La validation n'utilise aucune position réelle du téléphone.
+
 # Tester Promo Alimentaire sur Android
 
 Le test automatisé utilise **Chromium avec émulation de Pixel 7** (format tactile Android). Il teste le logiciel, mais ne simule pas une caméra physique, une position GPS réelle, les contraintes du Play Store ou un vrai paiement. Un test sur téléphone demeure nécessaire.
