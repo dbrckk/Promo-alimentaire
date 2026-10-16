@@ -159,6 +159,8 @@ export function priceCoverageSummary(observations,now=new Date(),lookup={}){
     total:records.length,valid:valid.length,
     recent30Days:recent.length,recent7Days:comparable.length,
     pagesFetched,lookupSkipped,lookupInterrupted,moreAvailable,
+    aliasQueries:Number.isInteger(lookup?.aliasQueries)?lookup.aliasQueries:0,
+    aliasRecovered:lookup?.aliasRecovered===true,
     searchIncomplete:!lookupSkipped && (lookupInterrupted || moreAvailable),
     // Dates may mix YYYY-MM-DD and full ISO timestamps with offsets.
     // Lexical ordering cannot identify the chronologically latest receipt.
