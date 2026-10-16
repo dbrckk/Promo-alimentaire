@@ -1486,19 +1486,32 @@ try{
         sourceSyncWarning:{status:"unavailable"}}],
       store:"carrefour",channel:"store",now:new Date("2026-10-17T12:00:00Z")
     });
+    // >240 current offers must not hide an otherwise eligible saved offer.
+    // That used to make the "prune" button silently delete a valid favorite.
+    const many=Array.from({length:260},(_,index)=>
+      make("bulk-"+String(index).padStart(3,"0"),"2026-10-22"));
+    const tail=make("bulk-999","2026-10-22");
+    const beyondCatalogue=selectSavedFoodRefunds({
+      savedIds:["shopmium-bulk-999","shopmium-expired"],
+      offers:[...many,tail,make("expired","2026-10-16")],
+      store:"carrefour",channel:"store",now:new Date("2026-10-17T12:00:00Z")
+    });
     return {
       parsed,invalid:normalizeSavedFoodRefundIds("{bad"),
       oversized:normalizeSavedFoodRefundIds("x".repeat(12001)),
       selected:selected.available.map((item)=>item.id),
       total:selected.total,unavailable:selected.unavailableCount,
-      sourceOutage:unavailable.unavailableCount
+      sourceOutage:unavailable.unavailableCount,
+      tailSaved:beyondCatalogue.available.map((item)=>item.id),
+      tailUnavailable:beyondCatalogue.unavailableCount
     };
   });
   assert.deepEqual(savedRefundSafety,{
     parsed:["shopmium-valid","coupon-network-other","shopmium-expired"],
     invalid:[],oversized:[],
-    selected:["shopmium-valid"],total:3,unavailable:2,sourceOutage:1
-  },"Saved IDs must never reinstate expired, unavailable or store-ineligible refunds");
+    selected:["shopmium-valid"],total:3,unavailable:2,sourceOutage:1,
+    tailSaved:["shopmium-bulk-999"],tailUnavailable:1
+  },"Saved IDs must never reinstate expired refunds or discard valid bookmarks beyond the 240-result display cap");
   assert.equal(await page.locator("#dailyAlternativeLink").getAttribute("href"),
     "https://www.bonial.fr/Enseignes/Carrefour",
     "Un accès aux prospectus datés reste disponible quand Carrefour bloque les robots");
