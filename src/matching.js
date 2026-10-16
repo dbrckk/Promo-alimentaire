@@ -141,13 +141,18 @@ function round(value) {
 }
 
 
-export function rankMatchedOffers(matches,{price=null,quantity=1}={}) {
+export function rankMatchedOffers(matches,{price=null,quantity=1,canEstimate=null}={}) {
   const qty=Math.max(1,Math.trunc(Number(quantity)||1));
   return (matches || [])
     .map((entry)=>{
       const minQty=requiredQuantity(entry.offer);
       const quantitySatisfied=qty>=minQty;
-      const estimatedSaving=Number.isFinite(Number(price))
+      // Product-page estimates may require independent evidence per offer.
+      // When a caller supplies a policy, never rank an unverified candidate
+      // by a numerical saving that must not be displayed to the shopper.
+      const estimateAllowed=typeof canEstimate!=="function" || canEstimate(entry)===true;
+      const estimatedSaving=estimateAllowed && price!==null && price!==undefined
+        && Number.isFinite(Number(price))
         ? estimateOfferSaving(Number(price),entry.offer,qty)
         : null;
       const percent=effectiveOfferPercent(entry.offer,qty);
