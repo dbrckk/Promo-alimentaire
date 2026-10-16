@@ -1297,6 +1297,70 @@ try{
     complete:{calls:1,moreAvailable:false,incomplete:false,matched:1}
   });
 
+  // Integration within the existing Pixel 7 browser journey: the product
+  // URL query is exact, yet UPC-A, EAN-13 and GTIN-14 may encode the same
+  // GS1 identifier. A cautious fallback must not accept superseded prices,
+  // personal consumption entries or a lookalike SKU.
+  const barcodeFallback=await page.evaluate(async()=>{
+    const {fetchPricesByBarcode}=await import("./src/open-data.js");
+    const upc="036000291452",equivalentEan="0036000291452";
+    const date=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    const urls=[];
+    const row=(id,product_code,price,extras={})=>({
+      id,product_code,price,currency:"EUR",price_per:"UNIT",
+      date,kind:"COMMUNITY",type:"PRODUCT",
+      location:{osm_brand:"Carrefour",osm_name:"Carrefour centre",
+        osm_address_city:"Chalon-sur-Saône",osm_address_postcode:"71100"},
+      ...extras
+    });
+    const fetchImpl=async(raw)=>{
+      const query=new URL(raw).searchParams;
+      urls.push({
+        code:query.get("product_code"),
+        kind:query.get("kind"),dedup:query.get("duplicate_of__isnull")
+      });
+      const items=query.get("product_code")===equivalentEan
+        ?[
+          row(401,equivalentEan,2.69),
+          row(402,equivalentEan,0.05,{duplicate_of:401}),
+          row(403,equivalentEan,0.04,{kind:"CONSUMPTION"}),
+          row(404,equivalentEan,0.03,{type:"CATEGORY"}),
+          row(405,"4006381333931",0.02),
+          row(406,equivalentEan,0.01,{
+            location:{osm_brand:"E.Leclerc"}})
+        ]:[];
+      return {ok:true,json:async()=>({items,pages:1,total:items.length})};
+    };
+    const result=await fetchPricesByBarcode(upc,{
+      store:"carrefour",alternateGtins:true,fetchImpl
+    });
+    const withAlias={
+      count:result.observations.length,
+      price:result.observations[0]?.price,
+      code:result.observations[0]?.productCode,
+      aliasQueries:result.aliasQueries,
+      recovered:result.aliasRecovered,
+      pagesFetched:result.pagesFetched,
+      partial:result.partial,
+      requested:urls.map((entry)=>entry.code),
+      safeFilters:urls.every((entry)=>
+        entry.kind==="COMMUNITY" && entry.dedup==="true")
+    };
+    urls.length=0;
+    const without=await fetchPricesByBarcode(upc,{
+      store:"carrefour",alternateGtins:false,fetchImpl
+    });
+    return {...withAlias,withoutCount:without.observations.length,
+      withoutAliases:without.aliasQueries,
+      withoutRequests:urls.map((entry)=>entry.code)};
+  });
+  assert.deepEqual(barcodeFallback,{
+    count:1,price:2.69,code:"0036000291452",
+    aliasQueries:1,recovered:true,pagesFetched:2,partial:false,
+    requested:["036000291452","0036000291452"],safeFilters:true,
+    withoutCount:0,withoutAliases:0,withoutRequests:["036000291452"]
+  });
+
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.locator("#savingsFocus").selectOption("full-refund");
   assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");
