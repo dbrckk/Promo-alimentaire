@@ -1705,7 +1705,8 @@ async function lookupBarcode(rawValue){
   });
   const [productResult,pricesResult]=await Promise.allSettled([
     Promise.race([fetchProductByBarcode(code,fetch,{signal:controller.signal}),deadline]),
-    Promise.race([fetchPricesByBarcode(code,{...priceQueryOptions(),signal:controller.signal}),deadline])
+    Promise.race([fetchPricesByBarcode(code,{...priceQueryOptions(),signal:controller.signal,
+      alternateGtins:true}),deadline])
   ]);
   if(token!==state.lookupToken) return;
   clearTimeout(productLookupTimeout);
@@ -1750,7 +1751,7 @@ async function refreshPrices(code){
   const token=++state.lookupToken;
   setProductStatus("Actualisation des prix pour cette enseigne…");
   try{
-    const result=await fetchPricesByBarcode(code,priceQueryOptions());
+    const result=await fetchPricesByBarcode(code,{...priceQueryOptions(),alternateGtins:true});
     if(token!==state.lookupToken) return;
     state.priceObservations=result.observations;
     renderPrices(state.priceObservations,result.sourceUrl,result);
@@ -1832,7 +1833,7 @@ async function compareCurrentExactSku({deep=false}={}){
   try{
     fetched=await Promise.allSettled(stores.map((store)=>
       fetchPricesByBarcode(code,{...options,store,
-        signal:controller.signal,fetchImpl:sharedFetch,
+        signal:controller.signal,fetchImpl:sharedFetch,alternateGtins:true,
         ...(deep ? {maxPages:3,minimumMatches:20} : {})})
     ));
   }finally{
@@ -1854,7 +1855,9 @@ async function compareCurrentExactSku({deep=false}={}){
       coverageByStore[stores[i]]={
         partial:entry.value.partial,
         moreAvailable:entry.value.moreAvailable,
-        pagesFetched:entry.value.pagesFetched
+        pagesFetched:entry.value.pagesFetched,
+        aliasQueries:entry.value.aliasQueries,
+        aliasRecovered:entry.value.aliasRecovered
       };
     }else{
       observations[stores[i]]=[];
@@ -1923,6 +1926,7 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false}={}){
       ${!unresolved && coverage.latestDate
         ? ` · Dernier relevé consulté : ${escapeHtml(formatDate(coverage.latestDate))}` : ""}
       ${escapeHtml(limitedCoverage)}
+      ${coverage.aliasQueries ? `<span>Recherche élargie à ${coverage.aliasQueries} autre(s) forme(s) équivalente(s) du code UPC/EAN/GTIN.${coverage.aliasRecovered?" Des relevés ont été retrouvés.":" Aucun relevé complémentaire trouvé."}</span>` : ""}
       <span>Ces données sont limitées à la recherche effectuée. Une absence de relevé ne signifie pas que le produit est absent du magasin.</span>
     </p>`;
     const offers=row.exactOffers.slice(0,6).map((offer)=>{
@@ -2221,12 +2225,15 @@ function renderPrices(observations,sourceUrl,metadata={}){
     : fetchedPages>1
       ? `<div class="panel price-source">${fetchedPages} pages Open Prices consultées pour rechercher davantage de relevés.</div>`
       : "";
+  const variantNote=metadata.aliasQueries
+    ? `<div class="panel price-source">Code-barres recherché aussi sous ${metadata.aliasQueries} autre(s) format(s) équivalent(s) UPC/EAN/GTIN.${metadata.aliasRecovered?" Relevés additionnels trouvés.":" Aucun prix complémentaire trouvé."} Une autre représentation n’implique pas une promotion actuelle.</div>`
+    : "";
   if(!observations.length){
     els.priceResults.innerHTML=`
       <div class="panel price-source">
         Aucun prix Open Prices trouvé pour ce code-barres chez ${storeLabel(state.store)}${state.nearbyEnabled?` dans un rayon de ${state.radiusKm} km`:""}.
         Cela ne signifie pas que le produit n'y est pas vendu : la base est communautaire et encore incomplète.
-      </div>${coverageNote}`;
+      </div>${coverageNote}${variantNote}`;
     return;
   }
   const best=selectBestRecentPrice(observations);
@@ -2256,6 +2263,7 @@ function renderPrices(observations,sourceUrl,metadata={}){
   els.priceResults.innerHTML=`
     ${bestSummary}
     ${coverageNote}
+    ${variantNote}
     ${cards}
     <div class="panel price-source">
       ${observations.length} observation(s) ${storeLabel(state.store)} trouvée(s)${state.nearbyEnabled?` dans un rayon de ${state.radiusKm} km`:""}. Source : Open Prices / Open Food Facts.
