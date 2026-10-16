@@ -1,3 +1,11 @@
+### Panier : isolation stricte des canaux magasin / Drive / livraison (16 octobre 2026)
+
+Les relevés Open Prices proviennent **des points de vente physiques**. Si l'utilisateur choisit **Drive** ou **En ligne/livraison**, le budget de la liste de courses **n'affiche plus de prix magasin comme s'il s'agissait de tarifs du canal sélectionné** et ne calcule plus de faux montants après promotions sur ces bases. Les lignes restent visibles avec **prix indisponible pour ce canal** et le comparateur explique explicitement la limite. Appuyer sur « Actualiser les prix » dans ces canaux **ne déclenche aucune requête Open Prices inutile** ; une explication invite à repasser en mode **Magasin**.
+
+Les prix physiques déjà obtenus restent en **mémoire de l'onglet seulement** : ils réapparaissent si l'utilisateur revient au canal Magasin, sans nouvel appel automatique, avec leur date et leur justificatif, et peuvent être actualisés volontairement. Les offres et remboursements demeurent filtrés selon le canal sélectionné : leur affichage ne vaut toujours pas confirmation du tarif Drive ni garantie d'application.
+
+Le smoke Android Pixel 7 du projet vérifie ce changement après avoir chargé deux relevés UPC/EAN valides : aucun prix ni coût de magasin ne s'affiche en Drive/En ligne, aucun appel réseau n'est émis au clic Actualiser, et les observations physiques réapparaissent au retour au canal Magasin.
+
 ### Panier : récupération UPC/EAN/GTIN et estimations fondées sur un prix réellement récent (16 octobre 2026)
 
 Dans **Liste de courses → Actualiser les prix**, la recherche sur le code-barres exact demande désormais, uniquement lorsqu'elle ne trouve **aucun relevé datant de 7 jours maximum**, jusqu'à **deux autres représentations GS1 équivalentes** : UPC-A, EAN-13 et GTIN-14. Ces identifiants sont reliés uniquement par leur checksum/codification, **jamais par la ressemblance des noms ou marques**. Chaque représentation est limitée à une page, les résultats sont toujours filtrés par enseigne et rayon choisi, et les requêtes identiques restent mutualisées entre Carrefour et E.Leclerc. Le statut de la liste indique combien de recherches complémentaires ont été tentées et combien de couples produit-enseigne ont retrouvé des observations. Une recherche dont la couverture est partielle est toujours signalée.
