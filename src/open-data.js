@@ -245,9 +245,11 @@ export async function fetchPricesByBarcode(value,{
       if(seen.has(key)) continue;
       seen.add(key);
       all.push(observation);
-      // Undated, stale or future-dated records must not exhaust the
-      // search budget: only truly recent receipts satisfy the target count.
-      if(isFreshObservation(observation,30)) recentUsableMatches+=1;
+      // The pagination target must match the freshness the caller needs.
+      // A 12-day-old receipt is useful history but cannot satisfy a 7-day
+      // retailer comparison and must not hide a later page of eligible
+      // evidence. Ordinary product lookups retain their 30-day threshold.
+      if(isFreshObservation(observation,aliasDays)) recentUsableMatches+=1;
     }
 
     const declaredPages=Number(payload.pages);
