@@ -2962,7 +2962,7 @@ function renderBudgetSummary(scenarios=[]){
   const evaluation=evaluateShoppingBudget(scenarios,{
     budget:state.shoppingBudget,
     channel:state.channel,
-    nearbyEnabled:state.nearbyEnabled,
+    nearbyEnabled:state.nearbyEnabled || Boolean(basketArea.commune),
     coverageIncomplete:state.basketPriceCoverageIncomplete
   });
   const labels={
@@ -3126,7 +3126,11 @@ async function refreshShoppingList(){
     const scenarios=evaluateCurrentBasketScenarios();
     recordComparisonHistory(scenarios);
     renderShoppingList();
-    const locality=state.nearbyEnabled ? ` dans un rayon de ${state.radiusKm} km` : " sans filtre géographique";
+    const locality=basketArea.commune
+      ? ` autour de ${basketArea.commune.nom} (${basketArea.postcode}), rayon ${state.radiusKm} km`
+      :state.nearbyEnabled
+        ? ` dans un rayon de ${state.radiusKm} km autour du GPS autorisé`
+        : " sans filtre géographique";
     const aliases=aliasQueries
       ? ` Recherche de variantes UPC/EAN/GTIN : ${aliasQueries} requête(s) logiques supplémentaires, ${aliasRecoveries} couple(s) produit-enseigne ayant récupéré des relevés. Ces relevés sont communautaires et doivent être vérifiés avant achat.`
       : "";
@@ -3255,7 +3259,13 @@ async function searchBasketAreaPostcode(){
 
 function basketQueryOptions(store){
   const options={store};
-  if(state.nearbyEnabled && state.coords){
+  if(basketArea.commune){
+    options.coords={
+      latitude:basketArea.commune.latitude,
+      longitude:basketArea.commune.longitude
+    };
+    options.radiusKm=state.radiusKm;
+  }else if(state.nearbyEnabled && state.coords){
     options.coords=state.coords;
     options.radiusKm=state.radiusKm;
   }
@@ -3290,7 +3300,10 @@ function evaluateCurrentBasketScenarios(){
     // Keep the in-memory physical observations for switching back to "store",
     // but never price another channel with them.
     const priceByCode=state.channel==="store"
-      ? mergeManualPriceObservations(state.basketPriceData[store],state.manualPrices,{store})
+      ? (basketArea.commune || (state.nearbyEnabled && state.coords))
+        // Manual store names/postcodes alone cannot certify a 5–50 km radius.
+        ? state.basketPriceData[store]
+        : mergeManualPriceObservations(state.basketPriceData[store],state.manualPrices,{store})
       : {};
     const locationScenarios=evaluateBasketLocations(state.shoppingList,{
       store,
@@ -3624,7 +3637,7 @@ function renderBasketComparison(scenarios){
   const ranked=compareBasketStores(scenarios);
   const strategySummary=summarizeBasketStrategies(scenarios,{
     channel:state.channel,
-    nearbyEnabled:state.nearbyEnabled,
+    nearbyEnabled:state.nearbyEnabled || Boolean(basketArea.commune),
     coverageIncomplete:state.basketPriceCoverageIncomplete
   });
   const strategyHtml=renderStrategySummary(strategySummary);
@@ -3635,8 +3648,8 @@ function renderBasketComparison(scenarios){
     recommendation='<div class="basket-recommendation"><strong>Aucun tarif Drive/livraison vérifié.</strong> Les relevés communautaires Open Prices concernent des magasins physiques : ils ne sont pas réutilisés pour chiffrer un panier Drive ou En ligne. Reviens au canal « Magasin » pour consulter les prix physiques ; les offres du canal sélectionné restent consultables séparément.</div>';
   }else if(state.basketPriceCoverageIncomplete){
     recommendation='<div class="basket-recommendation"><strong>Recherche Open Prices incomplète.</strong> Une page supplémentaire n’a pas pu être récupérée ; les résultats restent indicatifs et aucun magasin gagnant n’est annoncé.</div>';
-  }else if(!state.nearbyEnabled){
-    recommendation='<div class="basket-recommendation"><strong>Comparaison locale non activée.</strong> Active « Autour de moi » puis actualise pour comparer des magasins dans le même secteur.</div>';
+  }else if(!state.nearbyEnabled && !basketArea.commune){
+    recommendation='<div class="basket-recommendation"><strong>Comparaison locale non activée.</strong> Choisis une commune sans GPS ou active « Autour de moi », puis actualise pour comparer des magasins dans le même secteur.</div>';
   }else if(scenarios.some((scenario)=>scenario.manualPriceCount>0)){
     recommendation='<div class="basket-recommendation"><strong>Relevé personnel.</strong> Les prix ajoutés par toi servent à estimer un budget ; ils ne constituent pas une preuve commerciale ni un classement fiable des enseignes.</div>';
   }else if(!allComplete){
@@ -3655,6 +3668,9 @@ function renderBasketComparison(scenarios){
   }
 
   els.basketComparison.innerHTML=`
+    ${basketArea.commune && state.channel==="store"
+      ? `<p class="help">Panier local : ${escapeHtml(basketArea.commune.nom)} (${escapeHtml(basketArea.postcode)}), rayon ${state.radiusKm} km autour du centre communal. Prix personnels non géolocalisables exclus. Relevés Open Prices indicatifs.</p>`
+      : ""}
     ${strategyHtml}
     ${recommendation}
     <div class="scenario-grid">
@@ -3737,7 +3753,7 @@ function renderBasketScenario(scenario){
       && candidate.match.exact
       && candidate.offer?.requiresStoreVerification
       && state.channel==="store"
-      && state.nearbyEnabled
+      && (state.nearbyEnabled || basketArea.commune)
       && scenario.locationReliable
       && scenario.locationKey
     );
@@ -3758,8 +3774,8 @@ function renderBasketScenario(scenario){
       && candidate.offer?.requiresStoreVerification
       && state.channel==="store"
       && scenario.locationReliable
-      && !state.nearbyEnabled
-      ? '<span class="local-verify-hint">Active « Autour de moi » pour confirmer cette promo dans un magasin précis.</span>'
+      && !state.nearbyEnabled && !basketArea.commune
+      ? '<span class="local-verify-hint">Choisis une commune sans GPS ou active « Autour de moi » pour confirmer cette promo dans un magasin précis.</span>'
       : "";
     const candidateHtml=candidate
       ? `<div class="line-offer">
