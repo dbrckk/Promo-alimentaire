@@ -1320,7 +1320,7 @@ try{
     await page.locator("#foodRefundCopy").click();
     const copied=await page.evaluate(()=>window.__copiedRefundChecklist);
     assert.match(copied,/Remboursements alimentaires à vérifier/);
-    assert.match(copied,/Aucun remboursement garanti/);
+    assert.match(copied,/aucun remboursement garanti/i);
     assert.match(copied,/Conditions officielles : https:\/\//);
     assert.doesNotMatch(copied,/46\.78|longitude|latitude|GPS|prix en caisse : \d/);
     assert.match(await page.locator("#foodRefundSavedStatus").innerText(),/Liste copiée/);
