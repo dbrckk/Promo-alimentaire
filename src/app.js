@@ -263,6 +263,9 @@ const communityState={store:null,records:[],status:"idle",checkedAt:null,
 // Shared by both retailer lookups. Any change of product/filters aborts
 // obsolete network traffic instead of merely discarding its eventual reply.
 let skuComparisonController=null;
+// Location is requested only after a tap. A pending browser permission prompt
+// can outlive cancellation: token-gate callbacks so late GPS never re-enables it.
+const nearbyLocationRequest={pending:false,token:0};
 // A municipality centre is a requested search origin, not the user's GPS.
 // Keep the chosen place transient and independent of basket/community prices.
 const comparisonArea={
@@ -1795,7 +1798,19 @@ async function lookupBarcode(rawValue){
 }
 
 async function refreshPrices(code){
+  // A prior full barcode lookup might still be resolving with a different
+  // store/radius. Replace it with a fresh complete lookup (including product
+  // identity), rather than leaving an orphaned cancel button or stale result.
+  if(productLookupController){
+    await lookupBarcode(code);
+    return;
+  }
   const token=++state.lookupToken;
+  // Never show the previous store's price or an estimated saving while the
+  // new locality query is pending or has failed.
+  state.priceObservations=[];
+  els.priceResults.innerHTML="";
+  if(state.product) renderProductOffers(state.product,[]);
   setProductStatus("Actualisation des prix pour cette enseigne…");
   try{
     const result=await fetchPricesByBarcode(code,{...priceQueryOptions(),alternateGtins:true});
@@ -2402,44 +2417,84 @@ function priceQueryOptions(){
 }
 
 async function toggleNearbyPrices(){
+  // The second tap cancels our interest in an outstanding browser prompt.
+  // Web geolocation itself has no AbortSignal: ignore any delayed callback.
+  if(nearbyLocationRequest.pending){
+    nearbyLocationRequest.token++;
+    nearbyLocationRequest.pending=false;
+    syncNearbyControls();
+    setProductStatus("Demande de position annulée. Toute réponse tardive sera ignorée.");
+    setListStatus("Localisation annulée : aucune position récupérée n'est appliquée.");
+    return;
+  }
   if(state.nearbyEnabled){
+    nearbyLocationRequest.token++;
     invalidateExactSkuComparison();
     state.nearbyEnabled=false;
     state.coords=null;
     syncNearbyControls();
     markBasketPricesStale();
     if(state.productCode) await refreshPrices(state.productCode);
+    else setProductStatus("Mode proximité désactivé. Aucun GPS conservé.");
     setListStatus("Mode proximité désactivé. Actualise la liste pour recalculer les prix.");
     return;
   }
   if(!navigator.geolocation){
     setProductStatus("La géolocalisation n'est pas disponible sur ce navigateur.",true);
+    setListStatus("Géolocalisation indisponible. Les prix restent nationaux.",true);
     return;
   }
-  setProductStatus("Demande de position pour limiter les prix à proximité…");
-  navigator.geolocation.getCurrentPosition(async(position)=>{
-    state.coords={
-      latitude:position.coords.latitude,
-      longitude:position.coords.longitude
-    };
-    state.nearbyEnabled=true;
-    invalidateExactSkuComparison();
-    syncNearbyControls();
-    markBasketPricesStale();
-    if(state.productCode) await refreshPrices(state.productCode);
-    else setProductStatus("Mode proximité activé. Recherche ou scanne un produit.");
-    setListStatus(`Mode proximité activé (${state.radiusKm} km). Actualise la liste.`);
-  },()=>{
+  const token=++nearbyLocationRequest.token;
+  nearbyLocationRequest.pending=true;
+  syncNearbyControls();
+  setProductStatus("Demande de position en cours. Appuie à nouveau pour annuler.");
+  setListStatus("Localisation demandée à ton appareil. Appuie de nouveau pour annuler.");
+  try{
+    navigator.geolocation.getCurrentPosition(async(position)=>{
+      if(token!==nearbyLocationRequest.token || !nearbyLocationRequest.pending) return;
+      nearbyLocationRequest.pending=false;
+      const latitude=position?.coords?.latitude;
+      const longitude=position?.coords?.longitude;
+      if(typeof latitude!=="number" || typeof longitude!=="number"
+        || !Number.isFinite(latitude) || Math.abs(latitude)>90
+        || !Number.isFinite(longitude) || Math.abs(longitude)>180){
+        state.nearbyEnabled=false;
+        state.coords=null;
+        syncNearbyControls();
+        setProductStatus("Position invalide : aucun prix local n'a été recherché.",true);
+        setListStatus("Position invalide. Aucune coordonnée utilisée.",true);
+        return;
+      }
+      state.coords={latitude,longitude};
+      state.nearbyEnabled=true;
+      invalidateExactSkuComparison();
+      syncNearbyControls();
+      markBasketPricesStale();
+      if(state.productCode) await refreshPrices(state.productCode);
+      else setProductStatus("Mode proximité activé. Recherche ou scanne un produit.");
+      setListStatus(`Mode proximité activé (${state.radiusKm} km). Actualise la liste.`);
+    },()=>{
+      if(token!==nearbyLocationRequest.token || !nearbyLocationRequest.pending) return;
+      nearbyLocationRequest.pending=false;
+      state.coords=null;
+      state.nearbyEnabled=false;
+      syncNearbyControls();
+      setProductStatus("Position non disponible. Utilise un secteur sans GPS ou les prix globaux.",true);
+      setListStatus("Position non disponible. Aucun prix local calculé.",true);
+    },{
+      enableHighAccuracy:false,
+      timeout:10000,
+      maximumAge:300000
+    });
+  }catch{
+    if(token!==nearbyLocationRequest.token) return;
+    nearbyLocationRequest.pending=false;
     state.coords=null;
     state.nearbyEnabled=false;
     syncNearbyControls();
-    setProductStatus("Position non disponible. Autorise la localisation ou utilise les prix globaux.",true);
-    setListStatus("Position non disponible. Les prix locaux ne peuvent pas être calculés.",true);
-  },{
-    enableHighAccuracy:false,
-    timeout:10000,
-    maximumAge:300000
-  });
+    setProductStatus("Demande de position impossible sur cet appareil.",true);
+    setListStatus("Position non disponible. Aucune coordonnée utilisée.",true);
+  }
 }
 
 function renderPrices(observations,sourceUrl,metadata={}){
@@ -3057,10 +3112,14 @@ function markBasketPricesStale(){
 }
 
 function syncNearbyControls(){
-  const label=state.nearbyEnabled ? `À moins de ${state.radiusKm} km` : "Autour de moi";
+  const label=nearbyLocationRequest.pending
+    ? "Annuler la localisation"
+    : state.nearbyEnabled ? `À moins de ${state.radiusKm} km` : "Autour de moi";
   for(const button of [els.nearbyButton,els.listNearbyButton]){
     button.textContent=label;
     button.classList.toggle("active",state.nearbyEnabled);
+    button.setAttribute("aria-pressed",String(state.nearbyEnabled));
+    button.setAttribute("aria-busy",String(nearbyLocationRequest.pending));
   }
   els.radiusSelect.value=String(state.radiusKm);
   els.listRadiusSelect.value=String(state.radiusKm);

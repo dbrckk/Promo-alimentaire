@@ -1,3 +1,9 @@
+## Annulation de la géolocalisation du produit ou du panier
+
+Dans **Produit**, appuyer sur **Autour de moi** : tant que l'autorisation attend, le bouton doit afficher **Annuler la localisation**. Aller dans **Liste de courses** et l'utiliser pour annuler ; une réponse GPS retardée ne doit pas activer le mode local. Une nouvelle demande valide doit activer la proximité, puis un second appui la désactiver et supprimer la position utilisée. Les coordonnées invalides ou les erreurs de permission ne doivent pas laisser le mode actif. Le contrôle Android automatisé simule les réponses différées, sans requérir de véritable position GPS.
+
+Les prix et gains de l'ancien magasin/rayon doivent disparaître pendant le chargement du nouveau contexte, même en cas d'échec de l'API.
+
 ## Cohérence des estimations de remboursement selon les preuves
 
 Le test Chrome Android existant contrôle désormais aussi le **comparateur exact EAN** : une source non reconfirmée, une carte fidélité absente ou d'un niveau insuffisant, et une confirmation de magasin/canal manquante suppriment les chiffres d'économie et de « coût après remboursement ». La mention du motif doit rester lisible. Une offre fictive avec le même GTIN, un relevé ordinaire de moins de 7 jours, une source sans alerte et la carte requise conserve uniquement une **estimation conditionnelle**. Les décisions du comparateur doivent être cohérentes avec `canEstimateProductOffer`, déjà appliqué sur la fiche produit.
