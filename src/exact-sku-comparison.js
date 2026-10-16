@@ -92,6 +92,27 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
   function outranks(a,b){
     if(a.oldestAt!==b.oldestAt) return a.oldestAt>b.oldestAt;
     if(a.newestAt!==b.newestAt) return a.newestAt>b.newestAt;
+    // With an explicitly selected GPS/commune origin, favor the closest
+    // pair AFTER receipt recency. A pair of stores 1 km apart but both 25 km
+    // from the shopper must not beat equally fresh stores 2 km away.
+    // Compare the farthest shop first: both shops must be accessible.
+    // Distances are locally computed by Open Prices normalization, never
+    // derived from a merchant-provided price or chosen for cheapness.
+    const origin=(pair)=>{
+      const distances=[pair.carrefour.distanceKm,pair.leclerc.distanceKm];
+      return distances.every((d)=>typeof d==="number"
+        && Number.isFinite(d) && d>=0)
+        ? {farthest:Math.max(...distances),total:distances[0]+distances[1]}
+        : null;
+    };
+    const originA=origin(a),originB=origin(b);
+    if(originA && originB){
+      if(originA.farthest!==originB.farthest)
+        return originA.farthest<originB.farthest;
+      if(originA.total!==originB.total) return originA.total<originB.total;
+    }else if(Boolean(originA)!==Boolean(originB)){
+      return Boolean(originA);
+    }
     const dA=a.evidence.distanceKm, dB=b.evidence.distanceKm;
     if(dA!==null && dB!==null && dA!==dB) return dA<dB;
     if((dA!==null)!==(dB!==null)) return dA!==null;
