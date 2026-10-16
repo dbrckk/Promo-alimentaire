@@ -22,6 +22,7 @@ const jsErrors=[];
 const failedLocal=[];
 const observedGeoRequests=[];
 const observedPostalLookups=[];
+const exactSkuAreaQueries=[];
 page.on("pageerror",(error)=>jsErrors.push(error.stack || error.message));
 page.on("response",(response)=>{
   if(response.url().startsWith(BASE) && response.status()>=400){
@@ -101,6 +102,12 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
       ]})});
   }
   const code=query.get("product_code");
+  // Track actual API geo parameters for the postcode-based product
+  // comparison; no GPS permission is granted to this browser context.
+  if(code) exactSkuAreaQueries.push({
+    code,lat:query.get("lat"),lon:query.get("lon"),
+    radius:query.get("radius_km")
+  });
   route.fulfill({
     status:200,contentType:"application/json",
     body:JSON.stringify({total:2,items:[
@@ -3674,6 +3681,84 @@ try{
     sameId:true,updatedPrice:2.2,removed:0
   });
   await assertNoHorizontalOverflow(page,"prix personnels et variantes GTIN");
+
+  // Real Pixel 7 UI journey: a manually chosen postal-sector comparison
+  // uses an official commune centre rather than requesting device GPS.
+  // 71100 has two valid municipalities: no automatic "largest city" guess.
+  await page.locator('[data-tab="product"]').click();
+  assert.match(await page.locator("#exactSkuAreaStatus").innerText(),
+    /Aucun secteur choisi/);
+  await page.locator("#exactSkuAreaPostcode").fill("71100");
+  await page.locator("#exactSkuAreaSearch").click();
+  await page.locator("#exactSkuAreaCommuneField").waitFor({state:"visible",timeout:12000});
+  assert.match(await page.locator("#exactSkuAreaStatus").innerText(),
+    /2 communes possibles/);
+  assert.equal(await page.locator("#exactSkuAreaCommune").inputValue(),"",
+    "A shared postcode must require a commune choice");
+  await page.locator("#exactSkuAreaCommune").selectOption("71076");
+  assert.match(await page.locator("#exactSkuAreaStatus").innerText(),
+    /Chalon-sur-Saône.*25 km.*GPS n'a pas été demandé/s);
+  await page.locator("#barcode").fill("3017624010701");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  await page.locator("#productResult h2").waitFor({timeout:14000});
+  exactSkuAreaQueries.length=0;
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid")
+    .waitFor({state:"visible",timeout:25000});
+  const localResult=await page.locator("#exactSkuComparison").innerText();
+  assert.match(localResult,/Secteur demandé : Chalon-sur-Saône.*25 km/);
+  assert.doesNotMatch(localResult,/Relevé inférieur.*Carrefour/,
+    "Lyon prices must not be presented as a Chalon-local winner");
+  assert.ok(exactSkuAreaQueries.some((entry)=>
+    entry.code==="3017624010701"
+    && entry.lat==="46.783" && entry.lon==="4.854"
+    && entry.radius==="25"),"Both retailers must use commune centre and selected radius");
+  await page.locator("#exactSkuAreaRadius").selectOption("5");
+  assert.equal(await page.locator("#exactSkuComparison").innerText(),"",
+    "Changing the sector radius invalidates the old comparison");
+  exactSkuAreaQueries.length=0;
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid")
+    .waitFor({state:"visible",timeout:25000});
+  assert.ok(exactSkuAreaQueries.some((entry)=>
+    entry.radius==="5" && entry.lat==="46.783"),
+    "The chosen 5 km radius must reach Open Prices");
+  await page.locator("#exactSkuAreaPostcode").fill("99999");
+  assert.equal(await page.locator("#exactSkuComparison").innerText(),"",
+    "Typing another code cannot retain the earlier local winner");
+  await page.locator("#exactSkuAreaSearch").click();
+  await page.waitForFunction(()=>
+    document.querySelector("#exactSkuAreaStatus")?.textContent
+      ?.includes("Aucune commune identifiée"),null,{timeout:12000});
+  exactSkuAreaQueries.length=0;
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid")
+    .waitFor({state:"visible",timeout:25000});
+  assert.match(await page.locator("#exactSkuComparison").innerText(),
+    /Aucun secteur choisi.*ailleurs en France/);
+  assert.ok(exactSkuAreaQueries.some((entry)=>
+    entry.code==="3017624010701" && entry.lat===null
+    && entry.lon===null && entry.radius===null),
+    "A postcode with no verified municipality must never fabricate coordinates");
+  await page.locator("#exactSkuAreaPostcode").fill("71100");
+  await page.locator("#exactSkuAreaSearch").click();
+  await page.locator("#exactSkuAreaCommuneField").waitFor({state:"visible",timeout:12000});
+  await page.locator("#exactSkuAreaCommune").selectOption("71445");
+  assert.match(await page.locator("#exactSkuAreaStatus").innerText(),/Saint-Marcel/);
+  exactSkuAreaQueries.length=0;
+  await page.locator("#compareExactSku").click();
+  await page.locator("#exactSkuComparison .exact-sku-grid")
+    .waitFor({state:"visible",timeout:25000});
+  assert.ok(exactSkuAreaQueries.some((entry)=>
+    entry.lat==="46.77" && entry.lon==="4.893" && entry.radius==="5"),
+    "A different municipality sharing 71100 must change the actual query origin");
+  await page.locator("#exactSkuAreaClear").click();
+  assert.equal(await page.locator("#exactSkuAreaPostcode").inputValue(),"");
+  assert.equal(await page.locator("#exactSkuComparison").innerText(),"");
+  assert.match(await page.locator("#exactSkuAreaStatus").innerText(),
+    /Secteur effacé/);
+  assert.ok(observedPostalLookups.filter((zip)=>zip==="71100").length>=2);
+  await assertNoHorizontalOverflow(page,"comparaison code postal sans GPS");
 
   for(const width of [360,320]){
     await page.setViewportSize({width,height:750});
