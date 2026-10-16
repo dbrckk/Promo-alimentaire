@@ -1,3 +1,9 @@
+## Panier : isolation des prix magasin / Drive / En ligne
+
+Après avoir actualisé la liste en canal **Magasin**, basculer vers **Drive** puis **En ligne**. Le panier ne doit conserver **aucun montant calculé à partir des relevés de magasins physiques**, même si ces relevés sont dans l'historique de l'onglet. Appuyer sur **Actualiser les prix** dans ces canaux affiche un message explicite et n'envoie aucune requête à Open Prices. Revenir à **Magasin** permet de revoir les observations datées et leurs liens de preuve, puis de réactualiser manuellement.
+
+Le parcours mobile automatisé simule une paire de prix UPC/EAN chez Carrefour et E.Leclerc, contrôle l'absence de prix Drive et l'absence d'appels réseau, et vérifie la restitution du mode magasin.
+
 ## Panier Android : prix UPC/EAN et garde-fou des sept jours
 
 Sur une liste contenant un UPC-A valide, l'actualisation consulte les variantes EAN-13/GTIN-14 uniquement si aucun relevé du même produit ne satisfait les **sept derniers jours**. Les recherches Carrefour et Leclerc partagent les pages Open Prices, sans mélanger les enseignes. Le statut affiche les variantes tentées et les relevés supplémentaires récupérés. Si un prix de huit jours reste affiché comme contexte, **aucun remboursement ni coupon ne doit être déduit automatiquement de ce prix** ; un prix de 7 jours et quelques heures est également trop ancien, même si l'interface indique « 7 jours révolus ».

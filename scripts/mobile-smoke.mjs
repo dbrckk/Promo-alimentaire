@@ -3597,6 +3597,10 @@ try{
   assert.match(await page.locator("#listCount").textContent(),/1/);
   await page.locator("#shoppingBudget").fill("3,00");
   assert.match(await page.locator("#budgetSummary").innerText(),/Prix indisponibles/);
+  // This journey explicitly tests in-store receipts. Previous screens may
+  // have selected Drive, where asking Open Prices for checkout totals is
+  // now intentionally forbidden.
+  await page.locator("#channel").selectOption("store");
   const basketRequests=[];
   const basketRequestProbe=async(route)=>{
     const url=route.request().url();
@@ -4296,6 +4300,29 @@ try{
   ).evaluateAll((nodes)=>nodes.map((node)=>node.getAttribute("href")));
   assert.ok(receipts.includes("https://prices.openfoodfacts.org/prices/902"));
   assert.ok(receipts.includes("https://prices.openfoodfacts.org/prices/903"));
+  // Switching channels must never present a physical shop receipt as a
+  // Drive checkout price. A Drive refresh must not waste mobile requests.
+  // Returning to in-store keeps the already checked physical price evidence.
+  await page.locator("#channel").selectOption("drive");
+  const driveBasket=await page.locator("#basketComparison").innerText();
+  assert.match(driveBasket,/Aucun tarif Drive\/livraison vérifié/);
+  assert.doesNotMatch(driveBasket,/2,69|3,29/,
+    "A physical shop price must not become a Drive quote");
+  assert.match(await page.locator("#budgetSummary").innerText(),
+    /Prix indisponibles/);
+  basketAliasCalls.length=0;
+  await page.locator("#refreshList").click();
+  assert.equal(basketAliasCalls.length,0,
+    "A Drive budget refresh must not request physical Open Prices receipts");
+  assert.match(await page.locator("#listStatus").innerText(),
+    /Aucun tarif Drive\/livraison vérifié/);
+  await page.locator("#channel").selectOption("online");
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),
+    /2,69|3,29/,
+    "Online delivery cannot silently inherit in-store checkout prices");
+  await page.locator("#channel").selectOption("store");
+  assert.match(await page.locator("#basketComparison").innerText(),/2,69/,
+    "Returning to the physical-store channel restores cached shop evidence");
   await page.unroute("https://prices.openfoodfacts.org/**",basketAliasRoute);
   // A basket receipt dated exactly seven whole displayed days ago may
   // already be too old by several hours. Never auto-deduct a manufacturer
