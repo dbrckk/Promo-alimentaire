@@ -3,6 +3,8 @@ import {
   minimumQuantityForRetailerPromo
 } from "./retailer-promo.js";
 import {canonicalGtin} from "./gtin.js";
+import {isFreshObservation} from "./open-data.js";
+import {offerEvidenceStatus} from "./evidence.js";
 
 export function normalizeText(value) {
   return String(value ?? "")
@@ -140,6 +142,24 @@ function round(value) {
   return Math.round((Number(value)+Number.EPSILON)*100)/100;
 }
 
+
+/**
+ * A numeric product-page saving is only an illustration backed by a recent,
+ * ordinary receipt of this exact GTIN in a physical shop. This is stricter
+ * than candidate discovery: a brand/label suggestion is never a priced offer.
+ * It does not claim live stock, a final checkout price or guaranteed refund.
+ */
+export function canEstimateProductOffer({offer,match}={},{
+  channel="store",observation=null,now=new Date(),loyaltyProfile={}
+}={}){
+  if(channel!=="store" || !observation || observation.isDiscounted===true
+    || !isFreshObservation(observation,7,now)
+    || !match?.exact || !offer || offer.sourceSyncWarning
+    || ["retailer_promo","retailer_loyalty"].includes(offer.mechanism)) return false;
+  return offerEvidenceStatus(offer,{
+    match,loyaltyProfile,storeVerified:false,channelPriceVerified:false
+  }).canGuarantee;
+}
 
 export function rankMatchedOffers(matches,{price=null,quantity=1,canEstimate=null}={}) {
   const qty=Math.max(1,Math.trunc(Number(quantity)||1));
