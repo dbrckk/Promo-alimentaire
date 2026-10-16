@@ -1340,6 +1340,7 @@ try{
       code:result.observations[0]?.productCode,
       aliasQueries:result.aliasQueries,
       recovered:result.aliasRecovered,
+      rawLinkCode:new URL(result.sourceUrl).searchParams.get("product_code"),
       pagesFetched:result.pagesFetched,
       partial:result.partial,
       requested:urls.map((entry)=>entry.code),
@@ -1356,7 +1357,8 @@ try{
   });
   assert.deepEqual(barcodeFallback,{
     count:1,price:2.69,code:"0036000291452",
-    aliasQueries:1,recovered:true,pagesFetched:2,partial:false,
+    aliasQueries:1,recovered:true,rawLinkCode:"0036000291452",
+    pagesFetched:2,partial:false,
     requested:["036000291452","0036000291452"],safeFilters:true,
     withoutCount:0,withoutAliases:0,withoutRequests:["036000291452"]
   });
