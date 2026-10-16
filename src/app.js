@@ -104,6 +104,11 @@ const els = {
   foodRefundPrune:document.querySelector("#foodRefundPrune"),
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
   dailyAlternativeCatalogues:document.querySelector("#dailyAlternativeCatalogues"),
+  brochureCompareForm:document.querySelector("#brochureCompareForm"),
+  brochureProductCode:document.querySelector("#brochureProductCode"),
+  brochureCompareStatus:document.querySelector("#brochureCompareStatus"),
+  brochureScanButton:document.querySelector("#brochureScanButton"),
+  brochureCompareNotice:document.querySelector("#brochureCompareNotice"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
@@ -411,7 +416,51 @@ els.sourceSearch.addEventListener("input",()=>{
 els.basketAmount.addEventListener("input",renderOptimizer);
 els.barcodeForm.addEventListener("submit",(event)=>{
   event.preventDefault();
+  els.brochureCompareNotice.classList.add("hidden");
   lookupBarcode(els.barcode.value);
+});
+// This path uses ONLY an exact code supplied by the visitor. The Bonial
+// flyer provides dates/links, not a verified price or product association.
+// Reuse the existing source-scoped, cancellable Open Prices comparison.
+els.brochureCompareForm.addEventListener("submit",async(event)=>{
+  event.preventDefault();
+  if(state.store!=="carrefour" || state.channel!=="store"
+    || !selectAlternativeCatalogues({
+      catalogues:state.dailyAlternatives,store:state.store,
+      channel:state.channel,now:new Date()
+    }).length) return;
+  let code;
+  try{
+    code=normalizeBarcode(els.brochureProductCode.value);
+  }catch(error){
+    els.brochureCompareStatus.textContent=error.message;
+    els.brochureProductCode.focus();
+    return;
+  }
+  els.brochureCompareStatus.textContent="";
+  els.brochureProductCode.value=code;
+  els.exactSkuQuantity.value="1";
+  els.brochureCompareNotice.classList.remove("hidden");
+  setTab("product");
+  els.barcode.value=code;
+  // A newer lookup, canceled scan or tab change must not launch a stale
+  // comparison when the first request eventually resolves.
+  const previousLookup=state.lookupToken;
+  await lookupBarcode(code);
+  if(state.lookupToken!==previousLookup+1
+    || state.productCode!==code || state.tab!=="product"
+    || state.channel!=="store") return;
+  await compareCurrentExactSku();
+});
+els.brochureScanButton.addEventListener("click",()=>{
+  if(state.store!=="carrefour" || state.channel!=="store"
+    || !selectAlternativeCatalogues({
+      catalogues:state.dailyAlternatives,store:state.store,
+      channel:state.channel,now:new Date()
+    }).length) return;
+  els.brochureCompareNotice.classList.remove("hidden");
+  setTab("product");
+  void startScanner();
 });
 els.cancelBarcodeLookup.addEventListener("click",()=>{
   if(!productLookupController) return;
@@ -1203,6 +1252,14 @@ function renderDailyCatalogue(){
       ? '<p class="panel help">Ces catalogues concernent Carrefour en magasin. Les offres Drive peuvent différer.</p>'
       : cards || '<p class="panel help">Aucun prospectus Bonial actuel et contrôlé récemment. '+
         'La consultation manuelle reste possible via le lien Bonial ci-dessus.</p>';
+  }
+  if(els.brochureCompareForm){
+    const accessible=state.store==="carrefour" && state.channel==="store"
+      && alternatives.length>0;
+    els.brochureCompareForm.classList.toggle("hidden",!accessible);
+    els.brochureProductCode.disabled=!accessible;
+    els.brochureScanButton.disabled=!accessible;
+    if(!accessible) els.brochureCompareStatus.textContent="";
   }
   renderFoodRefundExplorer();
 }
