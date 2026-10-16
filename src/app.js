@@ -1942,7 +1942,7 @@ async function compareCurrentExactSku({deep=false}={}){
     const comparison=compareExactSku(normalizedProduct,candidates,{
       carrefour:[],leclerc:[]
     },{
-      channel,quantity,now:new Date(),
+      channel,quantity,now:new Date(),loyaltyProfile:state.loyaltyProfile,
       coverageByStore:{carrefour:{skipped:true},leclerc:{skipped:true}}
     });
     els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison);
@@ -2029,7 +2029,8 @@ async function compareCurrentExactSku({deep=false}={}){
   const normalizedProduct={...(state.product||{}),code};
   const candidates=resolveOffersForLoyalty(activeOffers(),state.loyaltyProfile);
   const comparison=compareExactSku(normalizedProduct,candidates,observations,{
-    channel,quantity,now:new Date(),coverageByStore
+    channel,quantity,now:new Date(),coverageByStore,
+    loyaltyProfile:state.loyaltyProfile
   });
   els.exactSkuComparison.innerHTML=renderExactSkuComparison(comparison,errors,{deep,areaNote});
 }
@@ -2122,6 +2123,12 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false,areaNote="
             ? "Prix magasin ou canal à confirmer : gain non calculé"
             : offer.status==="price-too-old-for-estimate"
               ? "Relevé de plus de 7 jours : économie non estimée"
+            : offer.status==="source-unconfirmed"
+              ? "Source non reconfirmée : économie non estimée"
+              : offer.status==="loyalty-unverified"
+                ? "Carte fidélité requise non confirmée : économie non estimée"
+                : offer.status==="offer-evidence-unverified"
+                  ? "Conditions de l’offre insuffisamment vérifiées : économie non estimée"
             : offer.status==="quantity-required"
               ? `Quantité minimale : ${offer.minQuantity} article(s)`
               : "Économie non calculable sans prix récent";
