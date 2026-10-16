@@ -2120,6 +2120,8 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false,areaNote="
           ? "Relevé déjà remisé : aucun second gain déduit"
           : offer.status==="retailer-price-required"
             ? "Prix magasin ou canal à confirmer : gain non calculé"
+            : offer.status==="price-too-old-for-estimate"
+              ? "Relevé de plus de 7 jours : économie non estimée"
             : offer.status==="quantity-required"
               ? `Quantité minimale : ${offer.minQuantity} article(s)`
               : "Économie non calculable sans prix récent";
