@@ -1,3 +1,7 @@
+## Pagination selon les preuves utilisables
+
+Le parcours Android Pixel 7 simule une première page Open Prices contenant quatre relevés datant de 9 à 12 jours, puis une seconde page contenant un relevé de 2 jours. Le comparateur doit consulter les deux pages pour sa fenêtre de 7 jours. La consultation ordinaire garde sa limite de 30 jours, peut s'arrêter à la première page et signale alors que d'autres données peuvent exister.
+
 ## Variante UPC/EAN et fraîcheur du comparateur
 
 Le parcours Chrome Android vérifie que la comparaison des enseignes recherche un EAN-13 équivalent quand le UPC-A ne fournit qu'un prix de 12 jours, même si celui-ci reste affichable dans l'historique. Une fiche produit ordinaire conserve le seuil de 30 jours et ne télécharge pas ces variantes. Si une première variante ne contient qu'un relevé de 11 jours, la seconde variante GTIN-14 est aussi consultée. Les correspondances reposent sur le contrôle GS1 et non sur la similarité des noms de produits.
