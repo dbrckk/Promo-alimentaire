@@ -2898,13 +2898,28 @@ function addCurrentProduct(){
   // Keep the original list barcode for remote product URLs, basket pricing
   // and manual-price keys. A later equivalent scan must not create an
   // orphan price entry under another representation.
-  const listCode=existing?.product.code || code;
-  state.basketPriceData[state.store][listCode]=state.priceObservations;
+  // A scanned product may use nationwide receipts or the PRODUCT GPS origin,
+  // which is independent of the basket's explicitly selected commune.
+  // Never silently inject those observations into a local basket: an
+  // out-of-area low price could otherwise become a fictitious local budget.
+  // Even nationally, keep previously refreshed basket coverage intact when
+  // an existing line is merely incremented.
+  const canReuseProductReceipts=!existing
+    && !basketArea.commune && !state.nearbyEnabled
+    && state.channel==="store";
+  if(canReuseProductReceipts){
+    state.basketPriceData[state.store][code]=state.priceObservations;
+    // Product search covers a different query budget than both retailer
+    // basket searches. Its observations are only provisional until refresh.
+    state.basketPriceCoverageIncomplete=true;
+  }
   saveShoppingList();
   renderShoppingList();
   setProductStatus(existing
     ? "Même GTIN déjà présent : quantité mise à jour dans la liste."
-    : "Produit ajouté à la liste.");
+    : basketArea.commune || state.nearbyEnabled
+      ? "Produit ajouté. La zone de la liste est différente ou plus stricte : actualise les prix de la liste pour obtenir des relevés locaux."
+      : "Produit ajouté à la liste. Actualise ses prix pour comparer les deux enseignes.");
 }
 
 function handleShoppingListAction(event){
@@ -3074,53 +3089,71 @@ async function refreshShoppingList(){
   let limitedRequests=0;
   let aliasQueries=0;
   let aliasRecoveries=0;
-  // Cache duplicate product-code pages only for this explicit refresh.
-  // Each retailer still gets its own filtered receipts and coverage state.
+  // Cache identical Open Prices product-code pages only for this refresh;
+  // both retailers share a network request but keep independent verification.
   const sharedFetch=createSharedPriceFetch();
-
-  try{
-    for(let index=0;index<listSnapshot.length;index+=1){
+  const stores=["carrefour","leclerc"];
+  const settledItems=new Array(listSnapshot.length);
+  let nextIndex=0,completed=0;
+  // Three independent products at a time instead of waiting for every EAN
+  // serially. This bounds mobile data/API load and saves time on long lists.
+  // No result, history entry or coverage flag is committed until ALL workers
+  // finish and the original refresh token is still current.
+  async function worker(){
+    while(nextIndex<listSnapshot.length){
       if(controller.signal.aborted || refreshToken!==basketRefreshToken) return;
+      const index=nextIndex++;
       const item=listSnapshot[index];
-      setListStatus(`Actualisation ${index+1}/${listSnapshot.length} : ${item.product.name || item.product.code}…`);
-      const [carrefour,leclerc]=await Promise.allSettled([
+      const settled=await Promise.allSettled(stores.map((store)=>
         fetchPricesByBarcode(item.product.code,{
-          ...queryOptionsByStore.carrefour,fetchImpl:sharedFetch,
-          // Basket estimates rely on recent evidence. UPC-A, EAN-13 and
-          // GTIN-14 can represent exactly the same GS1 product; a price
-          // older than seven days must not hide a fresh equivalent code.
-          // The source already caps this fallback at two one-page aliases.
-          alternateGtins:true,aliasFreshnessDays:7,
-          signal:controller.signal
-        }),
-        fetchPricesByBarcode(item.product.code,{
-          ...queryOptionsByStore.leclerc,fetchImpl:sharedFetch,
+          ...queryOptionsByStore[store],fetchImpl:sharedFetch,
           alternateGtins:true,aliasFreshnessDays:7,
           signal:controller.signal
         })
-      ]);
+      ));
       if(controller.signal.aborted || refreshToken!==basketRefreshToken) return;
-      if(carrefour.status==="fulfilled"){
-        aliasQueries+=carrefour.value.aliasQueries||0;
-        if(carrefour.value.aliasRecovered) aliasRecoveries+=1;
-        next.carrefour[item.product.code]=carrefour.value.observations;
-        if(carrefour.value.partial) interruptedRequests+=1;
-        else if(carrefour.value.searchIncomplete) limitedRequests+=1;
-        recordProductObservation(item.product,"carrefour",carrefour.value.observations);
-      }else { next.carrefour[item.product.code]=[]; failures+=1; }
-      if(leclerc.status==="fulfilled"){
-        aliasQueries+=leclerc.value.aliasQueries||0;
-        if(leclerc.value.aliasRecovered) aliasRecoveries+=1;
-        next.leclerc[item.product.code]=leclerc.value.observations;
-        if(leclerc.value.partial) interruptedRequests+=1;
-        else if(leclerc.value.searchIncomplete) limitedRequests+=1;
-        recordProductObservation(item.product,"leclerc",leclerc.value.observations);
-      }else { next.leclerc[item.product.code]=[]; failures+=1; }
+      settledItems[index]=settled;
+      completed++;
+      setListStatus(`Actualisation ${completed}/${listSnapshot.length} : relevés consultés. Aucun budget modifié avant la fin.`);
     }
+  }
+
+  try{
+    await Promise.all(Array.from(
+      {length:Math.min(3,listSnapshot.length)},()=>worker()
+    ));
     if(controller.signal.aborted || refreshToken!==basketRefreshToken) return;
+    const recordedAt=new Date();
+    let priceHistory=state.productPriceHistory;
+    // Collate in the original list order, independently of request timing.
+    // Persist history just once after the refresh is fully accepted.
+    for(let i=0;i<listSnapshot.length;i++){
+      const item=listSnapshot[i];
+      const settled=settledItems[i];
+      for(let j=0;j<stores.length;j++){
+        const store=stores[j];
+        const entry=settled[j];
+        if(entry.status==="fulfilled"){
+          const value=entry.value;
+          next[store][item.product.code]=value.observations;
+          aliasQueries+=value.aliasQueries||0;
+          if(value.aliasRecovered) aliasRecoveries+=1;
+          if(value.partial) interruptedRequests+=1;
+          else if(value.searchIncomplete) limitedRequests+=1;
+          priceHistory=addStorePriceObservations(priceHistory,{
+            product:item.product,store,observations:value.observations,recordedAt
+          });
+        }else{
+          next[store][item.product.code]=[];
+          failures+=1;
+        }
+      }
+    }
     state.basketPriceData=next;
-    // A successful HTTP response may still cover only the first few pages.
-    // Missing pages and outright provider failures must lower budget confidence.
+    state.productPriceHistory=priceHistory;
+    saveProductPriceHistory();
+    // Even HTTP 200 can cover only the first few pages. The budget must
+    // never imply exhaustive coverage after partial/provider failures.
     state.basketPriceCoverageIncomplete=failures>0
       || interruptedRequests>0 || limitedRequests>0;
     const scenarios=evaluateCurrentBasketScenarios();
