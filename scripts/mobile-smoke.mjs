@@ -3685,6 +3685,8 @@ try{
   // Real Pixel 7 UI journey: a manually chosen postal-sector comparison
   // uses an official commune centre rather than requesting device GPS.
   // 71100 has two valid municipalities: no automatic "largest city" guess.
+  // Earlier cases deliberately use Drive, which never queries store prices.
+  await page.locator("#channel").selectOption("store");
   await page.locator('[data-tab="product"]').click();
   assert.match(await page.locator("#exactSkuAreaStatus").innerText(),
     /Aucun secteur choisi/);
@@ -3735,7 +3737,7 @@ try{
   await page.locator("#exactSkuComparison .exact-sku-grid")
     .waitFor({state:"visible",timeout:25000});
   assert.match(await page.locator("#exactSkuComparison").innerText(),
-    /Aucun secteur choisi.*ailleurs en France/);
+    /Aucun secteur choisi.*n'importe où en France/);
   assert.ok(exactSkuAreaQueries.some((entry)=>
     entry.code==="3017624010701" && entry.lat===null
     && entry.lon===null && entry.radius===null),
