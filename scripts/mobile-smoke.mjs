@@ -4297,6 +4297,46 @@ try{
   assert.ok(receipts.includes("https://prices.openfoodfacts.org/prices/902"));
   assert.ok(receipts.includes("https://prices.openfoodfacts.org/prices/903"));
   await page.unroute("https://prices.openfoodfacts.org/**",basketAliasRoute);
+  // A basket receipt dated exactly seven whole displayed days ago may
+  // already be too old by several hours. Never auto-deduct a manufacturer
+  // refund or a basket gift-card discount from that stale subtotal. The
+  // theoretical product candidate remains visible, explicitly unconfirmed.
+  const exactBasketFreshness=await page.evaluate(async()=>{
+    const {evaluateBasketStore}=await import("./src/basket.js");
+    const product={code:"3017624010701",name:"Article témoin",brands:"Marque"};
+    const offers=[
+      {id:"odr-freshness",scope:"produit",stores:["carrefour"],
+        eans:[product.code],savingAmount:2,autoStack:true,
+        stackGroup:"manufacturer",mechanism:"odr",benefitTiming:"refund"},
+      {id:"gift-freshness",scope:"panier",stores:["carrefour"],
+        channels:["store"],savingPercent:10,autoStack:true,
+        mechanism:"gift_card",stackGroup:"payment"}
+    ];
+    const now=new Date("2026-10-08T12:00:00Z");
+    const run=(date)=>evaluateBasketStore([{product,quantity:1}],{
+      store:"carrefour",channel:"store",
+      priceByCode:{[product.code]:[{
+        id:927,productCode:product.code,price:10,date,
+        retailerText:"Carrefour",pricePer:"UNIT",currency:"EUR"
+      }]},
+      offers,now
+    });
+    const stale=run("2026-10-01"),fresh=run("2026-10-07");
+    return {
+      staleTotal:stale.finalCost,staleGuaranteed:stale.guaranteedSaving,
+      stalePossible:stale.potentialProductSaving,
+      staleWarning:stale.lines[0].productBenefitAgeWarning,
+      staleAge:stale.lines[0].priceAgeDays,
+      freshTotal:fresh.finalCost,
+      freshGuaranteed:fresh.guaranteedSaving,
+      freshWarning:fresh.lines[0].productBenefitAgeWarning
+    };
+  });
+  assert.deepEqual(exactBasketFreshness,{
+    staleTotal:10,staleGuaranteed:0,stalePossible:2,
+    staleWarning:true,staleAge:7,
+    freshTotal:7.2,freshGuaranteed:2.8,freshWarning:false
+  });
   await assertNoHorizontalOverflow(page,"panier UPC/EAN de prix récupérés");
 
   for(const width of [360,320]){
