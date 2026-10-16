@@ -1,3 +1,11 @@
+### Meilleure couverture de prix par code-barres et contrôle des relevés (16 octobre 2026)
+
+La recherche d'un **produit exact** dans Open Prices interroge maintenant aussi, **uniquement si aucun relevé de moins de 30 jours n'a été trouvé**, les représentations numériquement équivalentes et vérifiées par checksum GS1 : UPC-A à 12 chiffres, EAN-13 préfixé par zéro et GTIN-14. Ce repli est limité à **deux requêtes supplémentaires, une page chacune**, sans recherche approximative par nom/marque, sans mélange de produits et sans données payantes. L'utilisateur voit dans la fiche et le comparateur si un autre format a été essayé et s'il a fourni des relevés. Aucun taux d'économie ni prix actuel n'est déduit du seul fait qu'un code a été reconnu. Les recherches de lots et les comparaisons respectent toujours la géolocalisation volontaire et ses filtres locaux.
+
+L'API publique est interrogée avec `kind=COMMUNITY` et `duplicate_of__isnull=true`, puis chaque ligne est vérifiée localement : rejet des preuves remplacées par un doublon, des enregistrements explicitement non communautaires, des objets non produits et des lignes d'une autre enseigne, monnaie, unité ou GTIN. Ces lignes ne peuvent plus influencer le dernier prix observé ni la comparaison Carrefour/E.Leclerc. Les prix communautaires restent **non contractuels**, datés, incomplets et ne prouvent ni stock, ni disponibilité locale, ni cumul de remises.
+
+Le scénario Chrome Android existant vérifie avec des réponses réseau simulées le secours UPC→EAN, son caractère facultatif, le filtrage des relevés dupliqués, personnels, non-produits et d'un autre EAN, ainsi que les paramètres publics de l'API. Aucun nouveau test unitaire ajouté.
+
 ### Comparer un produit précis depuis un prospectus Bonial (16 octobre 2026)
 
 Dans **Promos du jour → Prospectus Carrefour datés via Bonial**, un formulaire mobile permet désormais de **saisir le code-barres EAN/UPC d'un produit vu dans un prospectus** ou d'ouvrir le scanner natif. Pour un code valide, l'application ouvre la fiche produit Open Food Facts, récupère les relevés Open Prices et **lance automatiquement la comparaison par EAN identique chez Carrefour et E.Leclerc** (canal magasin). Le champ est strictement validé avant toute navigation ; un EAN malformé ne lance pas de recherche.
