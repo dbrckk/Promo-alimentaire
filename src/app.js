@@ -3590,7 +3590,7 @@ function recordComparisonHistory(scenarios){
     scenarios,
     shoppingList:state.shoppingList,
     radiusKm:state.radiusKm,
-    nearbyEnabled:state.nearbyEnabled,
+    nearbyEnabled:state.nearbyEnabled || Boolean(basketArea.commune),
     channel:state.channel
   });
   state.comparisonHistory=addHistoryEntry(state.comparisonHistory,entry,{limit:20});
