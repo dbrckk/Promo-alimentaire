@@ -241,5 +241,53 @@
     "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637": {
       "status": "available"
     }
-  }
+  },
+  "alternativeCatalogues": [
+    {
+      "id": "bonial-carrefour-20261013-20261026-au-coeur-du-gout",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Catalogue Carrefour « AU COEUR DU GOÛT »",
+      "startsAt": "2026-10-13",
+      "expiresAt": "2026-10-26",
+      "verifiedAt": "2026-10-16",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261013-20261026-mieux-manger",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Catalogue Carrefour « PARTAGEONS LE GOÛT DU MIEUX MANGER »",
+      "startsAt": "2026-10-13",
+      "expiresAt": "2026-10-26",
+      "verifiedAt": "2026-10-16",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261014-20261028-bons-plans",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Catalogue Carrefour « LE PLEIN DE BONS PLANS »",
+      "startsAt": "2026-10-14",
+      "expiresAt": "2026-10-28",
+      "verifiedAt": "2026-10-16",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    }
+  ],
+  "alternativeCheckedAt": "2026-10-16T00:00:00Z",
+  "alternativeLastAttemptAt": null,
+  "alternativeStatus": "manual-public-index",
+  "alternativeReason": "Trois dates de catalogues corroborées sur la page publique Bonial le 16 octobre ; prochaine actualisation GitHub à vérifier."
 }

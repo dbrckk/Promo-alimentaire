@@ -2,7 +2,8 @@ import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import {
   selectDailyCatalogue,selectFoodRefundOpportunities,selectSavedFoodRefunds,
-  normalizeSavedFoodRefundIds,formatSavedFoodRefundChecklist,dailyCampaignRefreshNotice
+  normalizeSavedFoodRefundIds,formatSavedFoodRefundChecklist,dailyCampaignRefreshNotice,
+  selectAlternativeCatalogues
 } from "./daily-catalogue.js";
 import {fetchObservedDiscounts,selectObservedDiscounts,lookupPostalCodeCommunes} from "./community-deals.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
@@ -102,6 +103,7 @@ const els = {
   foodRefundCopy:document.querySelector("#foodRefundCopy"),
   foodRefundPrune:document.querySelector("#foodRefundPrune"),
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
+  dailyAlternativeCatalogues:document.querySelector("#dailyAlternativeCatalogues"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
@@ -223,6 +225,7 @@ const state = {
   basketRefreshing:false,
   sourceHealth:[],
   dailyCampaigns:[],
+  dailyAlternatives:[],
   dailyFeedCheckedAt:null,
   dailyFeedLastAttemptAt:null,
   dailySourceChecks:{},
@@ -1178,6 +1181,29 @@ function renderDailyCatalogue(){
       </article>`;
     }).join("")
     :fallback("Aucune campagne datée et contrôlée depuis 7 jours pour ce canal. Les annonces trop anciennes sont masquées : consulte le catalogue officiel pour les promotions du jour.");
+  // Independent public index. A Bonial flyer cannot supply exact prices.
+  const alternatives=selectAlternativeCatalogues({
+    catalogues:state.dailyAlternatives,store:state.store,
+    channel:state.channel,now:today
+  });
+  if(els.dailyAlternativeCatalogues){
+    const cards=alternatives.map((item)=>
+      '<article class="card daily-offer">'+
+      '<span class="badge">Bonial · source tierce</span>'+
+      '<h4>'+escapeHtml(item.title)+'</h4>'+
+      '<p class="help">Période annoncée : '+formatDate(item.startsAt)+
+      ' au '+formatDate(item.expiresAt)+'. Relevé Bonial du '+
+      formatDate(item.verifiedAt)+'.</p>'+
+      '<p class="help">Vérifier les produits alimentaires du prospectus et la participation du magasin. '+
+      '<strong>Aucun prix exact ni gain en caisse confirmé.</strong></p>'+
+      '<a class="open" href="'+escapeHtml(item.sourceUrl)+
+      '" target="_blank" rel="noopener noreferrer">Voir sur Bonial</a></article>'
+    ).join("");
+    els.dailyAlternativeCatalogues.innerHTML=state.store!=="carrefour" || state.channel!=="store"
+      ? '<p class="panel help">Ces catalogues concernent Carrefour en magasin. Les offres Drive peuvent différer.</p>'
+      : cards || '<p class="panel help">Aucun prospectus Bonial actuel et contrôlé récemment. '+
+        'La consultation manuelle reste possible via le lien Bonial ci-dessus.</p>';
+  }
   renderFoodRefundExplorer();
 }
 
@@ -1323,12 +1349,15 @@ async function hydrateDailyCampaigns(){
     if(!response.ok) throw new Error("HTTP "+response.status);
     const data=await response.json();
     state.dailyCampaigns=Array.isArray(data?.campaigns)?data.campaigns:[];
+    state.dailyAlternatives=Array.isArray(data?.alternativeCatalogues)
+      ?data.alternativeCatalogues:[];
     state.dailyFeedCheckedAt=data?.checkedAt || null;
     state.dailyFeedLastAttemptAt=data?.lastAttemptAt || null;
     state.dailySourceChecks=data?.sourceChecks && typeof data.sourceChecks==="object"
       && !Array.isArray(data.sourceChecks) ? data.sourceChecks:{};
   }catch{
     state.dailyCampaigns=[];
+    state.dailyAlternatives=[];
     state.dailyFeedCheckedAt=null;
     state.dailyFeedLastAttemptAt=null;
     state.dailySourceChecks={};

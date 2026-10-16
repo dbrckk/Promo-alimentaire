@@ -1,6 +1,7 @@
 import {readFile,writeFile} from "node:fs/promises";
 import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,discoverCarrefourFoodBrochures,retainRecentDailyLeads,dailyCampaignSourceUrls} from "./daily-campaign-evidence.mjs";
 import {parisCivilDay} from "../src/ingestion.js";
+import {BONIAL_CARREFOUR_URL,discoverBonialCarrefourCatalogues} from "./bonial-public-catalogues.mjs";
 
 const destination=new URL("../data/daily-campaigns.json",import.meta.url);
 const write=process.argv.includes("--write");
@@ -48,6 +49,42 @@ for(const url of sources){
       reason.slice(0,180));
   }
 }
+// This independent public third-party index is a fallback for reading flyer
+// periods, NOT a way around carrefour.fr 403s or proof of SKU/checkout prices.
+let alternatives=Array.isArray(payload.alternativeCatalogues)
+  ?payload.alternativeCatalogues:[];
+let alternativeStatus="unavailable";
+let alternativeReason="Aucun prospectus Bonial reconfirmé.";
+let alternativeCheckedAt=payload.alternativeCheckedAt || null;
+try{
+  const response=await fetch(BONIAL_CARREFOUR_URL,{
+    headers:{Accept:"text/html,application/xhtml+xml",
+      "User-Agent":"PromoAlimentaire/0.1 public-catalogue-index"},
+    redirect:"error",signal:AbortSignal.timeout(14000)
+  });
+  if(!response.ok) throw Error("HTTP "+response.status);
+  const html=await response.text();
+  const current=discoverBonialCarrefourCatalogues(html,now);
+  if(!current.length) throw Error("Aucun prospectus Carrefour actuel avec dates contrôlables.");
+  alternatives=current;
+  alternativeStatus="available";
+  alternativeReason=current.length+" prospectus Carrefour daté(s), consultation Bonial uniquement.";
+  alternativeCheckedAt=now.toISOString();
+  console.log("[daily] Bonial public : "+current.length+" prospectus courant(s) daté(s).");
+}catch(error){
+  // Keep the previous observation for audit; the browser rejects it after
+  // two unchecked civil days, even when the brochure's expiry is later.
+  alternativeReason=String(error?.message||error).slice(0,160);
+  console.warn("[daily] index Bonial indisponible : "+alternativeReason);
+}
+const alternativeChanged=JSON.stringify(alternatives)
+  !==JSON.stringify(payload.alternativeCatalogues||[])
+  || payload.alternativeStatus!==alternativeStatus
+  || payload.alternativeReason!==alternativeReason;
+const priorAlternativeAttempt=payload.alternativeLastAttemptAt
+  && Number.isFinite(Date.parse(payload.alternativeLastAttemptAt))
+  ?parisCivilDay(new Date(payload.alternativeLastAttemptAt)):null;
+
 let confirmed=0;
 let changed=0;
 const next=payload.campaigns.map((entry)=>{
@@ -93,11 +130,17 @@ const priorAttemptDay=payload.lastAttemptAt
   ?parisCivilDay(new Date(payload.lastAttemptAt)):null;
 const statusChanged=JSON.stringify(payload.sourceChecks||{})!==JSON.stringify(sourceChecks);
 const provenToday=confirmed>0 || discovered.length>0;
-if(write && (changed || discoveryChanged || statusChanged || priorAttemptDay!==today)){
+if(write && (changed || discoveryChanged || statusChanged || priorAttemptDay!==today
+  || alternativeChanged || priorAlternativeAttempt!==today)){
   payload.campaigns=updated;
   if(provenToday) payload.checkedAt=now.toISOString();
   payload.lastAttemptAt=now.toISOString();
   payload.sourceChecks=sourceChecks;
+  payload.alternativeCatalogues=alternatives;
+  payload.alternativeCheckedAt=alternativeCheckedAt;
+  payload.alternativeLastAttemptAt=now.toISOString();
+  payload.alternativeStatus=alternativeStatus;
+  payload.alternativeReason=alternativeReason;
   await writeFile(destination,JSON.stringify(payload,null,2)+"\n","utf8");
   console.log("[daily] Dernière tentative enregistrée ; preuve "+
     (provenToday?"mise à jour":"inchangée, campagnes non prolongées")+".");
