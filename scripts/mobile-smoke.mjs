@@ -59,6 +59,12 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
   if(query.get("price_is_discounted")==="true"){
     assert.equal(query.has("location__osm_name__contains"),false,
       "Le filtre enseigne Open Prices retourne des pages vides pour des magasins pourtant présents : filtrer localement");
+    assert.equal(query.get("proof_id__isnull"),"false",
+      "Only public price records with source evidence should consume the 600-item page budget");
+    assert.equal(query.get("duplicate_of__isnull"),"true",
+      "Superseded price records should be removed server-side");
+    assert.equal(query.get("product__source"),"off");
+    assert.equal(query.get("kind"),"COMMUNITY");
     const date=RECENT_RECEIPT_DATE;
     if(query.has("lat") || query.has("lon") || query.has("radius_km")){
       observedGeoRequests.push({
@@ -82,11 +88,15 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
         osm_lon:name==="Dijon"?5.041:4.85}
     });
     return route.fulfill({status:200,contentType:"application/json",
-      body:JSON.stringify({total:4,pages:1,items:[
+      body:JSON.stringify({total:5,pages:1,items:[
         make(511,"3038359913242","Carrefour","Chalon","71100",0.99,1.59),
         make(512,"3038359913273","Carrefour","Dijon","21000",1.50,2.10),
         make(513,"3038359913297","E.Leclerc","Chalon","71100",1.29,1.99),
-        make(514,"3038359913242","Carrefour","Alcool","71100",1.00,3.00,"en:alcoholic-beverages")
+        make(514,"3038359913242","Carrefour","Alcool","71100",1.00,3.00,"en:alcoholic-beverages"),
+        // Deliberately from a distinct outlet; ordinary SKU/location
+        // dedup would not reject it. Only the duplicate proof gate can.
+        {...make(515,"3038359913242","Carrefour","Chalon","71100",0.19,1.99),
+          duplicate_of:511}
       ]})});
   }
   const code=query.get("product_code");

@@ -1,3 +1,9 @@
+### Relevés Open Prices : davantage de preuves pertinentes dans la pagination (16 octobre 2026)
+
+Dans **Promos du jour → Réductions observées**, la recherche demande maintenant à l'API publique Open Prices uniquement les relevés **de type communautaire**, issus de la base Open Food Facts, disposant d'un justificatif et **non déclarés doublons**. Ces filtres sont documentés par l'API officielle et réduisent les pages consommées par des enregistrements déjà rejetés côté Android, dans la limite existante de 600 observations par recherche. Par sécurité, la normalisation locale rejette aussi chaque relevé dont `duplicate_of` désigne une ancienne preuve, même si le serveur renvoie malgré tout cette entrée. Le filtrage local des enseignes et des catégories, les dates et les contrôles géographiques restent obligatoires. Le parcours Chrome Android existant injecte un prix dupliqué à très forte remise dans un autre magasin : il ne doit pas apparaître. Aucun nouveau test unitaire.
+
+**Limite :** filtrer les données inutilisables peut améliorer le rendement de la recherche, mais ne garantit ni une collecte exhaustive, ni une offre encore disponible en magasin, ni un prix de caisse actuel. Aucun cashback ou montant de panier n'est calculé à partir de ces relevés.
+
 ### Export des remboursements : domaines officiels vérifiés (16 octobre 2026)
 
 La copie Android de **Ma liste de remboursements à vérifier** vérifie maintenant les domaines HTTPS officiels **au moment de l'export**, en plus du filtrage du catalogue. Les domaines imitants, les liens avec identifiants, les sources inconnues et les liens attribués au mauvais fournisseur sont exclus. Le nom du fournisseur est dérivé de son identifiant contrôlé ; la numérotation reste continue après rejet d'un lien suspect. La régression est couverte par le parcours existant Chrome Android, sans nouveau test unitaire.
