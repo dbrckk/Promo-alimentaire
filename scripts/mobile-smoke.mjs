@@ -1357,15 +1357,27 @@ try{
   const refundExportSafety=await page.evaluate(async()=>{
     const {formatSavedFoodRefundChecklist}=await import("./src/daily-catalogue.js");
     const sample=[
-      {title:"Produit A\nBon",provider:"Shopmium",sourceUrl:"https://www.shopmium.com/fr/"},
-      {title:"Douteux",provider:"Source",sourceUrl:"javascript:alert(1)"},
-      {title:"Mot de passe",provider:"Source",sourceUrl:"https://user:pass@example.com/"}
+      {title:"Produit A\nBon",providerId:"shopmium",provider:"Autre",
+        sourceUrl:"https://offers.shopmium.com/fr/"},
+      {title:"Douteux",providerId:"shopmium",provider:"Source",
+        sourceUrl:"javascript:alert(1)"},
+      {title:"Mot de passe",providerId:"shopmium",provider:"Source",
+        sourceUrl:"https://user:pass@example.com/"},
+      {title:"Faux site",providerId:"shopmium",provider:"Source",
+        sourceUrl:"https://offers.shopmium.com.evil.example/fr/"},
+      {title:"Fournisseur inversé",providerId:"coupon-network",provider:"Source",
+        sourceUrl:"https://offers.shopmium.com/fr/"},
+      {title:"Coupon alimentaire",providerId:"coupon-network",provider:"Source",
+        sourceUrl:"https://www.couponnetwork.fr/"}
     ];
     return formatSavedFoodRefundChecklist(sample,{store:"leclerc"});
   });
   assert.match(refundExportSafety,/E.Leclerc/);
   assert.match(refundExportSafety,/Produit A Bon/);
-  assert.doesNotMatch(refundExportSafety,/Douteux|Mot de passe|javascript:|user:pass/);
+  assert.match(refundExportSafety,/1\. Produit A Bon \(Shopmium\)/);
+  assert.match(refundExportSafety,/2\. Coupon alimentaire \(Coupon Network\)/);
+  assert.doesNotMatch(refundExportSafety,
+    /Douteux|Mot de passe|Faux site|Fournisseur inversé|javascript:|user:pass|evil\.example|Autre/);
   const foodRefundSafety=await page.evaluate(async()=>{
     const {normalizeImportedOffer}=await import("./src/ingestion.js");
     const {selectFoodRefundOpportunities}=await import("./src/daily-catalogue.js");

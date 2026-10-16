@@ -1,3 +1,7 @@
+### Export des remboursements : domaines officiels vérifiés (16 octobre 2026)
+
+La copie Android de **Ma liste de remboursements à vérifier** vérifie maintenant les domaines HTTPS officiels **au moment de l'export**, en plus du filtrage du catalogue. Les domaines imitants, les liens avec identifiants, les sources inconnues et les liens attribués au mauvais fournisseur sont exclus. Le nom du fournisseur est dérivé de son identifiant contrôlé ; la numérotation reste continue après rejet d'un lien suspect. La régression est couverte par le parcours existant Chrome Android, sans nouveau test unitaire.
+
 ### Favoris de remboursements : aucune perte au-delà des 240 offres affichées (16 octobre 2026)
 
 La liste **Ma liste de remboursements à vérifier** réévalue désormais directement tous les identifiants sauvegardés (40 maximum) contre les sources actuelles et les contraintes de magasin, canal et dates. Elle **ne dépend plus de la limite d'affichage du catalogue (240 offres)**. Auparavant, un favori valide classé après les 240 premiers pouvait apparaître « indisponible » et être effacé par le bouton de nettoyage. Une offre réellement expirée ou dont la source n'est plus vérifiable reste exclue ; aucun avantage non confirmé n'est réactivé.
