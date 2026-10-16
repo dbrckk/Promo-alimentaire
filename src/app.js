@@ -8,7 +8,7 @@ import {
 import {fetchObservedDiscounts,selectObservedDiscounts,lookupPostalCodeCommunes} from "./community-deals.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
-import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, selectBestRecentPrice } from "./open-data.js";
+import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, priceOutletMapUrl, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
 import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
@@ -2040,6 +2040,34 @@ function openPricesReceiptLink(observation,label){
     : "";
 }
 
+/**
+ * Only source-supplied OUTLET coordinates become a map marker. Never embed
+ * the user's GPS, postcode centre or current coordinates into external URLs.
+ * The price and location are independently contributed, not verified stock.
+ */
+function renderComparedOutlet(observation,store){
+  const mapUrl=priceOutletMapUrl(observation);
+  const place=[observation.storeName,observation.postcode,observation.city]
+    .filter((value)=>typeof value==="string" && value.trim())
+    .map((value)=>escapeHtml(value)).join(" · ");
+  const distance=observation.distanceKm;
+  const distanceText=typeof distance==="number" && Number.isFinite(distance)
+    && distance>=0
+    ? '<span>À '+escapeHtml(distance.toLocaleString("fr-FR",{maximumFractionDigits:1}))+
+      ' km du point de recherche, à vol d’oiseau.</span>'
+    : '<span>Distance au secteur non renseignée.</span>';
+  return '<div class="exact-sku-pair-outlet">'+
+    '<strong>'+escapeHtml(storeLabel(store))+
+    ' · '+money.format(Number(observation.price))+'</strong>'+
+    '<span>'+place+'</span>'+
+    '<span>Relevé du '+escapeHtml(formatDate(observation.date))+'</span>'+
+    distanceText+
+    (mapUrl ? '<a class="exact-sku-outlet-map" href="'+mapUrl+
+      '" target="_blank" rel="noopener noreferrer">Voir le magasin indiqué sur OpenStreetMap</a>'
+      : '<span>Position du magasin non vérifiable sur une carte.</span>')+
+    '</div>';
+}
+
 function renderExactSkuComparison(result,errors=new Set(),{deep=false,areaNote=""}={}){
   if(result.status!=="ok"){
     return '<div class="panel price-source">Impossible de comparer : code GTIN ou quantité invalide.</div>';
@@ -2178,7 +2206,14 @@ function renderExactSkuComparison(result,errors=new Set(),{deep=false,areaNote="
         ? `Projection pour ${escapeHtml(quantityLabel)} : Carrefour ${money.format(result.observedQuantityTotals.carrefour)} · E.Leclerc ${money.format(result.observedQuantityTotals.leclerc)} (hors remises, prix et stocks non garantis).`
         : ""}
       Les cartes ci-dessous montrent séparément le dernier prix observé de chaque enseigne : il peut être issu d'un autre magasin.
-      ${comparedSourceLinks ? `Relevés comparés : ${comparedSourceLinks}.` : ""}</p>` : "";
+      ${comparedSourceLinks ? `Relevés comparés : ${comparedSourceLinks}.` : ""}</p>
+    <div class="exact-sku-pair-outlets" role="group" aria-label="Points de vente des relevés comparés">
+      ${renderComparedOutlet(paired.carrefour,"carrefour")}
+      ${renderComparedOutlet(paired.leclerc,"leclerc")}
+    </div>
+    <p class="help">Positions renseignées par les contributeurs Open Prices, non confirmées par les commerçants.
+      Les distances sont à vol d’oiseau, pas des itinéraires ; vérifiez l’adresse, les horaires et les prix avant de vous déplacer.
+      Aucune position personnelle n’est transmise aux liens cartographiques.</p>` : "";
   return `<div class="exact-sku-header">
     <h3>Même produit, deux enseignes</h3>
     ${areaNote ? `<p class="help exact-sku-area-note">${escapeHtml(areaNote)}</p>` : ""}

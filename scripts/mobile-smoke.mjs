@@ -2744,6 +2744,80 @@ try{
   assert.equal(priceSourceLinks.length,4);
   assert.equal(priceSourceLinks.filter((url)=>url.endsWith("/1")).length,2);
   assert.equal(priceSourceLinks.filter((url)=>url.endsWith("/2")).length,2);
+  // Store markers are sourced from the ACTUAL compared receipts, not from
+  // the user's GPS or the postal centroid. Never insert a fake map marker.
+  const selectedOutletMaps=await page.locator(
+    "#exactSkuComparison .exact-sku-outlet-map"
+  ).evaluateAll((links)=>links.map((a)=>a.getAttribute("href")));
+  assert.deepEqual(selectedOutletMaps,[
+    "https://www.openstreetmap.org/?mlat=45.76000&mlon=4.84000#map=17/45.76000/4.84000",
+    "https://www.openstreetmap.org/?mlat=45.76100&mlon=4.85000#map=17/45.76100/4.85000"
+  ]);
+  assert.match(exactStoreCards,/Positions renseignées par les contributeurs Open Prices/);
+  assert.match(exactStoreCards,/Aucune position personnelle n’est transmise/);
+  const outletMapGuards=await page.evaluate(async()=>{
+    const {priceOutletMapUrl}=await import("./src/open-data.js");
+    return [
+      priceOutletMapUrl({locationLat:46.783,locationLon:4.854}),
+      priceOutletMapUrl({locationLat:null,locationLon:4.854}),
+      priceOutletMapUrl({locationLat:"46.783",locationLon:4.854}),
+      priceOutletMapUrl({locationLat:0,locationLon:0}),
+      priceOutletMapUrl({locationLat:91,locationLon:4}),
+      priceOutletMapUrl({locationLat:46.783,locationLon:-181}),
+      priceOutletMapUrl({locationLat:NaN,locationLon:4.854})
+    ];
+  });
+  assert.deepEqual(outletMapGuards,[
+    "https://www.openstreetmap.org/?mlat=46.78300&mlon=4.85400#map=17/46.78300/4.85400",
+    null,null,null,null,null,null
+  ]);
+
+  // Existing Android-browser integration suite, not a new isolated unit
+  // test. On equally fresh receipts, the selected nearby pair must win
+  // over a cheaper and geographically tighter pair far from the shopper.
+  // A newer far-away receipt still wins on recency, preserving evidence.
+  const originRanking=await page.evaluate(async()=>{
+    const {normalizePriceObservation}=await import("./src/open-data.js");
+    const {selectComparablePricePair}=await import("./src/exact-sku-comparison.js");
+    const origin={latitude:46.783,longitude:4.854};
+    const make=(id,store,latitude,longitude,price,date="2026-10-08")=>
+      normalizePriceObservation({
+        id,product_code:"3017624010701",price,date,price_per:"UNIT",
+        currency:"EUR",kind:"COMMUNITY",
+        location:{osm_brand:store==="carrefour"?"Carrefour":"E.Leclerc",
+          osm_name:store+" "+id,osm_lat:latitude,osm_lon:longitude,
+          osm_address_postcode:"71100",osm_address_city:"Chalon-sur-Saône"}
+      },origin);
+    const nearCar=make("near-c","carrefour",46.782,4.852,3.49);
+    const nearLec=make("near-l","leclerc",46.780,4.875,3.59);
+    const farCar=make("far-c","carrefour",46.790,5.105,0.20);
+    const farLec=make("far-l","leclerc",46.791,5.106,0.30);
+    const now=new Date("2026-10-09T12:00:00Z");
+    const near=selectComparablePricePair(
+      [nearCar,farCar],[nearLec,farLec],now);
+    const fresherFar=selectComparablePricePair(
+      [nearCar,{...farCar,date:"2026-10-09"}],
+      [nearLec,{...farLec,date:"2026-10-09"}],now);
+    const noOrigin=selectComparablePricePair(
+      [nearCar,farCar].map((r)=>({...r,distanceKm:null})),
+      [nearLec,farLec].map((r)=>({...r,distanceKm:null})),now);
+    return {
+      chosenNearby:[near?.carrefour?.id,near?.leclerc?.id],
+      fresherFar:[fresherFar?.carrefour?.id,fresherFar?.leclerc?.id],
+      noOrigin:[noOrigin?.carrefour?.id,noOrigin?.leclerc?.id],
+      outletDistances:[nearCar.distanceKm,nearLec.distanceKm,
+        farCar.distanceKm,farLec.distanceKm],
+      remainsComparable:near?.evidence?.comparable===true
+    };
+  });
+  assert.deepEqual(originRanking.chosenNearby,["near-c","near-l"]);
+  assert.deepEqual(originRanking.fresherFar,["far-c","far-l"]);
+  assert.deepEqual(originRanking.noOrigin,["far-c","far-l"],
+    "Without a chosen sector the original inter-store distance order is preserved");
+  assert.equal(originRanking.remainsComparable,true);
+  assert.ok(originRanking.outletDistances[0]<originRanking.outletDistances[2]);
+  assert.ok(originRanking.outletDistances[1]<originRanking.outletDistances[3]);
+
   const validatedPriceUrls=await page.evaluate(async()=>{
     const {priceObservationPublicUrl}=await import("./src/open-data.js");
     return [

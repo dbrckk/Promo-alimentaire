@@ -92,6 +92,23 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
   function outranks(a,b){
     if(a.oldestAt!==b.oldestAt) return a.oldestAt>b.oldestAt;
     if(a.newestAt!==b.newestAt) return a.newestAt>b.newestAt;
+    // With an explicitly selected GPS/commune origin, favor the closest
+    // pair AFTER receipt recency. A pair of stores 1 km apart but both 25 km
+    // from the shopper must not beat equally fresh stores 2 km away.
+    // Compare the farthest shop first: both shops must be accessible.
+    // Distances are locally computed by Open Prices normalization, never
+    // chosen for cheapness. Keep primitive scores on each candidate instead
+    // of allocating arrays/objects again for every pair comparison on mobile.
+    const aLocal=a.originFarthest!==null;
+    const bLocal=b.originFarthest!==null;
+    if(aLocal && bLocal){
+      if(a.originFarthest!==b.originFarthest)
+        return a.originFarthest<b.originFarthest;
+      if(a.originTotal!==b.originTotal)
+        return a.originTotal<b.originTotal;
+    }else if(aLocal!==bLocal){
+      return aLocal;
+    }
     const dA=a.evidence.distanceKm, dB=b.evidence.distanceKm;
     if(dA!==null && dB!==null && dA!==dB) return dA<dB;
     if((dA!==null)!==(dB!==null)) return dA!==null;
@@ -116,9 +133,17 @@ export function selectComparablePricePair(carrefourObservations,leclercObservati
       if(!evidence.comparable) continue;
       const aTime=parsePriceEvidenceDate(carrefour.date).getTime();
       const bTime=parsePriceEvidenceDate(leclerc.date).getTime();
+      const originDistances=[carrefour.distanceKm,leclerc.distanceKm];
+      const hasOrigin=originDistances.every((distance)=>
+        typeof distance==="number" && Number.isFinite(distance)
+        && distance>=0);
       const candidate={carrefour,leclerc,evidence,
         oldestAt:Math.min(aTime,bTime),
-        newestAt:Math.max(aTime,bTime)
+        newestAt:Math.max(aTime,bTime),
+        originFarthest:hasOrigin
+          ? Math.max(originDistances[0],originDistances[1]):null,
+        originTotal:hasOrigin
+          ? originDistances[0]+originDistances[1]:null
       };
       if(!best || outranks(candidate,best)) best=candidate;
     }

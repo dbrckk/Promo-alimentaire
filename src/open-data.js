@@ -16,6 +16,25 @@ export function priceObservationPublicUrl(id) {
 }
 
 
+/**
+ * A public map marker for the store coordinates supplied by Open Prices.
+ * Never build a URL from a shop name, user GPS, postcode centroid or
+ * provider-supplied URL. The (0,0) placeholder is not a reliable outlet.
+ * This marker describes a contributed location, NOT live stock or prices.
+ */
+export function priceOutletMapUrl(observation){
+  const lat=observation?.locationLat,lon=observation?.locationLon;
+  if(typeof lat!=="number" || typeof lon!=="number"
+    || !Number.isFinite(lat) || !Number.isFinite(lon)
+    || lat < -90 || lat > 90 || lon < -180 || lon > 180
+    || (lat===0 && lon===0)) return null;
+  const markerLat=lat.toFixed(5),markerLon=lon.toFixed(5);
+  return "https://www.openstreetmap.org/?mlat="+markerLat+
+    "&mlon="+markerLon+"#map=17/"+markerLat+"/"+markerLon;
+}
+
+
+
 const STORE_MATCHERS = {
   carrefour: /carrefour/i,
   leclerc: /(?:e\.?\s*)?leclerc/i
