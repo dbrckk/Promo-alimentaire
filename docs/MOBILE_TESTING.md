@@ -1,3 +1,7 @@
+### Liste de courses locale sans GPS
+
+Dans **Liste de courses**, saisir un code postal dans **Prix de la liste près d'une commune, sans GPS** puis rechercher. Si plusieurs communes correspondent, sélectionner celle souhaitée (71100 : Chalon-sur-Saône ou Saint-Marcel), choisir un rayon 5/10/25/50 km dans la barre de la liste, puis **Actualiser les prix**. La zone de résultat doit rappeler la commune et le rayon ; les relevés d'un magasin situé hors rayon et les prix personnels sans coordonnées ne doivent pas influencer le total. Le choix de commune n'appelle pas `navigator.geolocation` et n'est pas sauvegardé. Modifier code postal/rayon, changer de commune ou effacer le secteur doit retirer immédiatement les anciennes estimations. Le smoke Pixel 7 teste les paramètres réels des requêtes, l'absence de mélange des secteurs et les prix non géolocalisables.
+
 ## Panier : isolation des prix magasin / Drive / En ligne
 
 Après avoir actualisé la liste en canal **Magasin**, basculer vers **Drive** puis **En ligne**. Le panier ne doit conserver **aucun montant calculé à partir des relevés de magasins physiques**, même si ces relevés sont dans l'historique de l'onglet. Appuyer sur **Actualiser les prix** dans ces canaux affiche un message explicite et n'envoie aucune requête à Open Prices. Revenir à **Magasin** permet de revoir les observations datées et leurs liens de preuve, puis de réactualiser manuellement.
