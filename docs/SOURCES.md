@@ -1,3 +1,9 @@
+## Montants indicatifs des offres détectées sur la fiche produit (16 octobre 2026)
+
+Pour chiffrer un gain candidat, **Produit → Offres compatibles détectées** doit disposer d'un prix Open Prices `COMMUNITY` : GTIN exact, enseigne actuelle, EUR par unité, observation normale (pas déjà remisée) datée de 7 jours au plus. Les observations situées hors rayon (s'il est demandé) ou dénuées de coordonnées vérifiables ne peuvent pas servir. Les montants sont également supprimés pour une simple correspondance de marque, une synchronisation officielle non reconfirmée, une condition de magasin/prix/fidélité non validée ou une remise distributeur à vérifier en caisse. La fiche du produit n'utilise jamais des relevés magasin physiques pour le canal Drive/livraison. Les relevés de plus de 7 jours restent dans l'historique, sans servir à une économie calculée.
+
+Même un montant potentiellement affiché ne prouve ni le stock, ni l'éligibilité réelle au remboursement, ni le cumul avec d'autres avantages. Le tableau de conditions et les liens de provenance doivent être consultés avant d'acheter.
+
 ## Preuves de points de vente dans la comparaison d'EAN — 16 octobre 2026
 
 Lorsque deux relevés récents de Carrefour/E.Leclerc constituent une paire comparable, **leurs points de vente exacts dans les données Open Prices** sont présentés dans deux cartes séparées (elles peuvent différer des dernières observations des fiches enseignes). Un lien OpenStreetMap n'est créé qu'à partir des coordonnées `osm_lat` et `osm_lon` normalisées et validées de la **localisation du relevé**, jamais de la position personnelle ou du centre de commune. Les points nuls `(0,0)`, coordonnées manquantes et valeurs hors bornes sont refusés. L'URL est reconstruite à partir de valeurs numériques arrondies, sans accepter d'URL externe fournie par le flux.
