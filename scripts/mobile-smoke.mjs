@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {mkdir,readFile} from "node:fs/promises";
 import {chromium,devices} from "playwright";
+import {discoverBonialCarrefourCatalogues} from "./bonial-public-catalogues.mjs";
 
 const RECENT_RECEIPT_DATE=new Date(Date.now()-24*60*60*1000)
   .toISOString().slice(0,10); // fresh regardless of when GitHub Actions runs
@@ -114,6 +115,24 @@ await page.route("https://prices.openfoodfacts.org/**",(route)=>{
     ]})
   });
 });
+
+// Run the public-feed parser as part of the existing full Android journey,
+// not as a new isolated unit-test file.
+const publicBonialHtml='<html><body>'+[
+  '<img alt="Catalogue Carrefour, 13/10/2026 - 26/10/2026, AU COEUR DU GOUT, 24 pages" src="/a">',
+  '<img alt="Catalogue Carrefour Market, 13/10/2026 - 25/10/2026, MARKET" src="/b">',
+  '<img alt="Catalogue Carrefour, 20/10/2026 - 02/11/2026, FUTUR" src="/c">',
+  '<img alt="Catalogue Carrefour, 01/01/2026 - 30/11/2026, ANNUEL" src="/d">',
+  '<img alt="Catalogue Carrefour, 13/10/2026 - 26/10/2026, AU COEUR DU GOUT, 24 pages" src="/e">'
+].join("")+'</body></html>';
+const parsedBonial=discoverBonialCarrefourCatalogues(publicBonialHtml,
+  new Date("2026-10-16T12:00:00Z"));
+assert.equal(parsedBonial.length,1,
+  "Only one active Carrefour flyer, not Market/future/year-long duplicates");
+assert.equal(parsedBonial[0].sourceUrl,"https://www.bonial.fr/Enseignes/Carrefour");
+assert.equal(parsedBonial[0].expiresAt,"2026-10-26");
+assert.equal("savingAmount" in parsedBonial[0],false);
+assert.equal("basePrice" in parsedBonial[0],false);
 
 try{
   const response=await page.goto(BASE,{waitUntil:"networkidle",timeout:30000});
@@ -1936,6 +1955,35 @@ try{
     shown:1,title:"Catalogue Carrefour « Au cœur du goût »",
     checkoutSaving:null,checkoutPercent:null,expired:0,drive:0
   });
+  // Browser selection rejects forged URLs, old proof, wrong channels and
+  // fabricated euro savings from an untrusted public third-party import.
+  const alternativeGate=await page.evaluate(async(parsed)=>{
+    const {selectAlternativeCatalogues}=await import("./src/daily-catalogue.js");
+    const now=new Date("2026-10-16T12:00:00Z");
+    const select=(catalogues,channel="store",day=now)=>selectAlternativeCatalogues({
+      catalogues,store:"carrefour",channel,now:day
+    });
+    const allowed=select([parsed]);
+    const spoof=select([{...parsed,id:"bonial-carrefour-spoof",
+      sourceUrl:"https://www.bonial.fr.evil.example/"}]);
+    const falselyPriced=select([{...parsed,savingAmount:1000,basePrice:1}]);
+    const old=select([parsed],"store",new Date("2026-10-19T12:00:00Z"));
+    return {shown:allowed.length,link:allowed[0]?.sourceUrl,
+      hasSaving:"savingAmount" in (allowed[0]||{}),
+      hasPrice:"basePrice" in (allowed[0]||{}),
+      spoof:spoof.length,drive:select([parsed],"drive").length,
+      leclerc:selectAlternativeCatalogues({
+        catalogues:[parsed],store:"leclerc",channel:"store",now
+      }).length,old:old.length,pricedCount:falselyPriced.length,
+      stripsValue:!("savingAmount" in (falselyPriced[0]||{}))}
+  },parsedBonial[0]);
+  assert.deepEqual(alternativeGate,{
+    shown:1,link:"https://www.bonial.fr/Enseignes/Carrefour",
+    hasSaving:false,hasPrice:false,spoof:0,drive:0,
+    leclerc:0,old:0,pricedCount:1,stripsValue:true
+  });
+  assert.ok(await page.locator("#dailyAlternativeCatalogues").count()===1,
+    "Third-party flyer cards have a separate DOM container");
   // The public campaign feed may legitimately be purged after its 7-day
   // audit retention; only assert rendered cards if today's datum is present.
   const brochureCard=page.locator("#dailyCampaigns .daily-offer")
