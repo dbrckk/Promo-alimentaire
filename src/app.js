@@ -3024,6 +3024,8 @@ async function refreshShoppingList(){
   let failures=0;
   let interruptedRequests=0;
   let limitedRequests=0;
+  let aliasQueries=0;
+  let aliasRecoveries=0;
   // Cache duplicate product-code pages only for this explicit refresh.
   // Each retailer still gets its own filtered receipts and coverage state.
   const sharedFetch=createSharedPriceFetch();
@@ -3036,21 +3038,31 @@ async function refreshShoppingList(){
       const [carrefour,leclerc]=await Promise.allSettled([
         fetchPricesByBarcode(item.product.code,{
           ...queryOptionsByStore.carrefour,fetchImpl:sharedFetch,
+          // Basket estimates rely on recent evidence. UPC-A, EAN-13 and
+          // GTIN-14 can represent exactly the same GS1 product; a price
+          // older than seven days must not hide a fresh equivalent code.
+          // The source already caps this fallback at two one-page aliases.
+          alternateGtins:true,aliasFreshnessDays:7,
           signal:controller.signal
         }),
         fetchPricesByBarcode(item.product.code,{
           ...queryOptionsByStore.leclerc,fetchImpl:sharedFetch,
+          alternateGtins:true,aliasFreshnessDays:7,
           signal:controller.signal
         })
       ]);
       if(controller.signal.aborted || refreshToken!==basketRefreshToken) return;
       if(carrefour.status==="fulfilled"){
+        aliasQueries+=carrefour.value.aliasQueries||0;
+        if(carrefour.value.aliasRecovered) aliasRecoveries+=1;
         next.carrefour[item.product.code]=carrefour.value.observations;
         if(carrefour.value.partial) interruptedRequests+=1;
         else if(carrefour.value.searchIncomplete) limitedRequests+=1;
         recordProductObservation(item.product,"carrefour",carrefour.value.observations);
       }else { next.carrefour[item.product.code]=[]; failures+=1; }
       if(leclerc.status==="fulfilled"){
+        aliasQueries+=leclerc.value.aliasQueries||0;
+        if(leclerc.value.aliasRecovered) aliasRecoveries+=1;
         next.leclerc[item.product.code]=leclerc.value.observations;
         if(leclerc.value.partial) interruptedRequests+=1;
         else if(leclerc.value.searchIncomplete) limitedRequests+=1;
@@ -3067,10 +3079,13 @@ async function refreshShoppingList(){
     recordComparisonHistory(scenarios);
     renderShoppingList();
     const locality=state.nearbyEnabled ? ` dans un rayon de ${state.radiusKm} km` : " sans filtre géographique";
+    const aliases=aliasQueries
+      ? ` Recherche de variantes UPC/EAN/GTIN : ${aliasQueries} requête(s) logiques supplémentaires, ${aliasRecoveries} couple(s) produit-enseigne ayant récupéré des relevés. Ces relevés sont communautaires et doivent être vérifiés avant achat.`
+      : "";
     setListStatus(
-      failures || interruptedRequests || limitedRequests
+      (failures || interruptedRequests || limitedRequests
         ? `Actualisation indicative : ${failures} requête(s) indisponible(s), ${interruptedRequests} recherche(s) interrompue(s), ${limitedRequests} limitée(s) aux premières pages${locality}. Le total ne représente que les prix consultés.`
-        : `Prix actualisés pour Carrefour et E.Leclerc${locality}.`,
+        : `Prix actualisés pour Carrefour et E.Leclerc${locality}.`)+aliases,
       failures>0 || interruptedRequests>0 || limitedRequests>0
     );
   }finally{
