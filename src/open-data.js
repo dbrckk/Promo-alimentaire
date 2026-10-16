@@ -131,7 +131,8 @@ function equivalentLongGtins(code,canonical){
 
 export async function fetchPricesByBarcode(value,{
   store,size=100,coords=null,radiusKm=25,fetchImpl=fetch,
-  maxPages=2,minimumMatches=4,signal=null,alternateGtins=false
+  maxPages=2,minimumMatches=4,signal=null,alternateGtins=false,
+  aliasFreshnessDays=30
 }={}) {
   const code=normalizeBarcode(value);
   const canonicalQuery=canonicalGtin(code);
@@ -139,6 +140,10 @@ export async function fetchPricesByBarcode(value,{
   const pageSize=Math.min(Math.max(Math.trunc(Number(size)||100),1),100);
   const pageLimit=Math.min(Math.max(Math.trunc(Number(maxPages)||2),1),3);
   const minMatches=Math.min(Math.max(Math.trunc(Number(minimumMatches)||4),1),20);
+  // Two-store comparisons require a receipt within 7 days. A primary-code
+  // receipt from 8–30 days ago must not suppress a fresher UPC/EAN alias.
+  // Ordinary product lookup retains its existing 30-day request budget.
+  const aliasDays=aliasFreshnessDays===7 ? 7 : 30;
   const params=new URLSearchParams({
     product_code:code,
     currency:"EUR",
@@ -275,7 +280,7 @@ export async function fetchPricesByBarcode(value,{
   // variants without fetching irrelevant aliases for normal EAN-13 codes.
   let aliasQueries=0,aliasRecovered=false,displayedSourceUrl=url;
   if(alternateGtins===true
-    && !observations.some((item)=>isFreshObservation(item,30))){
+    && !observations.some((item)=>isFreshObservation(item,aliasDays))){
     for(const alias of equivalentLongGtins(code,canonicalQuery)){
       if(signal?.aborted) throw new DOMException("Recherche annulée","AbortError");
       aliasQueries++;
@@ -309,7 +314,7 @@ export async function fetchPricesByBarcode(value,{
           displayedSourceUrl=extra.sourceUrl;
           // A stale-only variant need not hide newer prices of another
           // representation. A fresh receipt ends the fallback early.
-          if(extra.observations.some((item)=>isFreshObservation(item,30)))
+          if(extra.observations.some((item)=>isFreshObservation(item,aliasDays)))
             break;
         }
       }catch(error){

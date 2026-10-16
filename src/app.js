@@ -1989,6 +1989,7 @@ async function compareCurrentExactSku({deep=false}={}){
     fetched=await Promise.allSettled(stores.map((store)=>
       fetchPricesByBarcode(code,{...options,store,
         signal:controller.signal,fetchImpl:sharedFetch,alternateGtins:true,
+        aliasFreshnessDays:7,
         ...(deep ? {maxPages:3,minimumMatches:20} : {})})
     ));
   }finally{
