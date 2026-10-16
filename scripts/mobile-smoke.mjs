@@ -1304,6 +1304,58 @@ try{
     complete:{calls:1,moreAvailable:false,incomplete:false,matched:1}
   });
 
+  // Functional Pixel 7 integration: old receipts on page 1 must not use
+  // up a comparison's 7-day evidence budget when more pages are declared.
+  // A normal product lookup deliberately stops after four 30-day matches.
+  const freshnessPagination=await page.evaluate(async()=>{
+    const {fetchPricesByBarcode}=await import("./src/open-data.js");
+    const {priceCoverageSummary}=await import("./src/exact-sku-comparison.js");
+    const code="3017624010701";
+    const on=(daysAgo)=>{
+      const date=new Date();date.setUTCDate(date.getUTCDate()-daysAgo);
+      return date.toISOString().slice(0,10);
+    };
+    const row=(id,daysAgo)=>({
+      id,product_code:code,price:2.5,currency:"EUR",
+      price_per:"UNIT",kind:"COMMUNITY",type:"PRODUCT",
+      date:on(daysAgo),location:{osm_brand:"Carrefour"}
+    });
+    const first=[row(801,12),row(802,11),row(803,10),row(804,9)];
+    const second=[row(805,2)];
+    const urls=[];
+    const fakeFetch=async(raw)=>{
+      const url=new URL(raw);urls.push(url.searchParams.get("page")||"1");
+      const items=url.searchParams.get("page")==="2"?second:first;
+      return {ok:true,json:async()=>({total:5,pages:2,items})};
+    };
+    const comparison=await fetchPricesByBarcode(code,{
+      store:"carrefour",size:4,maxPages:2,minimumMatches:4,
+      aliasFreshnessDays:7,alternateGtins:false,fetchImpl:fakeFetch
+    });
+    const comparisonRequests=[...urls];urls.length=0;
+    const ordinary=await fetchPricesByBarcode(code,{
+      store:"carrefour",size:4,maxPages:2,minimumMatches:4,
+      fetchImpl:fakeFetch
+    });
+    const ordinaryRequests=[...urls];
+    return {
+      comparisonRequests,comparisonPages:comparison.pagesFetched,
+      comparisonIncomplete:comparison.searchIncomplete,
+      comparisonRecent7:priceCoverageSummary(comparison.observations).recent7Days,
+      comparisonLastId:comparison.observations[0]?.id,
+      ordinaryRequests,ordinaryPages:ordinary.pagesFetched,
+      ordinaryIncomplete:ordinary.searchIncomplete,
+      ordinaryRecent7:priceCoverageSummary(ordinary.observations).recent7Days
+    };
+  });
+  assert.deepEqual(freshnessPagination,{
+    comparisonRequests:["1","2"],comparisonPages:2,
+    comparisonIncomplete:false,comparisonRecent7:1,comparisonLastId:805,
+    ordinaryRequests:["1"],ordinaryPages:1,
+    ordinaryIncomplete:true,ordinaryRecent7:0
+  });
+
+
   // Integration within the existing Pixel 7 browser journey: the product
   // URL query is exact, yet UPC-A, EAN-13 and GTIN-14 may encode the same
   // GS1 identifier. A cautious fallback must not accept superseded prices,
