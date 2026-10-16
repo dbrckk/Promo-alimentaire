@@ -228,7 +228,7 @@
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     }
   ],
-  "lastAttemptAt": "2026-10-15T12:39:53.591Z",
+  "lastAttemptAt": "2026-10-16T08:53:35.594Z",
   "sourceChecks": {
     "https://www.carrefour.fr/catalogue/carrefour": {
       "status": "unavailable",
@@ -287,7 +287,7 @@
     }
   ],
   "alternativeCheckedAt": "2026-10-16T00:00:00Z",
-  "alternativeLastAttemptAt": null,
-  "alternativeStatus": "manual-public-index",
-  "alternativeReason": "Trois dates de catalogues corroborées sur la page publique Bonial le 16 octobre ; prochaine actualisation GitHub à vérifier."
+  "alternativeLastAttemptAt": "2026-10-16T08:53:35.594Z",
+  "alternativeStatus": "unavailable",
+  "alternativeReason": "Aucun prospectus Carrefour actuel avec dates contrôlables."
 }
