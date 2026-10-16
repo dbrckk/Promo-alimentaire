@@ -1994,6 +1994,44 @@ try{
   });
   assert.ok(await page.locator("#dailyAlternativeCatalogues").count()===1,
     "Third-party flyer cards have a separate DOM container");
+  // Real Pixel 7 browser interaction: from one dated public flyer, enter
+  // a visitor-supplied EAN and reuse the existing exact two-chain comparison.
+  // A flyer is NOT evidence for that GTIN, price or claimed saving.
+  const beforeFlyerStore=await page.locator("#store").inputValue();
+  const beforeFlyerChannel=await page.locator("#channel").inputValue();
+  await page.locator("#store").selectOption("carrefour");
+  await page.locator("#channel").selectOption("store");
+  await page.locator('[data-tab="daily"]').click();
+  const flyerEligible=await page.locator("#dailyAlternativeCatalogues a.open").count()>0;
+  if(flyerEligible){
+    assert.equal(await page.locator("#brochureCompareForm").isVisible(),true);
+    await page.locator("#brochureProductCode").fill("EAN:3017624010701");
+    await page.locator('#brochureCompareForm button[type="submit"]').click();
+    assert.match(await page.locator("#brochureCompareStatus").innerText(),
+      /Code-barres invalide/);
+    assert.equal(await page.locator("#productView").isVisible(),false,
+      "A malformed flyer EAN must not trigger a remote lookup or comparison");
+    await page.locator("#brochureProductCode").fill("3017-6240 10701");
+    await page.locator('#brochureCompareForm button[type="submit"]').click();
+    await page.locator("#productResult h2").waitFor({timeout:18000});
+    assert.equal(await page.locator("#barcode").inputValue(),"3017624010701");
+    assert.equal(await page.locator("#brochureCompareNotice").isVisible(),true);
+    await page.waitForFunction(()=>
+      document.querySelector("#exactSkuComparison")?.textContent
+        ?.includes("Carrefour") &&
+      document.querySelector("#exactSkuComparison")?.textContent
+        ?.includes("E.Leclerc"),null,{timeout:22000});
+    assert.equal(await page.locator("#compareExactSku").isEnabled(),true);
+    assert.doesNotMatch(await page.locator("#brochureCompareNotice").innerText(),
+      /prix confirmés|remise garantie/i);
+    await page.locator('[data-tab="daily"]').click();
+    await page.locator("#channel").selectOption("drive");
+    assert.equal(await page.locator("#brochureCompareForm").isVisible(),false,
+      "A store-only Bonial flyer must not imply a Drive checkout price");
+    await page.locator("#channel").selectOption("store");
+  }
+  await page.locator("#store").selectOption(beforeFlyerStore);
+  await page.locator("#channel").selectOption(beforeFlyerChannel);
   // The public campaign feed may legitimately be purged after its 7-day
   // audit retention; only assert rendered cards if today's datum is present.
   const brochureCard=page.locator("#dailyCampaigns .daily-offer")

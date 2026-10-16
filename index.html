@@ -296,6 +296,15 @@
         <h3>Prospectus Carrefour datés via Bonial (solution de secours)</h3>
         <p class="help">Index public indépendant quand Carrefour bloque la lecture automatisée. Périodes datées, sans prix de caisse ni disponibilité locale confirmés ; aucune économie ajoutée à votre panier.</p>
         <div id="dailyAlternativeCatalogues" class="grid" aria-live="polite"></div>
+        <form id="brochureCompareForm" class="panel inline-form hidden" autocomplete="off">
+          <label for="brochureProductCode">Produit vu dans un prospectus : entrer son code-barres EAN/UPC</label>
+          <input id="brochureProductCode" type="text" inputmode="numeric" maxlength="30"
+            autocomplete="off" placeholder="Ex. 3017624010701" />
+          <button type="submit" class="primary">Comparer cet EAN chez Carrefour et E.Leclerc</button>
+          <button type="button" id="brochureScanButton" class="secondary">Scanner plutôt</button>
+          <p id="brochureCompareStatus" class="help" role="status" aria-live="polite"></p>
+          <p class="help">Il faut relever le code exact sur le produit : le prospectus seul ne prouve ni cette référence ni son prix. Les comparaisons utilisent des relevés indépendants Open Prices, datés et parfois incomplets.</p>
+        </form>
       </section>
     </section>
 
@@ -305,6 +314,7 @@
           <p class="eyebrow dark">Prix par code-barres</p>
           <h2>Retrouver un produit et ses prix observés</h2>
           <p class="help">Les fiches viennent d'Open Food Facts et les prix d'Open Prices. Les prix sont communautaires : la date et le magasin sont toujours affichés.</p>
+          <p id="brochureCompareNotice" class="help hidden" role="status">Comparaison lancée depuis un prospectus Bonial. Le code-barres est saisi séparément : aucun prix ni produit de ce prospectus n'est validé automatiquement. Seuls les relevés datés d'Open Prices peuvent servir à la comparaison.</p>
         </div>
         <form id="barcodeForm" class="inline-form">
           <label class="sr-only" for="barcode">Code-barres EAN / UPC</label>
