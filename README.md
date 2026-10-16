@@ -1,3 +1,11 @@
+### Comparateur EAN : même exigence de preuve que la fiche produit (16 octobre 2026)
+
+Les estimations chiffrées du comparateur **Produit → Même produit, deux enseignes** suivent désormais **la même vérification des justificatifs** que **Produit → Offres compatibles détectées**. Un remboursement ou coupon associé au GTIN exact n'est plus chiffré lorsque la **source n'a pas pu être reconfirmée**, lorsqu'une **carte fidélité requise n'est pas déclarée comme éligible**, ou lorsque les conditions obligatoires de magasin/canal ne sont pas vérifiées. Le comparateur continue de refuser les prix remisés, les relevés de plus de **7 jours**, les correspondances approximatives et les promotions distributeur dépendant d'une confirmation en caisse.
+
+Les offres demeurent visibles avec un **motif explicite** lorsque le montant ne peut pas être estimé. Le « meilleur coût hypothétique après remboursement » disparaît si aucune preuve suffisante ne permet un calcul. Cette harmonisation évite de présenter un gain sur un écran qui est interdit sur l'autre ; elle ne certifie pas le prix réel ni le remboursement définitif.
+
+Le smoke Android existant compare la décision des deux écrans pour une offre fictive : source inaccessible, club au lieu de Pass, carte Pass renseignée, vérification de magasin/canal, GTIN différent, et cas entièrement admissible. **Aucun nouveau test unitaire**.
+
 ### Économies calculées : preuve de prix datant de 7 jours maximum
 
 Dans le comparateur par EAN, les observations de prix Open Prices restent consultables jusqu'à **30 jours** à titre indicatif. En revanche, une offre avec GTIN explicite ne reçoit **aucune estimation chiffrée d'économie** si son prix de référence date de plus de **7 jours**. L'interface affiche « Relevé de plus de 7 jours : économie non estimée » au lieu de présenter un gain périmé. Les autres contrôles (prix déjà remisé, conditions du canal, quantité minimale, prix magasin à confirmer) restent inchangés. Une estimation avec prix récent demeure **conditionnelle** et ne constitue jamais une garantie de remboursement.
