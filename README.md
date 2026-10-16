@@ -1,3 +1,9 @@
+### Copier sa liste de remboursements à vérifier (16 octobre 2026)
+
+Depuis **Promos du jour → Ma liste de remboursements à vérifier**, le bouton **« Copier ma liste à vérifier »** prépare une liste textuelle des favoris encore documentés pour le magasin et le canal choisis. Elle inclut les noms, les fournisseurs et les liens HTTPS vers les conditions officielles. La liste est copiée via le presse-papiers du navigateur, sans envoi au serveur ni enregistrement supplémentaire. Si le presse-papiers est bloqué, l'application affiche un message explicite.
+
+Les offres expirées ou non proposées pour ce magasin ne sont pas exportées. Aucun prix de caisse, gain garanti, position GPS, montant de remboursement fictif ou donnée personnelle n'est ajouté. Chaque ligne reste une piste à **vérifier avant achat** (EAN, activation, dates, ticket et cumul). Les tests Android existants vérifient la copie, l'absence d'informations sensibles, les liens HTTPS et le bouton désactivé pour une liste vide.
+
 ### Davantage de relevés alimentaires publics, sans inventer d'offres (15 octobre 2026)
 
 La découverte des prix remisés Open Prices explore désormais **jusqu’à 6 pages de 100 relevés** au lieu de 3, dans la même fenêtre de sept jours. Les relevés sont toujours vérifiés individuellement : enseigne, produit Open Food Facts, catégorie alimentaire, prix avant/après, preuve, date et lieu. Les catégories explicitement non alimentaires (hygiène, shampoing, électronique, jouets, vêtements, etc.) sont rejetées, même si elles possèdent un code-barres. Une limite de 600 relevés mondiaux peut rester insuffisante : les résultats incomplets sont signalés et **aucun résultat ne garantit une remise actuellement disponible**. L'augmentation de la pagination peut rallonger le chargement en connexion mobile ; le bouton d'actualisation reste manuel et les requêtes sont annulables.
