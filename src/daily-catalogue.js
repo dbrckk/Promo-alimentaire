@@ -535,6 +535,44 @@ export function selectDailyCatalogue({
     exactRetailerCount:retailer.filter((item)=>item.hasExactEan).length};
 }
 
+/**
+ * Third-party dated flyers: editorial discovery ONLY, never a product
+ * promotion or a price. Revalidate all import fields at the UI boundary.
+ */
+export function selectAlternativeCatalogues({
+  catalogues=[],store="carrefour",channel="store",now=new Date()
+}={}){
+  if(store!=="carrefour" || channel!=="store") return [];
+  const today=parisCivilDay(new Date(now));
+  if(!today || !Array.isArray(catalogues)) return [];
+  const readDay=(s)=>Date.parse(s+"T12:00:00Z");
+  const seen=new Set();
+  return catalogues.slice(0,40).filter((item)=>{
+    if(!item || item.store!=="carrefour" || item.source!=="Bonial"
+      || item.format!=="Carrefour"
+      || item.sourceUrl!=="https://www.bonial.fr/Enseignes/Carrefour"
+      || !Array.isArray(item.channels)
+      || item.channels.length!==1 || item.channels[0]!=="store"
+      || typeof item.title!=="string" || !item.title.startsWith("Catalogue Carrefour")
+      && item.title!=="Prospectus Carrefour"
+      || item.title.length>130 || !validDate(item.verifiedAt)
+      || !validDate(item.startsAt) || !validDate(item.expiresAt)
+      || item.verifiedAt>today || item.startsAt>today || item.expiresAt<today
+      || !/^bonial-carrefour-[a-z0-9-]{8,130}$/.test(item.id||"")
+      || seen.has(item.id)) return false;
+    const age=(readDay(today)-readDay(item.verifiedAt))/86400000;
+    const duration=(readDay(item.expiresAt)-readDay(item.startsAt))/86400000;
+    if(age<0 || age>2 || duration<0 || duration>45) return false;
+    seen.add(item.id);
+    return true;
+  }).slice(0,8).map((item)=>({
+    id:item.id,title:item.title,sourceUrl:item.sourceUrl,
+    source:"Bonial",verifiedAt:item.verifiedAt,
+    startsAt:item.startsAt,expiresAt:item.expiresAt
+    // No basePrice, advertisedPrice, savingAmount, savingPercent or EAN.
+  }));
+}
+
 // The advertised campaign's expiry is not the time of the last successful
 // scrape. A green scheduled workflow may have received HTTP 403; make that
 // gap visible in the Android UI without changing any individual offer proof.
