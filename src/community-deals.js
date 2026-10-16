@@ -41,6 +41,10 @@ export function normalizeObservedDiscount(raw,{
   if(!raw || typeof raw!=="object" || !Object.hasOwn(LABELS,store)) return null;
   // This is an observed unit-price reduction, never a coupon, a quantity
   // promotion or a loyalty reward usable without further confirmation.
+  // Open Prices marks superseded receipts using duplicate_of. A duplicate
+  // must not be presented as independent evidence even if the API query
+  // ignores or changes its documented duplicate filter.
+  if(raw.duplicate_of!==null && raw.duplicate_of!==undefined) return null;
   if(raw.type!=="PRODUCT" || raw.price_is_discounted!==true
     || !DISCOUNT_TYPES.has(raw.discount_type)) return null;
   const product=raw.product || {};
@@ -188,6 +192,11 @@ export async function fetchObservedDiscounts({
     if(signal?.aborted) throw new DOMException("Recherche annulée","AbortError");
     const query=new URLSearchParams({
       currency:"EUR",type:"PRODUCT",price_is_discounted:"true",
+      // Server-side relevance gates match the checks below: discard
+      // unproven, superseded, non-OFF and personal-consumption records
+      // before spending one of six limited 100-price API pages.
+      proof_id__isnull:"false",duplicate_of__isnull:"true",
+      product__source:"off",kind:"COMMUNITY",
       date__gte:cutoff,order_by:"-date",size:"100",page:String(page)
       // The Open Prices location-name filter has returned empty pages for
       // retailers present in global results. Filter retailer identity locally
