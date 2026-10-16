@@ -1,3 +1,11 @@
+### Estimations de remboursement : preuves vérifiables avant tout montant (16 octobre 2026)
+
+Dans **Produit → Offres compatibles détectées**, les montants d'économie potentielle ne sont désormais affichés que si les conditions minimales de preuve sont réunies : **même GTIN confirmé dans l'offre**, prix **normal non remisé** issu d'un relevé Open Prices datant de **7 jours maximum**, **enseigne et magasin physique concordants**, rayon respecté lorsque le mode local est activé, source de l'offre reconfirmée et absence de conditions distributeur/canal/fidélité non vérifiées. Un coupon ou une remise distributeur nécessitant une confirmation en caisse reste consultable, mais son gain n'est plus calculé comme si le prix et son application étaient certains.
+
+Les suggestions par marque/nom, les prix de plus de 7 jours, les relevés déjà remisés, les données d'une autre enseigne ou d'un autre EAN et les relevés magasin vus depuis le canal **Drive/livraison** ne produisent **aucun chiffre d'économie**. Ils conservent leurs libellés, sources et indications sur les vérifications manquantes. Cette restriction s'applique également pendant l'actualisation asynchrone après un changement d'enseigne, de canal ou de rayon. Les éventuelles estimations restantes sont toujours **indicatives, non garanties**.
+
+Une régression ajoutée au scénario Android existant vérifie la sélection du prix par code/enseigne/date/rayon et la décision de chiffrer ou non un montant selon ses preuves. Aucun nouveau test unitaire créé.
+
 ### Récupération des relevés récents entre variantes UPC/EAN (16 octobre 2026)
 
 Dans **Produit → Même produit, deux enseignes**, un relevé daté de 8 à 30 jours sous le code UPC saisi n'empêche plus de consulter une représentation équivalente EAN-13 ou GTIN-14 du **même identifiant GS1 vérifié**. Le comparateur cherche désormais une preuve datée de **7 jours maximum** avant de renoncer au repli, au lieu de considérer qu'un relevé de 30 jours suffit. La recherche est limitée à **deux variantes supplémentaires et une page chacune**, afin de préserver le réseau mobile. Les prix anciens restent visibles comme observations, mais **ne peuvent pas déterminer un magasin gagnant**. Une fiche produit ordinaire conserve la règle historique des 30 jours, sans requêtes supplémentaires. Les prix restent communautaires, non garantis en caisse.
