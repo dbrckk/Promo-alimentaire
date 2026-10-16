@@ -65,7 +65,17 @@ try{
   if(!response.ok) throw Error("HTTP "+response.status);
   const html=await response.text();
   const current=discoverBonialCarrefourCatalogues(html,now);
-  if(!current.length) throw Error("Aucun prospectus Carrefour actuel avec dates contrôlables.");
+  if(!current.length){
+    const count=(expression)=>(html.match(expression)||[]).length;
+    const candidates=[...html.matchAll(/alt\\s*=\\s*["']([^"']{1,240})["']/gi)]
+      .map((m)=>m[1]).filter((v)=>/catalogue carrefour/i.test(v)).slice(0,4);
+    console.warn("[daily] Bonial diagnostic HTML : taille="+html.length+
+      " img="+count(/<img\\b/gi)+
+      " texteCarrefour="+count(/Catalogue Carrefour/gi)+
+      " dateOct="+count(/2026/gi)+
+      " exemplesAlt="+JSON.stringify(candidates));
+    throw Error("Aucun prospectus Carrefour actuel avec dates contrôlables.");
+  }
   alternatives=current;
   alternativeStatus="available";
   alternativeReason=current.length+" prospectus Carrefour daté(s), consultation Bonial uniquement.";
