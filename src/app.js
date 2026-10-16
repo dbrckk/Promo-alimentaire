@@ -8,9 +8,9 @@ import {
 import {fetchObservedDiscounts,selectObservedDiscounts,lookupPostalCodeCommunes} from "./community-deals.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
-import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, priceOutletMapUrl, selectBestRecentPrice, isUnambiguousRetailer } from "./open-data.js";
+import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, priceOutletMapUrl, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
-import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers, canEstimateProductOffer } from "./matching.js";
+import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers, canEstimateProductOffer, selectProductOfferPriceObservation } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
 import { filterActiveOffers, parisCivilDay } from "./ingestion.js";
 import {
@@ -2259,22 +2259,13 @@ function renderProductOffers(product,observations=[]){
     [...resolvedOffers,...loyaltyOffers],
     {store:state.store,channel:state.channel}
   );
-  // A product's old observation can outlive a channel/store/radius change
-  // until the next request completes. Never quote it for a different store,
-  // for Drive/delivery, or for a different product's verified GTIN.
-  const pricedObservations=(observations||[]).filter((item)=>
-    canonicalGtin(item?.productCode)===canonicalGtin(product?.code)
-    && isUnambiguousRetailer(item?.retailerText,state.store)
-    && item.currency==="EUR" && item.pricePer==="UNIT"
-    && (!state.nearbyEnabled || !state.coords
-      || (Number.isFinite(item.distanceKm)
-        && item.distanceKm<=state.radiusKm+0.1))
-  );
-  // Only a non-discounted, very recent shelf/receipt observation may be the
-  // *basis* for an illustrative saving. A 120-day receipt is history, not a
-  // defensible current estimate; neither is a one-off discounted receipt.
-  const bestObserved=state.channel==="store"
-    ? selectBestRecentPrice(pricedObservations,7) : null;
+  // The last product/store lookup may outlive a channel/radius change.
+  // Never recycle a stale, cross-retailer or Drive-incompatible price.
+  const bestObserved=selectProductOfferPriceObservation(observations,{
+    productCode:product?.code,store:state.store,channel:state.channel,
+    nearby:state.nearbyEnabled && Boolean(state.coords),
+    radiusKm:state.radiusKm
+  });
   const pricedForEstimate=bestObserved && bestObserved.isDiscounted!==true
     ? bestObserved.price : null;
   const eligibleEstimate=(entry)=>canEstimateProductOffer(entry,{
