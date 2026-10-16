@@ -2898,13 +2898,28 @@ function addCurrentProduct(){
   // Keep the original list barcode for remote product URLs, basket pricing
   // and manual-price keys. A later equivalent scan must not create an
   // orphan price entry under another representation.
-  const listCode=existing?.product.code || code;
-  state.basketPriceData[state.store][listCode]=state.priceObservations;
+  // A scanned product may use nationwide receipts or the PRODUCT GPS origin,
+  // which is independent of the basket's explicitly selected commune.
+  // Never silently inject those observations into a local basket: an
+  // out-of-area low price could otherwise become a fictitious local budget.
+  // Even nationally, keep previously refreshed basket coverage intact when
+  // an existing line is merely incremented.
+  const canReuseProductReceipts=!existing
+    && !basketArea.commune && !state.nearbyEnabled
+    && state.channel==="store";
+  if(canReuseProductReceipts){
+    state.basketPriceData[state.store][code]=state.priceObservations;
+    // Product search covers a different query budget than both retailer
+    // basket searches. Its observations are only provisional until refresh.
+    state.basketPriceCoverageIncomplete=true;
+  }
   saveShoppingList();
   renderShoppingList();
   setProductStatus(existing
     ? "Même GTIN déjà présent : quantité mise à jour dans la liste."
-    : "Produit ajouté à la liste.");
+    : basketArea.commune || state.nearbyEnabled
+      ? "Produit ajouté. La zone de la liste est différente ou plus stricte : actualise les prix de la liste pour obtenir des relevés locaux."
+      : "Produit ajouté à la liste. Actualise ses prix pour comparer les deux enseignes.");
 }
 
 function handleShoppingListAction(event){
