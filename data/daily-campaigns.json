@@ -241,5 +241,10 @@
     "https://nos-catalogues-promos-v2.e.leclerc/catalog/26G133G/0637": {
       "status": "available"
     }
-  }
+  },
+  "alternativeCatalogues": [],
+  "alternativeCheckedAt": null,
+  "alternativeLastAttemptAt": null,
+  "alternativeStatus": "unavailable",
+  "alternativeReason": "En attente du premier relevé public Bonial validé."
 }
