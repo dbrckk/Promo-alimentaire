@@ -1,3 +1,7 @@
+## Pagination des preuves Open Prices selon la destination des prix (16 octobre 2026)
+
+Les pages de l'API Open Prices sont limitées aux premières pages accessibles ; l'absence de relevé récent ne garantit jamais l'absence de ce produit en magasin. Pour les comparaisons par EAN entre Carrefour et E.Leclerc, **seuls les relevés de 7 jours maximum comptent dans le seuil d'arrêt** après une page. Un relevé de 12 jours peut rester affiché comme prix ancien, mais ne remplit pas ce seuil et ne doit pas arrêter la pagination lorsqu'une autre page est annoncée. Les recherches produit ordinaires utilisent toujours un seuil de 30 jours. Aucun champ nouveau, contournement de l'API ou lecture illimitée n'est nécessaire.
+
 ## Preuves de points de vente dans la comparaison d'EAN — 16 octobre 2026
 
 Lorsque deux relevés récents de Carrefour/E.Leclerc constituent une paire comparable, **leurs points de vente exacts dans les données Open Prices** sont présentés dans deux cartes séparées (elles peuvent différer des dernières observations des fiches enseignes). Un lien OpenStreetMap n'est créé qu'à partir des coordonnées `osm_lat` et `osm_lon` normalisées et validées de la **localisation du relevé**, jamais de la position personnelle ou du centre de commune. Les points nuls `(0,0)`, coordonnées manquantes et valeurs hors bornes sont refusés. L'URL est reconstruite à partir de valeurs numériques arrondies, sans accepter d'URL externe fournie par le flux.
