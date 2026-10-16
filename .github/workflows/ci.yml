@@ -17,6 +17,9 @@ on:
       - "Sync payment discounts"
       - "Verify Carrefour promotions"
       - "Verify E.Leclerc catalogue"
+      # The daily public index writes with GITHUB_TOKEN too; without this
+      # trigger Pages can publish the PREVIOUS catalogue indefinitely.
+      - "Sync public daily catalogue"
     types: [completed]
 permissions:
   contents: read
