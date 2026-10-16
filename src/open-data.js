@@ -97,9 +97,22 @@ export function createSharedPriceFetch(fetchImpl=fetch){
   };
 }
 
+/**
+ * Open Prices filters product_code by its exact representation. A UPC-A can
+ * be entered as UPC-12, EAN-13 (one leading zero) or GTIN-14 (two zeros).
+ * Ask for equivalent codes only as a bounded fallback when the retailer has
+ * no recent observation under the original code. Never fuzzy-match names.
+ */
+function equivalentLongGtins(code,canonical){
+  if(code.length<12) return [];
+  return [12,13,14].filter((length)=>length!==code.length)
+    .map((length)=>canonical.slice(-length))
+    .filter((alias)=>canonicalGtin(alias)===canonical);
+}
+
 export async function fetchPricesByBarcode(value,{
   store,size=100,coords=null,radiusKm=25,fetchImpl=fetch,
-  maxPages=2,minimumMatches=4,signal=null
+  maxPages=2,minimumMatches=4,signal=null,alternateGtins=false
 }={}) {
   const code=normalizeBarcode(value);
   const canonicalQuery=canonicalGtin(code);
@@ -111,6 +124,10 @@ export async function fetchPricesByBarcode(value,{
     product_code:code,
     currency:"EUR",
     type:"PRODUCT",
+    // Exclude personal consumption and superseded receipts before they
+    // occupy a scarce paginated result slot; local checks remain mandatory.
+    kind:"COMMUNITY",
+    duplicate_of__isnull:"true",
     order_by:"-date",
     size:String(pageSize)
   });
@@ -173,6 +190,15 @@ export async function fetchPricesByBarcode(value,{
     if(Number.isInteger(payload.total) && payload.total>=0) total=payload.total;
     const items=payload.items;
     for(const source of items){
+      // A superseded receipt must not create an independent price signal.
+      // Reject explicitly non-community or non-product rows even if an API
+      // pagination/cache edge case returns them despite the query filters.
+      if(!source || typeof source!=="object"
+        || (source.duplicate_of!==null && source.duplicate_of!==undefined)
+        || (source.kind!==undefined && source.kind!==null
+          && source.kind!=="COMMUNITY")
+        || (source.type!==undefined && source.type!==null
+          && source.type!=="PRODUCT")) continue;
       const observation=normalizePriceObservation(source,coords);
       const observedCode=String(observation.productCode);
       if(canonicalQuery ? canonicalGtin(observedCode)!==canonicalQuery : observedCode!==code) continue;
@@ -225,9 +251,68 @@ export async function fetchPricesByBarcode(value,{
     }
     return new Date(b.date)-new Date(a.date);
   });
+  // Extra variants are intentionally opt-in: default product lookups keep
+  // their historical request budget. A comparison can opt in for UPC/EAN
+  // variants without fetching irrelevant aliases for normal EAN-13 codes.
+  let aliasQueries=0,aliasRecovered=false,displayedSourceUrl=url;
+  if(alternateGtins===true
+    && !observations.some((item)=>isFreshObservation(item,30))){
+    for(const alias of equivalentLongGtins(code,canonicalQuery)){
+      if(signal?.aborted) throw new DOMException("Recherche annulée","AbortError");
+      aliasQueries++;
+      try{
+        // One extra page per representation, at most two, even on 3G.
+        // All the usual retailer, GTIN, currency, unit and geo checks run.
+        const extra=await fetchPricesByBarcode(alias,{
+          store,size:pageSize,coords,radiusKm,fetchImpl,
+          maxPages:1,minimumMatches:1,signal,alternateGtins:false
+        });
+        pagesFetched+=extra.pagesFetched;
+        partial=partial||extra.partial;
+        moreAvailable=moreAvailable||extra.moreAvailable;
+        if(Number.isInteger(extra.total)){
+          total=Math.max(total ?? 0,extra.total);
+        }
+        for(const item of extra.observations){
+          const key=item.id!==null && item.id!==undefined
+            ? "id:"+String(item.id) :JSON.stringify([
+                item.productCode,item.locationId,item.storeName,
+                item.postcode,item.city,item.date,item.price
+              ]);
+          if(seen.has(key)) continue;
+          seen.add(key);
+          observations.push(item);
+        }
+        if(extra.observations.length){
+          aliasRecovered=true;
+          // The raw-data link must open the representation that actually
+          // supplied the prices, not an empty initial UPC/EAN query.
+          displayedSourceUrl=extra.sourceUrl;
+          // A stale-only variant need not hide newer prices of another
+          // representation. A fresh receipt ends the fallback early.
+          if(extra.observations.some((item)=>isFreshObservation(item,30)))
+            break;
+        }
+      }catch(error){
+        if(signal?.aborted || error?.name==="AbortError") throw error;
+        // Primary search succeeded: keep that result, mark incomplete,
+        // and do not pretend all equivalent representations were checked.
+        partial=true;
+      }
+    }
+  }
+  observations.sort((a,b)=>{
+    if(coords){
+      const da=Number.isFinite(a.distanceKm)?a.distanceKm:Infinity;
+      const db=Number.isFinite(b.distanceKm)?b.distanceKm:Infinity;
+      if(da!==db) return da-db;
+    }
+    return new Date(b.date)-new Date(a.date);
+  });
   return {
-    observations,total:total ?? observations.length,sourceUrl:url,
-    pagesFetched,partial,moreAvailable,
+    observations,total:total ?? observations.length,
+    sourceUrl:displayedSourceUrl,
+    pagesFetched,partial,moreAvailable,aliasQueries,aliasRecovered,
     searchIncomplete:partial || moreAvailable
   };
 }
