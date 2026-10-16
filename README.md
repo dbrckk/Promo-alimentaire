@@ -1,3 +1,11 @@
+### Comparer un produit précis depuis un prospectus Bonial (16 octobre 2026)
+
+Dans **Promos du jour → Prospectus Carrefour datés via Bonial**, un formulaire mobile permet désormais de **saisir le code-barres EAN/UPC d'un produit vu dans un prospectus** ou d'ouvrir le scanner natif. Pour un code valide, l'application ouvre la fiche produit Open Food Facts, récupère les relevés Open Prices et **lance automatiquement la comparaison par EAN identique chez Carrefour et E.Leclerc** (canal magasin). Le champ est strictement validé avant toute navigation ; un EAN malformé ne lance pas de recherche.
+
+Ce parcours ne prétend jamais qu'un article scanné appartient au prospectus : l'utilisateur le sélectionne et fournit lui-même l'EAN. Aucune remise Bonial n'est inventée ni ajoutée au panier ; la comparaison existante continue de refuser un gagnant sans preuves récentes, dates compatibles, localisation comparable et prix normal non remisé. Si Open Prices ne connaît pas ce produit, le résultat signale son manque de données. Le formulaire est masqué lorsque les prospectus ne sont pas datés et suffisamment récents ou lorsque le canal est Drive/En ligne. L'ouverture du scanner reste soumise à la prise en charge navigateur et à la permission caméra.
+
+Une navigation ou nouvelle recherche pendant les appels interrompt l'exploitation des résultats précédents : pas de comparaison automatique d'un autre EAN après une course réseau retardée. Le scénario Chrome Android existant teste les EAN erronés, le passage au comparateur et l'exclusion Drive. Aucun test unitaire nouveau.
+
 ### Solution de secours Carrefour : prospectus Bonial datés (16 octobre 2026)
 
 L'accès automatisé aux pages Carrefour reste bloqué par HTTP 401/403. Plutôt que de contourner cette restriction ou de prétendre confirmer d'anciens prix, le projet consulte désormais **une fois par jour** l'index public `https://www.bonial.fr/Enseignes/Carrefour`, dans le workflow **Sync public daily catalogue**. Seules les balises d'image de prospectus avec une période **explicite**, des dates cohérentes et une durée maximale de 45 jours sont prises en compte. Les catalogues futurs, les archives annuelles et les autres formats de magasin sont exclus.
