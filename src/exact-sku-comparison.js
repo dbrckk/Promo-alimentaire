@@ -235,6 +235,15 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
     const observed=channel==="store"
       ? selectBestRecentPrice(own,30,now) : null;
     const price=observed ? Number(observed.price) : null;
+    // A 30-day observation is useful as price history, not a reliable
+    // basis for an actionable coupon estimate. Match the strict seven-day
+    // evidence window already used for the two-retailer winner.
+    const observedAt=observed
+      ? parsePriceEvidenceDate(observed.date)?.getTime() ?? NaN : NaN;
+    const observedAge=new Date(now).getTime()-observedAt;
+    const recentEstimateEvidence=Number.isFinite(observedAt)
+      && Number.isFinite(observedAge)
+      && observedAge>=0 && observedAge<=7*DAY_MS;
 
     const exactOffers=(offers || [])
       .filter((offer)=>offer?.scope==="produit")
@@ -253,8 +262,9 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
         const needsCurrentRetailerPrice=["retailer_promo","retailer_loyalty"].includes(offer.mechanism)
           || offer.requiresChannelPriceVerification===true
           || offer.requiresStoreVerification===true;
-        const canSimulate=price!==null && !alreadyDiscounted
-          && qty>=minQuantity && !needsCurrentRetailerPrice;
+        const canSimulate=price!==null && recentEstimateEvidence
+          && !alreadyDiscounted && qty>=minQuantity
+          && !needsCurrentRetailerPrice;
         const estimate=canSimulate ? estimateOfferSaving(price,offer,qty) : null;
         const saving=Number.isFinite(estimate) ? round(estimate) : null;
         const retailerProof=offer.providerId===store
@@ -270,6 +280,7 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
             : needsCurrentRetailerPrice?"retailer-price-required"
               : qty<minQuantity?"quantity-required"
                 : price===null?"price-unknown"
+                  : !recentEstimateEvidence?"price-too-old-for-estimate"
                   : saving===null?"not-calculable":"estimated"
         };
       }).sort((a,b)=>{

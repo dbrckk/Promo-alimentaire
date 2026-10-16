@@ -1,3 +1,7 @@
+### Économies calculées : preuve de prix datant de 7 jours maximum
+
+Dans le comparateur par EAN, les observations de prix Open Prices restent consultables jusqu'à **30 jours** à titre indicatif. En revanche, une offre avec GTIN explicite ne reçoit **aucune estimation chiffrée d'économie** si son prix de référence date de plus de **7 jours**. L'interface affiche « Relevé de plus de 7 jours : économie non estimée » au lieu de présenter un gain périmé. Les autres contrôles (prix déjà remisé, conditions du canal, quantité minimale, prix magasin à confirmer) restent inchangés. Une estimation avec prix récent demeure **conditionnelle** et ne constitue jamais une garantie de remboursement.
+
 ### Estimations de remboursement : preuves vérifiables avant tout montant (16 octobre 2026)
 
 Dans **Produit → Offres compatibles détectées**, les montants d'économie potentielle ne sont désormais affichés que si les conditions minimales de preuve sont réunies : **même GTIN confirmé dans l'offre**, prix **normal non remisé** issu d'un relevé Open Prices datant de **7 jours maximum**, **enseigne et magasin physique concordants**, rayon respecté lorsque le mode local est activé, source de l'offre reconfirmée et absence de conditions distributeur/canal/fidélité non vérifiées. Un coupon ou une remise distributeur nécessitant une confirmation en caisse reste consultable, mais son gain n'est plus calculé comme si le prix et son application étaient certains.

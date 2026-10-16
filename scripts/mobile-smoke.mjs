@@ -1587,6 +1587,42 @@ try{
     },
     exactRanksFirst:true
   });
+  // Integration regression in the existing Android browser suite:
+  // a receipt may remain visible for 30 days but a 12-day price cannot
+  // underpin an actionable manufacturer refund estimate.
+  const staleOfferEstimate=await page.evaluate(async()=>{
+    const {compareExactSku}=await import("./src/exact-sku-comparison.js");
+    const code="3017624010701";
+    const now=new Date("2026-10-16T12:00:00Z");
+    const offer={
+      id:"receipt-freshness",title:"Remboursement témoin",
+      scope:"produit",provider:"Marque test",providerId:"manufacturer-test",
+      mechanism:"manufacturer_refund",eans:[code],
+      stores:["carrefour"],channels:["store"],savingPercent:20
+    };
+    const receipt=(date)=>({
+      id:1,productCode:code,price:10,date,
+      retailerText:"Carrefour Chalon",storeName:"Carrefour Chalon",
+      city:"Chalon-sur-Saône",postcode:"71100",
+      currency:"EUR",pricePer:"UNIT"
+    });
+    const run=(date)=>compareExactSku({code},[offer],{
+      carrefour:[receipt(date)]
+    },{now}).stores[0];
+    const old=run("2026-10-04"),fresh=run("2026-10-15");
+    return {
+      oldPrice:old.price,oldSaving:old.potentialSaving,
+      oldNet:old.possibleNetCost,oldStatus:old.exactOffers[0]?.status,
+      freshPrice:fresh.price,freshSaving:fresh.potentialSaving,
+      freshStatus:fresh.exactOffers[0]?.status
+    };
+  });
+  assert.deepEqual(staleOfferEstimate,{
+    oldPrice:10,oldSaving:null,oldNet:null,
+    oldStatus:"price-too-old-for-estimate",
+    freshPrice:10,freshSaving:2,freshStatus:"estimated"
+  });
+
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.locator("#savingsFocus").selectOption("full-refund");
   assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");
