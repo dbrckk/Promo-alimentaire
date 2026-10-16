@@ -10,7 +10,7 @@ import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingSco
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, priceOutletMapUrl, selectBestRecentPrice, isUnambiguousRetailer } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
-import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
+import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers, canEstimateProductOffer } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
 import { filterActiveOffers, parisCivilDay } from "./ingestion.js";
 import {
@@ -2277,14 +2277,10 @@ function renderProductOffers(product,observations=[]){
     ? selectBestRecentPrice(pricedObservations,7) : null;
   const pricedForEstimate=bestObserved && bestObserved.isDiscounted!==true
     ? bestObserved.price : null;
-  const eligibleEstimate=({offer,match})=>
-    match.exact===true
-    && !offer.sourceSyncWarning
-    && !["retailer_promo","retailer_loyalty"].includes(offer.mechanism)
-    && offerEvidenceStatus(offer,{
-      match,loyaltyProfile:state.loyaltyProfile,
-      storeVerified:false,channelPriceVerified:false
-    }).canGuarantee;
+  const eligibleEstimate=(entry)=>canEstimateProductOffer(entry,{
+    channel:state.channel,observation:bestObserved,
+    loyaltyProfile:state.loyaltyProfile
+  });
   const matches=rankMatchedOffers(rawMatches,{
     price:pricedForEstimate,quantity:1,canEstimate:eligibleEstimate
   });
