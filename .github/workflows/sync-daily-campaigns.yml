@@ -9,6 +9,7 @@ on:
     paths:
       - "scripts/sync-daily-campaigns.mjs"
       - "scripts/daily-campaign-evidence.mjs"
+      - "scripts/bonial-public-catalogues.mjs"
       - "data/daily-campaigns.json"
       - ".github/workflows/sync-daily-campaigns.yml"
 permissions:
