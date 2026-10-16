@@ -1623,6 +1623,78 @@ try{
     freshPrice:10,freshSaving:2,freshStatus:"estimated"
   });
 
+  // Evidence-policy integration in the existing Pixel 7 journey. The same
+  // manufacturer offer must not receive different hypothetical savings on
+  // Product vs two-retailer comparison merely because the source has not
+  // been reconfirmed or the user has no eligible loyalty account.
+  const exactSkuEvidenceGate=await page.evaluate(async()=>{
+    const {compareExactSku}=await import("./src/exact-sku-comparison.js");
+    const {canEstimateProductOffer,matchOfferToProduct}
+      =await import("./src/matching.js");
+    const code="3017624010701";
+    const now=new Date("2026-10-16T12:00:00Z");
+    const observation={
+      id:171,productCode:code,price:10,date:"2026-10-15",
+      retailerText:"Carrefour Chalon",storeName:"Carrefour Chalon",
+      city:"Chalon-sur-Saône",postcode:"71100",
+      currency:"EUR",pricePer:"UNIT",isDiscounted:false
+    };
+    const baseOffer={
+      id:"refund-proof-check",title:"Remboursement fictif",
+      scope:"produit",provider:"Marque test",providerId:"manufacturer-test",
+      mechanism:"manufacturer_refund",eans:[code],stores:["carrefour"],
+      channels:["store"],savingPercent:20
+    };
+    const measure=(overrides={},loyaltyProfile={})=>{
+      const offer={...baseOffer,...overrides};
+      const result=compareExactSku({code},[offer],{
+        carrefour:[observation]
+      },{now,channel:"store",loyaltyProfile});
+      const row=result.stores[0],candidate=row.exactOffers[0];
+      const expected=canEstimateProductOffer({
+        offer,match:matchOfferToProduct({code},offer)
+      },{channel:"store",observation,loyaltyProfile,now});
+      return {
+        status:candidate?.status,saving:candidate?.saving??null,
+        net:row.possibleNetCost,expected,
+        count:row.exactCount
+      };
+    };
+    return {
+      verified:measure(),
+      missingSync:measure({sourceSyncWarning:{
+        status:"unavailable",checkedAt:"2026-10-16"
+      }}),
+      noLoyalty:measure({requiresLoyalty:"carrefour-pass"},
+        {carrefour:"unknown"}),
+      clubInsteadOfPass:measure({requiresLoyalty:"carrefour-pass"},
+        {carrefour:"club"}),
+      passAvailable:measure({requiresLoyalty:"carrefour-pass"},
+        {carrefour:"pass"}),
+      shopNeedsApproval:measure({requiresStoreVerification:true}),
+      priceNeedsApproval:measure({requiresChannelPriceVerification:true}),
+      alreadyRetailerPromo:measure({mechanism:"retailer_promo"}),
+      wrongSku:measure({eans:["4006381333931"]})
+    };
+  });
+  assert.deepEqual(exactSkuEvidenceGate,{
+    verified:{status:"estimated",saving:2,net:8,expected:true,count:1},
+    missingSync:{status:"source-unconfirmed",saving:null,net:null,
+      expected:false,count:1},
+    noLoyalty:{status:"loyalty-unverified",saving:null,net:null,
+      expected:false,count:1},
+    clubInsteadOfPass:{status:"loyalty-unverified",saving:null,net:null,
+      expected:false,count:1},
+    passAvailable:{status:"estimated",saving:2,net:8,expected:true,count:1},
+    shopNeedsApproval:{status:"retailer-price-required",saving:null,net:null,
+      expected:false,count:1},
+    priceNeedsApproval:{status:"retailer-price-required",saving:null,net:null,
+      expected:false,count:1},
+    alreadyRetailerPromo:{status:"retailer-price-required",saving:null,net:null,
+      expected:false,count:1},
+    wrongSku:{status:undefined,saving:null,net:null,expected:false,count:0}
+  });
+
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.locator("#savingsFocus").selectOption("full-refund");
   assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");
