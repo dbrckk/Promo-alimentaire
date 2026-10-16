@@ -3,7 +3,7 @@ import {
   minimumQuantityForRetailerPromo
 } from "./retailer-promo.js";
 import {canonicalGtin} from "./gtin.js";
-import {isFreshObservation} from "./open-data.js";
+import {isFreshObservation,isUnambiguousRetailer,selectBestRecentPrice} from "./open-data.js";
 import {offerEvidenceStatus} from "./evidence.js";
 
 export function normalizeText(value) {
@@ -142,6 +142,30 @@ function round(value) {
   return Math.round((Number(value)+Number.EPSILON)*100)/100;
 }
 
+
+/**
+ * Never use an old product/store lookup from the previous retailer, channel,
+ * SKU or search radius to price an offer. A retailer match must be explicit
+ * and a voluntary local filter requires independent distance evidence.
+ */
+export function selectProductOfferPriceObservation(observations,{
+  productCode=null,store=null,channel="store",nearby=false,radiusKm=25,now=new Date()
+}={}){
+  const sku=canonicalGtin(productCode);
+  if(channel!=="store" || !sku || !["carrefour","leclerc"].includes(store)){
+    return null;
+  }
+  const radius=Number(radiusKm);
+  const matching=(Array.isArray(observations)?observations:[]).filter((item)=>
+    canonicalGtin(item?.productCode)===sku
+    && isUnambiguousRetailer(item?.retailerText,store)
+    && item.currency==="EUR" && item.pricePer==="UNIT"
+    && (!nearby || (Number.isFinite(radius) && radius>=1 && radius<=100
+      && Number.isFinite(item.distanceKm)
+      && item.distanceKm<=radius+0.1))
+  );
+  return selectBestRecentPrice(matching,7,now);
+}
 
 /**
  * A numeric product-page saving is only an illustration backed by a recent,
