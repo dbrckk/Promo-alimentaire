@@ -172,6 +172,13 @@ const els = {
   refreshList:document.querySelector("#refreshList"),
   cancelRefreshList:document.querySelector("#cancelRefreshList"),
   listNearbyButton:document.querySelector("#listNearbyButton"),
+  basketAreaForm:document.querySelector("#basketAreaForm"),
+  basketAreaPostcode:document.querySelector("#basketAreaPostcode"),
+  basketAreaSearch:document.querySelector("#basketAreaSearch"),
+  basketAreaCommuneField:document.querySelector("#basketAreaCommuneField"),
+  basketAreaCommune:document.querySelector("#basketAreaCommune"),
+  basketAreaClear:document.querySelector("#basketAreaClear"),
+  basketAreaStatus:document.querySelector("#basketAreaStatus"),
   listRadiusSelect:document.querySelector("#listRadiusSelect"),
   clearList:document.querySelector("#clearList"),
   exportList:document.querySelector("#exportList"),
@@ -272,6 +279,9 @@ const comparisonArea={
   commune:null,postcode:"",radiusKm:25,candidates:[],pendingZip:"",
   controller:null,lookupToken:0
 };
+// Voluntary basket location, independent of the per-product comparison.
+const basketArea={commune:null,postcode:"",candidates:[],pendingZip:"",
+  controller:null,lookupToken:0};
 const EXACT_SKU_TIMEOUT_MS=18000;
 let productLookupController=null;
 let productLookupTimeout=null;
@@ -542,6 +552,29 @@ els.exactSkuComparison.addEventListener("click",(event)=>{
 });
 els.nearbyButton.addEventListener("click",toggleNearbyPrices);
 els.listNearbyButton.addEventListener("click",toggleNearbyPrices);
+els.basketAreaForm.addEventListener("submit",(event)=>{
+  event.preventDefault();
+  void searchBasketAreaPostcode();
+});
+els.basketAreaPostcode.addEventListener("input",()=>{
+  clearBasketArea(false);
+  els.basketAreaStatus.textContent=
+    "Code postal modifié : l'ancien secteur a été désactivé. "+
+    "Choisis une commune puis actualise les prix.";
+});
+els.basketAreaCommune.addEventListener("change",()=>{
+  const selected=basketArea.candidates.find(
+    (place)=>place.code===els.basketAreaCommune.value
+  );
+  if(selected && basketArea.pendingZip===els.basketAreaPostcode.value.trim()){
+    applyBasketArea(selected,basketArea.pendingZip);
+  }else{
+    basketArea.commune=null;
+    markBasketPricesStale();
+    els.basketAreaStatus.textContent="Sélectionne explicitement une commune.";
+  }
+});
+els.basketAreaClear.addEventListener("click",()=>clearBasketArea(true));
 els.refreshList.addEventListener("click",refreshShoppingList);
 els.cancelRefreshList.addEventListener("click",cancelBasketPriceRefresh);
 els.exportList.addEventListener("click",downloadShoppingListBackup);
@@ -610,10 +643,15 @@ els.listRadiusSelect.addEventListener("change",async()=>{
   state.radiusKm=Number(els.listRadiusSelect.value)||25;
   els.radiusSelect.value=String(state.radiusKm);
   syncNearbyControls();
-  if(state.nearbyEnabled){
-    // Invalidate immediately, before the asynchronous product lookup.
+  if(state.nearbyEnabled || basketArea.commune){
     markBasketPricesStale();
-    if(state.productCode) await refreshPrices(state.productCode);
+    if(basketArea.commune){
+      els.basketAreaStatus.textContent="Secteur : "+basketArea.commune.nom+
+        " ("+basketArea.postcode+"), rayon "+state.radiusKm+
+        " km autour du centre communal. Actualise les prix de la liste.";
+    }
+    if(state.nearbyEnabled && state.productCode)
+      await refreshPrices(state.productCode);
   }
 });
 els.closeScan.addEventListener("click",()=>els.scanDialog.close());
