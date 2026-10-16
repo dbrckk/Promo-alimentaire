@@ -1,3 +1,7 @@
+## Cohérence des estimations de remboursement selon les preuves
+
+Le test Chrome Android existant contrôle désormais aussi le **comparateur exact EAN** : une source non reconfirmée, une carte fidélité absente ou d'un niveau insuffisant, et une confirmation de magasin/canal manquante suppriment les chiffres d'économie et de « coût après remboursement ». La mention du motif doit rester lisible. Une offre fictive avec le même GTIN, un relevé ordinaire de moins de 7 jours, une source sans alerte et la carte requise conserve uniquement une **estimation conditionnelle**. Les décisions du comparateur doivent être cohérentes avec `canEstimateProductOffer`, déjà appliqué sur la fiche produit.
+
 ## Fiabilité des économies calculées sur un produit scanné
 
 Le scénario Chrome Android existant évalue les fonctions réellement utilisées dans la fiche produit sur les cas suivants : relevé normal daté de moins de 7 jours, autre enseigne, autre GTIN, devises incorrectes, relevé de 12 jours, prix déjà remisé, Drive, distance hors rayon, absence de distance et exigences supplémentaires de fidélité, de magasin ou de confirmation de prix. Une offre avec EAN exact et justificatifs suffisants peut recevoir une **estimation indicative**, alors qu'une correspondance approximative par marque ou un relevé périmé ne le peut pas. Le scénario s'exécute sans accès au GPS de l'utilisateur.
