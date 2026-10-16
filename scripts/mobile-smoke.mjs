@@ -4459,6 +4459,137 @@ try{
   });
   await assertNoHorizontalOverflow(page,"panier UPC/EAN de prix récupérés");
 
+
+  // Browser integration: selecting a basket municipality must prevent a
+  // nationwide product scan from adding unrelated prices to the local
+  // basket merely because the shopper taps "Ajouter à la liste".
+  await page.locator("#channel").selectOption("store");
+  await page.locator('[data-tab="list"]').click();
+  await page.locator("#basketAreaPostcode").fill("71100");
+  await page.locator("#basketAreaSearch").click();
+  await page.locator("#basketAreaCommuneField")
+    .waitFor({state:"visible",timeout:12000});
+  await page.locator("#basketAreaCommune").selectOption("71076");
+  await page.locator('[data-tab="product"]').click();
+  await page.locator("#barcode").fill("3017624010701");
+  await page.locator('#barcodeForm button[type="submit"]').click();
+  await page.locator("#productResult h2").waitFor({timeout:15000});
+  await page.locator("#priceResults").getByText("3,49",{exact:false})
+    .first().waitFor({state:"visible",timeout:12000});
+  await page.locator('[data-action="add-current-product"]').click();
+  await page.locator('[data-tab="list"]').click();
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/3,49/,
+    "National product receipts must never enter a basket constrained to Chalon");
+  assert.match(await page.locator("#basketAreaStatus").innerText(),/Chalon-sur-Saône/);
+  await page.locator("#basketAreaClear").click();
+
+  // Five different valid GS1 products prove that the actual Pixel 7
+  // refresh uses bounded parallelism: not the previous serial downloads
+  // and not an unbounded storm of Open Prices requests.
+  const parallelCodes=[
+    "3017624010701","036000291452","4006381333931",
+    "3038359913242","3038359913273"
+  ];
+  await page.evaluate((codes)=>{
+    localStorage.setItem("promo-shopping-list-v1",JSON.stringify(
+      codes.map((code,i)=>({
+        product:{code,name:"Panier parallèle "+(i+1),brands:"Test",
+          quantity:"1 pièce"},quantity:1
+      }))
+    ));
+    localStorage.removeItem("promo-manual-prices-v1");
+  },parallelCodes);
+  await page.reload({waitUntil:"domcontentloaded"});
+  await page.locator("#channel").selectOption("store");
+  await page.locator('[data-tab="list"]').click();
+  assert.equal(await page.locator("#listCount").innerText(),"5");
+  let activeBasketCalls=0,peakBasketCalls=0;
+  const parallelBasketRequests=[];
+  const basketConcurrentProbe=async(route)=>{
+    const u=new URL(route.request().url());
+    const code=u.searchParams.get("product_code");
+    if(!parallelCodes.includes(code)) return route.fallback();
+    parallelBasketRequests.push(code);
+    activeBasketCalls++;
+    peakBasketCalls=Math.max(peakBasketCalls,activeBasketCalls);
+    await new Promise((resolve)=>setTimeout(resolve,280));
+    activeBasketCalls--;
+    const i=parallelCodes.indexOf(code);
+    const location=(id,brand)=>({
+      id,osm_brand:brand,osm_name:brand+" Chalon",
+      osm_lat:46.783,osm_lon:4.854,
+      osm_address_city:"Chalon-sur-Saône",osm_address_postcode:"71100"
+    });
+    try{
+      await route.fulfill({status:200,contentType:"application/json",
+        body:JSON.stringify({pages:1,total:2,items:[
+          {id:7300+i*2,product_code:code,price:3.49,
+            date:RECENT_RECEIPT_DATE,currency:"EUR",price_per:"UNIT",
+            kind:"COMMUNITY",type:"PRODUCT",
+            location_id:8300+i*2,
+            location:location(8300+i*2,"Carrefour")},
+          {id:7301+i*2,product_code:code,price:3.59,
+            date:RECENT_RECEIPT_DATE,currency:"EUR",price_per:"UNIT",
+            kind:"COMMUNITY",type:"PRODUCT",
+            location_id:8301+i*2,
+            location:location(8301+i*2,"E.Leclerc")}
+        ]})
+      });
+    }catch{
+      // The cancellation scenario below is permitted to abort the route.
+    }
+  };
+  await page.route("https://prices.openfoodfacts.org/**",basketConcurrentProbe);
+  await page.locator("#refreshList").click();
+  await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,
+    null,{timeout:25000});
+  assert.equal(parallelBasketRequests.length,5,
+    "Shared Carrefour/E.Leclerc pages must be downloaded only once per item");
+  assert.equal(new Set(parallelBasketRequests).size,5);
+  assert.ok(peakBasketCalls>=2 && peakBasketCalls<=3,
+    "Bounded basket concurrency must be 2–3 requests, not serial or unbounded: "+
+      peakBasketCalls);
+  assert.match(await page.locator("#listStatus").innerText(),/Prix actualisés/);
+  assert.match(await page.locator("#basketComparison").innerText(),/Relevé du/);
+  await page.unroute("https://prices.openfoodfacts.org/**",basketConcurrentProbe);
+
+  // A user cancellation after several overlapping requests must leave
+  // BOTH the displayed basket and the persisted product-price history
+  // untouched. In particular, partial batches cannot leak 99 € receipts.
+  const beforeCancelledHistory=await page.evaluate(()=>
+    localStorage.getItem("promo-product-price-history-v1"));
+  const slowConcurrentProbe=async(route)=>{
+    const code=new URL(route.request().url()).searchParams.get("product_code");
+    await new Promise((resolve)=>setTimeout(resolve,780));
+    try{
+      await route.fulfill({status:200,contentType:"application/json",
+        body:JSON.stringify({pages:1,total:1,items:[{
+          id:9990,product_code:code,price:99,currency:"EUR",
+          date:RECENT_RECEIPT_DATE,location_id:9990,
+          location:{id:9990,osm_brand:"Carrefour",
+            osm_name:"Carrefour Chalon",osm_lat:46.783,osm_lon:4.854,
+            osm_address_postcode:"71100",osm_address_city:"Chalon-sur-Saône"}
+        }]})
+      });
+    }catch{}
+  };
+  await page.route("https://prices.openfoodfacts.org/**",slowConcurrentProbe);
+  const firstConcurrentRequest=page.waitForRequest((request)=>
+    request.url().includes("prices.openfoodfacts.org")
+      && request.url().includes("product_code="),{timeout:9000});
+  await page.locator("#refreshList").click();
+  await firstConcurrentRequest;
+  await page.locator("#cancelRefreshList").click();
+  await new Promise((resolve)=>setTimeout(resolve,900));
+  assert.equal(await page.locator("#refreshList").isDisabled(),false);
+  assert.match(await page.locator("#listStatus").innerText(),/Actualisation annulée/);
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/99,00/);
+  assert.equal(await page.evaluate(()=>
+    localStorage.getItem("promo-product-price-history-v1")),
+  beforeCancelledHistory,"Cancellation must not leave partial basket-price history entries");
+  await page.unroute("https://prices.openfoodfacts.org/**",slowConcurrentProbe);
+  await assertNoHorizontalOverflow(page,"panier parallèle fiable et annulable");
+
   for(const width of [360,320]){
     await page.setViewportSize({width,height:750});
     await assertNoHorizontalOverflow(page,"largeur "+width+"px");
