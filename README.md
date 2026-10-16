@@ -1,3 +1,9 @@
+### Favoris de remboursements : aucune perte au-delà des 240 offres affichées (16 octobre 2026)
+
+La liste **Ma liste de remboursements à vérifier** réévalue désormais directement tous les identifiants sauvegardés (40 maximum) contre les sources actuelles et les contraintes de magasin, canal et dates. Elle **ne dépend plus de la limite d'affichage du catalogue (240 offres)**. Auparavant, un favori valide classé après les 240 premiers pouvait apparaître « indisponible » et être effacé par le bouton de nettoyage. Une offre réellement expirée ou dont la source n'est plus vérifiable reste exclue ; aucun avantage non confirmé n'est réactivé.
+
+Le parcours d'intégration Android existant vérifie 261 offres et un favori classé après la limite, ainsi qu'un favori expiré dans le même jeu de données. Aucun test unitaire n'a été ajouté.
+
 ### Copier sa liste de remboursements à vérifier (16 octobre 2026)
 
 Depuis **Promos du jour → Ma liste de remboursements à vérifier**, le bouton **« Copier ma liste à vérifier »** prépare une liste textuelle des favoris encore documentés pour le magasin et le canal choisis. Elle inclut les noms, les fournisseurs et les liens HTTPS vers les conditions officielles. La liste est copiée via le presse-papiers du navigateur, sans envoi au serveur ni enregistrement supplémentaire. Si le presse-papiers est bloqué, l'application affiche un message explicite.

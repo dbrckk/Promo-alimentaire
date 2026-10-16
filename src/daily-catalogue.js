@@ -380,9 +380,16 @@ export function selectSavedFoodRefunds({
   savedIds=[],offers=[],store="carrefour",channel="store",now=new Date()
 }={}){
   const ids=normalizeSavedFoodRefundIds(savedIds);
-  const live=selectFoodRefundOpportunities({
-    offers,store,channel,now,limit:240
-  }).items;
+  // A catalogue is deliberately capped at 240 rendered results on mobile.
+  // A bookmark outside that arbitrary display window must NEVER be marked
+  // unavailable (or deleted by "prune"). Re-evaluate only bookmarked IDs
+  // against the same current official-source, date and store/channel gates.
+  const idSet=new Set(ids);
+  const bookmarked=(Array.isArray(offers)?offers:[])
+    .filter((offer)=>idSet.has(offer?.id));
+  const live=bookmarked.length?selectFoodRefundOpportunities({
+    offers:bookmarked,store,channel,now,limit:40
+  }).items:[];
   const matching=new Map(live.map((offer)=>[offer.id,offer]));
   const available=ids.map((id)=>matching.get(id)).filter(Boolean);
   return {total:ids.length,available,unavailableCount:ids.length-available.length};
