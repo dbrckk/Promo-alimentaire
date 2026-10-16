@@ -4240,12 +4240,17 @@ try{
   // once over the network (shared by both retailer consumers), not mix a
   // different SKU, and show the recovered price with its original proof.
   const basketAliasCalls=[];
+  const basketAreaRequests=[];
   const upcCode="036000291452",eanCode="0036000291452";
   const basketAliasRoute=async(route)=>{
     const query=new URL(route.request().url()).searchParams;
     const code=query.get("product_code");
     if(code!==upcCode && code!==eanCode) return route.fallback();
     basketAliasCalls.push(code);
+    basketAreaRequests.push({
+      code,lat:query.get("lat"),lon:query.get("lon"),
+      radius:query.get("radius_km")
+    });
     assert.equal(query.get("kind"),"COMMUNITY");
     assert.equal(query.get("duplicate_of__isnull"),"true");
     const older=new Date(Date.now()-12*86400000).toISOString().slice(0,10);
@@ -4262,6 +4267,16 @@ try{
       :[
         raw(902,eanCode,2.69,"Carrefour",0,RECENT_RECEIPT_DATE),
         raw(903,eanCode,3.29,"E.Leclerc",0.002,RECENT_RECEIPT_DATE),
+        // A geographically distant cheap shop is deliberately returned even
+        // for scoped requests: local browser filtering must reject it.
+        ...(query.has("lat") ? [{
+          ...raw(905,eanCode,0.03,"Carrefour",0,RECENT_RECEIPT_DATE),
+          location_id:1005,location:{
+            id:1005,osm_brand:"Carrefour",osm_name:"Carrefour Lyon",
+            osm_lat:45.76,osm_lon:4.84,
+            osm_address_postcode:"69002",osm_address_city:"Lyon"
+          }
+        }] : []),
         // A valid but unrelated GTIN must never enter the basket.
         raw(904,"4006381333931",0.01,"Carrefour",0,RECENT_RECEIPT_DATE)
       ];
