@@ -38,10 +38,23 @@ export function discoverBonialCarrefourCatalogues(html,now=new Date()){
   if(typeof html!=="string" || html.length<300 || html.length>4000000)
     return [];
   const today=safeDay(now),items=new Map();
+  // Bonial's public server response can carry its catalog image captions
+  // in serialized page data without emitting ANY <img> tags (observed on
+  // GitHub Actions on 16 October). Read only explicit dated descriptions;
+  // no JSON endpoint, browser spoofing or protected retailer request.
+  const captions=[];
   for(const tag of html.matchAll(/<img\b[^>]{0,3000}>/gi)){
     const altMatch=/\balt\s*=\s*(["'])(.*?)\1/is.exec(tag[0]);
-    if(!altMatch) continue;
-    const alt=decodeText(altMatch[2]).replace(/\s+/g," ").trim();
+    if(altMatch) captions.push(altMatch[2]);
+  }
+  const serialized=html.replace(/\\u002[fF]|\\\//g,"/")
+    .replace(/\\u002[dD]/g,"-");
+  for(const match of serialized.matchAll(/Catalogue Carrefour[^<>"'\n]{0,240}/gi)){
+    captions.push(match[0]);
+    if(captions.length>500) break;
+  }
+  for(const candidate of captions){
+    const alt=decodeText(candidate).replace(/\s+/g," ").trim();
     if(!/^Catalogue Carrefour\b/i.test(alt)
       || /^Catalogue Carrefour\s+(?:Market|City|Contact|Express|Proximité)\b/i.test(alt))
       continue;

@@ -129,6 +129,16 @@ const parsedBonial=discoverBonialCarrefourCatalogues(publicBonialHtml,
   new Date("2026-10-16T12:00:00Z"));
 assert.equal(parsedBonial.length,1,
   "Only one active Carrefour flyer, not Market/future/year-long duplicates");
+const serializedBonial='<html><body>'+'.'.repeat(310)+
+  '<script type="application/json">'+JSON.stringify({
+    alt:"Catalogue Carrefour du moment, 14/10/2026 - 28/10/2026",
+    other:"Catalogue Carrefour Market, 12/10/2026 - 20/10/2026"
+  })+'</script></body></html>';
+const serializedResult=discoverBonialCarrefourCatalogues(serializedBonial,
+  new Date("2026-10-16T12:00:00Z"));
+assert.equal(serializedResult.length,1,
+  "The public server can expose dated brochure descriptions without HTML images");
+assert.equal(serializedResult[0].expiresAt,"2026-10-28");
 assert.equal(parsedBonial[0].sourceUrl,"https://www.bonial.fr/Enseignes/Carrefour");
 assert.equal(parsedBonial[0].expiresAt,"2026-10-26");
 assert.equal("savingAmount" in parsedBonial[0],false);
