@@ -1,3 +1,7 @@
+## Fiabilité des économies calculées sur un produit scanné
+
+Le scénario Chrome Android existant évalue les fonctions réellement utilisées dans la fiche produit sur les cas suivants : relevé normal daté de moins de 7 jours, autre enseigne, autre GTIN, devises incorrectes, relevé de 12 jours, prix déjà remisé, Drive, distance hors rayon, absence de distance et exigences supplémentaires de fidélité, de magasin ou de confirmation de prix. Une offre avec EAN exact et justificatifs suffisants peut recevoir une **estimation indicative**, alors qu'une correspondance approximative par marque ou un relevé périmé ne le peut pas. Le scénario s'exécute sans accès au GPS de l'utilisateur.
+
 ## Pagination selon les preuves utilisables
 
 Le parcours Android Pixel 7 simule une première page Open Prices contenant quatre relevés datant de 9 à 12 jours, puis une seconde page contenant un relevé de 2 jours. Le comparateur doit consulter les deux pages pour sa fenêtre de 7 jours. La consultation ordinaire garde sa limite de 30 jours, peut s'arrêter à la première page et signale alors que d'autres données peuvent exister.
