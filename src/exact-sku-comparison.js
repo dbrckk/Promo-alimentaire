@@ -1,6 +1,7 @@
 import {canonicalGtin} from "./gtin.js";
 import {isOfferActive} from "./ingestion.js";
-import {estimateOfferSaving,matchOfferToProduct,requiredQuantity} from "./matching.js";
+import {canEstimateProductOffer,estimateOfferSaving,matchOfferToProduct,requiredQuantity} from "./matching.js";
+import {offerEvidenceStatus} from "./evidence.js";
 import {haversineKm,isUnambiguousRetailer,parsePriceEvidenceDate,selectBestRecentPrice} from "./open-data.js";
 import {validateRetailerGtinEvidence} from "./retailer-ean-evidence.js";
 
@@ -209,7 +210,8 @@ export function priceCoverageSummary(observations,now=new Date(),lookup={}){
  * independent observations, not live store inventory or Drive prices.
  */
 export function compareExactSku(product,offers,priceObservationsByStore,{
-  channel="store",quantity=1,now=new Date(),coverageByStore={}
+  channel="store",quantity=1,now=new Date(),coverageByStore={},
+  loyaltyProfile={}
 }={}){
   const gtin=canonicalGtin(product?.code);
   if(!gtin) return {status:"invalid-gtin",gtin:null,stores:[]};
@@ -256,15 +258,24 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
       .filter((offer)=>matchOfferToProduct({code:product.code},offer).exact)
       .map((offer)=>{
         const minQuantity=requiredQuantity(offer);
+        const match=matchOfferToProduct({code:product.code},offer);
+        const evidence=offerEvidenceStatus(offer,{
+          match,loyaltyProfile,storeVerified:false,channelPriceVerified:false
+        });
         // A discounted observation could already include a retailer promo;
         // subtracting it again would systematically overstate savings.
         const alreadyDiscounted=observed?.isDiscounted===true;
         const needsCurrentRetailerPrice=["retailer_promo","retailer_loyalty"].includes(offer.mechanism)
           || offer.requiresChannelPriceVerification===true
           || offer.requiresStoreVerification===true;
+        // Share the same strict proof policy as the product page: source
+        // re-confirmation, explicit GTIN, loyalty and location/channel
+        // conditions. Exact barcode matching alone does not prove a refund.
         const canSimulate=price!==null && recentEstimateEvidence
-          && !alreadyDiscounted && qty>=minQuantity
-          && !needsCurrentRetailerPrice;
+          && qty>=minQuantity && !needsCurrentRetailerPrice
+          && canEstimateProductOffer({offer,match},{
+            channel,observation:observed,now,loyaltyProfile
+          });
         const estimate=canSimulate ? estimateOfferSaving(price,offer,qty) : null;
         const saving=Number.isFinite(estimate) ? round(estimate) : null;
         const retailerProof=offer.providerId===store
@@ -281,7 +292,11 @@ export function compareExactSku(product,offers,priceObservationsByStore,{
               : qty<minQuantity?"quantity-required"
                 : price===null?"price-unknown"
                   : !recentEstimateEvidence?"price-too-old-for-estimate"
-                  : saving===null?"not-calculable":"estimated"
+                    : offer.sourceSyncWarning?"source-unconfirmed"
+                      : offer.requiresLoyalty && !evidence.loyaltyVerified
+                        ? "loyalty-unverified"
+                        : !evidence.canGuarantee?"offer-evidence-unverified"
+                          : saving===null?"not-calculable":"estimated"
         };
       }).sort((a,b)=>{
         if(a.saving!==null && b.saving===null) return -1;
