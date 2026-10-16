@@ -1370,6 +1370,79 @@ try{
     withoutCount:0,withoutAliases:0,withoutRequests:["036000291452"]
   });
 
+  // Browser integration: an 8–30-day-old primary UPC receipt must NOT
+  // suppress a 7-day-fresh EAN-13 equivalent in the two-retailer comparison.
+  // Normal product lookups keep their 30-day budget and skip this fallback.
+  const comparisonAliasFreshness=await page.evaluate(async()=>{
+    const {fetchPricesByBarcode}=await import("./src/open-data.js");
+    const upc="036000291452",ean="0036000291452",gtin14="00036000291452";
+    const day=(offset)=>{
+      const d=new Date();d.setUTCDate(d.getUTCDate()+offset);
+      return d.toISOString().slice(0,10);
+    };
+    const calls=[];
+    const receipt=(code,date,id,price)=>({
+      id,product_code:code,price,date,currency:"EUR",price_per:"UNIT",
+      kind:"COMMUNITY",type:"PRODUCT",
+      location:{osm_brand:"Carrefour",osm_name:"Carrefour Chalon",
+        osm_address_city:"Chalon-sur-Saône",osm_address_postcode:"71100"}
+    });
+    const fetchImpl=async(raw)=>{
+      const code=new URL(raw).searchParams.get("product_code");
+      calls.push(code);
+      const items=code===upc ? [receipt(upc,day(-12),701,2.89)]
+        :code===ean ? [receipt(ean,day(-2),702,2.69)]
+        :code===gtin14 ? [receipt(gtin14,day(-1),703,2.59)]
+        :[];
+      return {ok:true,json:async()=>({items,pages:1,total:items.length})};
+    };
+    const compared=await fetchPricesByBarcode(upc,{
+      store:"carrefour",alternateGtins:true,aliasFreshnessDays:7,fetchImpl
+    });
+    const comparedCalls=[...calls];
+    calls.length=0;
+    const ordinary=await fetchPricesByBarcode(upc,{
+      store:"carrefour",alternateGtins:true,fetchImpl
+    });
+    const ordinaryCalls=[...calls];
+    calls.length=0;
+    // An 8–30-day-old alias should not stop recovery of a subsequent
+    // 7-day-fresh representation. The source URL must name the real source.
+    const fallbackFetch=async(raw)=>{
+      const code=new URL(raw).searchParams.get("product_code");
+      calls.push(code);
+      const items=code===upc ? [receipt(upc,day(-12),711,2.89)]
+        :code===ean ? [receipt(ean,day(-11),712,2.69)]
+        :code===gtin14 ? [receipt(gtin14,day(-1),713,2.59)]
+        :[];
+      return {ok:true,json:async()=>({items,pages:1,total:items.length})};
+    };
+    const deeper=await fetchPricesByBarcode(upc,{
+      store:"carrefour",alternateGtins:true,aliasFreshnessDays:7,
+      fetchImpl:fallbackFetch
+    });
+    return {
+      comparisonCodes:comparedCalls,
+      comparisonPrices:compared.observations.map(x=>x.price),
+      comparisonAliasQueries:compared.aliasQueries,
+      comparisonRecovered:compared.aliasRecovered,
+      ordinaryCodes:ordinaryCalls,
+      ordinaryAliasQueries:ordinary.aliasQueries,
+      ordinaryPrices:ordinary.observations.map(x=>x.price),
+      deeperCodes:calls,
+      deeperAliasQueries:deeper.aliasQueries,
+      deeperSource:new URL(deeper.sourceUrl).searchParams.get("product_code")
+    };
+  });
+  assert.deepEqual(comparisonAliasFreshness,{
+    comparisonCodes:["036000291452","0036000291452"],
+    comparisonPrices:[2.69,2.89],
+    comparisonAliasQueries:1,comparisonRecovered:true,
+    ordinaryCodes:["036000291452"],ordinaryAliasQueries:0,
+    ordinaryPrices:[2.89],
+    deeperCodes:["036000291452","0036000291452","00036000291452"],
+    deeperAliasQueries:2,deeperSource:"00036000291452"
+  });
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.locator("#savingsFocus").selectOption("full-refund");
   assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");
