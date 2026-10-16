@@ -2,7 +2,8 @@ import { DATASET_DATE, offers as baseOffers, providers } from "./data.js";
 import {SOURCE_SCOPES,filterDiscoveryProviders} from "./source-discovery.js";
 import {
   selectDailyCatalogue,selectFoodRefundOpportunities,selectSavedFoodRefunds,
-  normalizeSavedFoodRefundIds,formatSavedFoodRefundChecklist,dailyCampaignRefreshNotice
+  normalizeSavedFoodRefundIds,formatSavedFoodRefundChecklist,dailyCampaignRefreshNotice,
+  selectAlternativeCatalogues
 } from "./daily-catalogue.js";
 import {fetchObservedDiscounts,selectObservedDiscounts,lookupPostalCodeCommunes} from "./community-deals.js";
 import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingScope, offerDeadline, rankOffers } from "./domain.js";
@@ -102,6 +103,7 @@ const els = {
   foodRefundCopy:document.querySelector("#foodRefundCopy"),
   foodRefundPrune:document.querySelector("#foodRefundPrune"),
   dailyCampaigns:document.querySelector("#dailyCampaigns"),
+  dailyAlternativeCatalogues:document.querySelector("#dailyAlternativeCatalogues"),
   dailyFreshnessStatus:document.querySelector("#dailyFreshnessStatus"),
   dailyOfficialLink:document.querySelector("#dailyOfficialLink"),
   dailyAlternativeLink:document.querySelector("#dailyAlternativeLink"),
@@ -223,6 +225,7 @@ const state = {
   basketRefreshing:false,
   sourceHealth:[],
   dailyCampaigns:[],
+  dailyAlternatives:[],
   dailyFeedCheckedAt:null,
   dailyFeedLastAttemptAt:null,
   dailySourceChecks:{},
@@ -1323,12 +1326,15 @@ async function hydrateDailyCampaigns(){
     if(!response.ok) throw new Error("HTTP "+response.status);
     const data=await response.json();
     state.dailyCampaigns=Array.isArray(data?.campaigns)?data.campaigns:[];
+    state.dailyAlternatives=Array.isArray(data?.alternativeCatalogues)
+      ?data.alternativeCatalogues:[];
     state.dailyFeedCheckedAt=data?.checkedAt || null;
     state.dailyFeedLastAttemptAt=data?.lastAttemptAt || null;
     state.dailySourceChecks=data?.sourceChecks && typeof data.sourceChecks==="object"
       && !Array.isArray(data.sourceChecks) ? data.sourceChecks:{};
   }catch{
     state.dailyCampaigns=[];
+    state.dailyAlternatives=[];
     state.dailyFeedCheckedAt=null;
     state.dailyFeedLastAttemptAt=null;
     state.dailySourceChecks={};
