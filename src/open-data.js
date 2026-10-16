@@ -254,7 +254,7 @@ export async function fetchPricesByBarcode(value,{
   // Extra variants are intentionally opt-in: default product lookups keep
   // their historical request budget. A comparison can opt in for UPC/EAN
   // variants without fetching irrelevant aliases for normal EAN-13 codes.
-  let aliasQueries=0,aliasRecovered=false;
+  let aliasQueries=0,aliasRecovered=false,displayedSourceUrl=url;
   if(alternateGtins===true
     && !observations.some((item)=>isFreshObservation(item,30))){
     for(const alias of equivalentLongGtins(code,canonicalQuery)){
@@ -285,6 +285,9 @@ export async function fetchPricesByBarcode(value,{
         }
         if(extra.observations.length){
           aliasRecovered=true;
+          // The raw-data link must open the representation that actually
+          // supplied the prices, not an empty initial UPC/EAN query.
+          displayedSourceUrl=extra.sourceUrl;
           // A stale-only variant need not hide newer prices of another
           // representation. A fresh receipt ends the fallback early.
           if(extra.observations.some((item)=>isFreshObservation(item,30)))
@@ -307,7 +310,8 @@ export async function fetchPricesByBarcode(value,{
     return new Date(b.date)-new Date(a.date);
   });
   return {
-    observations,total:total ?? observations.length,sourceUrl:url,
+    observations,total:total ?? observations.length,
+    sourceUrl:displayedSourceUrl,
     pagesFetched,partial,moreAvailable,aliasQueries,aliasRecovered,
     searchIncomplete:partial || moreAvailable
   };
