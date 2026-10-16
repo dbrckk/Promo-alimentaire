@@ -3009,6 +3009,16 @@ function renderShoppingList(){
 
 async function refreshShoppingList(){
   if(state.basketRefreshing || !state.shoppingList.length) return;
+  if(state.channel!=="store"){
+    // A successful Open Prices HTTP response is NOT a Drive checkout price.
+    // Avoid redundant mobile network traffic and any stale cross-channel
+    // totals. Product/coupon listings still filter by the selected channel.
+    renderShoppingList();
+    setListStatus("Aucun tarif Drive/livraison vérifié dans Open Prices : "+
+      "les prix observés en magasin ne permettent pas de calculer ce panier. "+
+      "Choisis « Magasin » pour actualiser les relevés physiques.");
+    return;
+  }
   state.basketRefreshing=true;
   els.refreshList.disabled=true;
   els.cancelRefreshList.classList.remove("hidden");
@@ -3142,9 +3152,13 @@ function syncNearbyControls(){
 
 function evaluateCurrentBasketScenarios(){
   return ["carrefour","leclerc"].map((store)=>{
+    // Open Prices is based on physical shops. Carrying these receipts into
+    // Drive/delivery previously produced a fictitious channel checkout total.
+    // Keep the in-memory physical observations for switching back to "store",
+    // but never price another channel with them.
     const priceByCode=state.channel==="store"
       ? mergeManualPriceObservations(state.basketPriceData[store],state.manualPrices,{store})
-      : state.basketPriceData[store];
+      : {};
     const locationScenarios=evaluateBasketLocations(state.shoppingList,{
       store,
       channel:state.channel,
@@ -3485,7 +3499,7 @@ function renderBasketComparison(scenarios){
   const allLocationsReliable=scenarios.length>0 && scenarios.every((scenario)=>scenario.locationReliable);
   let recommendation="";
   if(state.channel!=="store"){
-    recommendation='<div class="basket-recommendation"><strong>Prix indicatifs seulement.</strong> Open Prices contient des observations de magasins physiques ; en mode Drive ou En ligne, ces prix ne permettent pas de déclarer une enseigne gagnante. Les offres du canal sélectionné restent filtrées correctement.</div>';
+    recommendation='<div class="basket-recommendation"><strong>Aucun tarif Drive/livraison vérifié.</strong> Les relevés communautaires Open Prices concernent des magasins physiques : ils ne sont pas réutilisés pour chiffrer un panier Drive ou En ligne. Reviens au canal « Magasin » pour consulter les prix physiques ; les offres du canal sélectionné restent consultables séparément.</div>';
   }else if(state.basketPriceCoverageIncomplete){
     recommendation='<div class="basket-recommendation"><strong>Recherche Open Prices incomplète.</strong> Une page supplémentaire n’a pas pu être récupérée ; les résultats restent indicatifs et aucun magasin gagnant n’est annoncé.</div>';
   }else if(!state.nearbyEnabled){
