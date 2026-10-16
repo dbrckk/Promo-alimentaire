@@ -3597,6 +3597,10 @@ try{
   assert.match(await page.locator("#listCount").textContent(),/1/);
   await page.locator("#shoppingBudget").fill("3,00");
   assert.match(await page.locator("#budgetSummary").innerText(),/Prix indisponibles/);
+  // This journey explicitly tests in-store receipts. Previous screens may
+  // have selected Drive, where asking Open Prices for checkout totals is
+  // now intentionally forbidden.
+  await page.locator("#channel").selectOption("store");
   const basketRequests=[];
   const basketRequestProbe=async(route)=>{
     const url=route.request().url();
