@@ -10,7 +10,7 @@ import { computeSaving, effectivePercent, filterOffers, isOfferWithinShoppingSco
 import {parseSimulatedUnitPrice,parseSimulatedQuantity,simulateProductOffer} from "./offer-simulator.js";
 import { createSharedPriceFetch, fetchPricesByBarcode, fetchProductByBarcode, isFreshObservation, normalizeBarcode, priceFreshness, priceObservationPublicUrl, priceOutletMapUrl, selectBestRecentPrice } from "./open-data.js";
 import { optimizeStack } from "./stacking.js";
-import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers } from "./matching.js";
+import { effectiveOfferPercent, estimateOfferSaving, findProductOffers, rankMatchedOffers, canEstimateProductOffer, selectProductOfferPriceObservation } from "./matching.js";
 import { loadImportedOffers, mergeOffers } from "./import-loader.js";
 import { filterActiveOffers, parisCivilDay } from "./ingestion.js";
 import {
@@ -2259,9 +2259,22 @@ function renderProductOffers(product,observations=[]){
     [...resolvedOffers,...loyaltyOffers],
     {store:state.store,channel:state.channel}
   );
-  const bestObserved=selectBestRecentPrice(observations);
-  const recentPrice=bestObserved?.price ?? null;
-  const matches=rankMatchedOffers(rawMatches,{price:recentPrice,quantity:1});
+  // The last product/store lookup may outlive a channel/radius change.
+  // Never recycle a stale, cross-retailer or Drive-incompatible price.
+  const bestObserved=selectProductOfferPriceObservation(observations,{
+    productCode:product?.code,store:state.store,channel:state.channel,
+    nearby:state.nearbyEnabled && Boolean(state.coords),
+    radiusKm:state.radiusKm
+  });
+  const pricedForEstimate=bestObserved && bestObserved.isDiscounted!==true
+    ? bestObserved.price : null;
+  const eligibleEstimate=(entry)=>canEstimateProductOffer(entry,{
+    channel:state.channel,observation:bestObserved,
+    loyaltyProfile:state.loyaltyProfile
+  });
+  const matches=rankMatchedOffers(rawMatches,{
+    price:pricedForEstimate,quantity:1,canEstimate:eligibleEstimate
+  });
   if(!matches.length){
     els.productOffers.innerHTML=`
       <div class="panel price-source">
@@ -2280,11 +2293,21 @@ function renderProductOffers(product,observations=[]){
     const confidenceClass=match.exact ? "good" : "warn";
     const savingLabel=offerPercentLabel(offer)
       || (Number.isFinite(offer.savingAmount) ? money.format(offer.savingAmount) : "—");
-    const amountLine=potential===null
-      ? (action.quantitySatisfied
-          ? "Montant potentiel indisponible sans prix récent"
-          : `Acheter au moins ${action.minQty} article(s) pour activer cette offre`)
-      : `Potentiel ≈ ${money.format(potential)} sur le dernier prix observé`;
+    const amountLine=potential!==null
+      ? `Potentiel indicatif ≈ ${money.format(potential)} sur un relevé normal du ${formatDate(bestObserved.date)} (≤ 7 jours)`
+      : !action.quantitySatisfied
+        ? `Acheter au moins ${action.minQty} article(s) pour activer cette offre`
+        : state.channel!=="store"
+          ? "Aucun tarif de magasin physique utilisé pour ce canal Drive/livraison"
+          : !bestObserved
+            ? "Pas de prix normal exploitable datant de 7 jours maximum"
+            : bestObserved.isDiscounted===true
+              ? "Prix ponctuellement remisé : aucune seconde économie chiffrée"
+              : !match.exact
+                ? "Produit non confirmé par GTIN : économie non chiffrée"
+                : offer.sourceSyncWarning
+                  ? "Source non reconfirmée : économie non chiffrée"
+                  : "Conditions de l'offre ou du magasin à confirmer : économie non chiffrée";
     const quantityLine=action.quantitySatisfied
       ? (action.minQty>1 ? `Quantité minimale atteinte : ${action.minQty}` : "Valable dès 1 article")
       : `Il manque ${action.missingQty} article(s) pour atteindre le minimum`;
@@ -2355,7 +2378,7 @@ function renderProductOffers(product,observations=[]){
   els.productOffers.innerHTML=`
     <div class="product-offers-head">
       <h3>Offres compatibles détectées</h3>
-      <p>Les correspondances non exactes sont des candidats à vérifier ; elles ne sont jamais intégrées automatiquement à l’économie garantie.</p>
+      <p>Les correspondances non exactes sont des candidats à vérifier. Les économies ne sont chiffrées qu'avec un GTIN exact, un relevé normal des 7 derniers jours et des conditions d'offre suffisamment documentées, jamais à partir d'un prix Drive déduit d'un ticket de magasin. Une estimation reste non garantie.</p>
     </div>
     ${cards}`;
 }
