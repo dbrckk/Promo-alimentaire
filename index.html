@@ -403,6 +403,28 @@
           </select>
           <button id="clearHistory" class="secondary danger-action" type="button">Effacer l'historique</button>
         </div>
+        <form id="basketAreaForm" class="panel exact-sku-area" autocomplete="off"
+          aria-label="Chercher les prix de la liste autour d'une commune sans GPS">
+          <h3>Prix de la liste près d'une commune, sans GPS</h3>
+          <p class="help">Choisis une commune française et un rayon pour limiter les prix du panier aux magasins physiques de ce secteur. Le centre communal est approximatif. Ce choix ne modifie pas la comparaison Produit ni les promotions du jour.</p>
+          <div class="exact-sku-area-fields">
+            <div class="field">
+              <label for="basketAreaPostcode">Code postal du secteur</label>
+              <input id="basketAreaPostcode" inputmode="numeric" maxlength="5" pattern="[0-9]{5}"
+                autocomplete="postal-code" placeholder="Ex. 71100" />
+            </div>
+            <button id="basketAreaSearch" class="secondary" type="submit">Chercher une commune</button>
+            <div id="basketAreaCommuneField" class="field hidden">
+              <label for="basketAreaCommune">Sélectionner la commune exacte</label>
+              <select id="basketAreaCommune">
+                <option value="">Choisir une commune…</option>
+              </select>
+            </div>
+            <button id="basketAreaClear" class="secondary" type="button">Effacer ce secteur</button>
+          </div>
+          <p id="basketAreaStatus" class="help" role="status" aria-live="polite">Aucun secteur de liste choisi : les relevés peuvent concerner des magasins de toute la France. Le rayon de la liste ci-dessus s'applique uniquement lorsque le GPS ou une commune est activé.</p>
+          <p class="help">Les prix saisis personnellement sans coordonnées de magasin ne sont pas inclus dans un panier filtré par rayon : leur proximité ne peut pas être vérifiée. Les prix communautaires restent indicatifs.</p>
+        </form>
         <p class="help">La liste de produits et les quantités sont enregistrées sur cet appareil. Sauvegarde et restauration fonctionnent hors ligne, sans compte ni serveur. Restaurer remplace la liste et le budget, mais pas les historiques, les prix ou les réglages. La position n'est jamais persistée.</p>
         <div id="listStatus" class="status" aria-live="polite"></div>
       </div>

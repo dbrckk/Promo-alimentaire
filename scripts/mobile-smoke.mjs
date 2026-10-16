@@ -4240,12 +4240,17 @@ try{
   // once over the network (shared by both retailer consumers), not mix a
   // different SKU, and show the recovered price with its original proof.
   const basketAliasCalls=[];
+  const basketAreaRequests=[];
   const upcCode="036000291452",eanCode="0036000291452";
   const basketAliasRoute=async(route)=>{
     const query=new URL(route.request().url()).searchParams;
     const code=query.get("product_code");
     if(code!==upcCode && code!==eanCode) return route.fallback();
     basketAliasCalls.push(code);
+    basketAreaRequests.push({
+      code,lat:query.get("lat"),lon:query.get("lon"),
+      radius:query.get("radius_km")
+    });
     assert.equal(query.get("kind"),"COMMUNITY");
     assert.equal(query.get("duplicate_of__isnull"),"true");
     const older=new Date(Date.now()-12*86400000).toISOString().slice(0,10);
@@ -4262,6 +4267,16 @@ try{
       :[
         raw(902,eanCode,2.69,"Carrefour",0,RECENT_RECEIPT_DATE),
         raw(903,eanCode,3.29,"E.Leclerc",0.002,RECENT_RECEIPT_DATE),
+        // A geographically distant cheap shop is deliberately returned even
+        // for scoped requests: local browser filtering must reject it.
+        ...(query.has("lat") ? [{
+          ...raw(905,eanCode,0.03,"Carrefour",0,RECENT_RECEIPT_DATE),
+          location_id:1005,location:{
+            id:1005,osm_brand:"Carrefour",osm_name:"Carrefour Lyon",
+            osm_lat:45.76,osm_lon:4.84,
+            osm_address_postcode:"69002",osm_address_city:"Lyon"
+          }
+        }] : []),
         // A valid but unrelated GTIN must never enter the basket.
         raw(904,"4006381333931",0.01,"Carrefour",0,RECENT_RECEIPT_DATE)
       ];
@@ -4323,6 +4338,84 @@ try{
   await page.locator("#channel").selectOption("store");
   assert.match(await page.locator("#basketComparison").innerText(),/2,69/,
     "Returning to the physical-store channel restores cached shop evidence");
+  // Real mobile basket journey: choose a commune without ever granting GPS.
+  // 71100 belongs to more than one municipality. The price API must receive
+  // the selected centre + radius and discard even a cheaper Lyon receipt.
+  await page.locator("#manualPricePanel").evaluate((el)=>{el.open=true;});
+  await page.locator("#manualPriceStore").selectOption("carrefour");
+  await page.locator("#manualPriceAmount").fill("0.01");
+  await page.locator("#manualPriceStoreName").fill("Carrefour Lyon Centre");
+  await page.locator("#manualPricePostcode").fill("69002");
+  await page.locator("#manualPriceDate").fill(RECENT_RECEIPT_DATE);
+  await page.locator("#manualPriceSubmit").click();
+  await page.locator("#manualPriceEntries").getByText("Carrefour Lyon Centre")
+    .waitFor({state:"visible",timeout:10000});
+  await page.locator("#basketAreaPostcode").fill("71100");
+  await page.locator("#basketAreaSearch").click();
+  await page.locator("#basketAreaCommuneField")
+    .waitFor({state:"visible",timeout:12000});
+  assert.match(await page.locator("#basketAreaStatus").innerText(),
+    /2 communes.*71100/);
+  assert.equal(await page.locator("#basketAreaCommune").inputValue(),"");
+  await page.locator("#basketAreaCommune").selectOption("71076");
+  assert.match(await page.locator("#basketAreaStatus").innerText(),
+    /Chalon-sur-Saône.*25 km.*Aucun GPS demandé/s);
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/2,69/,
+    "Selecting a different basket geography must immediately clear prior prices");
+  basketAreaRequests.length=0;
+  await page.locator("#refreshList").click();
+  await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,
+    null,{timeout:25000});
+  assert.ok(basketAreaRequests.some((entry)=>entry.code===upcCode
+    && entry.lat==="46.783" && entry.lon==="4.854" && entry.radius==="25"),
+    "The actual basket request must use the selected Chalon commune centre");
+  const geoBasket=await page.locator("#basketComparison").innerText();
+  assert.match(geoBasket,/Panier local : Chalon-sur-Saône.*25 km/);
+  assert.match(geoBasket,/2,69|3,29/);
+  assert.doesNotMatch(geoBasket,/0,03|0,01|Carrefour Lyon/,
+    "Neither a too-distant public receipt nor a non-geolocatable manual price is local evidence");
+  await page.locator("#listRadiusSelect").selectOption("5");
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/2,69/,
+    "Changing basket radius must discard evidence from the old radius");
+  basketAreaRequests.length=0;
+  await page.locator("#refreshList").click();
+  await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,
+    null,{timeout:25000});
+  assert.ok(basketAreaRequests.some((entry)=>entry.lat==="46.783"
+    && entry.radius==="5"),"The updated 5 km radius must reach Open Prices");
+  await page.locator("#basketAreaPostcode").fill("99999");
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/2,69/,
+    "Editing the postcode must invalidate the previous local basket");
+  await page.locator("#basketAreaSearch").click();
+  await page.waitForFunction(()=>
+    document.querySelector("#basketAreaStatus")?.textContent
+      ?.includes("Aucune commune vérifiée"),null,{timeout:12000});
+  basketAreaRequests.length=0;
+  await page.locator("#refreshList").click();
+  await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,
+    null,{timeout:25000});
+  assert.ok(basketAreaRequests.some((entry)=>entry.lat===null
+    && entry.lon===null && entry.radius===null),
+    "An unknown postcode cannot generate a fictional local coordinate");
+  await page.locator("#basketAreaPostcode").fill("71100");
+  await page.locator("#basketAreaSearch").click();
+  await page.locator("#basketAreaCommuneField")
+    .waitFor({state:"visible",timeout:12000});
+  await page.locator("#basketAreaCommune").selectOption("71445");
+  basketAreaRequests.length=0;
+  await page.locator("#refreshList").click();
+  await page.waitForFunction(()=>!document.querySelector("#refreshList").disabled,
+    null,{timeout:25000});
+  assert.ok(basketAreaRequests.some((entry)=>entry.lat==="46.77"
+    && entry.lon==="4.893" && entry.radius==="5"),
+    "Saint-Marcel must not inherit the coordinates of Chalon for the same postcode");
+  await page.locator("#basketAreaClear").click();
+  assert.equal(await page.locator("#basketAreaPostcode").inputValue(),"");
+  assert.equal(await page.locator("#basketAreaCommuneField").isVisible(),false);
+  assert.doesNotMatch(await page.locator("#basketComparison").innerText(),/2,69/);
+  assert.match(await page.locator("#basketAreaStatus").innerText(),/Secteur effacé/);
+  await assertNoHorizontalOverflow(page,"panier local sans GPS");
+
   await page.unroute("https://prices.openfoodfacts.org/**",basketAliasRoute);
   // A basket receipt dated exactly seven whole displayed days ago may
   // already be too old by several hours. Never auto-deduct a manufacturer
