@@ -1,3 +1,11 @@
+## Preuves de points de vente dans la comparaison d'EAN — 16 octobre 2026
+
+Lorsque deux relevés récents de Carrefour/E.Leclerc constituent une paire comparable, **leurs points de vente exacts dans les données Open Prices** sont présentés dans deux cartes séparées (elles peuvent différer des dernières observations des fiches enseignes). Un lien OpenStreetMap n'est créé qu'à partir des coordonnées `osm_lat` et `osm_lon` normalisées et validées de la **localisation du relevé**, jamais de la position personnelle ou du centre de commune. Les points nuls `(0,0)`, coordonnées manquantes et valeurs hors bornes sont refusés. L'URL est reconstruite à partir de valeurs numériques arrondies, sans accepter d'URL externe fournie par le flux.
+
+Après égalité de fraîcheur des deux relevés, si les deux distances à un point de recherche explicitement choisi sont valides, le moteur préfère le couple dont le magasin le plus éloigné est le plus proche de ce point ; en cas d'égalité, la somme des distances est retenue, puis la distance entre enseignes. **Pas de priorité fondée sur le prix le moins cher** : les chiffres ne deviennent pas des devis en temps réel. Sans point de recherche, l'ordre antérieur est inchangé. Les distances sont géodésiques (à vol d'oiseau), pas des durées ni distances routières.
+
+Références : [Open Prices](https://prices.openfoodfacts.org/), [OpenStreetMap](https://www.openstreetmap.org/).
+
 ## Comparaison locale sans GPS — référentiel français des communes (16 octobre 2026)
 
 Le formulaire du comparateur par EAN appelle sur demande la seule API publique `https://geo.api.gouv.fr/communes` avec code postal et centre géographique de commune. Un code postal peut correspondre à plusieurs localités : elles sont proposées au choix, jamais déduites de la taille de la population. Le centre géographique est approximatif et ne constitue ni une adresse de magasin ni la position du téléphone. L'appel Open Prices `/api/v1/prices` ajoute `lat`, `lon` et `radius_km` quand une commune a été explicitement sélectionnée, avec contrôles de distance locaux et limite de 5/10/25/50 km. La portée des comparaisons demeure limitée à deux magasins de la même région géographique, à 15 km maximum l'un de l'autre et à un écart de date de 3 jours au maximum pour leurs relevés de 7 jours.
