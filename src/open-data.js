@@ -124,6 +124,10 @@ export async function fetchPricesByBarcode(value,{
     product_code:code,
     currency:"EUR",
     type:"PRODUCT",
+    // Exclude personal consumption and superseded receipts before they
+    // occupy a scarce paginated result slot; local checks remain mandatory.
+    kind:"COMMUNITY",
+    duplicate_of__isnull:"true",
     order_by:"-date",
     size:String(pageSize)
   });
