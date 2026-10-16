@@ -1,3 +1,7 @@
+## Fiabilité des économies calculées sur un produit scanné
+
+Le scénario Chrome Android existant évalue les fonctions réellement utilisées dans la fiche produit sur les cas suivants : relevé normal daté de moins de 7 jours, autre enseigne, autre GTIN, devises incorrectes, relevé de 12 jours, prix déjà remisé, Drive, distance hors rayon, absence de distance et exigences supplémentaires de fidélité, de magasin ou de confirmation de prix. Une offre avec EAN exact et justificatifs suffisants peut recevoir une **estimation indicative**, alors qu'une correspondance approximative par marque ou un relevé périmé ne le peut pas. Le scénario s'exécute sans accès au GPS de l'utilisateur.
+
 ## Variante UPC/EAN et fraîcheur du comparateur
 
 Le parcours Chrome Android vérifie que la comparaison des enseignes recherche un EAN-13 équivalent quand le UPC-A ne fournit qu'un prix de 12 jours, même si celui-ci reste affichable dans l'historique. Une fiche produit ordinaire conserve le seuil de 30 jours et ne télécharge pas ces variantes. Si une première variante ne contient qu'un relevé de 11 jours, la seconde variante GTIN-14 est aussi consultée. Les correspondances reposent sur le contrôle GS1 et non sur la similarité des noms de produits.
