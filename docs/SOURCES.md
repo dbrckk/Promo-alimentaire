@@ -1,3 +1,9 @@
+## Recherche Open Prices par formats GTIN équivalents — 16 octobre 2026
+
+Le paramètre public `product_code` filtre un code précis. Lorsqu'un EAN/UPC saisi ne fournit pas de relevé de moins de 30 jours pour l'enseigne sélectionnée, le parcours du produit et la comparaison inter-enseignes peuvent consulter, sous plafond strict (2 codes et une page par code), les autres représentations 12, 13 et 14 chiffres du **même GTIN à checksum valide**. Aucun rapprochement lexical ni prix implicite n'est généré. Les demandes conservent les restrictions de magasin, d'unité, de devise et de rayon explicite. `aliasQueries` et `aliasRecovered` indiquent au navigateur les vérifications réellement effectuées.
+
+Les filtres publics `kind=COMMUNITY` et `duplicate_of__isnull=true` réduisent les relevés peu pertinents qui consomment les pages. Un contrôle local refuse malgré tout chaque `duplicate_of` non nul, type autre que `PRODUCT` ou `kind` explicitement différent de `COMMUNITY`. Les observations éventuelles restent des prix collectés par la communauté, pas des remises actuelles vérifiées par Carrefour/E.Leclerc.
+
 ## Voie publique de secours Carrefour — Bonial (16 octobre 2026)
 
 Les catalogues en magasin de `https://www.bonial.fr/Enseignes/Carrefour` affichent une période datée, sans API Carrefour ni connexion. Le synchroniseur quotidien réutilise une unique page HTML publique et extrait seulement les périodes explicites des prospectus Carrefour : pas de prix produit, pas de réduction calculée et aucun mécanisme d'accès contournant le HTTP 403 de Carrefour.
