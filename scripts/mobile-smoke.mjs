@@ -1495,6 +1495,98 @@ try{
     deeperCodes:["036000291452","0036000291452","00036000291452"],
     deeperAliasQueries:2,deeperSource:"00036000291452"
   });
+  // Evidence-safe product offers: use the exact same module functions as
+  // the live Android product screen. No new unit test runner or test file.
+  // A receipt from another shop, an older price or a one-off discount must
+  // never produce a monetary coupon estimate for the scanned barcode.
+  const safeProductEstimate=await page.evaluate(async()=>{
+    const {canEstimateProductOffer,selectProductOfferPriceObservation,
+      rankMatchedOffers,matchOfferToProduct}=await import("./src/matching.js");
+    const code="3017624010701";
+    const product={code,name:"Pâte à tartiner témoin",brands:"Marque témoin"};
+    const day=(offset)=>{
+      const date=new Date();date.setUTCDate(date.getUTCDate()+offset);
+      return date.toISOString().slice(0,10);
+    };
+    const row=(id,price,date,extras={})=>({
+      id,productCode:code,price,date,currency:"EUR",pricePer:"UNIT",
+      retailerText:"Carrefour Chalon",storeName:"Carrefour Chalon",
+      isDiscounted:false,distanceKm:3,...extras
+    });
+    const recent=row(101,10,day(-1));
+    const choose=(rows,options={})=>selectProductOfferPriceObservation(rows,{
+      productCode:code,store:"carrefour",channel:"store",...options
+    });
+    const accepted=choose([
+      row(90,1,day(-12)),
+      row(91,0.01,day(-1),{retailerText:"E.Leclerc Dijon"}),
+      row(92,0.02,day(-1),{productCode:"4006381333931"}),
+      row(93,0.03,day(-1),{currency:"USD"}),
+      recent
+    ]);
+    const exactOffer={
+      id:"exact",scope:"produit",eans:[code],savingPercent:20,
+      stores:["carrefour"],mechanism:"cashback",sourceUrl:"https://example.org"
+    };
+    const noProof={...exactOffer,id:"fuzzy",eans:[],
+      productMatch:{brands:["marque"],minScore:55}};
+    const candidates=[
+      exactOffer,
+      {...exactOffer,id:"source-stale",sourceSyncWarning:{checkedAt:day(-1)}},
+      {...exactOffer,id:"retailer",mechanism:"retailer_promo"},
+      {...exactOffer,id:"store-unknown",requiresStoreVerification:true},
+      {...exactOffer,id:"channel-unknown",requiresChannelPriceVerification:true},
+      noProof
+    ].map((offer)=>({offer,match:matchOfferToProduct(product,offer)}));
+    const eligibility=(entry,options={})=>canEstimateProductOffer(entry,{
+      channel:"store",observation:recent,...options
+    });
+    const ranked=rankMatchedOffers(candidates,{
+      price:recent.price,quantity:1,canEstimate:eligibility
+    });
+    const prices=Object.fromEntries(ranked.map((entry)=>[
+      entry.offer.id,entry.action.estimatedSaving
+    ]));
+    const exact=candidates[0];
+    return {
+      recentChosen:accepted?.id,
+      foreignRetailerRejected:choose([row(102,0.99,day(-1),{
+        retailerText:"E.Leclerc Dijon"})])===null,
+      wrongSkuRejected:choose([row(103,0.99,day(-1),{
+        productCode:"4006381333931"})])===null,
+      staleRejected:choose([row(104,0.99,day(-12))])===null,
+      discountedSelected:choose([row(105,2,day(-1),{
+        isDiscounted:true})])?.id,
+      discountedEstimate:eligibility(exact,{
+        observation:row(105,2,day(-1),{isDiscounted:true})
+      }),
+      driveRejected:choose([recent],{channel:"drive"})===null,
+      fiveKmAccepted:choose([recent],{nearby:true,radiusKm:5})?.id,
+      farStoreRejected:choose([row(106,1,day(-1),{distanceKm:10})],{
+        nearby:true,radiusKm:5
+      })===null,
+      missingGeoRejected:choose([row(107,1,day(-1),{distanceKm:null})],{
+        nearby:true,radiusKm:5
+      })===null,
+      oldProofRejected:eligibility(exact,{
+        observation:row(104,5,day(-12))
+      }),
+      driveEstimate:eligibility(exact,{channel:"drive"}),
+      savings:prices,
+      exactRanksFirst:ranked[0]?.offer.id==="exact"
+    };
+  });
+  assert.deepEqual(safeProductEstimate,{
+    recentChosen:101,foreignRetailerRejected:true,wrongSkuRejected:true,
+    staleRejected:true,discountedSelected:105,discountedEstimate:false,
+    driveRejected:true,fiveKmAccepted:101,farStoreRejected:true,
+    missingGeoRejected:true,oldProofRejected:false,driveEstimate:false,
+    savings:{
+      exact:2,"source-stale":null,retailer:null,
+      "store-unknown":null,"channel-unknown":null,fuzzy:null
+    },
+    exactRanksFirst:true
+  });
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.locator("#savingsFocus").selectOption("full-refund");
   assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");

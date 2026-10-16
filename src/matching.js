@@ -3,6 +3,8 @@ import {
   minimumQuantityForRetailerPromo
 } from "./retailer-promo.js";
 import {canonicalGtin} from "./gtin.js";
+import {isFreshObservation,isUnambiguousRetailer,selectBestRecentPrice} from "./open-data.js";
+import {offerEvidenceStatus} from "./evidence.js";
 
 export function normalizeText(value) {
   return String(value ?? "")
@@ -141,13 +143,60 @@ function round(value) {
 }
 
 
-export function rankMatchedOffers(matches,{price=null,quantity=1}={}) {
+/**
+ * Never use an old product/store lookup from the previous retailer, channel,
+ * SKU or search radius to price an offer. A retailer match must be explicit
+ * and a voluntary local filter requires independent distance evidence.
+ */
+export function selectProductOfferPriceObservation(observations,{
+  productCode=null,store=null,channel="store",nearby=false,radiusKm=25,now=new Date()
+}={}){
+  const sku=canonicalGtin(productCode);
+  if(channel!=="store" || !sku || !["carrefour","leclerc"].includes(store)){
+    return null;
+  }
+  const radius=Number(radiusKm);
+  const matching=(Array.isArray(observations)?observations:[]).filter((item)=>
+    canonicalGtin(item?.productCode)===sku
+    && isUnambiguousRetailer(item?.retailerText,store)
+    && item.currency==="EUR" && item.pricePer==="UNIT"
+    && (!nearby || (Number.isFinite(radius) && radius>=1 && radius<=100
+      && Number.isFinite(item.distanceKm)
+      && item.distanceKm<=radius+0.1))
+  );
+  return selectBestRecentPrice(matching,7,now);
+}
+
+/**
+ * A numeric product-page saving is only an illustration backed by a recent,
+ * ordinary receipt of this exact GTIN in a physical shop. This is stricter
+ * than candidate discovery: a brand/label suggestion is never a priced offer.
+ * It does not claim live stock, a final checkout price or guaranteed refund.
+ */
+export function canEstimateProductOffer({offer,match}={},{
+  channel="store",observation=null,now=new Date(),loyaltyProfile={}
+}={}){
+  if(channel!=="store" || !observation || observation.isDiscounted===true
+    || !isFreshObservation(observation,7,now)
+    || !match?.exact || !offer || offer.sourceSyncWarning
+    || ["retailer_promo","retailer_loyalty"].includes(offer.mechanism)) return false;
+  return offerEvidenceStatus(offer,{
+    match,loyaltyProfile,storeVerified:false,channelPriceVerified:false
+  }).canGuarantee;
+}
+
+export function rankMatchedOffers(matches,{price=null,quantity=1,canEstimate=null}={}) {
   const qty=Math.max(1,Math.trunc(Number(quantity)||1));
   return (matches || [])
     .map((entry)=>{
       const minQty=requiredQuantity(entry.offer);
       const quantitySatisfied=qty>=minQty;
-      const estimatedSaving=Number.isFinite(Number(price))
+      // Product-page estimates may require independent evidence per offer.
+      // When a caller supplies a policy, never rank an unverified candidate
+      // by a numerical saving that must not be displayed to the shopper.
+      const estimateAllowed=typeof canEstimate!=="function" || canEstimate(entry)===true;
+      const estimatedSaving=estimateAllowed && price!==null && price!==undefined
+        && Number.isFinite(Number(price))
         ? estimateOfferSaving(Number(price),entry.offer,qty)
         : null;
       const percent=effectiveOfferPercent(entry.offer,qty);
