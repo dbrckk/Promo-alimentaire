@@ -3158,6 +3158,101 @@ function cancelBasketPriceRefresh(){
   setListStatus("Actualisation annulée : la liste ou les paramètres ont changé. Relance la recherche de prix.",true);
 }
 
+// This form never prompts for GPS. Its only location is an official,
+// approximate commune centre selected by the shopper, in memory for this tab.
+// Cancel any outstanding postal lookup AND any in-flight basket price fetch
+// before the selected geographic context changes.
+function clearBasketArea(clearInput=true){
+  ++basketArea.lookupToken;
+  basketArea.controller?.abort();
+  basketArea.controller=null;
+  basketArea.commune=null;
+  basketArea.postcode="";
+  basketArea.candidates=[];
+  basketArea.pendingZip="";
+  els.basketAreaSearch.disabled=false;
+  els.basketAreaCommuneField.classList.add("hidden");
+  els.basketAreaCommune.replaceChildren(new Option("Choisir une commune…",""));
+  if(clearInput) els.basketAreaPostcode.value="";
+  markBasketPricesStale();
+  if(clearInput){
+    els.basketAreaStatus.textContent="Secteur effacé. "+
+      (state.nearbyEnabled && state.coords
+        ?"La liste utilisera le GPS déjà autorisé, tant que « Autour de moi » reste actif."
+        :"La prochaine recherche de liste ne sera pas limitée à une commune.");
+  }
+}
+
+function applyBasketArea(place,postcode){
+  if(!/^[0-9]{5}$/.test(postcode) || !/^[0-9A-Z]{5}$/.test(place?.code||"")
+    || !Number.isFinite(place.latitude) || !Number.isFinite(place.longitude)
+    || Math.abs(place.latitude)>90 || Math.abs(place.longitude)>180
+    || typeof place.nom!=="string" || place.nom.length>100) return;
+  basketArea.commune={
+    code:place.code,nom:place.nom,
+    latitude:place.latitude,longitude:place.longitude
+  };
+  basketArea.postcode=postcode;
+  basketArea.candidates=[];
+  basketArea.pendingZip="";
+  els.basketAreaCommuneField.classList.add("hidden");
+  markBasketPricesStale();
+  els.basketAreaStatus.textContent="Secteur actif : "+place.nom+" ("+
+    postcode+"), rayon "+state.radiusKm+" km autour du centre communal. "+
+    "Appuie sur « Actualiser les prix ». Aucun GPS demandé ni stocké. "+
+    "Seuls les magasins avec coordonnées vérifiables sont retenus ; "+
+    "les prix personnels sans coordonnées sont exclus du budget local.";
+}
+
+async function searchBasketAreaPostcode(){
+  const postcode=els.basketAreaPostcode.value.trim();
+  clearBasketArea(false);
+  if(!/^[0-9]{5}$/.test(postcode)){
+    els.basketAreaStatus.textContent=
+      "Code postal invalide : cinq chiffres sont nécessaires. Aucune localisation appliquée.";
+    return;
+  }
+  const token=++basketArea.lookupToken;
+  const controller=new AbortController();
+  basketArea.controller=controller;
+  els.basketAreaSearch.disabled=true;
+  els.basketAreaStatus.textContent="Recherche des communes correspondant à "+postcode+"…";
+  const timer=setTimeout(()=>controller.abort(),9000);
+  try{
+    const places=await lookupPostalCodeCommunes(postcode,{signal:controller.signal});
+    if(token!==basketArea.lookupToken || controller.signal.aborted
+      || els.basketAreaPostcode.value.trim()!==postcode) return;
+    if(!places.length){
+      els.basketAreaStatus.textContent=
+        "Aucune commune vérifiée pour ce code postal. La liste n'est pas localisée.";
+    }else if(places.length===1){
+      applyBasketArea(places[0],postcode);
+    }else{
+      basketArea.candidates=places;
+      basketArea.pendingZip=postcode;
+      els.basketAreaCommune.replaceChildren(new Option("Choisir une commune…",""));
+      for(const place of places){
+        els.basketAreaCommune.add(new Option(place.nom,place.code));
+      }
+      els.basketAreaCommuneField.classList.remove("hidden");
+      els.basketAreaStatus.textContent=places.length+
+        " communes partagent le code "+postcode+
+        " : choisis la bonne avant d'actualiser les prix locaux.";
+    }
+  }catch(error){
+    if(token!==basketArea.lookupToken) return;
+    els.basketAreaStatus.textContent=controller.signal.aborted
+      ?"Recherche de communes interrompue. Réessaie."
+      :"Référentiel communal indisponible. Aucun secteur n'a été appliqué.";
+  }finally{
+    clearTimeout(timer);
+    if(token===basketArea.lookupToken){
+      basketArea.controller=null;
+      els.basketAreaSearch.disabled=false;
+    }
+  }
+}
+
 function basketQueryOptions(store){
   const options={store};
   if(state.nearbyEnabled && state.coords){
