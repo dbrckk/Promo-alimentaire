@@ -14,6 +14,11 @@ const normalizedPlace=(value)=>String(value??"").trim()
   .toLocaleLowerCase("fr").replace(/[^a-z0-9]+/g," ").trim();
 
 function geographicEvidence(a,b){
+  // A supplied (0,0) is a rejected geocode, not missing geodata. Never
+  // replace it with a postcode-based assertion that two outlets are local.
+  if(a?.placeholderLocation===true || b?.placeholderLocation===true){
+    return {ok:false,status:"location-unverified",distanceKm:null};
+  }
   const distance=haversineKm(a?.locationLat,a?.locationLon,b?.locationLat,b?.locationLon);
   if(Number.isFinite(distance)){
     return distance<=15
