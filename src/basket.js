@@ -450,7 +450,20 @@ export function selectBestLocationScenario(scenarios) {
   return [...pool].sort((a,b)=>{
     if(a.isComplete!==b.isComplete) return a.isComplete ? -1 : 1;
     if(a.pricedCount!==b.pricedCount) return b.pricedCount-a.pricedCount;
-    if(a.finalCost!==b.finalCost) return a.finalCost-b.finalCost;
+    // Never choose a cheaper, stale outlet ahead of an equally complete
+    // outlet backed by receipts fresh enough for a local comparison.
+    // Otherwise a valid 7-day pair with the other retailer is discarded.
+    const fresh=(scenario)=>Number.isFinite(scenario.oldestPriceAgeExactDays)
+      && scenario.oldestPriceAgeExactDays>=0
+      && scenario.oldestPriceAgeExactDays<=7
+      && Number(scenario.manualPriceCount)===0;
+    const freshA=fresh(a),freshB=fresh(b);
+    if(freshA!==freshB) return freshA ? -1 : 1;
+    // Within the same evidence tier shoppers may still compare prices.
+    // Do not let an unpriced/invalid amount masquerade as the cheapest.
+    const costA=Number.isFinite(a.finalCost) ? a.finalCost : Infinity;
+    const costB=Number.isFinite(b.finalCost) ? b.finalCost : Infinity;
+    if(costA!==costB) return costA-costB;
     const da=Number.isFinite(a.location?.distanceKm) ? a.location.distanceKm : Infinity;
     const db=Number.isFinite(b.location?.distanceKm) ? b.location.distanceKm : Infinity;
     return da-db;
