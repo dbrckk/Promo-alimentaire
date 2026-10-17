@@ -228,7 +228,7 @@
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     }
   ],
-  "lastAttemptAt": "2026-10-16T08:57:54.092Z",
+  "lastAttemptAt": "2026-10-17T11:46:08.448Z",
   "sourceChecks": {
     "https://www.carrefour.fr/catalogue/carrefour": {
       "status": "unavailable",
@@ -253,7 +253,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-06",
       "expiresAt": "2026-10-19",
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-17",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -267,7 +267,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-07",
       "expiresAt": "2026-10-21",
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-17",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -281,7 +281,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-01",
       "expiresAt": "2026-10-25",
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-17",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -295,7 +295,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-13",
       "expiresAt": "2026-10-26",
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-17",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -309,7 +309,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-09-29",
       "expiresAt": "2026-10-27",
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-17",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -323,13 +323,13 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-14",
       "expiresAt": "2026-10-28",
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-17",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     }
   ],
-  "alternativeCheckedAt": "2026-10-16T08:57:54.092Z",
-  "alternativeLastAttemptAt": "2026-10-16T08:57:54.092Z",
+  "alternativeCheckedAt": "2026-10-17T11:46:08.448Z",
+  "alternativeLastAttemptAt": "2026-10-17T11:46:08.448Z",
   "alternativeStatus": "available",
   "alternativeReason": "6 prospectus Carrefour daté(s), consultation Bonial uniquement."
 }
