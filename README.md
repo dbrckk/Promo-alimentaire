@@ -1,3 +1,9 @@
+### Bloquer les positions fictives des magasins dans les comparateurs (17 octobre 2026)
+
+Les coordonnées géographiques **(0,0)** correspondent fréquemment à un emplacement fictif, parfois appelé « Null Island », et non à un magasin Carrefour ou E.Leclerc effectivement localisé. Un relevé communautaire Open Prices situé sur ce point ne peut plus contribuer à une **comparaison de deux magasins**, même si la source lui donne un identifiant ou le même code postal qu’un autre relevé : l'application le marque comme emplacement non fiable, écarte le repli par code postal et refuse de constituer un panier « magasin » sur cette base. Les observations restent consultables comme prix historiques indicatifs, sans position vérifiée.
+
+Ce contrôle est exécuté **localement**, en plus du filtre géographique Open Prices. Les emplacements réels dotés de coordonnées valides restent utilisables. Le parcours Chrome Android existant confirme les cas fictifs et réels dans les fonctions de comparaison et de panier, sans ajouter de test unitaire.
+
 ### Choisir un magasin avec des prix récents avant de comparer les paniers (17 octobre 2026)
 
 Lorsque plusieurs magasins de la **même enseigne** disposent d'un panier complet dans le secteur demandé, le comparateur privilégie désormais le magasin dont **tous les relevés datent de sept jours maximum** et ne sont pas des prix saisis personnellement. Auparavant, le coût le plus bas gagnait la sélection, même si ses prix provenaient de tickets vieux de plusieurs semaines : un Carrefour actuel et un E.Leclerc actuel pouvaient alors ne jamais être comparés, car un autre Carrefour moins cher mais périmé était retenu.
