@@ -65,6 +65,35 @@ export function summarizeBasketStrategies(scenarios,{
     };
   }
 
+  // A 50 km radius around a town may contain stores 100 km apart.
+  // Comparing those as a "local winner" is misleading even when every
+  // product has a fresh receipt. Only enforce this when both precise store
+  // positions are known; a missing coordinate is handled separately by
+  // the caller's location reliability checks.
+  const [first,second]=reliable;
+  const firstPoint=first.location;
+  const secondPoint=second.location;
+  const valid=(point)=>point
+    && Number.isFinite(point.latitude) && Math.abs(point.latitude)<=90
+    && Number.isFinite(point.longitude) && Math.abs(point.longitude)<=180;
+  if(valid(firstPoint) && valid(secondPoint)){
+    const radians=(degrees)=>degrees*Math.PI/180;
+    const dLat=radians(secondPoint.latitude-firstPoint.latitude);
+    const dLon=radians(secondPoint.longitude-firstPoint.longitude);
+    const hav=Math.sin(dLat/2)**2
+      +Math.cos(radians(firstPoint.latitude))
+      *Math.cos(radians(secondPoint.latitude))
+      *Math.sin(dLon/2)**2;
+    const distanceKm=6371*2*Math.asin(Math.min(1,Math.sqrt(Math.max(0,hav))));
+    if(distanceKm>15){
+      return {
+        status:"indicative",
+        reason:"Les deux magasins retenus sont éloignés de plus de 15 km "+
+          "l'un de l'autre : les prix restent indicatifs, sans gagnant local."
+      };
+    }
+  }
+
   const guaranteed=[...reliable].sort((a,b)=>a.finalCost-b.finalCost)[0];
   const prudent=[...reliable].sort((a,b)=>
     (a.conservativeBestCaseCost ?? a.finalCost)
