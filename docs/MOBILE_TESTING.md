@@ -1,3 +1,7 @@
+## Protection contre les coordonnées fictives (0,0)
+
+Le parcours Android Pixel 7 valide que deux relevés Open Prices prétendument à `(0,0)` mais portant le même code postal ne créent jamais un gagnant Carrefour/E.Leclerc et ne constituent pas un panier dans un point de vente identifié. Les coordonnées valides continuent d'être acceptées. Les relevés fictifs restent uniquement des observations indicatives.
+
 ## Choix du magasin à prix récents
 
 Le smoke Chrome Android vérifie deux magasins Carrefour pour un même code-barres : un magasin à 1,50 € sur un relevé vieux de 13 jours et un autre à 3,30 € avec un relevé d'hier. Le second doit être sélectionné pour une comparaison locale avec un E.Leclerc proche à 3,80 € daté d'hier ; le ticket ancien reste disponible en indication, sans masquer le magasin récent. Les critères de panier complet, rayon géographique, rapprochement de magasins et caution sur la fiabilité restent inchangés.
