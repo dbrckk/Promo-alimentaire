@@ -1,3 +1,11 @@
+### Choisir un magasin avec des prix récents avant de comparer les paniers (17 octobre 2026)
+
+Lorsque plusieurs magasins de la **même enseigne** disposent d'un panier complet dans le secteur demandé, le comparateur privilégie désormais le magasin dont **tous les relevés datent de sept jours maximum** et ne sont pas des prix saisis personnellement. Auparavant, le coût le plus bas gagnait la sélection, même si ses prix provenaient de tickets vieux de plusieurs semaines : un Carrefour actuel et un E.Leclerc actuel pouvaient alors ne jamais être comparés, car un autre Carrefour moins cher mais périmé était retenu.
+
+La **complétude du panier** reste prioritaire ; à complétude et nombre d'articles tarifés identiques, la fraîcheur vérifiable passe avant les prix, puis le tarif estimé et enfin la distance au secteur. Les anciennes observations continuent d'aider à préparer un budget indicatif lorsqu'aucun magasin actuel n'est suffisamment renseigné. **Aucun prix nouveau n'est inventé** et les contrôles existants de rayon, de coordonnées, de distance maximale de 15 km entre enseignes et d'incertitude des tickets s'appliquent toujours.
+
+Le parcours Chrome Android existant simule deux Carrefour (un ticket de 13 jours moins cher et un ticket d'hier plus cher) face à un E.Leclerc proche. Il vérifie que le Carrefour récent est retenu et que la comparaison n'est plus bloquée par le faux bon plan périmé, sans créer de nouveau test unitaire.
+
 ### Comparaison de panier : distance réelle entre les deux magasins (17 octobre 2026)
 
 Un rayon de recherche de 50 km autour d'une commune peut contenir deux magasins éloignés de presque 100 km l'un de l'autre. Le comparateur de panier conserve maintenant les **coordonnées physiques des points de vente observés** et refuse de déclarer un magasin « gagnant local » si la distance à vol d'oiseau entre le Carrefour et le E.Leclerc retenus dépasse **15 km**, même lorsque les deux paniers disposent de prix récents et complets. Les prix restent consultables à titre indicatif. La règle est vérifiée dans le parcours Android Chrome existant avec une paire proche et une paire éloignée, sans créer de nouveau test unitaire.
