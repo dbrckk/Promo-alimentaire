@@ -369,6 +369,8 @@ export function normalizePriceObservation(item,originCoords=null) {
     // Null Island (0,0) is a common missing-geocode placeholder, not a
     // trustworthy retail outlet. It must not establish a "nearby" winner.
     && !(locationLat===0 && locationLon===0);
+  const placeholderLocation=latPresent && lonPresent
+    && locationLat===0 && locationLon===0;
   const distanceKm=originCoords && hasLocation
     ? haversineKm(
         Number(originCoords.latitude ?? originCoords.lat),
@@ -382,6 +384,7 @@ export function normalizePriceObservation(item,originCoords=null) {
     locationId:item.location_id || location.id || null,
     locationLat:hasLocation ? locationLat : null,
     locationLon:hasLocation ? locationLon : null,
+    placeholderLocation,
     distanceKm:Number.isFinite(distanceKm) ? Math.round(distanceKm*10)/10 : null,
     productCode:item.product_code || item?.product?.code || "",
     productName:item.product_name || item?.product?.product_name || "",
