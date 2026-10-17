@@ -365,7 +365,10 @@ export function normalizePriceObservation(item,originCoords=null) {
   const locationLon=lonPresent ? Number(location.osm_lon) : NaN;
   const hasLocation=latPresent && lonPresent
     && Number.isFinite(locationLat) && locationLat>=-90 && locationLat<=90
-    && Number.isFinite(locationLon) && locationLon>=-180 && locationLon<=180;
+    && Number.isFinite(locationLon) && locationLon>=-180 && locationLon<=180
+    // Null Island (0,0) is a common missing-geocode placeholder, not a
+    // trustworthy retail outlet. It must not establish a "nearby" winner.
+    && !(locationLat===0 && locationLon===0);
   const distanceKm=originCoords && hasLocation
     ? haversineKm(
         Number(originCoords.latitude ?? originCoords.lat),
