@@ -1764,6 +1764,57 @@ try{
     wrongSku:{status:undefined,saving:null,net:null,expected:false,count:0}
   });
 
+  // Existing Pixel 7 browser integration: two fully priced stores within
+  // the same 50 km search circle can still be 70 km apart. Do not declare
+  // one the local winner. A genuinely nearby pair remains comparable.
+  const basketStoreSeparation=await page.evaluate(async()=>{
+    const {summarizeBasketStrategies}=await import("./src/strategy.js");
+    const {evaluateBasketLocations,selectBestLocationScenario}=
+      await import("./src/basket.js");
+    const product={code:"3017624010701",name:"Produit témoin",categories:[]};
+    const now=new Date();
+    const yesterday=new Date(now.getTime()-86400000).toISOString().slice(0,10);
+    const scenario=(store,lat,lon,price)=>{
+      const code=product.code;
+      const observation={
+        id:store==="carrefour"?110:120,
+        productCode:code,price,date:yesterday,
+        locationId:store==="carrefour"?201:202,
+        locationLat:lat,locationLon:lon,distanceKm:4,
+        storeName:store==="carrefour"?"Carrefour test":"E.Leclerc test",
+        postcode:"71100",city:"Chalon-sur-Saône",
+        retailerText:store==="carrefour"?"Carrefour":"E.Leclerc"
+      };
+      const scenarios=evaluateBasketLocations([{product,quantity:1}],{
+        store,channel:"store",priceByCode:{[code]:[observation]},
+        now,offers:[]
+      });
+      const selected=selectBestLocationScenario(scenarios);
+      return {...selected,locationReliable:true,priceChannelReliable:true};
+    };
+    const carrefour=scenario("carrefour",46.783,4.854,3);
+    const leclercNear=scenario("leclerc",46.785,4.875,4);
+    const leclercFar=scenario("leclerc",46.6,5.45,4);
+    const summarize=(other)=>summarizeBasketStrategies(
+      [carrefour,other],{channel:"store",nearbyEnabled:true}
+    );
+    const near=summarize(leclercNear);
+    const far=summarize(leclercFar);
+    return {
+      coordsRetained:carrefour.location.latitude===46.783
+        && carrefour.location.longitude===4.854,
+      nearStatus:near.status,nearWinner:near.guaranteed?.store,
+      farStatus:far.status,farWinner:far.guaranteed?.store||null,
+      farReason:far.reason
+    };
+  });
+  assert.equal(basketStoreSeparation.coordsRetained,true);
+  assert.equal(basketStoreSeparation.nearStatus,"ready");
+  assert.equal(basketStoreSeparation.nearWinner,"carrefour");
+  assert.equal(basketStoreSeparation.farStatus,"indicative");
+  assert.equal(basketStoreSeparation.farWinner,null);
+  assert.match(basketStoreSeparation.farReason,/plus de 15 km/);
+
   await assertNoHorizontalOverflow(page,"page d'accueil");
   await page.locator("#savingsFocus").selectOption("full-refund");
   assert.equal(await page.locator("#savingsFocus").inputValue(),"full-refund");

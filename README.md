@@ -1,3 +1,7 @@
+### Comparaison de panier : distance réelle entre les deux magasins (17 octobre 2026)
+
+Un rayon de recherche de 50 km autour d'une commune peut contenir deux magasins éloignés de presque 100 km l'un de l'autre. Le comparateur de panier conserve maintenant les **coordonnées physiques des points de vente observés** et refuse de déclarer un magasin « gagnant local » si la distance à vol d'oiseau entre le Carrefour et le E.Leclerc retenus dépasse **15 km**, même lorsque les deux paniers disposent de prix récents et complets. Les prix restent consultables à titre indicatif. La règle est vérifiée dans le parcours Android Chrome existant avec une paire proche et une paire éloignée, sans créer de nouveau test unitaire.
+
 ### Liste de courses plus rapide et cohérente : recherches parallèles bornées (16 octobre 2026)
 
 Le bouton **Liste de courses → Actualiser les prix** interroge désormais jusqu'à **trois codes-barres de produits distincts en parallèle** plutôt qu'un article après l'autre. Les pages Open Prices identiques continuent d'être mutualisées entre Carrefour et E.Leclerc, avec les contrôles existants (GTIN exact, qualité des preuves, rayon volontaire, fraîcheur des observations, pagination et repli UPC/EAN/GTIN). Trois est une limite volontaire pour ne pas submerger le service public ni les connexions mobiles. Le compteur suit les articles **terminés**, et non les requêtes simplement lancées.

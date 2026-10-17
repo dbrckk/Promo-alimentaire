@@ -407,7 +407,9 @@ export function evaluateBasketLocations(items,{
             name:observation.storeName || "",
             city:observation.city || "",
             postcode:observation.postcode || "",
-            distanceKm:Number.isFinite(observation.distanceKm) ? observation.distanceKm : null
+            distanceKm:Number.isFinite(observation.distanceKm) ? observation.distanceKm : null,
+            latitude:Number.isFinite(observation.locationLat) ? observation.locationLat : null,
+            longitude:Number.isFinite(observation.locationLon) ? observation.locationLon : null
           },
           priceByCode:{}
         });
