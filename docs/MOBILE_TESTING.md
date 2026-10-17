@@ -1,3 +1,7 @@
+## Choix du magasin à prix récents
+
+Le smoke Chrome Android vérifie deux magasins Carrefour pour un même code-barres : un magasin à 1,50 € sur un relevé vieux de 13 jours et un autre à 3,30 € avec un relevé d'hier. Le second doit être sélectionné pour une comparaison locale avec un E.Leclerc proche à 3,80 € daté d'hier ; le ticket ancien reste disponible en indication, sans masquer le magasin récent. Les critères de panier complet, rayon géographique, rapprochement de magasins et caution sur la fiabilité restent inchangés.
+
 ## Comparaison de panier entre deux magasins distants
 
 Le parcours Chrome Android inclut deux paniers complets issus de magasins physiques identifiés : à environ 2 km, le comparateur peut annoncer le meilleur scénario observé ; à plus de 15 km, il ne doit pas annoncer de gagnant, même si les deux magasins sont inclus dans un même rayon de recherche de 50 km. Les prix restent indicatifs et la règle n'affecte pas les remises individuelles.

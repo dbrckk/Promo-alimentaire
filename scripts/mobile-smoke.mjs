@@ -1767,6 +1767,63 @@ try{
   // Existing Pixel 7 browser integration: two fully priced stores within
   // the same 50 km search circle can still be 70 km apart. Do not declare
   // one the local winner. A genuinely nearby pair remains comparable.
+  // Browser integration: a chain with two complete local outlets must
+  // select fresh evidence BEFORE a cheaper receipt from two weeks ago.
+  // The stale candidate remains visible for indicative budgeting, but
+  // cannot mask a genuinely comparable current Carrefour/E.Leclerc pair.
+  const basketFreshOutletChoice=await page.evaluate(async()=>{
+    const {evaluateBasketLocations,selectBestLocationScenario}=
+      await import("./src/basket.js");
+    const {summarizeBasketStrategies}=await import("./src/strategy.js");
+    const code="3017624010701",product={code,name:"Produit témoin"};
+    const now=new Date();
+    const day=(daysAgo)=>{
+      const d=new Date(now.getTime()-daysAgo*86400000);
+      return d.toISOString().slice(0,10);
+    };
+    const row=(id,store,date,price,lat,lon)=>({
+      id,productCode:code,date,price,
+      locationId:id,locationLat:lat,locationLon:lon,
+      distanceKm:2,storeName:(store==="carrefour"?"Carrefour ":"E.Leclerc ")+id,
+      postcode:"71100",city:"Chalon-sur-Saône",
+      retailerText:store==="carrefour"?"Carrefour":"E.Leclerc",
+      currency:"EUR",pricePer:"UNIT"
+    });
+    const old=row(9101,"carrefour",day(13),1.50,46.781,4.852);
+    const fresh=row(9102,"carrefour",day(1),3.30,46.783,4.858);
+    const peer=row(9103,"leclerc",day(1),3.80,46.786,4.867);
+    const options={channel:"store",now,offers:[]};
+    const target=[{product,quantity:1}];
+    const carrefour=evaluateBasketLocations(target,{
+      ...options,store:"carrefour",priceByCode:{[code]:[old,fresh]}
+    });
+    const picked=selectBestLocationScenario(carrefour);
+    const oldOnly=selectBestLocationScenario(carrefour.filter((entry)=>
+      entry.locationKey==="id:9101"
+    ));
+    const leclerc=selectBestLocationScenario(evaluateBasketLocations(target,{
+      ...options,store:"leclerc",priceByCode:{[code]:[peer]}
+    }));
+    const ready=summarizeBasketStrategies([
+      {...picked,locationReliable:true,priceChannelReliable:true},
+      {...leclerc,locationReliable:true,priceChannelReliable:true}
+    ],{channel:"store",nearbyEnabled:true});
+    return {
+      outletCount:carrefour.length,
+      chosenOutlet:picked.locationKey,
+      chosenCost:picked.finalCost,
+      chosenAge:picked.oldestPriceAgeExactDays<=7,
+      olderPrice:oldOnly.finalCost,
+      olderAge:oldOnly.oldestPriceAgeExactDays>7,
+      strategy:ready.status,winner:ready.guaranteed?.store
+    };
+  });
+  assert.deepEqual(basketFreshOutletChoice,{
+    outletCount:2,chosenOutlet:"id:9102",chosenCost:3.30,
+    chosenAge:true,olderPrice:1.50,olderAge:true,
+    strategy:"ready",winner:"carrefour"
+  });
+
   const basketStoreSeparation=await page.evaluate(async()=>{
     const {summarizeBasketStrategies}=await import("./src/strategy.js");
     const {evaluateBasketLocations,selectBestLocationScenario}=
