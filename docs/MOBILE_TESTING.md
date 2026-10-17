@@ -1,3 +1,7 @@
+## Comparaison de panier entre deux magasins distants
+
+Le parcours Chrome Android inclut deux paniers complets issus de magasins physiques identifiés : à environ 2 km, le comparateur peut annoncer le meilleur scénario observé ; à plus de 15 km, il ne doit pas annoncer de gagnant, même si les deux magasins sont inclus dans un même rayon de recherche de 50 km. Les prix restent indicatifs et la règle n'affecte pas les remises individuelles.
+
 ## Rafraîchissement parallèle du panier et prix local isolé
 
 Le parcours Android existant simule **cinq produits à codes GTIN distincts** et une API Open Prices lente. Il vérifie que deux à trois recherches peuvent se chevaucher mais que jamais plus de trois produits ne sont téléchargés simultanément, et que les requêtes identiques restent mutualisées entre Carrefour et E.Leclerc. Il annule ensuite une mise à jour contenant des prix de test inhabituels ; le budget et le contenu **persisté** de l'historique ne doivent pas changer. Enfin, en mode **panier limité à une commune**, un scan national suivi de « Ajouter à la liste » ne doit pas injecter ces relevés hors secteur dans le budget local. Les prix du panier local ne sont renseignés qu'après « Actualiser les prix ».
