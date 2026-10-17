@@ -3274,6 +3274,54 @@ try{
     null,null,null,null,null,null
   ]);
 
+  // A (0,0) placeholder must not acquire outlet identity from an ID or
+  // a shared postal code. Test the actual browser-loaded normalization,
+  // comparison and basket modules, without adding a separate unit test.
+  const placeholderOutletSafety=await page.evaluate(async()=>{
+    const {normalizePriceObservation}=await import("./src/open-data.js");
+    const {comparePriceObservationEvidence}=await import("./src/exact-sku-comparison.js");
+    const {evaluateBasketLocations}=await import("./src/basket.js");
+    const date=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    const product={code:"3017624010701",name:"Produit témoin"};
+    const row=(id,brand,lat,lon)=>normalizePriceObservation({
+      id,product_code:product.code,date,price:2.59,currency:"EUR",
+      price_per:"UNIT",location_id:id,
+      location:{osm_brand:brand,osm_name:brand+" Chalon",
+        osm_lat:lat,osm_lon:lon,osm_address_postcode:"71100",
+        osm_address_city:"Chalon-sur-Saône"}
+    });
+    const invalidCar=row(801,"Carrefour",0,0);
+    const invalidLec=row(802,"E.Leclerc",0,0);
+    const validCar=row(803,"Carrefour",46.783,4.854);
+    const validLec=row(804,"E.Leclerc",46.785,4.863);
+    const fakePair=comparePriceObservationEvidence(invalidCar,invalidLec);
+    const realPair=comparePriceObservationEvidence(validCar,validLec);
+    const fakeBasket=evaluateBasketLocations([{product,quantity:1}],{
+      store:"carrefour",channel:"store",offers:[],
+      priceByCode:{[product.code]:[invalidCar]}
+    });
+    const validBasket=evaluateBasketLocations([{product,quantity:1}],{
+      store:"carrefour",channel:"store",offers:[],
+      priceByCode:{[product.code]:[validCar]}
+    });
+    return {
+      fakeLocation:invalidCar.locationLat,
+      fakeFlag:invalidCar.placeholderLocation,
+      fakeDistance:invalidCar.distanceKm,
+      fakePair:fakePair.comparable,
+      fakePairStatus:fakePair.status,
+      fakeBasketStores:fakeBasket.length,
+      realFlag:validCar.placeholderLocation,
+      realPair:realPair.comparable,
+      realBasketStores:validBasket.length
+    };
+  });
+  assert.deepEqual(placeholderOutletSafety,{
+    fakeLocation:null,fakeFlag:true,fakeDistance:null,
+    fakePair:false,fakePairStatus:"location-unverified",
+    fakeBasketStores:0,realFlag:false,realPair:true,realBasketStores:1
+  });
+
   // Existing Android-browser integration suite, not a new isolated unit
   // test. On equally fresh receipts, the selected nearby pair must win
   // over a cheaper and geographically tighter pair far from the shopper.
