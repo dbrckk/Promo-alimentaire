@@ -361,7 +361,7 @@ export function compareBasketStores(scenarios) {
 
 
 export function observationLocationKey(observation) {
-  if(!observation) return null;
+  if(!observation || observation.placeholderLocation===true) return null;
   if(observation.locationId!==null && observation.locationId!==undefined
     && String(observation.locationId).trim()) {
     return `id:${String(observation.locationId).trim()}`;
