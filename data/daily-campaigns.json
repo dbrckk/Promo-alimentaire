@@ -326,6 +326,20 @@
       "verifiedAt": "2026-10-17",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
+    },
+    {
+      "id": "bonial-leclerc-20261006-20261031-nos-conseils-offres-de-saison",
+      "store": "leclerc",
+      "channels": [
+        "store"
+      ],
+      "format": "E.Leclerc",
+      "title": "Catalogue E.Leclerc « NOS CONSEILS & OFFRES DE SAISON »",
+      "startsAt": "2026-10-06",
+      "expiresAt": "2026-10-31",
+      "verifiedAt": "2026-10-18",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
+      "source": "Bonial"
     }
   ],
   "alternativeCheckedAt": "2026-10-17T11:46:08.448Z",
