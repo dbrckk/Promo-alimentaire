@@ -170,6 +170,20 @@ assert.equal(parsedLeclerc[0].sourceUrl,"https://www.bonial.fr/Enseignes/E-Lecle
 assert.equal(parsedLeclerc[0].expiresAt,"2026-10-31");
 assert.equal(parsedLeclerc[0].verifiedAt,"2026-10-18");
 assert.equal("savingAmount" in parsedLeclerc[0],false);
+
+const mixedBonial='<html><body>'+
+  '<img alt="Catalogue E.Leclerc, 06/10/2026 - 31/10/2026, NOS CONSEILS &amp; OFFRES DE SAISON, 20 pages" src="/a">'+
+  '<script type="application/json">'+JSON.stringify({
+    alt:"Catalogue E.Leclerc, 06/10/2026 - 31/10/2026, NOS CONSEILS \\u0026 OFFRES DE SAISON, 20 pages"
+  })+'</script>'+'.'.repeat(310)+'</body></html>';
+const normalizedBonial=discoverBonialLeclercCatalogues(mixedBonial,
+  new Date("2026-10-18T12:00:00Z"));
+assert.equal(normalizedBonial.length,1,
+  "HTML ampersands and serialized Unicode escapes describe the same flyer");
+assert.equal(normalizedBonial[0].id,
+  "bonial-leclerc-20261006-20261031-nos-conseils-offres-de-saison");
+assert.match(normalizedBonial[0].title,/NOS CONSEILS & OFFRES DE SAISON/);
+
 const serializedLeclerc='<html><body>'+'.'.repeat(310)+
   '<script type="application/json">'+JSON.stringify({
     alt:"Catalogue E.Leclerc du moment, 06/10/2026 - 31/10/2026",
