@@ -228,7 +228,7 @@
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     }
   ],
-  "lastAttemptAt": "2026-10-18T08:56:12.213Z",
+  "lastAttemptAt": "2026-10-18T09:00:22.188Z",
   "sourceChecks": {
     "https://www.carrefour.fr/catalogue/carrefour": {
       "status": "unavailable",
@@ -353,10 +353,10 @@
       "source": "Bonial"
     }
   ],
-  "alternativeCheckedAt": "2026-10-18T08:56:12.213Z",
-  "alternativeLastAttemptAt": "2026-10-18T08:56:12.213Z",
+  "alternativeCheckedAt": "2026-10-18T09:00:22.188Z",
+  "alternativeLastAttemptAt": "2026-10-18T09:00:22.188Z",
   "alternativeStatus": "available",
-  "alternativeReason": "Carrefour : 6 daté(s) ; E.Leclerc : 3 daté(s)",
+  "alternativeReason": "Carrefour : 6 daté(s) ; E.Leclerc : 2 daté(s)",
   "alternativeSourceChecks": {
     "carrefour": {
       "status": "available",
@@ -364,7 +364,7 @@
     },
     "leclerc": {
       "status": "available",
-      "count": 3
+      "count": 2
     }
   }
 }
