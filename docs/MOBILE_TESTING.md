@@ -1,3 +1,7 @@
+## Prospectus E.Leclerc Bonial
+
+Dans **Promos du jour**, choisir **E.Leclerc**, canal **Magasin**, et consulter les prospectus Bonial datés. Le parcours Chrome Android existant vérifie qu'un prospectus E.Leclerc en cours peut être proposé comme **source de consultation uniquement**, qu'un prospectus expiré ou futur ne l'est pas, et qu'un titre de prospectus ne crée aucune économie chiffrée ou prix de caisse. Vérifier aussi que le canal **Drive** ne présente aucun de ces catalogues comme des prix Drive. Les dates et le lien public doivent être visibles ; la disponibilité d'un magasin participant n'est jamais inférée.
+
 ## Protection contre les coordonnées fictives (0,0)
 
 Le parcours Android Pixel 7 valide que deux relevés Open Prices prétendument à `(0,0)` mais portant le même code postal ne créent jamais un gagnant Carrefour/E.Leclerc et ne constituent pas un panier dans un point de vente identifié. Les coordonnées valides continuent d'être acceptées. Les relevés fictifs restent uniquement des observations indicatives.

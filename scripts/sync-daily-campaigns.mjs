@@ -1,7 +1,9 @@
 import {readFile,writeFile} from "node:fs/promises";
 import {confirmPublicDailyCampaign,discoverCarrefourDailyLeads,discoverCarrefourFoodBrochures,retainRecentDailyLeads,dailyCampaignSourceUrls} from "./daily-campaign-evidence.mjs";
 import {parisCivilDay} from "../src/ingestion.js";
-import {BONIAL_CARREFOUR_URL,discoverBonialCarrefourCatalogues} from "./bonial-public-catalogues.mjs";
+import {BONIAL_CARREFOUR_URL,BONIAL_LECLERC_URL,
+  discoverBonialCarrefourCatalogues,discoverBonialLeclercCatalogues
+} from "./bonial-public-catalogues.mjs";
 
 const destination=new URL("../data/daily-campaigns.json",import.meta.url);
 const write=process.argv.includes("--write");
@@ -49,48 +51,63 @@ for(const url of sources){
       reason.slice(0,180));
   }
 }
-// This independent public third-party index is a fallback for reading flyer
-// periods, NOT a way around carrefour.fr 403s or proof of SKU/checkout prices.
+// A public third-party index never proves a barcode, price or actual saving.
+// Each retailer is fetched independently: outages cannot refresh stale proof
+// from the other chain or hide still-valid evidence.
 let alternatives=Array.isArray(payload.alternativeCatalogues)
   ?payload.alternativeCatalogues:[];
-let alternativeStatus="unavailable";
-let alternativeReason="Aucun prospectus Bonial reconfirmé.";
 let alternativeCheckedAt=payload.alternativeCheckedAt || null;
-try{
-  const response=await fetch(BONIAL_CARREFOUR_URL,{
-    headers:{Accept:"text/html,application/xhtml+xml",
-      "User-Agent":"PromoAlimentaire/0.1 public-catalogue-index"},
-    redirect:"error",signal:AbortSignal.timeout(14000)
-  });
-  if(!response.ok) throw Error("HTTP "+response.status);
-  const html=await response.text();
-  const current=discoverBonialCarrefourCatalogues(html,now);
-  if(!current.length){
-    const count=(expression)=>(html.match(expression)||[]).length;
-    const candidates=[...html.matchAll(/alt\\s*=\\s*["']([^"']{1,240})["']/gi)]
-      .map((m)=>m[1]).filter((v)=>/catalogue carrefour/i.test(v)).slice(0,4);
-    console.warn("[daily] Bonial diagnostic HTML : taille="+html.length+
-      " img="+count(/<img\\b/gi)+
-      " texteCarrefour="+count(/Catalogue Carrefour/gi)+
-      " dateOct="+count(/2026/gi)+
-      " exemplesAlt="+JSON.stringify(candidates));
-    throw Error("Aucun prospectus Carrefour actuel avec dates contrôlables.");
+const alternativeSourceChecks={};
+const alternativeSummaries=[];
+let successfulAlternatives=0;
+for(const entry of [
+  {store:"carrefour",name:"Carrefour",url:BONIAL_CARREFOUR_URL,
+    discover:discoverBonialCarrefourCatalogues},
+  {store:"leclerc",name:"E.Leclerc",url:BONIAL_LECLERC_URL,
+    discover:discoverBonialLeclercCatalogues}
+]){
+  try{
+    const response=await fetch(entry.url,{
+      headers:{Accept:"text/html,application/xhtml+xml",
+        "User-Agent":"PromoAlimentaire/0.1 public-catalogue-index"},
+      redirect:"error",signal:AbortSignal.timeout(14000)
+    });
+    if(!response.ok) throw Error("HTTP "+response.status);
+    const html=await response.text();
+    const current=entry.discover(html,now);
+    if(!current.length){
+      const sample=[...html.matchAll(/Catalogue (?:Carrefour|E\.Leclerc|Leclerc)[^<>"'\n]{0,140}/gi)]
+        .slice(0,3).map((item)=>item[0]);
+      console.warn("[daily] Bonial "+entry.name+" : aucun prospectus actuel exploitable ; "+
+        "HTML="+html.length+" ; exemples="+JSON.stringify(sample));
+      throw Error("Aucun prospectus actuel avec dates vérifiables");
+    }
+    alternatives=alternatives.filter((item)=>item?.store!==entry.store)
+      .concat(current);
+    successfulAlternatives++;
+    alternativeCheckedAt=now.toISOString();
+    alternativeSourceChecks[entry.store]={status:"available",count:current.length};
+    alternativeSummaries.push(entry.name+" : "+current.length+" daté(s)");
+    console.log("[daily] Bonial "+entry.name+" : "+current.length+
+      " prospectus courant(s) daté(s), sans prix confirmés.");
+  }catch(error){
+    // Old entries expire independently by verifiedAt and expiry in the PWA.
+    const reason=String(error?.message||error).slice(0,130);
+    alternativeSourceChecks[entry.store]={status:"unavailable",reason};
+    alternativeSummaries.push(entry.name+" : indisponible ("+reason+")");
+    console.warn("[daily] Bonial "+entry.name+" indisponible : "+reason);
   }
-  alternatives=current;
-  alternativeStatus="available";
-  alternativeReason=current.length+" prospectus Carrefour daté(s), consultation Bonial uniquement.";
-  alternativeCheckedAt=now.toISOString();
-  console.log("[daily] Bonial public : "+current.length+" prospectus courant(s) daté(s).");
-}catch(error){
-  // Keep the previous observation for audit; the browser rejects it after
-  // two unchecked civil days, even when the brochure's expiry is later.
-  alternativeReason=String(error?.message||error).slice(0,160);
-  console.warn("[daily] index Bonial indisponible : "+alternativeReason);
 }
+alternatives=alternatives.slice(0,32);
+const alternativeStatus=successfulAlternatives===2?"available"
+  :successfulAlternatives===1?"partial":"unavailable";
+const alternativeReason=alternativeSummaries.join(" ; ");
 const alternativeChanged=JSON.stringify(alternatives)
   !==JSON.stringify(payload.alternativeCatalogues||[])
   || payload.alternativeStatus!==alternativeStatus
-  || payload.alternativeReason!==alternativeReason;
+  || payload.alternativeReason!==alternativeReason
+  || JSON.stringify(payload.alternativeSourceChecks||{})
+    !==JSON.stringify(alternativeSourceChecks);
 const priorAlternativeAttempt=payload.alternativeLastAttemptAt
   && Number.isFinite(Date.parse(payload.alternativeLastAttemptAt))
   ?parisCivilDay(new Date(payload.alternativeLastAttemptAt)):null;
@@ -151,6 +168,7 @@ if(write && (changed || discoveryChanged || statusChanged || priorAttemptDay!==t
   payload.alternativeLastAttemptAt=now.toISOString();
   payload.alternativeStatus=alternativeStatus;
   payload.alternativeReason=alternativeReason;
+  payload.alternativeSourceChecks=alternativeSourceChecks;
   await writeFile(destination,JSON.stringify(payload,null,2)+"\n","utf8");
   console.log("[daily] Dernière tentative enregistrée ; preuve "+
     (provenToday?"mise à jour":"inchangée, campagnes non prolongées")+".");

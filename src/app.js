@@ -451,7 +451,7 @@ els.barcodeForm.addEventListener("submit",(event)=>{
 // Reuse the existing source-scoped, cancellable Open Prices comparison.
 els.brochureCompareForm.addEventListener("submit",async(event)=>{
   event.preventDefault();
-  if(state.store!=="carrefour" || state.channel!=="store"
+  if(state.channel!=="store"
     || !selectAlternativeCatalogues({
       catalogues:state.dailyAlternatives,store:state.store,
       channel:state.channel,now:new Date()
@@ -468,6 +468,7 @@ els.brochureCompareForm.addEventListener("submit",async(event)=>{
   els.brochureProductCode.value=code;
   els.exactSkuQuantity.value="1";
   els.brochureCompareNotice.classList.remove("hidden");
+  const brochureStore=state.store;
   setTab("product");
   els.barcode.value=code;
   // A newer lookup, canceled scan or tab change must not launch a stale
@@ -476,11 +477,11 @@ els.brochureCompareForm.addEventListener("submit",async(event)=>{
   await lookupBarcode(code);
   if(state.lookupToken!==previousLookup+1
     || state.productCode!==code || state.tab!=="product"
-    || state.channel!=="store") return;
+    || state.store!==brochureStore || state.channel!=="store") return;
   await compareCurrentExactSku();
 });
 els.brochureScanButton.addEventListener("click",()=>{
-  if(state.store!=="carrefour" || state.channel!=="store"
+  if(state.channel!=="store"
     || !selectAlternativeCatalogues({
       catalogues:state.dailyAlternatives,store:state.store,
       channel:state.channel,now:new Date()
@@ -1336,14 +1337,14 @@ function renderDailyCatalogue(){
       '<a class="open" href="'+escapeHtml(item.sourceUrl)+
       '" target="_blank" rel="noopener noreferrer">Voir sur Bonial</a></article>'
     ).join("");
-    els.dailyAlternativeCatalogues.innerHTML=state.store!=="carrefour" || state.channel!=="store"
-      ? '<p class="panel help">Ces catalogues concernent Carrefour en magasin. Les offres Drive peuvent différer.</p>'
-      : cards || '<p class="panel help">Aucun prospectus Bonial actuel et contrôlé récemment. '+
+    els.dailyAlternativeCatalogues.innerHTML=state.channel!=="store"
+      ? '<p class="panel help">Ces catalogues concernent les magasins physiques. Les prix Drive ou livraison peuvent différer.</p>'
+      : cards || '<p class="panel help">Aucun prospectus Bonial daté et contrôlé récemment pour '+
+        escapeHtml(storeLabel(state.store))+'. Les offres expirées sont masquées. '+
         'La consultation manuelle reste possible via le lien Bonial ci-dessus.</p>';
   }
   if(els.brochureCompareForm){
-    const accessible=state.store==="carrefour" && state.channel==="store"
-      && alternatives.length>0;
+    const accessible=state.channel==="store" && alternatives.length>0;
     els.brochureCompareForm.classList.toggle("hidden",!accessible);
     els.brochureProductCode.disabled=!accessible;
     els.brochureScanButton.disabled=!accessible;
