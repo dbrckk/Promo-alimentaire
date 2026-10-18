@@ -542,23 +542,38 @@ export function selectDailyCatalogue({
 export function selectAlternativeCatalogues({
   catalogues=[],store="carrefour",channel="store",now=new Date()
 }={}){
-  if(store!=="carrefour" || channel!=="store") return [];
+  // Only these two stable public index URLs can be emitted. Store, format,
+  // ID and title must agree: a raw feed cannot point shoppers to arbitrary
+  // domains, claim a private Drive rate or mix a different retailer's flyer.
+  const pinned={
+    carrefour:{format:"Carrefour",
+      url:"https://www.bonial.fr/Enseignes/Carrefour",
+      prefix:"bonial-carrefour-",
+      title:"Carrefour"},
+    leclerc:{format:"E.Leclerc",
+      url:"https://www.bonial.fr/Enseignes/E-Leclerc",
+      prefix:"bonial-leclerc-",
+      title:"E.Leclerc"}
+  }[store];
+  if(!pinned || channel!=="store") return [];
   const today=parisCivilDay(new Date(now));
   if(!today || !Array.isArray(catalogues)) return [];
   const readDay=(s)=>Date.parse(s+"T12:00:00Z");
   const seen=new Set();
   return catalogues.slice(0,40).filter((item)=>{
-    if(!item || item.store!=="carrefour" || item.source!=="Bonial"
-      || item.format!=="Carrefour"
-      || item.sourceUrl!=="https://www.bonial.fr/Enseignes/Carrefour"
+    if(!item || item.store!==store || item.source!=="Bonial"
+      || item.format!==pinned.format
+      || item.sourceUrl!==pinned.url
       || !Array.isArray(item.channels)
       || item.channels.length!==1 || item.channels[0]!=="store"
-      || typeof item.title!=="string" || !item.title.startsWith("Catalogue Carrefour")
-      && item.title!=="Prospectus Carrefour"
+      || typeof item.title!=="string"
+      || (item.title!=="Prospectus "+pinned.title
+        && !item.title.startsWith("Catalogue "+pinned.title+" « "))
       || item.title.length>130 || !validDate(item.verifiedAt)
       || !validDate(item.startsAt) || !validDate(item.expiresAt)
       || item.verifiedAt>today || item.startsAt>today || item.expiresAt<today
-      || !/^bonial-carrefour-[a-z0-9-]{8,130}$/.test(item.id||"")
+      || typeof item.id!=="string" || !item.id.startsWith(pinned.prefix)
+      || !/^bonial-(?:carrefour|leclerc)-[a-z0-9-]{8,130}$/.test(item.id)
       || seen.has(item.id)) return false;
     const age=(readDay(today)-readDay(item.verifiedAt))/86400000;
     const duration=(readDay(item.expiresAt)-readDay(item.startsAt))/86400000;
@@ -569,7 +584,7 @@ export function selectAlternativeCatalogues({
     id:item.id,title:item.title,sourceUrl:item.sourceUrl,
     source:"Bonial",verifiedAt:item.verifiedAt,
     startsAt:item.startsAt,expiresAt:item.expiresAt
-    // No basePrice, advertisedPrice, savingAmount, savingPercent or EAN.
+    // Editorial flyer, never an estimated product price or saving.
   }));
 }
 
