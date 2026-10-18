@@ -1,3 +1,11 @@
+### Prospectus E.Leclerc datés via Bonial, sans prix inventés (18 octobre 2026)
+
+La page **Promos du jour** permet désormais de consulter, pour **Carrefour comme pour E.Leclerc**, les prospectus avec dates explicites référencés dans les **pages publiques de Bonial**. Le synchroniseur quotidien parcourt séparément `https://www.bonial.fr/Enseignes/Carrefour` et `https://www.bonial.fr/Enseignes/E-Leclerc`. Les catalogues E.Leclerc découverts restent des **pistes de lecture**, même quand le catalogue E.Leclerc importé pour le 6–17 octobre est expiré : aucun prix produit, pourcentage d'économie, Ticket E.Leclerc, EAN, disponibilité locale ou cumul n'est automatiquement déduit du titre du prospectus.
+
+Sont exclus les prospectus non datés, futurs, expirés, de plus de 45 jours, de sous-enseignes Drive ainsi que les résultats dont la dernière vérification remonte à plus de deux jours civils. Les URL sont **fixées par enseigne** et le sélecteur vérifie enseigne, format, titre, canal et dates. Les échanges Bonial sont indépendants : une réponse Carrefour ne peut pas prolonger artificiellement une preuve E.Leclerc ni masquer une panne de cette source. L'application peut toujours scanner un EAN choisi **manuellement** dans un prospectus et afficher la comparaison Open Prices ; le prospectus lui-même ne prouve pas le produit ni son prix.
+
+Le parcours existant Chrome Android Pixel 7 vérifie la découverte E.Leclerc à partir des dates publiques, l'exclusion des annonces anciennes/futures et Drive, la protection contre les liens falsifiés ainsi que l'absence de prix inventés. Aucun nouveau fichier de tests unitaires.
+
 ### Bloquer les positions fictives des magasins dans les comparateurs (17 octobre 2026)
 
 Les coordonnées géographiques **(0,0)** correspondent fréquemment à un emplacement fictif, parfois appelé « Null Island », et non à un magasin Carrefour ou E.Leclerc effectivement localisé. Un relevé communautaire Open Prices situé sur ce point ne peut plus contribuer à une **comparaison de deux magasins**, même si la source lui donne un identifiant ou le même code postal qu’un autre relevé : l'application le marque comme emplacement non fiable, écarte le repli par code postal et refuse de constituer un panier « magasin » sur cette base. Les observations restent consultables comme prix historiques indicatifs, sans position vérifiée.
