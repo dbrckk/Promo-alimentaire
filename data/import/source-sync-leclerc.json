@@ -1,23 +1,12 @@
 {
   "sources": {
     "leclerc": {
-      "status": "updated",
-      "checkedAt": "2026-10-15T11:36:29.591Z",
-      "reason": "Toutes les promotions encore dans leur période ont été reconfirmées (HTML=0, rendu public=10).",
-      "extractedCount": 10,
+      "status": "unavailable",
+      "checkedAt": "2026-10-18T11:14:23.031Z",
+      "reason": "Aucune campagne catalogue encore en cours (13 expirée(s)). Il faut découvrir les nouvelles opérations.",
+      "extractedCount": 0,
       "previousSnapshotCount": 13,
-      "confirmedExternalIds": [
-        "26G133G-belle-chaurienne-plat-cuisine-34",
-        "26G133G-cote-table-cassoulet-40-second",
-        "26G133G-gullon-biscuits-68-second",
-        "26G133G-lor-espresso-capri-68-second",
-        "26G133G-maille-vinaigre-balsamique-modene-30",
-        "26G133G-menguys-melange-68-second",
-        "26G133G-mini-nems-tables-du-monde-20-ticket",
-        "26G133G-nissin-demae-ramen-68-second",
-        "26G133G-petit-navire-effiloches-thon-2plus1",
-        "26G133G-tramier-olives-noires-68-second"
-      ]
+      "confirmedExternalIds": []
     }
   }
 }
