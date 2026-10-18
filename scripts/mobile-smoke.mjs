@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {mkdir,readFile} from "node:fs/promises";
 import {chromium,devices} from "playwright";
-import {discoverBonialCarrefourCatalogues} from "./bonial-public-catalogues.mjs";
+import {discoverBonialCarrefourCatalogues,discoverBonialLeclercCatalogues} from "./bonial-public-catalogues.mjs";
 
 const RECENT_RECEIPT_DATE=new Date(Date.now()-24*60*60*1000)
   .toISOString().slice(0,10); // fresh regardless of when GitHub Actions runs
@@ -150,6 +150,34 @@ assert.equal(parsedBonial[0].sourceUrl,"https://www.bonial.fr/Enseignes/Carrefou
 assert.equal(parsedBonial[0].expiresAt,"2026-10-26");
 assert.equal("savingAmount" in parsedBonial[0],false);
 assert.equal("basePrice" in parsedBonial[0],false);
+
+// Independent E.Leclerc public index: an expired catalogue, a future
+// brochure and a year-long advert cannot be marketed as today's offers.
+const leclercBonialHtml='<html><body>'+[
+  '<img alt="Catalogue E.Leclerc, 06/10/2026 - 31/10/2026, NOS CONSEILS ET OFFRES DE SAISON, 20 pages" src="/a">',
+  '<img alt="Catalogue E.Leclerc, 06/10/2026 - 17/10/2026, PROMOS EN OR, 76 pages" src="/b">',
+  '<img alt="Catalogue E.Leclerc Drive, 12/10/2026 - 31/10/2026, DRIVE" src="/c">',
+  '<img alt="Catalogue E.Leclerc, 20/10/2026 - 01/11/2026, FUTUR" src="/d">',
+  '<img alt="Catalogue E.Leclerc, 01/01/2026 - 31/12/2026, ANNUEL" src="/e">',
+  '<img alt="Catalogue E.Leclerc, 06/10/2026 - 31/10/2026, NOS CONSEILS ET OFFRES DE SAISON, 20 pages" src="/f">'
+].join("")+'</body></html>';
+const parsedLeclerc=discoverBonialLeclercCatalogues(leclercBonialHtml,
+  new Date("2026-10-18T12:00:00Z"));
+assert.equal(parsedLeclerc.length,1,
+  "A current E.Leclerc flyer is independently retained, not expired/Drive/future/annual duplicates");
+assert.equal(parsedLeclerc[0].store,"leclerc");
+assert.equal(parsedLeclerc[0].sourceUrl,"https://www.bonial.fr/Enseignes/E-Leclerc");
+assert.equal(parsedLeclerc[0].expiresAt,"2026-10-31");
+assert.equal(parsedLeclerc[0].verifiedAt,"2026-10-18");
+assert.equal("savingAmount" in parsedLeclerc[0],false);
+const serializedLeclerc='<html><body>'+'.'.repeat(310)+
+  '<script type="application/json">'+JSON.stringify({
+    alt:"Catalogue E.Leclerc du moment, 06/10/2026 - 31/10/2026",
+    other:"Catalogue E.Leclerc Drive, 06/10/2026 - 31/10/2026"
+  })+'</script></body></html>';
+assert.equal(discoverBonialLeclercCatalogues(serializedLeclerc,
+  new Date("2026-10-18T12:00:00Z")).length,1);
+
 
 try{
   const response=await page.goto(BASE,{waitUntil:"networkidle",timeout:30000});
@@ -2566,6 +2594,37 @@ try{
     shown:1,link:"https://www.bonial.fr/Enseignes/Carrefour",
     hasSaving:false,hasPrice:false,spoof:0,drive:0,
     leclerc:0,old:0,pricedCount:1,stripsValue:true
+  });
+  const leclercAlternativeGate=await page.evaluate(async(record)=>{
+    const {selectAlternativeCatalogues}=await import("./src/daily-catalogue.js");
+    const now=new Date("2026-10-18T12:00:00Z");
+    const pick=(item,channel="store",date=now)=>selectAlternativeCatalogues({
+      catalogues:[item],store:"leclerc",channel,now:date
+    });
+    const shown=pick(record);
+    const forged=pick({...record,
+      sourceUrl:"https://www.bonial.fr.evil.invalid/Enseignes/E-Leclerc"});
+    const fakePrice=pick({...record,savingAmount:900,basePrice:0.01});
+    return {
+      shown:shown.length,link:shown[0]?.sourceUrl,
+      hasSaving:"savingAmount" in (shown[0]||{}),
+      hasPrice:"basePrice" in (shown[0]||{}),
+      carrefour:selectAlternativeCatalogues({
+        catalogues:[record],store:"carrefour",channel:"store",now
+      }).length,
+      drive:pick(record,"drive").length,
+      expired:pick(record,"store",new Date("2026-11-01T12:00:00Z")).length,
+      unchecked:pick(record,"store",new Date("2026-10-21T12:00:00Z")).length,
+      forged:forged.length,
+      fakePriceShown:fakePrice.length,
+      fakePriceUsed:"savingAmount" in (fakePrice[0]||{})
+    };
+  },parsedLeclerc[0]);
+  assert.deepEqual(leclercAlternativeGate,{
+    shown:1,link:"https://www.bonial.fr/Enseignes/E-Leclerc",
+    hasSaving:false,hasPrice:false,
+    carrefour:0,drive:0,expired:0,unchecked:0,forged:0,
+    fakePriceShown:1,fakePriceUsed:false
   });
   assert.ok(await page.locator("#dailyAlternativeCatalogues").count()===1,
     "Third-party flyer cards have a separate DOM container");
