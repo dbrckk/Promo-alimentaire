@@ -1,3 +1,7 @@
+### Prospectus Bonial : titres E.Leclerc dédoublonnés (18 octobre 2026)
+
+La synchronisation automatique peut recevoir deux écritures du même prospectus, une avec le caractère `&` dans la légende HTML et l'autre avec sa représentation JSON `\\u0026`. Le normaliseur décode désormais les échappements Unicode imprimables **avant** la construction de l'identifiant et la déduplication. Le prospectus « NOS CONSEILS & OFFRES DE SAISON » du 6 au 31 octobre n'apparaît plus deux fois dans **Promos du jour**. La protection des URL autorisées, les dates d'expiration et l'absence de prix ou remises inventés restent identiques. Régression ajoutée au parcours Android existant.
+
 ### Prospectus E.Leclerc datés via Bonial, sans prix inventés (18 octobre 2026)
 
 La page **Promos du jour** permet désormais de consulter, pour **Carrefour comme pour E.Leclerc**, les prospectus avec dates explicites référencés dans les **pages publiques de Bonial**. Le synchroniseur quotidien parcourt séparément `https://www.bonial.fr/Enseignes/Carrefour` et `https://www.bonial.fr/Enseignes/E-Leclerc`. Les catalogues E.Leclerc découverts restent des **pistes de lecture**, même quand le catalogue E.Leclerc importé pour le 6–17 octobre est expiré : aucun prix produit, pourcentage d'économie, Ticket E.Leclerc, EAN, disponibilité locale ou cumul n'est automatiquement déduit du titre du prospectus.

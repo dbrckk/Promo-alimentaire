@@ -21,7 +21,17 @@ const RETAILERS={
 };
 
 function decodeText(text){
-  return text.replace(/&(?:amp|quot|apos|lt|gt|nbsp|#39|#x27|#(\d+)|#x([0-9a-f]+));/gi,
+  // The same caption can appear as HTML text ("&") and as serialized
+  // hydration JSON ("\\u0026"). Normalize before identifying a brochure:
+  // otherwise one dated E.Leclerc flyer is duplicated under two IDs.
+  // Decode printable BMP characters only; no controls or lone surrogates.
+  const unicode=String(text).replace(/\\+u([0-9a-f]{4})/gi,(_,hex)=>{
+    const code=Number.parseInt(hex,16);
+    return code>=32 && !(code>=0xd800 && code<=0xdfff)
+      && ![0x7f,0x2028,0x2029].includes(code)
+      ?String.fromCharCode(code):" ";
+  });
+  return unicode.replace(/&(?:amp|quot|apos|lt|gt|nbsp|#39|#x27|#(\d+)|#x([0-9a-f]+));/gi,
     (full,decimal,hex)=>{
       if(decimal || hex){
         const code=Number.parseInt(decimal || hex,hex?16:10);
