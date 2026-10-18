@@ -1,6 +1,24 @@
 // Bonial is a public third-party flyer index, not Carrefour price evidence.
 // Read only the public HTML page. No private APIs, cookies, auth or bot evasion.
 export const BONIAL_CARREFOUR_URL="https://www.bonial.fr/Enseignes/Carrefour";
+export const BONIAL_LECLERC_URL="https://www.bonial.fr/Enseignes/E-Leclerc";
+
+// Fixed public indexes only. A third-party flyer never proves a product
+// price, barcode, in-store availability, loyalty credit or actual saving.
+const RETAILERS={
+  carrefour:{
+    label:"Carrefour",format:"Carrefour",url:BONIAL_CARREFOUR_URL,
+    caption:/^Catalogue Carrefour\b/i,
+    excluded:/^Catalogue Carrefour\s+(?:Market|City|Contact|Express|Proximité)\b/i,
+    serialized:/Catalogue Carrefour[^<>"'\n]{0,240}/gi
+  },
+  leclerc:{
+    label:"E.Leclerc",format:"E.Leclerc",url:BONIAL_LECLERC_URL,
+    caption:/^Catalogue (?:E\.Leclerc|Leclerc)\b/i,
+    excluded:/^Catalogue (?:E\.Leclerc|Leclerc)\s+(?:Drive|Express)\b/i,
+    serialized:/Catalogue (?:E\.Leclerc|Leclerc)[^<>"'\n]{0,240}/gi
+  }
+};
 
 function decodeText(text){
   return text.replace(/&(?:amp|quot|apos|lt|gt|nbsp|#39|#x27|#(\d+)|#x([0-9a-f]+));/gi,
@@ -35,7 +53,14 @@ function slug(text){
  * or a guarantee that the local store participates.
  */
 export function discoverBonialCarrefourCatalogues(html,now=new Date()){
-  if(typeof html!=="string" || html.length<300 || html.length>4000000)
+  return discoverBonialRetailerCatalogues(html,now,"carrefour");
+}
+export function discoverBonialLeclercCatalogues(html,now=new Date()){
+  return discoverBonialRetailerCatalogues(html,now,"leclerc");
+}
+function discoverBonialRetailerCatalogues(html,now,store){
+  const config=RETAILERS[store];
+  if(!config || typeof html!=="string" || html.length<300 || html.length>4000000)
     return [];
   const today=safeDay(now),items=new Map();
   // Bonial's public server response can carry its catalog image captions
@@ -49,14 +74,13 @@ export function discoverBonialCarrefourCatalogues(html,now=new Date()){
   }
   const serialized=html.replace(/\\u002[fF]|\\\//g,"/")
     .replace(/\\u002[dD]/g,"-");
-  for(const match of serialized.matchAll(/Catalogue Carrefour[^<>"'\n]{0,240}/gi)){
+  for(const match of serialized.matchAll(config.serialized)){
     captions.push(match[0]);
     if(captions.length>500) break;
   }
   for(const candidate of captions){
     const alt=decodeText(candidate).replace(/\s+/g," ").trim();
-    if(!/^Catalogue Carrefour\b/i.test(alt)
-      || /^Catalogue Carrefour\s+(?:Market|City|Contact|Express|Proximité)\b/i.test(alt))
+    if(!config.caption.test(alt) || config.excluded.test(alt))
       continue;
     const dates=/\b([0-3]?\d)\/([01]?\d)\/(20\d{2})\s*[-–]\s*([0-3]?\d)\/([01]?\d)\/(20\d{2})\b/.exec(alt);
     if(!dates) continue;
@@ -70,17 +94,18 @@ export function discoverBonialCarrefourCatalogues(html,now=new Date()){
     if(days<0 || days>45) continue;
     const suffix=alt.slice(alt.indexOf(dates[0])+dates[0].length)
       .replace(/^[\s,:"'«»]+|[\s,:"'«»]+$/g,"").slice(0,80);
+    const fallback="Prospectus "+config.label;
     const label=suffix && !/^\d+\s+pages?$/i.test(suffix)
-      ?suffix.replace(/,\s*\d+\s+pages?$/i,"").trim():"Prospectus Carrefour";
+      ?suffix.replace(/,\s*\d+\s+pages?$/i,"").trim():fallback;
     const key=startsAt+"|"+expiresAt+"|"+slug(label);
     if(items.has(key)) continue;
     items.set(key,{
-      id:"bonial-carrefour-"+startsAt.replaceAll("-","")+"-"
+      id:"bonial-"+store+"-"+startsAt.replaceAll("-","")+"-"
         +expiresAt.replaceAll("-","")+"-"+slug(label),
-      store:"carrefour",channels:["store"],format:"Carrefour",
-      title:label==="Prospectus Carrefour"?label:"Catalogue Carrefour « "+label+" »",
+      store,channels:["store"],format:config.format,
+      title:label===fallback?label:"Catalogue "+config.label+" « "+label+" »",
       startsAt,expiresAt,verifiedAt:today,
-      sourceUrl:BONIAL_CARREFOUR_URL,source:"Bonial"
+      sourceUrl:config.url,source:"Bonial"
     });
     if(items.size>=12) break;
   }
