@@ -1281,19 +1281,23 @@ try{
     );
     return {
       count:catalog.offers.filter((row)=>row.providerId==="shopmium").length,
+      activeAffected:catalog.offers.filter((row)=>
+        row.providerId==="shopmium" && row.sourceSyncWarning).length,
       status:statistic?.status||null,
       failure:statistic?.syncState?.status||null
     };
   });
   assert.ok(currentShopmiumHealth.count>0,
     "Le catalogue officiel Shopmium doit rester chargé sur Android");
-  if(currentShopmiumStatus.status==="updated"){
-    assert.equal(currentShopmiumHealth.failure,null,
-      "La dernière réussite Shopmium ne doit pas apparaître comme une panne");
-  }else{
-    assert.equal(currentShopmiumHealth.failure,currentShopmiumStatus.status,
-      "Le diagnostic Shopmium dédié doit apparaître dans la PWA Android");
-  }
+  // A partial source synchronization can have zero *affected active*
+  // products: the two missed offers may already be expired, or newer proof
+  // exists. A provider-level "partial" label alone must not create a
+  // false failure banner on Android.
+  assert.equal(currentShopmiumHealth.failure,
+    currentShopmiumStatus.status!=="updated"
+      && currentShopmiumHealth.activeAffected>0
+      ? currentShopmiumStatus.status : null,
+    "Le diagnostic Shopmium apparaît seulement pour des offres actives réellement touchées");
   // Mixed Open Prices date formats must be ordered by actual timestamps.
   const latestReceipt=await page.evaluate(async()=>{
     const {priceCoverageSummary}=await import("./src/exact-sku-comparison.js");
