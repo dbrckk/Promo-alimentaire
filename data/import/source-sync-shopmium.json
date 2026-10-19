@@ -2,10 +2,10 @@
   "sources": {
     "shopmium": {
       "status": "updated",
-      "checkedAt": "2026-10-18T09:53:16.463Z",
-      "reason": "Les 42 fiches actives du snapshot ont été reconfirmées dans cette exécution Shopmium.",
-      "extractedCount": 42,
-      "previousSnapshotCount": 42
+      "checkedAt": "2026-10-19T11:15:15.234Z",
+      "reason": "Les 44 fiches actives du snapshot ont été reconfirmées dans cette exécution Shopmium.",
+      "extractedCount": 44,
+      "previousSnapshotCount": 44
     }
   }
 }
