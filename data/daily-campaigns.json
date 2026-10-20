@@ -228,7 +228,7 @@
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     }
   ],
-  "lastAttemptAt": "2026-10-19T14:59:42.823Z",
+  "lastAttemptAt": "2026-10-20T13:01:40.865Z",
   "sourceChecks": {
     "https://www.carrefour.fr/catalogue/carrefour": {
       "status": "unavailable",
@@ -241,20 +241,6 @@
   },
   "alternativeCatalogues": [
     {
-      "id": "bonial-carrefour-20261006-20261019-prospectus-carrefour",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "format": "Carrefour",
-      "title": "Prospectus Carrefour",
-      "startsAt": "2026-10-06",
-      "expiresAt": "2026-10-19",
-      "verifiedAt": "2026-10-19",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
-      "source": "Bonial"
-    },
-    {
       "id": "bonial-carrefour-20261007-20261021-prospectus-carrefour",
       "store": "carrefour",
       "channels": [
@@ -264,7 +250,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-07",
       "expiresAt": "2026-10-21",
-      "verifiedAt": "2026-10-19",
+      "verifiedAt": "2026-10-20",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -278,7 +264,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-01",
       "expiresAt": "2026-10-25",
-      "verifiedAt": "2026-10-19",
+      "verifiedAt": "2026-10-20",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -292,7 +278,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-13",
       "expiresAt": "2026-10-26",
-      "verifiedAt": "2026-10-19",
+      "verifiedAt": "2026-10-20",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -306,7 +292,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-09-29",
       "expiresAt": "2026-10-27",
-      "verifiedAt": "2026-10-19",
+      "verifiedAt": "2026-10-20",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -320,37 +306,79 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-14",
       "expiresAt": "2026-10-28",
-      "verifiedAt": "2026-10-19",
+      "verifiedAt": "2026-10-20",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
     {
-      "id": "bonial-leclerc-20261006-20261031-nos-conseils-offres-de-saison",
+      "id": "bonial-carrefour-20261020-20261102-haha-halloween",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Catalogue Carrefour « HAHA HALLOWEEN »",
+      "startsAt": "2026-10-20",
+      "expiresAt": "2026-11-02",
+      "verifiedAt": "2026-10-20",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261020-20261102-prospectus-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Prospectus Carrefour",
+      "startsAt": "2026-10-20",
+      "expiresAt": "2026-11-02",
+      "verifiedAt": "2026-10-20",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-leclerc-20261020-20261031-10-jours-diamants",
       "store": "leclerc",
       "channels": [
         "store"
       ],
       "format": "E.Leclerc",
-      "title": "Catalogue E.Leclerc « NOS CONSEILS & OFFRES DE SAISON »",
+      "title": "Catalogue E.Leclerc « 10 JOURS DIAMANTS »",
+      "startsAt": "2026-10-20",
+      "expiresAt": "2026-10-31",
+      "verifiedAt": "2026-10-20",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-leclerc-20261006-20261031-prospectus-e-leclerc",
+      "store": "leclerc",
+      "channels": [
+        "store"
+      ],
+      "format": "E.Leclerc",
+      "title": "Prospectus E.Leclerc",
       "startsAt": "2026-10-06",
       "expiresAt": "2026-10-31",
-      "verifiedAt": "2026-10-19",
+      "verifiedAt": "2026-10-20",
       "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
       "source": "Bonial"
     }
   ],
-  "alternativeCheckedAt": "2026-10-19T14:59:42.823Z",
-  "alternativeLastAttemptAt": "2026-10-19T14:59:42.823Z",
+  "alternativeCheckedAt": "2026-10-20T13:01:40.865Z",
+  "alternativeLastAttemptAt": "2026-10-20T13:01:40.865Z",
   "alternativeStatus": "available",
-  "alternativeReason": "Carrefour : 6 daté(s) ; E.Leclerc : 1 daté(s)",
+  "alternativeReason": "Carrefour : 7 daté(s) ; E.Leclerc : 2 daté(s)",
   "alternativeSourceChecks": {
     "carrefour": {
       "status": "available",
-      "count": 6
+      "count": 7
     },
     "leclerc": {
       "status": "available",
-      "count": 1
+      "count": 2
     }
   }
 }
