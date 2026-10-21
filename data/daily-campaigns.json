@@ -228,7 +228,7 @@
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     }
   ],
-  "lastAttemptAt": "2026-10-20T13:01:40.865Z",
+  "lastAttemptAt": "2026-10-21T13:15:20.304Z",
   "sourceChecks": {
     "https://www.carrefour.fr/catalogue/carrefour": {
       "status": "unavailable",
@@ -250,7 +250,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-07",
       "expiresAt": "2026-10-21",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -264,7 +264,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-01",
       "expiresAt": "2026-10-25",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -278,7 +278,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-13",
       "expiresAt": "2026-10-26",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -292,7 +292,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-09-29",
       "expiresAt": "2026-10-27",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -306,7 +306,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-14",
       "expiresAt": "2026-10-28",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -320,7 +320,7 @@
       "title": "Catalogue Carrefour « HAHA HALLOWEEN »",
       "startsAt": "2026-10-20",
       "expiresAt": "2026-11-02",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -334,7 +334,21 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-20",
       "expiresAt": "2026-11-02",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261021-20261103-prospectus-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Prospectus Carrefour",
+      "startsAt": "2026-10-21",
+      "expiresAt": "2026-11-03",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -348,7 +362,7 @@
       "title": "Catalogue E.Leclerc « 10 JOURS DIAMANTS »",
       "startsAt": "2026-10-20",
       "expiresAt": "2026-10-31",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
       "source": "Bonial"
     },
@@ -362,19 +376,19 @@
       "title": "Prospectus E.Leclerc",
       "startsAt": "2026-10-06",
       "expiresAt": "2026-10-31",
-      "verifiedAt": "2026-10-20",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
       "source": "Bonial"
     }
   ],
-  "alternativeCheckedAt": "2026-10-20T13:01:40.865Z",
-  "alternativeLastAttemptAt": "2026-10-20T13:01:40.865Z",
+  "alternativeCheckedAt": "2026-10-21T13:15:20.304Z",
+  "alternativeLastAttemptAt": "2026-10-21T13:15:20.304Z",
   "alternativeStatus": "available",
-  "alternativeReason": "Carrefour : 7 daté(s) ; E.Leclerc : 2 daté(s)",
+  "alternativeReason": "Carrefour : 8 daté(s) ; E.Leclerc : 2 daté(s)",
   "alternativeSourceChecks": {
     "carrefour": {
       "status": "available",
-      "count": 7
+      "count": 8
     },
     "leclerc": {
       "status": "available",
