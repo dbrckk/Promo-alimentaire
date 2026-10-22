@@ -2,10 +2,10 @@
   "sources": {
     "coupon-network": {
       "status": "updated",
-      "checkedAt": "2026-10-19T10:58:43.785Z",
+      "checkedAt": "2026-10-22T10:20:32.917Z",
       "reason": "Données publiques extraites et validées",
-      "extractedCount": 117,
-      "previousSnapshotCount": 119
+      "extractedCount": 120,
+      "previousSnapshotCount": 117
     }
   }
 }
