@@ -2,9 +2,9 @@
   "sources": {
     "shopmium": {
       "status": "partial",
-      "checkedAt": "2026-10-21T10:34:53.892Z",
-      "reason": "42/44 fiches vérifiées lors de cette exécution ; 2 autre(s) conservent leur preuve antérieure.",
-      "extractedCount": 42,
+      "checkedAt": "2026-10-22T10:38:07.316Z",
+      "reason": "39/44 fiches vérifiées lors de cette exécution ; 5 autre(s) conservent leur preuve antérieure.",
+      "extractedCount": 39,
       "previousSnapshotCount": 44,
       "confirmedExternalIds": [
         "auto-a-chacun-son-daddy",
@@ -29,9 +29,6 @@
         "auto-huggies-extra-care-1",
         "auto-huggies-little-movers-1",
         "auto-innocent-smoothies-gourmands",
-        "auto-jordan-ultralite-blancheur-3",
-        "auto-jordan-ultralite-classique-3",
-        "auto-jordan-ultralite-sensible-3",
         "auto-kiri-6",
         "auto-la-vache-qui-rit-7",
         "auto-lait-et-boissons-lactees-grandlait-des-p-tits-1",
