@@ -2,10 +2,10 @@
   "sources": {
     "shopmium": {
       "status": "partial",
-      "checkedAt": "2026-10-22T10:38:07.316Z",
-      "reason": "39/44 fiches vérifiées lors de cette exécution ; 5 autre(s) conservent leur preuve antérieure.",
-      "extractedCount": 39,
-      "previousSnapshotCount": 44,
+      "checkedAt": "2026-10-23T10:30:27.355Z",
+      "reason": "37/42 fiches vérifiées lors de cette exécution ; 5 autre(s) conservent leur preuve antérieure.",
+      "extractedCount": 37,
+      "previousSnapshotCount": 42,
       "confirmedExternalIds": [
         "auto-a-chacun-son-daddy",
         "auto-apericube-2",
@@ -26,8 +26,6 @@
         "auto-gels-douche-sanex-derma-therapie-2",
         "auto-grands-formats",
         "auto-harrys-mini-tressee-pepites-de-chocolat",
-        "auto-huggies-extra-care-1",
-        "auto-huggies-little-movers-1",
         "auto-innocent-smoothies-gourmands",
         "auto-kiri-6",
         "auto-la-vache-qui-rit-7",
