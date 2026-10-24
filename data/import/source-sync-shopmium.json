@@ -2,10 +2,10 @@
   "sources": {
     "shopmium": {
       "status": "partial",
-      "checkedAt": "2026-10-23T10:30:27.355Z",
-      "reason": "37/42 fiches vérifiées lors de cette exécution ; 5 autre(s) conservent leur preuve antérieure.",
-      "extractedCount": 37,
-      "previousSnapshotCount": 42,
+      "checkedAt": "2026-10-24T09:47:12.553Z",
+      "reason": "35/39 fiches vérifiées lors de cette exécution ; 4 autre(s) conservent leur preuve antérieure.",
+      "extractedCount": 35,
+      "previousSnapshotCount": 39,
       "confirmedExternalIds": [
         "auto-a-chacun-son-daddy",
         "auto-apericube-2",
@@ -20,8 +20,6 @@
         "auto-decouvrez-harrys-american-sandwich-protein",
         "auto-essuie-tout-textile-3-epaisseurs",
         "auto-fleury-michon-plats-cuisines-3",
-        "auto-frisk-sours-gout-citron-2",
-        "auto-frisk-sours-gout-fraise-2",
         "auto-gaufrettes-et-barres-lait-noisette-cacahuete",
         "auto-gels-douche-sanex-derma-therapie-2",
         "auto-grands-formats",
