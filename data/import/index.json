@@ -1,13 +1,13 @@
 {
-  "verifiedAt": "2026-10-26",
+  "verifiedAt": "2026-10-27",
   "files": [
     "la-belle-adresse-2026-10-07.json",
     "envie-de-plus-2026-10-07.json",
     "leclerc-catalog-2026-10-07.json",
     "carrefour-promotions-auto.json",
     "coupon-network-auto.json",
-    "payment-discounts-auto.json",
-    "shopmium-auto.json"
+    "shopmium-auto.json",
+    "payment-discounts-auto.json"
   ],
   "archivedOnly": {
     "carrefour-promotions-auto.json": "11 campagnes Carrefour expirées conservées pour audit ; la lecture automatisée de nouvelles promotions officielles n'est pas disponible."
