@@ -2,10 +2,10 @@
   "sources": {
     "shopmium": {
       "status": "partial",
-      "checkedAt": "2026-10-26T11:32:11.257Z",
-      "reason": "34/38 fiches vérifiées lors de cette exécution ; 4 autre(s) conservent leur preuve antérieure.",
-      "extractedCount": 34,
-      "previousSnapshotCount": 38,
+      "checkedAt": "2026-10-27T10:58:36.787Z",
+      "reason": "36/37 fiches vérifiées lors de cette exécution ; 1 autre(s) conservent leur preuve antérieure.",
+      "extractedCount": 36,
+      "previousSnapshotCount": 37,
       "confirmedExternalIds": [
         "auto-a-chacun-son-daddy",
         "auto-apericube-2",
@@ -25,6 +25,8 @@
         "auto-innocent-smoothies-gourmands",
         "auto-kiri-6",
         "auto-la-vache-qui-rit-7",
+        "auto-lactel-bio-1l-1",
+        "auto-lactel-bio-6x1l-1",
         "auto-lait-et-boissons-lactees-grandlait-des-p-tits-1",
         "auto-les-nouveautes-daddy",
         "auto-p-tits-pains",
