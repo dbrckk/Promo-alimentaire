@@ -13,8 +13,8 @@
       "store"
     ],
     "savingPercent": 4,
-    "verifiedAt": "2026-10-28",
-    "reviewAfter": "2026-11-04",
+    "verifiedAt": "2026-10-29",
+    "reviewAfter": "2026-11-05",
     "sourceUrl": "https://www.fidme.com/nos-avantages/bons-dachats/",
     "scope": "panier",
     "mechanism": "gift_card",
@@ -40,8 +40,8 @@
       "store"
     ],
     "savingPercent": 4,
-    "verifiedAt": "2026-10-28",
-    "reviewAfter": "2026-11-04",
+    "verifiedAt": "2026-10-29",
+    "reviewAfter": "2026-11-05",
     "sourceUrl": "https://www.widilo.fr/bon-d-achat/carrefour",
     "scope": "panier",
     "mechanism": "gift_card",
@@ -67,8 +67,8 @@
       "store"
     ],
     "savingPercent": 3.6,
-    "verifiedAt": "2026-10-28",
-    "reviewAfter": "2026-11-04",
+    "verifiedAt": "2026-10-29",
+    "reviewAfter": "2026-11-05",
     "sourceUrl": "https://www.ebuyclub.com/selection-bons-d-achat/carrefour-courses-alimentaires-10310",
     "scope": "panier",
     "mechanism": "gift_card",
@@ -121,8 +121,8 @@
       "store"
     ],
     "savingPercent": 0.05,
-    "verifiedAt": "2026-10-28",
-    "reviewAfter": "2026-11-04",
+    "verifiedAt": "2026-10-29",
+    "reviewAfter": "2026-11-05",
     "sourceUrl": "https://www.ebuyclub.com/cashback-connecte",
     "scope": "panier",
     "mechanism": "card_cashback",
@@ -148,8 +148,8 @@
       "store"
     ],
     "savingPercent": 0.05,
-    "verifiedAt": "2026-10-28",
-    "reviewAfter": "2026-11-04",
+    "verifiedAt": "2026-10-29",
+    "reviewAfter": "2026-11-05",
     "sourceUrl": "https://www.ebuyclub.com/cashback-connecte",
     "scope": "panier",
     "mechanism": "card_cashback",
@@ -176,8 +176,8 @@
     ],
     "savingAmount": 3,
     "savingAmountMode": "per-offer",
-    "verifiedAt": "2026-10-07",
-    "reviewAfter": "2026-10-14",
+    "verifiedAt": "2026-10-29",
+    "reviewAfter": "2026-11-05",
     "sourceUrl": "https://www.ebuyclub.com/cashback",
     "scope": "panier",
     "mechanism": "affiliate_cashback",
@@ -187,7 +187,7 @@
     "autoStack": false,
     "stackingConfidence": "unknown",
     "stacking": "cumul et catégories éligibles à vérifier avant commande",
-    "conditions": "Jusqu'à 3 € remboursés sur les achats en ligne Carrefour éligibles."
+    "conditions": "Jusqu'à 3 € remboursés sur les achats en ligne éligibles. Offre variable selon conditions."
   },
   {
     "providerId": "ebuyclub",
