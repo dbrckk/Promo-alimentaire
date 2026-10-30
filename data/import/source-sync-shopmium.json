@@ -2,16 +2,16 @@
   "sources": {
     "shopmium": {
       "status": "partial",
-      "checkedAt": "2026-10-29T11:45:09.016Z",
-      "reason": "31/32 fiches vérifiées lors de cette exécution ; 1 autre(s) conservent leur preuve antérieure.",
-      "extractedCount": 31,
-      "previousSnapshotCount": 32,
+      "checkedAt": "2026-10-30T11:37:27.731Z",
+      "reason": "32/33 fiches vérifiées lors de cette exécution ; 1 autre(s) conservent leur preuve antérieure.",
+      "extractedCount": 32,
+      "previousSnapshotCount": 33,
       "confirmedExternalIds": [
         "auto-a-chacun-son-daddy",
-        "auto-apericube-2",
         "auto-barilla-al-bronzo-5",
         "auto-boursin-3",
         "auto-cafes-legal-capsules-compatibles-nespresso",
+        "auto-carotte-rapee-citron-bonduelle",
         "auto-coloration-barbe-et-moustache-just-for-men",
         "auto-coloration-original-formula-just-for-men",
         "auto-decouvrez-harrys-american-sandwich-protein",
@@ -25,6 +25,7 @@
         "auto-la-vache-qui-rit-7",
         "auto-lait-et-boissons-lactees-grandlait-des-p-tits-1",
         "auto-les-nouveautes-daddy",
+        "auto-notre-selection-de-produits-bonduelle",
         "auto-p-tits-pains",
         "auto-pains-burger",
         "auto-panes-de-poulet-special-burger-pere-dodu",
@@ -34,7 +35,7 @@
         "auto-purees-coulis-de-tomates",
         "auto-rhum-flor-de-cana-3",
         "auto-sauces-tomates",
-        "auto-soupline-adoucissant-parfum-de-linge",
+        "auto-taboule-bonduelle-1",
         "auto-tranches-vege-fleury-michon-1",
         "auto-une-accroche-de-sauce-parfaite",
         "auto-yaourt-maison-regilait"
