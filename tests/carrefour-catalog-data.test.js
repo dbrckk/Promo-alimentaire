@@ -138,8 +138,10 @@ test("campagne nouvelle ne renouvelle pas une publicité dont la fin est falsifi
     entry,new Date("2026-10-14T12:00:00Z")),false);
 });
 
-test("détecter les nouveautés alimentaires du jour sans créer de prix EAN",()=>{
-  const page=`<section>
+// A deterministic archived source excerpt is needed to test a date-only
+// claim after production correctly prunes expired announcements. Tests must
+// never require an October 14 item to stay in the live catalogue indefinitely.
+const datedLeadProof=`<section>
     <img alt="Fruits et légumes à moins de 1 euro" />
     <h3>Fruits et légumes à 0,99€</h3><p>En Hypermarché et en Drive</p>
     <img alt="Bio à moins de 2 euros" />
@@ -149,6 +151,8 @@ test("détecter les nouveautés alimentaires du jour sans créer de prix EAN",()
     <p>Aujourd'hui uniquement</p>
     <p>Exclusivement dans les Drive participants.</p>
     </section>`;
+test("détecter les nouveautés alimentaires du jour sans créer de prix EAN",()=>{
+  const page=datedLeadProof;
   const date=new Date("2026-10-14T12:00:00Z");
   const leads=discoverCarrefourDailyLeads(page,date);
   assert.deepEqual(leads.map((item)=>item.id),[
@@ -204,9 +208,10 @@ test("aucune nouvelle fiche si preuve officielle absente ou programme hors alime
 
 test("un refus HTTP 403 ne supprime pas une piste vérifiée le même jour",()=>{
   const today="2026-10-14";
-  const lead=dailyCampaigns.find((x)=>x.id===
-    "carrefour-public-lead-legumes-099-20261014");
-  assert.ok(lead);
+  const lead=discoverCarrefourDailyLeads(
+    datedLeadProof,new Date("2026-10-14T12:00:00Z")
+  ).find((x)=>x.id==="carrefour-public-lead-legumes-099-20261014");
+  assert.ok(lead,"Le relevé d'origine doit être reconnu sans conserver une annonce expirée en production");
   const retained=retainRecentDailyLeads([lead],today);
   assert.deepEqual(retained,[lead]);
   assert.equal(selectDailyCatalogue({campaigns:retained,
