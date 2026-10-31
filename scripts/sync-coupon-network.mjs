@@ -100,7 +100,12 @@ if(!assessCouponNetworkSnapshot(offers,{previousCount,minimum:minOffers}).publis
   let browser=null;
   try{
     const {chromium}=await import("playwright");
-    browser=await chromium.launch({headless:true});
+    browser=await chromium.launch({
+      headless:true,
+      ...(process.env.PROMO_CHROME_EXECUTABLE
+        ? {executablePath:process.env.PROMO_CHROME_EXECUTABLE}
+        : {})
+    });
     const page=await browser.newPage({locale:"fr-FR"});
     await page.goto(PUBLIC_CARDS_URL,{
       waitUntil:"domcontentloaded",timeout:25000

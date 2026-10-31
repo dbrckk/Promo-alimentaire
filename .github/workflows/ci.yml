@@ -49,3 +49,5 @@ jobs:
         with:
           node-version: 22
       - run: npm run verify
+      - name: Validate shared Chromium setup script syntax
+        run: bash -n scripts/setup-playwright-chromium.sh

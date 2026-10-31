@@ -33,8 +33,7 @@ jobs:
       # Chromium reads only the publicly visible retailer catalogues.
       - name: Install Chromium for the public catalogue fallback
         run: |
-          npm install --no-save --package-lock=false playwright@1.56.1
-          npx playwright install --with-deps chromium
+          bash scripts/setup-playwright-chromium.sh
       - name: Verify public catalogue evidence
         run: npm run sync:leclerc -- --write
       - name: Validate repository

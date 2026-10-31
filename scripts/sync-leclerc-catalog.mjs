@@ -86,7 +86,12 @@ if(pendingUrls.length){
   let browser=null;
   try{
     const {chromium}=await import("playwright");
-    browser=await chromium.launch({headless:true});
+    browser=await chromium.launch({
+      headless:true,
+      ...(process.env.PROMO_CHROME_EXECUTABLE
+        ? {executablePath:process.env.PROMO_CHROME_EXECUTABLE}
+        : {})
+    });
     const context=await browser.newContext({locale:"fr-FR"});
     for(const url of pendingUrls){
       const page=await context.newPage();

@@ -1,3 +1,11 @@
+### Fiabiliser les workflows Chromium sur GitHub Actions (31 octobre 2026)
+
+Les exécutions du navigateur Android publié et des collecteurs publics Coupon Network / E.Leclerc pouvaient échouer **pendant `npx playwright install --with-deps chromium`**, avant de tester le site ou lire la source. Ce n'est pas la preuve d'un dysfonctionnement de la PWA ni d'une promotion indisponible.
+
+`scripts/setup-playwright-chromium.sh` installe Playwright avec trois tentatives, **vérifie par un lancement réel** le Chrome déjà présent sur le runner GitHub (prioritaire), puis essaie Chromium Playwright, et en dernier recours ses dépendances Linux. Le chemin Chrome n'est transmis aux scripts que si le navigateur démarre. Le même dispositif couvre les workflows Android, Pages, Coupon Network et E.Leclerc ; la CI vérifie la syntaxe du script. Si aucun navigateur ne fonctionne, le workflow échoue explicitement : aucune capture ni collecte n'est déclarée réussie artificiellement. Les collecteurs continuent à exiger leurs propres preuves et ne prolongent jamais les dates expirées en cas d'échec.
+
+**Attention :** le contrôle strict de fraîcheur reste indépendant et signale toujours les sources réellement périmées. Ce correctif améliore la disponibilité des contrôles, pas la validité des promotions.
+
 ### Prospectus Bonial : titres E.Leclerc dédoublonnés (18 octobre 2026)
 
 La synchronisation automatique peut recevoir deux écritures du même prospectus, une avec le caractère `&` dans la légende HTML et l'autre avec sa représentation JSON `\\u0026`. Le normaliseur décode désormais les échappements Unicode imprimables **avant** la construction de l'identifiant et la déduplication. Le prospectus « NOS CONSEILS & OFFRES DE SAISON » du 6 au 31 octobre n'apparaît plus deux fois dans **Promos du jour**. La protection des URL autorisées, les dates d'expiration et l'absence de prix ou remises inventés restent identiques. Régression ajoutée au parcours Android existant.
