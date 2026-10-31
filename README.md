@@ -1,3 +1,9 @@
+### Synchronisation quotidienne : test de preuve expirée indépendant du catalogue réel (31 octobre 2026)
+
+Le workflow de synchronisation des prospectus du jour échouait lors de `npm run verify` après avoir **correctement supprimé** une annonce Carrefour « fruits et légumes à 0,99 € » datée du **14 octobre**. La régression lisait directement le catalogue vivant et supposait que cette annonce historique devait y rester indéfiniment. Le contrôle a été corrigé dans le **fichier de test existant** : il reconstruit cette observation à partir du même extrait HTML de preuve datée que celui utilisé pour vérifier le parseur, puis contrôle sa conservation le jour du constat, son expiration à minuit à Paris et sa purge d'archive après 7 jours. Il n'oblige plus la production à conserver une offre expirée.
+
+La synchronisation publique sera aussi relancée lors d'une modification de ce test, afin de vérifier le parcours de bout en bout. Les refus HTTP 401/403 restent respectés et ne prolongent aucune preuve commerciale. Aucun nouveau test unitaire n'est ajouté.
+
 ### Fiabiliser les workflows Chromium sur GitHub Actions (31 octobre 2026)
 
 Les exécutions du navigateur Android publié et des collecteurs publics Coupon Network / E.Leclerc pouvaient échouer **pendant `npx playwright install --with-deps chromium`**, avant de tester le site ou lire la source. Ce n'est pas la preuve d'un dysfonctionnement de la PWA ni d'une promotion indisponible.
