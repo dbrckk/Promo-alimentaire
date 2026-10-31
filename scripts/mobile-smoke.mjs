@@ -8,7 +8,12 @@ const RECENT_RECEIPT_DATE=new Date(Date.now()-24*60*60*1000)
 const BASE=process.env.SMOKE_URL || "http://127.0.0.1:4173/";
 const OUT=process.env.SMOKE_OUTPUT || "artifacts/mobile";
 await mkdir(OUT,{recursive:true});
-const browser=await chromium.launch({headless:true});
+const browser=await chromium.launch({
+      headless:true,
+      ...(process.env.PROMO_CHROME_EXECUTABLE
+        ? {executablePath:process.env.PROMO_CHROME_EXECUTABLE}
+        : {})
+    });
 const context=await browser.newContext({
   ...devices["Pixel 7"],
   locale:"fr-FR",
