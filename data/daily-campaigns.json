@@ -136,99 +136,9 @@
       "verifiedAt": "2026-10-14",
       "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
       "detailsUrl": "https://www.carrefour.fr/evenements/semaine-du-gout"
-    },
-    {
-      "id": "carrefour-public-lead-legumes-099-20261014",
-      "store": "carrefour",
-      "channels": [
-        "store",
-        "drive"
-      ],
-      "category": "fruits et légumes",
-      "title": "Sélection fruits et légumes : annonce à 0,99 €",
-      "claim": "L'enseigne affiche une sélection à 0,99 €. Produit, quantité, unité et prix dans le magasin choisi à contrôler avant achat.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
-    },
-    {
-      "id": "carrefour-public-lead-bio-2-20261014",
-      "store": "carrefour",
-      "channels": [
-        "store",
-        "drive"
-      ],
-      "category": "bio",
-      "title": "Produits Bio annoncés à moins de 2 €",
-      "claim": "Sélection Bio Carrefour à petit prix ; sans référence exacte, le montant et la quantité du produit ne sont pas confirmés.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
-    },
-    {
-      "id": "carrefour-public-lead-poissonnerie-club-15-20261014",
-      "store": "carrefour",
-      "channels": [
-        "drive"
-      ],
-      "category": "alimentaire",
-      "title": "Poissonnerie : 34 % d'économies Club dès 15 €",
-      "claim": "Avantage Club annoncé dès 15 € sur une sélection hors promotions, uniquement aujourd'hui dans les Drives participants. Conditions fidélité et panier éligible à confirmer.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
-      "minimumPurchase": 15
-    },
-    {
-      "id": "carrefour-public-lead-brochure-au-coeur-du-gout-20261014",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "category": "alimentaire",
-      "title": "Catalogue Carrefour « Au cœur du goût »",
-      "claim": "Prospectus alimentaire officiel annoncé du 2026-10-13 au 2026-10-26. Consulter le catalogue et sélectionner son magasin ; aucun prix produit ou pourcentage d'économie n'est confirmé ici.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/catalogue/carrefour"
-    },
-    {
-      "id": "carrefour-public-lead-quotidien-1-20261014",
-      "store": "carrefour",
-      "channels": [
-        "store",
-        "drive"
-      ],
-      "category": "épicerie",
-      "title": "Produits du quotidien : sélection annoncée à moins de 1 €",
-      "claim": "Des produits du quotidien sont annoncés sous le seuil de 1 €. Le produit exact, sa quantité et son prix local doivent être consultés dans le magasin choisi.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment",
-      "detailsUrl": "https://www.carrefour.fr/boutique/produits-1euro"
-    },
-    {
-      "id": "carrefour-public-lead-recettes-budget-20261014",
-      "store": "carrefour",
-      "channels": [
-        "store",
-        "drive"
-      ],
-      "category": "alimentaire",
-      "title": "Recettes à petits prix : idées à consulter",
-      "claim": "Carrefour publie une sélection de recettes économiques. Aucun prix final, nombre de portions ou remise précise n'est vérifié.",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-14",
-      "verifiedAt": "2026-10-14",
-      "sourceUrl": "https://www.carrefour.fr/offres-du-moment"
     }
   ],
-  "lastAttemptAt": "2026-10-21T13:15:20.304Z",
+  "lastAttemptAt": "2026-10-31T09:08:29.928Z",
   "sourceChecks": {
     "https://www.carrefour.fr/catalogue/carrefour": {
       "status": "unavailable",
@@ -241,90 +151,6 @@
   },
   "alternativeCatalogues": [
     {
-      "id": "bonial-carrefour-20261007-20261021-prospectus-carrefour",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "format": "Carrefour",
-      "title": "Prospectus Carrefour",
-      "startsAt": "2026-10-07",
-      "expiresAt": "2026-10-21",
-      "verifiedAt": "2026-10-21",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
-      "source": "Bonial"
-    },
-    {
-      "id": "bonial-carrefour-20261001-20261025-prospectus-carrefour",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "format": "Carrefour",
-      "title": "Prospectus Carrefour",
-      "startsAt": "2026-10-01",
-      "expiresAt": "2026-10-25",
-      "verifiedAt": "2026-10-21",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
-      "source": "Bonial"
-    },
-    {
-      "id": "bonial-carrefour-20261013-20261026-prospectus-carrefour",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "format": "Carrefour",
-      "title": "Prospectus Carrefour",
-      "startsAt": "2026-10-13",
-      "expiresAt": "2026-10-26",
-      "verifiedAt": "2026-10-21",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
-      "source": "Bonial"
-    },
-    {
-      "id": "bonial-carrefour-20260929-20261027-prospectus-carrefour",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "format": "Carrefour",
-      "title": "Prospectus Carrefour",
-      "startsAt": "2026-09-29",
-      "expiresAt": "2026-10-27",
-      "verifiedAt": "2026-10-21",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
-      "source": "Bonial"
-    },
-    {
-      "id": "bonial-carrefour-20261014-20261028-prospectus-carrefour",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "format": "Carrefour",
-      "title": "Prospectus Carrefour",
-      "startsAt": "2026-10-14",
-      "expiresAt": "2026-10-28",
-      "verifiedAt": "2026-10-21",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
-      "source": "Bonial"
-    },
-    {
-      "id": "bonial-carrefour-20261020-20261102-haha-halloween",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "format": "Carrefour",
-      "title": "Catalogue Carrefour « HAHA HALLOWEEN »",
-      "startsAt": "2026-10-20",
-      "expiresAt": "2026-11-02",
-      "verifiedAt": "2026-10-21",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
-      "source": "Bonial"
-    },
-    {
       "id": "bonial-carrefour-20261020-20261102-prospectus-carrefour",
       "store": "carrefour",
       "channels": [
@@ -334,7 +160,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-20",
       "expiresAt": "2026-11-02",
-      "verifiedAt": "2026-10-21",
+      "verifiedAt": "2026-10-31",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -348,7 +174,63 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-21",
       "expiresAt": "2026-11-03",
-      "verifiedAt": "2026-10-21",
+      "verifiedAt": "2026-10-31",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261027-20261109-prospectus-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Prospectus Carrefour",
+      "startsAt": "2026-10-27",
+      "expiresAt": "2026-11-09",
+      "verifiedAt": "2026-10-31",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261022-20261109-prospectus-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Prospectus Carrefour",
+      "startsAt": "2026-10-22",
+      "expiresAt": "2026-11-09",
+      "verifiedAt": "2026-10-31",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261028-20261110-prospectus-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Prospectus Carrefour",
+      "startsAt": "2026-10-28",
+      "expiresAt": "2026-11-10",
+      "verifiedAt": "2026-10-31",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261028-20261130-prospectus-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Prospectus Carrefour",
+      "startsAt": "2026-10-28",
+      "expiresAt": "2026-11-30",
+      "verifiedAt": "2026-10-31",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -362,7 +244,21 @@
       "title": "Catalogue E.Leclerc « 10 JOURS DIAMANTS »",
       "startsAt": "2026-10-20",
       "expiresAt": "2026-10-31",
-      "verifiedAt": "2026-10-21",
+      "verifiedAt": "2026-10-31",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-leclerc-20261020-20261031-prospectus-e-leclerc",
+      "store": "leclerc",
+      "channels": [
+        "store"
+      ],
+      "format": "E.Leclerc",
+      "title": "Prospectus E.Leclerc",
+      "startsAt": "2026-10-20",
+      "expiresAt": "2026-10-31",
+      "verifiedAt": "2026-10-31",
       "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
       "source": "Bonial"
     },
@@ -376,23 +272,23 @@
       "title": "Prospectus E.Leclerc",
       "startsAt": "2026-10-06",
       "expiresAt": "2026-10-31",
-      "verifiedAt": "2026-10-21",
+      "verifiedAt": "2026-10-31",
       "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
       "source": "Bonial"
     }
   ],
-  "alternativeCheckedAt": "2026-10-21T13:15:20.304Z",
-  "alternativeLastAttemptAt": "2026-10-21T13:15:20.304Z",
+  "alternativeCheckedAt": "2026-10-31T09:08:29.928Z",
+  "alternativeLastAttemptAt": "2026-10-31T09:08:29.928Z",
   "alternativeStatus": "available",
-  "alternativeReason": "Carrefour : 8 daté(s) ; E.Leclerc : 2 daté(s)",
+  "alternativeReason": "Carrefour : 6 daté(s) ; E.Leclerc : 3 daté(s)",
   "alternativeSourceChecks": {
     "carrefour": {
       "status": "available",
-      "count": 8
+      "count": 6
     },
     "leclerc": {
       "status": "available",
-      "count": 2
+      "count": 3
     }
   }
 }
