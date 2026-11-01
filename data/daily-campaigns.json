@@ -138,7 +138,7 @@
       "detailsUrl": "https://www.carrefour.fr/evenements/semaine-du-gout"
     }
   ],
-  "lastAttemptAt": "2026-10-31T09:08:29.928Z",
+  "lastAttemptAt": "2026-11-01T14:31:13.563Z",
   "sourceChecks": {
     "https://www.carrefour.fr/catalogue/carrefour": {
       "status": "unavailable",
@@ -160,7 +160,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-20",
       "expiresAt": "2026-11-02",
-      "verifiedAt": "2026-10-31",
+      "verifiedAt": "2026-11-01",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -174,7 +174,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-21",
       "expiresAt": "2026-11-03",
-      "verifiedAt": "2026-10-31",
+      "verifiedAt": "2026-11-01",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -188,7 +188,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-27",
       "expiresAt": "2026-11-09",
-      "verifiedAt": "2026-10-31",
+      "verifiedAt": "2026-11-01",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -202,7 +202,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-22",
       "expiresAt": "2026-11-09",
-      "verifiedAt": "2026-10-31",
+      "verifiedAt": "2026-11-01",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -216,7 +216,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-28",
       "expiresAt": "2026-11-10",
-      "verifiedAt": "2026-10-31",
+      "verifiedAt": "2026-11-01",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -230,57 +230,29 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-28",
       "expiresAt": "2026-11-30",
-      "verifiedAt": "2026-10-31",
+      "verifiedAt": "2026-11-01",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
     {
-      "id": "bonial-leclerc-20261020-20261031-10-jours-diamants",
+      "id": "bonial-leclerc-20261020-20261101-le-meilleur-sortilege-pour-votre-porte-monnaie",
       "store": "leclerc",
       "channels": [
         "store"
       ],
       "format": "E.Leclerc",
-      "title": "Catalogue E.Leclerc « 10 JOURS DIAMANTS »",
+      "title": "Catalogue E.Leclerc « LE MEILLEUR SORTILÈGE POUR VOTRE PORTE-MONNAIE »",
       "startsAt": "2026-10-20",
-      "expiresAt": "2026-10-31",
-      "verifiedAt": "2026-10-31",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
-      "source": "Bonial"
-    },
-    {
-      "id": "bonial-leclerc-20261020-20261031-prospectus-e-leclerc",
-      "store": "leclerc",
-      "channels": [
-        "store"
-      ],
-      "format": "E.Leclerc",
-      "title": "Prospectus E.Leclerc",
-      "startsAt": "2026-10-20",
-      "expiresAt": "2026-10-31",
-      "verifiedAt": "2026-10-31",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
-      "source": "Bonial"
-    },
-    {
-      "id": "bonial-leclerc-20261006-20261031-prospectus-e-leclerc",
-      "store": "leclerc",
-      "channels": [
-        "store"
-      ],
-      "format": "E.Leclerc",
-      "title": "Prospectus E.Leclerc",
-      "startsAt": "2026-10-06",
-      "expiresAt": "2026-10-31",
-      "verifiedAt": "2026-10-31",
+      "expiresAt": "2026-11-01",
+      "verifiedAt": "2026-11-01",
       "sourceUrl": "https://www.bonial.fr/Enseignes/E-Leclerc",
       "source": "Bonial"
     }
   ],
-  "alternativeCheckedAt": "2026-10-31T09:08:29.928Z",
-  "alternativeLastAttemptAt": "2026-10-31T09:08:29.928Z",
+  "alternativeCheckedAt": "2026-11-01T14:31:13.563Z",
+  "alternativeLastAttemptAt": "2026-11-01T14:31:13.563Z",
   "alternativeStatus": "available",
-  "alternativeReason": "Carrefour : 6 daté(s) ; E.Leclerc : 3 daté(s)",
+  "alternativeReason": "Carrefour : 6 daté(s) ; E.Leclerc : 1 daté(s)",
   "alternativeSourceChecks": {
     "carrefour": {
       "status": "available",
@@ -288,7 +260,7 @@
     },
     "leclerc": {
       "status": "available",
-      "count": 3
+      "count": 1
     }
   }
 }
