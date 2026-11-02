@@ -2,7 +2,7 @@
   "sources": {
     "carrefour": {
       "status": "unavailable",
-      "checkedAt": "2026-11-01T13:12:54.828Z",
+      "checkedAt": "2026-11-02T15:39:18.605Z",
       "reason": "HTTP 401/403 : accès public aux fiches Carrefour refusé ; arrêt des requêtes suivantes sans contournement (10 évitées).",
       "extractedCount": 0,
       "previousSnapshotCount": 11,
