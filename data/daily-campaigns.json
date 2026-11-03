@@ -138,7 +138,7 @@
       "detailsUrl": "https://www.carrefour.fr/evenements/semaine-du-gout"
     }
   ],
-  "lastAttemptAt": "2026-11-02T17:27:17.021Z",
+  "lastAttemptAt": "2026-11-03T15:28:58.265Z",
   "sourceChecks": {
     "https://www.carrefour.fr/catalogue/carrefour": {
       "status": "unavailable",
@@ -165,20 +165,6 @@
       "source": "Bonial"
     },
     {
-      "id": "bonial-carrefour-20261020-20261102-prospectus-carrefour",
-      "store": "carrefour",
-      "channels": [
-        "store"
-      ],
-      "format": "Carrefour",
-      "title": "Prospectus Carrefour",
-      "startsAt": "2026-10-20",
-      "expiresAt": "2026-11-02",
-      "verifiedAt": "2026-11-02",
-      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
-      "source": "Bonial"
-    },
-    {
       "id": "bonial-carrefour-20261021-20261103-prospectus-carrefour",
       "store": "carrefour",
       "channels": [
@@ -188,7 +174,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-21",
       "expiresAt": "2026-11-03",
-      "verifiedAt": "2026-11-02",
+      "verifiedAt": "2026-11-03",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -202,7 +188,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-27",
       "expiresAt": "2026-11-09",
-      "verifiedAt": "2026-11-02",
+      "verifiedAt": "2026-11-03",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -216,7 +202,7 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-22",
       "expiresAt": "2026-11-09",
-      "verifiedAt": "2026-11-02",
+      "verifiedAt": "2026-11-03",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
@@ -230,33 +216,75 @@
       "title": "Prospectus Carrefour",
       "startsAt": "2026-10-28",
       "expiresAt": "2026-11-10",
-      "verifiedAt": "2026-11-02",
+      "verifiedAt": "2026-11-03",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     },
     {
-      "id": "bonial-carrefour-20261028-20261130-prospectus-carrefour",
+      "id": "bonial-carrefour-20261103-20261116-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Catalogue Carrefour « Carrefour »",
+      "startsAt": "2026-11-03",
+      "expiresAt": "2026-11-16",
+      "verifiedAt": "2026-11-03",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261103-20261116-prospectus-carrefour",
       "store": "carrefour",
       "channels": [
         "store"
       ],
       "format": "Carrefour",
       "title": "Prospectus Carrefour",
-      "startsAt": "2026-10-28",
-      "expiresAt": "2026-11-30",
-      "verifiedAt": "2026-11-02",
+      "startsAt": "2026-11-03",
+      "expiresAt": "2026-11-16",
+      "verifiedAt": "2026-11-03",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261103-20261122-prospectus-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Prospectus Carrefour",
+      "startsAt": "2026-11-03",
+      "expiresAt": "2026-11-22",
+      "verifiedAt": "2026-11-03",
+      "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
+      "source": "Bonial"
+    },
+    {
+      "id": "bonial-carrefour-20261103-20261123-prospectus-carrefour",
+      "store": "carrefour",
+      "channels": [
+        "store"
+      ],
+      "format": "Carrefour",
+      "title": "Prospectus Carrefour",
+      "startsAt": "2026-11-03",
+      "expiresAt": "2026-11-23",
+      "verifiedAt": "2026-11-03",
       "sourceUrl": "https://www.bonial.fr/Enseignes/Carrefour",
       "source": "Bonial"
     }
   ],
-  "alternativeCheckedAt": "2026-11-02T17:27:17.021Z",
-  "alternativeLastAttemptAt": "2026-11-02T17:27:17.021Z",
+  "alternativeCheckedAt": "2026-11-03T15:28:58.265Z",
+  "alternativeLastAttemptAt": "2026-11-03T15:28:58.265Z",
   "alternativeStatus": "partial",
-  "alternativeReason": "Carrefour : 6 daté(s) ; E.Leclerc : indisponible (Aucun prospectus actuel avec dates vérifiables)",
+  "alternativeReason": "Carrefour : 8 daté(s) ; E.Leclerc : indisponible (Aucun prospectus actuel avec dates vérifiables)",
   "alternativeSourceChecks": {
     "carrefour": {
       "status": "available",
-      "count": 6
+      "count": 8
     },
     "leclerc": {
       "status": "unavailable",
